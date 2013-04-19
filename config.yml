@@ -1,0 +1,70 @@
+# name: versch. Namen für schlecht/mittel/gut
+# ingredients: material/anzahl
+# cookingtime: Zeit in minuten die die zutaten kochen müssen (o=kein kochen)
+# destillruns: wie oft destilliert werden muss (0=ohne Destillieren)
+# filter: filter in der destille (leer wenn egal)
+# destillpotion: trank, der in der destille beigemischt wird (leer für wasser)
+# wood: Holz des Fasses 0=ohne fass 1=Birch 2=Oak 3=Jungle 4=Pine
+# difficulty: 1-10 genauigkeit der Einhaltung der Vorgaben
+# alcohol: Alkoholgehalt 0-100 in Vol.% bei perfektem Getränk
+
+#cooked: Auflistung ALLER möglichen Zutaten und die daraus entstehenden Tranknahmen (leer für undef.)
+
+
+recipes:
+   1:
+      name: Ranziges Weißbier/Weißbier/Feines Weißbier
+      ingredients: 
+      - WHEAT/6
+      cookingtime: 8
+      wood: 1
+      difficulty: 1
+      alcohol: 5
+   2:
+      name: Ranziges Bier/Bier/Feines Bier
+      ingredients: 
+      - WHEAT/6
+      cookingtime: 8
+      wood: 2
+      difficulty: 1
+      alcohol: 5
+   3:
+      name: Ranziges Dunkelbier/Dunkelbier/Feines Dunkelbier
+      ingredients: 
+      - WHEAT/6
+      cookingtime: 8
+      wood: 4
+      difficulty: 2
+      alcohol: 7
+   4:
+      name: Scheußlicher Met/Met/Goldener Met
+      ingredients: 
+      - SUGAR_CANE/6
+      cookingtime: 3
+      wood: 2
+      difficulty: 2
+      alcohol: 8
+   5:
+      name: Apfelmet/Süßer Apfelmet/Goldensüßer Apfelmet
+      ingredients: 
+      - SUGAR_CANE/6
+      - APPLE/2
+      cookingtime: 4
+      destillruns: 0
+      wood: 2
+      difficulty: 4
+      alcohol: 10
+   6:
+      name: Rum/Goldener Rum/Perfekter Rum
+      ingredients: 
+      - SUGAR_CANE/14
+      cookingtime: 5
+      destillruns: 2
+      wood: 2
+      difficulty: 6
+      alcohol: 60
+cooked:
+   WHEAT: Getreidemaische
+   SUGAR_CANE: Zuckersud
+   APPLE: Apfelmost
+   POTATO_ITEM: Kartoffelmaische

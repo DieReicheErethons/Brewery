@@ -2,29 +2,14 @@ package com.dre.brewery;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
-//import java.util.List;
-//import java.util.ArrayList;
-
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.HumanEntity;
 import org.bukkit.Material;
-import org.bukkit.material.Cauldron;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.ItemStack;
-//import org.bukkit.inventory.meta.ItemMeta;
-//import org.bukkit.inventory.meta.PotionMeta;
-//import org.bukkit.potion.Potion;
-//import org.bukkit.potion.PotionEffect;
-//import org.bukkit.potion.PotionEffectType;
-import org.bukkit.World;
 import org.bukkit.Effect;
 
-//import org.bukkit.block.BrewingStand;
-
 import com.dre.brewery.BIngredients;
-
-import com.dre.brewery.P;
 
 public class BCauldron {
 	public static CopyOnWriteArrayList<BCauldron> bcauldrons=new CopyOnWriteArrayList<BCauldron>();
@@ -34,7 +19,6 @@ public class BCauldron {
 	private int state;
 
 	public BCauldron(Block block,Material ingredient){
-		P.p.log("aaand we got a fresh cauldron");
 		this.block = block;
 		this.state = 1;
 		this.ingredients = new BIngredients();
@@ -44,10 +28,17 @@ public class BCauldron {
 
 
 	public void onUpdate(){
-		state++;//wie lange es schon kocht
+		//Check if fire still alive
+		if(block.getRelative(BlockFace.DOWN).getType() == Material.FIRE ||
+		block.getRelative(BlockFace.DOWN).getType() == Material.STATIONARY_LAVA ||
+		block.getRelative(BlockFace.DOWN).getType() == Material.LAVA){
+			//add a minute to cooking time
+			state++;
+		}
 	}
 
 
+	//add an ingredient to the cauldron
 	public void add(Material ingredient){
 		ingredients.add(ingredient);
 		block.getWorld().playEffect(block.getLocation(),Effect.EXTINGUISH,0);
@@ -56,11 +47,12 @@ public class BCauldron {
 		}
 	}
 
+	//get cauldron from block and add given ingredient
 	public static boolean ingredientAdd(Block block,Material ingredient){
+		//if not empty
 		if(block.getData() != 0){
 			for(BCauldron bcauldron:bcauldrons){
 				if(bcauldron.block.equals(block)){
-					P.p.log("is existing Cauldron");
 					bcauldron.add(ingredient);
 					return true;
 				}
@@ -71,12 +63,15 @@ public class BCauldron {
 		return false;
 	}
 
+	//fills players bottle with cooked brew
 	public static boolean fill(Player player,Block block){
 		for(BCauldron bcauldron:bcauldrons){
 			if(bcauldron.block.equals(block)){
 				ItemStack potion = bcauldron.ingredients.cook(bcauldron.state);
 				if(potion != null){
-					giveItem(player,potion);//Bukkit Bug, but could also just use deprecated updateInventory()
+					//Bukkit Bug, inventory not updating while in event so this will delay the give
+					//but could also just use deprecated updateInventory()
+					giveItem(player,potion);
 					//player.getInventory().addItem(potion);
 					//player.getInventory().updateInventory();
 					if(block.getData() > 3){
@@ -94,14 +89,16 @@ public class BCauldron {
 		return false;
 	}
 
+	//reset to normal cauldron
 	public static void remove(Block block){
 		for(BCauldron bcauldron:bcauldrons){
 			if(bcauldron.block.equals(block)){
-				bcauldrons.remove(bcauldron);//reset to normal cauldron (when refilling it)
+				bcauldrons.remove(bcauldron);
 			}
 		}
 	}
 
+	//bukkit bug not updating the inventory while executing event, have to schedule the give
 	public static void giveItem(final Player player,final ItemStack item){
 		P.p.getServer().getScheduler().runTaskLater(P.p, new Runnable() {
 			public void run() {

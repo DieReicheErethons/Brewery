@@ -1,23 +1,26 @@
 # name: versch. Namen für schlecht/mittel/gut
 # ingredients: material/anzahl
-# cookingtime: Zeit in minuten die die zutaten kochen müssen (o=kein kochen)
-# destillruns: wie oft destilliert werden muss (0=ohne Destillieren)
-# filter: filter in der destille (leer wenn egal)
-# destillpotion: trank, der in der destille beigemischt wird (leer für wasser)
-# wood: Holz des Fasses 0=ohne fass 1=Birch 2=Oak 3=Jungle 4=Pine
+# cookingtime: Zeit in echtminuten die die zutaten kochen müssen
+# distillruns: wie oft destilliert werden muss 0-10 (0=ohne Destillieren)
+# wood: Holz des Fasses 0=alle Holzsorten 1=Birch 2=Oak 3=Jungle 4=Pine
+# age: Zeit in Minecraft Tagen, die das getränk im fass reifen muss 0=kein reifen
+# color: Farbe des Getränks nach destillieren/reifen
 # difficulty: 1-10 genauigkeit der Einhaltung der Vorgaben
 # alcohol: Alkoholgehalt 0-100 in Vol.% bei perfektem Getränk
 
-#cooked: Auflistung ALLER möglichen Zutaten und die daraus entstehenden Tranknahmen (leer für undef.)
+#cooked: Auflistung ALLER möglichen Zutaten und die daraus entstehenden Tranknamen: (leer für undef.)
 
 
 recipes:
    1:
       name: Ranziges Weißbier/Weißbier/Feines Weißbier
       ingredients: 
-      - WHEAT/6
+      - WHEAT/3
       cookingtime: 8
+      distillruns: 0
       wood: 1
+      age: 2
+      color: BRIGHT_GREY
       difficulty: 1
       alcohol: 5
    2:
@@ -25,15 +28,21 @@ recipes:
       ingredients: 
       - WHEAT/6
       cookingtime: 8
-      wood: 2
+      distillruns: 0
+      wood: 0
+      age: 3
+      color: ORANGE
       difficulty: 1
-      alcohol: 5
+      alcohol: 6
    3:
       name: Ranziges Dunkelbier/Dunkelbier/Feines Dunkelbier
       ingredients: 
       - WHEAT/6
       cookingtime: 8
+      distillruns: 0
       wood: 4
+      age: 8
+      color: BLACK
       difficulty: 2
       alcohol: 7
    4:
@@ -41,30 +50,46 @@ recipes:
       ingredients: 
       - SUGAR_CANE/6
       cookingtime: 3
+      distillruns: 0
       wood: 2
+      age: 4
+      color: ORANGE
       difficulty: 2
-      alcohol: 8
+      alcohol: 10
    5:
       name: Apfelmet/Süßer Apfelmet/Goldensüßer Apfelmet
       ingredients: 
       - SUGAR_CANE/6
       - APPLE/2
       cookingtime: 4
-      destillruns: 0
+      distillruns: 0
       wood: 2
+      age: 4
+      COLOR: ORANGE
       difficulty: 4
-      alcohol: 10
+      alcohol: 12
    6:
       name: Rum/Goldener Rum/Perfekter Rum
       ingredients: 
       - SUGAR_CANE/14
       cookingtime: 5
-      destillruns: 2
+      distillruns: 2
       wood: 2
+      age: 14
+      color: DARK_RED
       difficulty: 6
       alcohol: 60
+   7:
+      name: Kartoffelsuppe
+      ingredients:
+      - POTATO_ITEM/5
+      - LONG_GRASS/3
+      cookingtime: 3
+      color: PINK
+      difficulty: 1
 cooked:
-   WHEAT: Getreidemaische
+   WHEAT: Getreideferment
    SUGAR_CANE: Zuckersud
    APPLE: Apfelmost
    POTATO_ITEM: Kartoffelmaische
+   LONG_GRASS: Kräuterbrühe

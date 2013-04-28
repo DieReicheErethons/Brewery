@@ -9,8 +9,8 @@ import org.apache.commons.lang.math.NumberUtils;
 
 import com.dre.brewery.listeners.BlockListener;
 import com.dre.brewery.listeners.PlayerListener;
+import com.dre.brewery.listeners.EntityListener;
 import org.bukkit.event.HandlerList;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.ChatColor;
@@ -19,15 +19,13 @@ import java.io.IOException;
 
 import org.bukkit.inventory.ItemStack;
 
-import com.dre.brewery.BIngredients;
-import com.dre.brewery.BRecipe;
-
 public class P extends JavaPlugin{
 	public static P p;
 	
 	//Listeners
 	public BlockListener blockListener;
 	public PlayerListener playerListener;
+	public EntityListener entityListener;
 	
 	
 	@Override
@@ -39,10 +37,12 @@ public class P extends JavaPlugin{
 		//Listeners
 		blockListener = new BlockListener();
 		playerListener = new PlayerListener();
+		entityListener = new EntityListener();
 		 
 		p.getServer().getPluginManager().registerEvents(blockListener, p);
 		p.getServer().getPluginManager().registerEvents(playerListener, p);
-		p.getServer().getScheduler().runTaskTimer(p, new BreweryRunnable(), 2400, 2400);
+		p.getServer().getPluginManager().registerEvents(entityListener, p);
+		p.getServer().getScheduler().runTaskTimer(p, new BreweryRunnable(), 1200, 1200);
 
 
 		this.log(this.getDescription().getName()+" enabled!");
@@ -62,6 +62,7 @@ public class P extends JavaPlugin{
 		File datafile = new File(p.getDataFolder(), "data.yml");
 		FileConfiguration configFile = new YamlConfiguration();
 
+		//braucht eine gute db
 		ItemStack test = new ItemStack(2);//speichert später die custom potions (nicht als itemstack)
 		configFile.set("ItemStack.Stack", test);
 
@@ -92,6 +93,7 @@ public class P extends JavaPlugin{
 		}
 		FileConfiguration config = getConfig();
 
+		//loading recipes
 		ConfigurationSection configSection = config.getConfigurationSection("recipes");
 		if(configSection != null){
 			for(String recipeId:configSection.getKeys(false)){
@@ -99,6 +101,7 @@ public class P extends JavaPlugin{
 			}
 		}
 
+		//loading cooked names and possible ingredients
 		configSection = config.getConfigurationSection("cooked");
 		if(configSection != null){
 			for(String ingredient:configSection.getKeys(false)){
@@ -124,8 +127,9 @@ public class P extends JavaPlugin{
 		public void run() {
 			p.log("Update");
 			for(BCauldron cauldron:BCauldron.bcauldrons){
-				cauldron.onUpdate();//runs every 2 min to update cooking time
+				cauldron.onUpdate();//runs every min to update cooking time
 			}
+			Barrel.onUpdate();//runs every min to check and update ageing time
 		}
 
 	}

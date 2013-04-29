@@ -142,8 +142,9 @@ public class BIngredients {
 				}
 			}
 		}
-
-		P.p.log("best recipe: "+bestRecipe.getName(5)+" has Quality= "+quality);
+		if(bestRecipe != null){
+			P.p.log("best recipe: "+bestRecipe.getName(5)+" has Quality= "+quality);
+		}
 		return bestRecipe;
 	}
 

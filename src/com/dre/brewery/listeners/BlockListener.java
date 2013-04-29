@@ -40,10 +40,18 @@ public class BlockListener implements Listener{
 				}
 			}
 		//remove barrel and throw potions on the ground
-		} else if(block.getType() == Material.FENCE || block.getType() == Material.NETHER_FENCE){
+		} else if (block.getType() == Material.FENCE || block.getType() == Material.NETHER_FENCE){
 			Barrel barrel = Barrel.get(block);
 			if(barrel != null){
 				barrel.remove(null);
+			}
+		//remove small Barrels
+		} else if (block.getType() == Material.SIGN || block.getType() == Material.WALL_SIGN){
+			Barrel barrel = Barrel.get(block);
+			if(barrel != null){
+				if(!barrel.isLarge()){
+					barrel.remove(null);
+				}
 			}
 		}
 	}

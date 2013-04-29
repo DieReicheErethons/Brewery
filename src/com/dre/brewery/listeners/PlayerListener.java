@@ -70,7 +70,10 @@ public class PlayerListener implements Listener{
 						}
 					}
 				//access a barrel
-				} else if (clickedBlock.getType() == Material.FENCE || clickedBlock.getType() == Material.NETHER_FENCE){
+				} else if (clickedBlock.getType() == Material.FENCE ||
+					clickedBlock.getType() == Material.NETHER_FENCE ||
+					clickedBlock.getType() == Material.SIGN ||
+					clickedBlock.getType() == Material.WALL_SIGN){
 					Barrel barrel = Barrel.get(clickedBlock);
 					if(barrel != null){
 						event.setCancelled(true);

@@ -12,8 +12,6 @@ import org.bukkit.inventory.BrewerInventory;
 
 import com.dre.brewery.BIngredients;
 
-import com.dre.brewery.P;
-
 public class Brew {
 
 	public static Map<Integer,Brew> potions=new HashMap<Integer,Brew>();
@@ -24,6 +22,7 @@ public class Brew {
 	private int quality;
 	private int distillRuns;
 	private float ageTime;
+	private int alcohol;
 
 	public Brew(int uid,BIngredients ingredients){
 		this.ingredients = ingredients;
@@ -31,9 +30,10 @@ public class Brew {
 	}
 
 	//quality already set
-	public Brew(int uid,int quality,BIngredients ingredients){
+	public Brew(int uid,int quality,int alcohol,BIngredients ingredients){
 		this.ingredients = ingredients;
 		this.quality = quality;
+		this.alcohol = calcAlcohol(alcohol);
 		potions.put(uid,this);
 	}
 
@@ -91,6 +91,39 @@ public class Brew {
 		return null;
 	}*/
 
+	//calculate alcohol from recipe
+	public int calcAlcohol(int alc){
+		if(distillRuns == 0){
+			distillRuns = 1;
+		}
+		alc /= distillRuns;
+		alc *= distillRuns * ((float)quality / 10.0);
+		return alc;
+	}
+
+	//calculating quality
+	public int calcQuality(BRecipe recipe,byte wood){
+		//calculate quality from all of the factors
+		float quality =(
+
+		ingredients.getIngredientQuality(recipe) +
+		ingredients.getCookingQuality(recipe) +
+		ingredients.getWoodQuality(recipe,wood) +
+		ingredients.getAgeQuality(recipe,ageTime));
+
+		quality /= 4;
+		return (int)Math.round(quality);
+	}
+
+	public int getQuality(){
+		return quality;
+	}
+
+	//return prev calculated alcohol
+	public int getAlcohol(){
+		return alcohol;
+	}
+
 
 
 
@@ -116,15 +149,7 @@ public class Brew {
 		BRecipe recipe = brew.ingredients.getdistillRecipe();
 
 		if(recipe != null){
-			//calculate quality of ingredients and cookingtime
-			float quality = brew.ingredients.getIngredientQuality(recipe) + brew.ingredients.getCookingQuality(recipe);
-			quality /= 2;
-
-			/*if(recipe.getDistillRuns() > 1){
-				quality -= Math.abs(recipe.getDistillRuns() - (brew.distillRuns + 1)) * 2;
-			}*/
-
-			brew.quality = (int)Math.round(quality);
+			brew.quality = brew.calcQuality(recipe,(byte)0);
 			P.p.log("destilled "+recipe.getName(5)+" has Quality: "+brew.quality);
 			brew.distillRuns += 1;
 			//distillRuns will have an effect on the amount of alcohol, not the quality
@@ -133,6 +158,7 @@ public class Brew {
 				lore.add(brew.distillRuns+" fach Destilliert");
 				potionMeta.setLore(lore);
 			}
+			brew.alcohol = brew.calcAlcohol(recipe.getAlcohol());
 
 			potionMeta.setDisplayName(recipe.getName(brew.quality));
 
@@ -165,22 +191,16 @@ public class Brew {
 			if(brew.ageTime > 0.5){
 				BRecipe recipe = brew.ingredients.getAgeRecipe(wood,brew.ageTime);
 				if(recipe != null){
+					if(!recipe.needsDistilling() || brew.distillRuns > 0){
 
-					//calculate quality from all of the factors
-					float quality =(
+						brew.quality = brew.calcQuality(recipe,wood);
+						brew.alcohol = brew.calcAlcohol(recipe.getAlcohol());
+						P.p.log("Final "+recipe.getName(5)+" has Quality: "+brew.quality);
 
-					brew.ingredients.getIngredientQuality(recipe) +
-					brew.ingredients.getCookingQuality(recipe) +
-					brew.ingredients.getWoodQuality(recipe,wood) +
-					brew.ingredients.getAgeQuality(recipe,brew.ageTime));
-
-					quality /= 4;
-					brew.quality = (int)Math.round(quality);
-					P.p.log("Final "+recipe.getName(5)+" has Quality: "+brew.quality);
-
-					potionMeta.setDisplayName(recipe.getName(brew.quality));
-					item.setDurability(PotionColor.valueOf(recipe.getColor()).getColorId(false));
-					item.setItemMeta(potionMeta);
+						potionMeta.setDisplayName(recipe.getName(brew.quality));
+						item.setDurability(PotionColor.valueOf(recipe.getColor()).getColorId(false));
+						item.setItemMeta(potionMeta);
+					}
 				}
 			}
 		}

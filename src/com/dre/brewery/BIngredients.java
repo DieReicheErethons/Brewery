@@ -9,7 +9,6 @@ import org.bukkit.Material;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.inventory.meta.PotionMeta;
 
-import com.dre.brewery.P;
 import com.dre.brewery.BRecipe;
 import com.dre.brewery.Brew;
 
@@ -61,7 +60,7 @@ public class BIngredients {
 			//Potion is best with cooking only, can still be destilled, etc.
 			int quality =(int) Math.round((getIngredientQuality(cookRecipe) + getCookingQuality(cookRecipe)) / 2.0);
 			P.p.log("cooked potion has Quality: "+quality);
-			new Brew(uid,quality,new BIngredients(ingredients,cookedTime));
+			new Brew(uid,quality,cookRecipe.getAlcohol(),new BIngredients(ingredients,cookedTime));
 
 			cookedName = cookRecipe.getName(quality);
 			potion.setDurability(Brew.PotionColor.valueOf(cookRecipe.getColor()).getColorId(false));

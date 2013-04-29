@@ -3,6 +3,7 @@ package com.dre.brewery.listeners;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.inventory.BrewEvent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -22,8 +23,7 @@ import com.dre.brewery.BCauldron;
 import com.dre.brewery.BIngredients;
 import com.dre.brewery.Brew;
 import com.dre.brewery.Barrel;
-
-import com.dre.brewery.P;
+import com.dre.brewery.BPlayer;
 
 public class PlayerListener implements Listener{
 	@EventHandler(priority = EventPriority.HIGH)
@@ -130,23 +130,29 @@ public class PlayerListener implements Listener{
 	//player drinks a custom potion
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerItemConsume(PlayerItemConsumeEvent event){
-		if(event.getItem() != null){
-			if(event.getItem().getType() == Material.POTION){
-				if(event.getItem().hasItemMeta()){
-					PotionMeta potionMeta = ((PotionMeta) event.getItem().getItemMeta());
+		ItemStack item = event.getItem();
+		if(item != null){
+			if(item.getType() == Material.POTION){
+				if(item.hasItemMeta()){
+					PotionMeta potionMeta = ((PotionMeta) item.getItemMeta());
 					if(potionMeta.hasCustomEffect(PotionEffectType.REGENERATION)){
 						for(PotionEffect effect:potionMeta.getCustomEffects()){
 							if(effect.getType().getId() == 10){
-								//tell him the ID for testing
-								P.p.msg(event.getPlayer(),"ID: "+effect.getDuration());
+								if(BPlayer.drink(potionMeta,event.getPlayer())){
+									Brew.remove(item);
+									item.setType(Material.POTION);
+								}
 							}
 						}
 					}
 				}
 			}
 		}
-
-
 	}
 
+	//player walks while drunk, push him around!
+	@EventHandler(priority = EventPriority.LOW)
+	public void onPlayerMove(PlayerMoveEvent event){
+		BPlayer.playerMove(event);
+	}
 }

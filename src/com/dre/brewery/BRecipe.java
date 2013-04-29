@@ -90,6 +90,13 @@ public class BRecipe {
 		return false;
 	}
 
+	public boolean needsDistilling(){
+		if(distillruns == 0){
+			return true;
+		}
+		return false;
+	}
+
 	public boolean needsToAge(){
 		if(age == 0){
 			return false;
@@ -169,6 +176,10 @@ public class BRecipe {
 
 	public int getDifficulty(){
 		return difficulty;
+	}
+
+	public int getAlcohol(){
+		return alcohol;
 	}
 
 

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.Material;
 import org.bukkit.potion.PotionEffectType;
@@ -256,6 +257,24 @@ public class BIngredients {
 			return quality;
 		}
 		return 0;
+	}
+
+	//saves data into ingredient section of Brew/BCauldron
+	public void save(ConfigurationSection config){
+		if(cookedTime != 0){
+			config.set("cookedTime", cookedTime);
+		}
+
+		//convert the ingredient Material to id
+		Map<Integer,Integer> mats = new HashMap<Integer,Integer>();
+		for(Material mat:ingredients.keySet()){
+			mats.put(mat.getId(),ingredients.get(mat));
+		}
+		//list all Material ids with their amount
+		ConfigurationSection matSection = config.createSection("mats");
+		for(int id:mats.keySet()){
+			matSection.set(""+id,mats.get(id));
+		}
 	}
 
 

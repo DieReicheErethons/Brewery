@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffect;
@@ -37,6 +38,16 @@ public class Brew {
 		potions.put(uid,this);
 	}
 
+	//loading from file
+	public Brew(int uid,BIngredients ingredients,int quality,int distillRuns,float ageTime,int alcohol){
+		this.ingredients = ingredients;
+		this.quality = quality;
+		this.distillRuns = distillRuns;
+		this.ageTime = ageTime;
+		this.alcohol = alcohol;
+		potions.put(uid,this);
+	}
+
 	//remove potion from map (drinking, despawning, should be more!)
 	public static void remove(ItemStack item){
 		PotionMeta meta = (PotionMeta) item.getItemMeta();
@@ -60,7 +71,7 @@ public class Brew {
 	public static Brew getByUID(int uid){
 		if(uid < -1){
 			if(!potions.containsKey(uid)){
-				P.p.log("Database failure! unable to find UID "+uid+" of a custom Potion in the db!");
+				P.p.errorLog("Database failure! unable to find UID "+uid+" of a custom Potion!");
 				return null;//throw some exception?
 			}
 		} else {
@@ -203,6 +214,29 @@ public class Brew {
 					}
 				}
 			}
+		}
+	}
+
+	//Saves all data
+	public static void save(ConfigurationSection config){
+		for(int uid:potions.keySet()){
+			ConfigurationSection idConfig = config.createSection(""+uid);
+			Brew brew = potions.get(uid);
+			//not saving unneccessary data
+			if(brew.quality != 0){
+				idConfig.set("quality", brew.quality);
+			}
+			if(brew.distillRuns != 0){
+				idConfig.set("distillRuns", brew.distillRuns);
+			}
+			if(brew.ageTime != 0){
+				idConfig.set("ageTime", brew.ageTime);
+			}
+			if(brew.alcohol != 0){
+				idConfig.set("alcohol", brew.alcohol);
+			}
+			//save the ingredients
+			brew.ingredients.save(idConfig.createSection("ingredients"));
 		}
 	}
 

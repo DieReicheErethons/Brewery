@@ -1,11 +1,13 @@
 package com.dre.brewery;
 
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Map;
 
 import org.bukkit.entity.Player;
 import org.bukkit.block.Block;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.configuration.ConfigurationSection;
 
 public class Barrel {
 
@@ -18,6 +20,35 @@ private float time;
 
 	public Barrel(Block spigot){
 		this.spigot = spigot;
+	}
+
+	//load from file
+	public Barrel(Block spigot,Map<String,Object> items,float time){
+		this.spigot = spigot;
+		if(isLarge()){
+			this.inventory = org.bukkit.Bukkit.createInventory(null, 27, "Fass");
+		} else {
+			this.inventory = org.bukkit.Bukkit.createInventory(null, 9, "Fass");
+		}
+		for(String slot:items.keySet()){
+			if(items.get(slot) instanceof ItemStack){
+				this.inventory.setItem(P.p.parseInt(slot), (ItemStack)items.get(slot));
+			}
+		}
+		this.time = time;
+		barrels.add(this);
+	}
+
+	//load from file (without inventory)
+	public Barrel(Block spigot,float time){
+		this.spigot = spigot;
+		if(isLarge()){
+			this.inventory = org.bukkit.Bukkit.createInventory(null, 27, "Fass");
+		} else {
+			this.inventory = org.bukkit.Bukkit.createInventory(null, 9, "Fass");
+		}
+		this.time = time;
+		barrels.add(this);
 	}
 
 	public static void onUpdate(){
@@ -109,6 +140,43 @@ private float time;
 		barrels.remove(this);
 	}
 
+	//Saves all data
+	public static void save(ConfigurationSection config){
+		int id = 0;
+		for(Barrel barrel:barrels){
+			//barrels are listed randomly
+			ConfigurationSection idConfig = config.createSection(""+id);
+
+			//block: worldname/x/y/z
+			idConfig.set("spigot",barrel.spigot.getWorld().getName()+"/"+barrel.spigot.getX()+"/"+barrel.spigot.getY()+"/"+barrel.spigot.getZ());
+			if(barrel.time != 0){
+				idConfig.set("time", barrel.time);
+			}
+
+			//not saving the inventory if there is none, or it is empty
+			if(barrel.inventory != null){
+				int slot = 0;
+				ItemStack item = null;
+				ConfigurationSection invConfig = null;
+				while(slot < barrel.inventory.getSize()){
+					item = barrel.inventory.getItem(slot);
+					if(item != null){
+						if(invConfig == null){
+							//create section only when items in inventory
+							invConfig = idConfig.createSection("inv");
+						}
+						//ItemStacks are configurationSerializeable, makes them really easy to save
+						invConfig.set(slot+"",item);
+					}
+
+					slot++;
+				}
+			}
+
+			id++;
+		}
+	}
+
 	//direction of the barrel from the spigot
 	public static int getDirection(Block spigot){
 		int direction = 0;//1=x+  2=x-  3=z+  4=z-
@@ -190,6 +258,21 @@ private float time;
 			return 0x3;
 		}
 		return 0;
+	}
+
+	//returns the fence above/below a block, itself if there is none
+	public static Block getSpigotOfSign(Block block){
+
+		int y = -2;
+		while(y <= 1){
+			//Fence and Netherfence
+			if(block.getRelative(0,y,0).getTypeId() == 85 ||
+			block.getRelative(0,y,0).getTypeId() == 113){
+				return (block.getRelative(0,y,0));
+			}
+			y++;
+		}
+		return block;
 	}
 
 	//returns null if Barrel is correctly placed; the block that is missing when not
@@ -352,21 +435,6 @@ private float time;
 		}
 		return null;
 
-	}
-
-	//returns the fence above/below a block, itself if there is none
-	public static Block getSpigotOfSign(Block block){
-
-		int y = -2;
-		while(y <= 1){
-			//Fence and Netherfence
-			if(block.getRelative(0,y,0).getTypeId() == 85 ||
-			block.getRelative(0,y,0).getTypeId() == 113){
-				return (block.getRelative(0,y,0));
-			}
-			y++;
-		}
-		return block;
 	}
 
 }

@@ -8,6 +8,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.Effect;
+import org.bukkit.configuration.ConfigurationSection;
 
 import com.dre.brewery.BIngredients;
 
@@ -23,6 +24,14 @@ public class BCauldron {
 		this.state = 1;
 		this.ingredients = new BIngredients();
 		add(ingredient);
+		bcauldrons.add(this);
+	}
+
+	//loading from file
+	public BCauldron(Block block,BIngredients ingredients,int state){
+		this.block = block;
+		this.state = state;
+		this.ingredients = ingredients;
 		bcauldrons.add(this);
 	}
 
@@ -95,6 +104,20 @@ public class BCauldron {
 			if(bcauldron.block.equals(block)){
 				bcauldrons.remove(bcauldron);
 			}
+		}
+	}
+
+	public static void save(ConfigurationSection config){
+		int id = 0;
+		for(BCauldron cauldron:bcauldrons){
+			//cauldrons are randomly listed
+			ConfigurationSection section = config.createSection(""+id);
+			section.set("block",cauldron.block.getWorld().getName()+"/"+cauldron.block.getX()+"/"+cauldron.block.getY()+"/"+cauldron.block.getZ());
+			if(cauldron.state != 1){
+				section.set("state",cauldron.state);
+			}
+			cauldron.ingredients.save(section.createSection("ingredients"));
+			id++;
 		}
 	}
 

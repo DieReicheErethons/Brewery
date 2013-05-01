@@ -10,6 +10,13 @@
 
 #cooked: Auflistung ALLER möglichen Zutaten und die daraus entstehenden Tranknamen: (leer für undef.)
 
+#words: Wörter und buchstaben die bei trunkenheit ersetzt werden sollen
+#to: in welches wort es ersetzt werden soll
+#pre: Wörter und Buchstaben vor dem gesuchten wort
+#match: true = eines der "pre"-Wörter muss vor dem gesuchten Wort stehen,  false = keines der "pre" Wörter darf vor dem gesuchten stehen
+#alcohol: 1-100 trunkenheit ab der die wörter ersetzt werden
+#percentage: Wahrscheinlichkeit des Ersetzen eines wortes in prozent
+
 
 recipes:
    1:
@@ -93,3 +100,20 @@ cooked:
    APPLE: Apfelmost
    POTATO_ITEM: Kartoffelmaische
    LONG_GRASS: Kräuterbrühe
+words:
+   ch:
+      to: sch
+      pre: u,s,o,a
+      match: false
+      alcohol: 20
+      percentage: 70
+   h:
+      to: hh
+      percentage: 60
+   u:
+      to: uuh
+      percentage: 20
+   das:
+      to: dass
+      percentage: 10
+      alcohol: 40

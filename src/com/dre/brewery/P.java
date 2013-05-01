@@ -104,6 +104,14 @@ public class P extends JavaPlugin{
 			}
 		}
 
+		//telling Words the path, it will load it when needed
+		configSection = config.getConfigurationSection("words");
+		if(configSection != null){
+			if(!configSection.getKeys(false).isEmpty()){
+				Words.config = configSection;
+			}
+		}
+
 	}
 
 	//load all Data

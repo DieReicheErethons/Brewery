@@ -48,13 +48,56 @@ public class Brew {
 		potions.put(uid,this);
 	}
 
+	//returns a Brew by its UID
+	public static Brew get(int uid){
+		if(uid < -1){
+			if(!potions.containsKey(uid)){
+				P.p.errorLog("Database failure! unable to find UID "+uid+" of a custom Potion!");
+				return null;//throw some exception?
+			}
+		} else {
+			return null;
+		}
+		return potions.get(uid);
+	}
+
+	//returns a Brew by PotionMeta
+	public static Brew get(PotionMeta meta){
+		return get(getUID(meta));
+	}
+
+	//returns a Brew by ItemStack
+	/*public static Brew get(ItemStack item){
+		if(item.getTypeId() == 373){
+			PotionMeta potionMeta = (PotionMeta) item.getItemMeta();
+			return get(potionMeta);
+		}
+		return null;
+	}*/
+
+	//returns UID of custom Potion item
+	public static int getUID(ItemStack item){
+		return getUID((PotionMeta) item.getItemMeta());
+	}
+
+
+	//returns UID of custom Potion meta
+	public static int getUID(PotionMeta potionMeta){
+		if(potionMeta.hasCustomEffect(PotionEffectType.REGENERATION)){
+			for(PotionEffect effect:potionMeta.getCustomEffects()){
+				if(effect.getType().equals(PotionEffectType.REGENERATION)){
+					if(effect.getDuration() < -1){
+						return effect.getDuration();
+					}
+				}
+			}
+		}
+		return 0;
+	}
+
 	//remove potion from map (drinking, despawning, should be more!)
 	public static void remove(ItemStack item){
-		PotionMeta meta = (PotionMeta) item.getItemMeta();
-		Brew brew = get(meta);
-		if(brew != null){
-			potions.remove(brew);
-		}
+		potions.remove(getUID(item));
 	}
 
 
@@ -66,41 +109,6 @@ public class Brew {
 		}
 		return uid;
 	}
-
-	//returns a Brew by its UID
-	public static Brew getByUID(int uid){
-		if(uid < -1){
-			if(!potions.containsKey(uid)){
-				P.p.errorLog("Database failure! unable to find UID "+uid+" of a custom Potion!");
-				return null;//throw some exception?
-			}
-		} else {
-			return null;
-		}
-		return potions.get(uid);
-
-	}
-
-	//returns a Brew by PotionMeta
-	public static Brew get(PotionMeta meta){
-		if(meta.hasCustomEffects()){
-			for(PotionEffect effect:meta.getCustomEffects()){
-				if(effect.getType().equals(PotionEffectType.REGENERATION)){
-					return getByUID(effect.getDuration());
-				}
-			}
-		}
-		return null;
-	}
-
-	//returns a Brew by ItemStack
-	/*public static Brew get(ItemStack item){
-		if(item.getTypeId() == 373){
-			PotionMeta potionMeta = (PotionMeta) item.getItemMeta();
-			return get(potionMeta);
-		}
-		return null;
-	}*/
 
 	//calculate alcohol from recipe
 	public int calcAlcohol(int alc){

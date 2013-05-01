@@ -6,7 +6,6 @@ import java.util.HashMap;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Entity;
-import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.util.Vector;
 
 import com.dre.brewery.Brew;
@@ -37,8 +36,8 @@ public class BPlayer {
 	}*/
 
 	//returns true if drinking was successful
-	public static boolean drink(PotionMeta meta,Player player){
-		Brew brew = Brew.get(meta);
+	public static boolean drink(int uid,Player player){
+		Brew brew = Brew.get(uid);
 		if(brew != null){
 			BPlayer bPlayer = get(player);
 			if(bPlayer == null){

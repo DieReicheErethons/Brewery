@@ -4,6 +4,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.inventory.BrewEvent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -15,15 +16,12 @@ import org.bukkit.inventory.BrewerInventory;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 
-import org.bukkit.inventory.meta.PotionMeta;
-import org.bukkit.potion.PotionEffectType;
-import org.bukkit.potion.PotionEffect;
-
 import com.dre.brewery.BCauldron;
 import com.dre.brewery.BIngredients;
 import com.dre.brewery.Brew;
 import com.dre.brewery.Barrel;
 import com.dre.brewery.BPlayer;
+import com.dre.brewery.Words;
 
 public class PlayerListener implements Listener{
 	@EventHandler(priority = EventPriority.HIGH)
@@ -107,13 +105,10 @@ public class PlayerListener implements Listener{
 			if(item != null){
 				if(item.getType() == Material.POTION){
 					if(item.hasItemMeta()){
-						PotionMeta potionMeta = ((PotionMeta) item.getItemMeta());
-						if(potionMeta.hasCustomEffect(PotionEffectType.REGENERATION)){
-							if(Brew.get(potionMeta) != null){
-								//has custom potion in "slot"
-								contents[slot] = 1;
-								custom = true;
-							}
+						if(Brew.potions.containsKey(Brew.getUID(item))){
+							//has custom potion in "slot"
+							contents[slot] = 1;
+							custom = true;
 						}
 					}
 				}
@@ -134,15 +129,9 @@ public class PlayerListener implements Listener{
 		if(item != null){
 			if(item.getType() == Material.POTION){
 				if(item.hasItemMeta()){
-					PotionMeta potionMeta = ((PotionMeta) item.getItemMeta());
-					if(potionMeta.hasCustomEffect(PotionEffectType.REGENERATION)){
-						for(PotionEffect effect:potionMeta.getCustomEffects()){
-							if(effect.getType().getId() == 10){
-								if(BPlayer.drink(potionMeta,event.getPlayer())){
-									Brew.remove(item);
-									item.setType(Material.POTION);
-								}
-							}
+					if(BPlayer.drink(Brew.getUID(item),event.getPlayer())){
+						if(event.getPlayer().getGameMode() != org.bukkit.GameMode.CREATIVE){
+							Brew.remove(item);
 						}
 					}
 				}
@@ -153,6 +142,16 @@ public class PlayerListener implements Listener{
 	//player walks while drunk, push him around!
 	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerMove(PlayerMoveEvent event){
-		BPlayer.playerMove(event);
+		if(BPlayer.players.containsKey(event.getPlayer())){
+			BPlayer.playerMove(event);
+		}
+	}
+
+	//player talks while drunk, but he cant speak very well
+	@EventHandler(priority = EventPriority.NORMAL)
+	public void onPlayerChat(AsyncPlayerChatEvent event){
+		if(BPlayer.players.containsKey(event.getPlayer())){
+			Words.playerChat(event);
+		}
 	}
 }

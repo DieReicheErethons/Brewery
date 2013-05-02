@@ -129,7 +129,7 @@ public class PlayerListener implements Listener{
 		if(item != null){
 			if(item.getType() == Material.POTION){
 				if(item.hasItemMeta()){
-					if(BPlayer.drink(Brew.getUID(item),event.getPlayer())){
+					if(BPlayer.drink(Brew.getUID(item),event.getPlayer().getName())){
 						if(event.getPlayer().getGameMode() != org.bukkit.GameMode.CREATIVE){
 							Brew.remove(item);
 						}
@@ -142,7 +142,7 @@ public class PlayerListener implements Listener{
 	//player walks while drunk, push him around!
 	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerMove(PlayerMoveEvent event){
-		if(BPlayer.players.containsKey(event.getPlayer())){
+		if(BPlayer.players.containsKey(event.getPlayer().getName())){
 			BPlayer.playerMove(event);
 		}
 	}
@@ -150,7 +150,7 @@ public class PlayerListener implements Listener{
 	//player talks while drunk, but he cant speak very well
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerChat(AsyncPlayerChatEvent event){
-		if(BPlayer.players.containsKey(event.getPlayer())){
+		if(BPlayer.players.containsKey(event.getPlayer().getName())){
 			Words.playerChat(event);
 		}
 	}

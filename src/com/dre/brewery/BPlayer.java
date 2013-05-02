@@ -7,11 +7,12 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Entity;
 import org.bukkit.util.Vector;
+import org.bukkit.configuration.ConfigurationSection;
 
 import com.dre.brewery.Brew;
 
 public class BPlayer {
-	public static Map<Player,BPlayer> players=new HashMap<Player,BPlayer>();
+	public static Map<String,BPlayer> players=new HashMap<String,BPlayer>();//Players name and BPlayer
 
 	private int quality = 0;// = quality of drunkeness * drunkeness
 	private int drunkeness = 0;// = amount of drunkeness
@@ -21,32 +22,35 @@ public class BPlayer {
 	public BPlayer(){
 	}
 
+	//reading from file
+	public BPlayer(String name,int quality,int drunkeness){
+		this.quality = quality;
+		this.drunkeness = drunkeness;
+		players.put(name,this);
+	}
 
-	public static BPlayer get(Player player){
+
+	public static BPlayer get(String name){
 		if(!players.isEmpty()){
-			if(players.containsKey(player)){
-				return players.get(player);
+			if(players.containsKey(name)){
+				return players.get(name);
 			}
 		}
 		return null;
 	}
 
-	/*public void remove(BPlayer player){
-		players.remove(player);
-	}*/
-
 	//returns true if drinking was successful
-	public static boolean drink(int uid,Player player){
+	public static boolean drink(int uid,String name){
 		Brew brew = Brew.get(uid);
 		if(brew != null){
-			BPlayer bPlayer = get(player);
+			BPlayer bPlayer = get(name);
 			if(bPlayer == null){
 				bPlayer = new BPlayer();
-				players.put(player,bPlayer);
+				players.put(name,bPlayer);
 			}
 			bPlayer.drunkeness += brew.getAlcohol();
 			bPlayer.quality += brew.getQuality() * brew.getAlcohol();
-			P.p.msg(player,"Du bist nun "+bPlayer.drunkeness+"% betrunken, mit einer Qualität von "+bPlayer.getQuality());
+			P.p.log(name+" ist nun "+bPlayer.drunkeness+"% betrunken, mit einer Qualität von "+bPlayer.getQuality());
 			return true;
 		}
 		return false;
@@ -54,7 +58,7 @@ public class BPlayer {
 
 	//push the player around if he moves
 	public static void playerMove(PlayerMoveEvent event){
-		BPlayer bPlayer = get(event.getPlayer());
+		BPlayer bPlayer = get(event.getPlayer().getName());
 		if(bPlayer != null){
 			bPlayer.move(event);
 		}
@@ -90,6 +94,29 @@ public class BPlayer {
 						}
 					}
 				}
+			}
+		}
+	}
+
+	//decreasing drunkeness over time
+	public static void onUpdate(){
+		if(!players.isEmpty()){
+			for(BPlayer bplayer:players.values()){
+				bplayer.drunkeness -= 2;
+				if(bplayer.drunkeness <= 0){
+					players.remove(bplayer);
+				}
+			}
+		}
+	}
+
+	//save all data
+	public static void save(ConfigurationSection config){
+		if(!players.isEmpty()){
+			for(String name:players.keySet()){
+				ConfigurationSection section = config.createSection(name);
+				section.set("quality", players.get(name).quality);
+				section.set("drunk", players.get(name).drunkeness);
 			}
 		}
 	}

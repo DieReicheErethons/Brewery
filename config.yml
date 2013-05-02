@@ -1,21 +1,21 @@
 # name: versch. Namen für schlecht/mittel/gut
-# ingredients: material/anzahl
-# cookingtime: Zeit in echtminuten die die zutaten kochen müssen
-# distillruns: wie oft destilliert werden muss 0-10 (0=ohne Destillieren)
+# ingredients: material/Anzahl
+# cookingtime: Zeit in Echtminuten die die Zutaten kochen müssen
+# distillruns: Wie oft destilliert werden muss 0-10 (0=ohne Destillieren)
 # wood: Holz des Fasses 0=alle Holzsorten 1=Birch 2=Oak 3=Jungle 4=Pine
-# age: Zeit in Minecraft Tagen, die das getränk im fass reifen muss 0=kein reifen
+# age: Zeit in Minecraft-Tagen, die das Getränk im Fass reifen muss 0= kein reifen
 # color: Farbe des Getränks nach destillieren/reifen
-# difficulty: 1-10 genauigkeit der Einhaltung der Vorgaben
+# difficulty: 1-10 Genauigkeit der Einhaltung der Vorgaben (1 = ungenau/einfach 10 = sehr genau/schwer)
 # alcohol: Alkoholgehalt 0-100 in Vol.% bei perfektem Getränk
 
 #cooked: Auflistung ALLER möglichen Zutaten und die daraus entstehenden Tranknamen: (leer für undef.)
 
-#words: Wörter und buchstaben die bei trunkenheit ersetzt werden sollen
+#words: Wörter und Buchstaben die bei Trunkenheit ersetzt werden sollen (besondere: -start = an den anfang, -end = ans ende, -random = zufällige position, -space anstatt leerzeichen)
 #to: in welches wort es ersetzt werden soll
 #pre: Wörter und Buchstaben vor dem gesuchten wort
 #match: true = eines der "pre"-Wörter muss vor dem gesuchten Wort stehen,  false = keines der "pre" Wörter darf vor dem gesuchten stehen
-#alcohol: 1-100 trunkenheit ab der die wörter ersetzt werden
-#percentage: Wahrscheinlichkeit des Ersetzen eines wortes in prozent
+#alcohol: 1-100 trunkenheit ab der die Wörter ersetzt werden
+#percentage: Wahrscheinlichkeit des Ersetzen eines Wortes in Prozent
 
 
 recipes:
@@ -87,6 +87,24 @@ recipes:
       difficulty: 6
       alcohol: 60
    7:
+      name: Abgeranzter Vodka/Vodka/Russischer Vodka
+      ingredients: 
+      - POTATO_ITEM/10
+      cookingtime: 15
+      distillruns: 3
+      age: 0
+      color: BRIGHT_GREY
+      difficulty: 4
+      alcohol: 40
+   8:
+      name: minderwertiger Absinth/Absinth/Starker Absinth
+      ingredients:
+      - LONG_GRASS/15
+      cookingtime: 3
+      distillruns: 6
+      color: GREEN
+      difficulty: 8
+   9:
       name: Kartoffelsuppe
       ingredients:
       - POTATO_ITEM/5
@@ -101,19 +119,127 @@ cooked:
    POTATO_ITEM: Kartoffelmaische
    LONG_GRASS: Kräuterbrühe
 words:
-   ch:
+   -  replace: ch
       to: sch
       pre: u,s,o,a
       match: false
-      alcohol: 20
+      alcohol: 10
       percentage: 70
-   h:
+
+   -  replace: h
       to: hh
+      pre: sch,h,t
+      match: false
       percentage: 60
-   u:
+      alcohol: 20
+
+   -  replace: u
       to: uuh
       percentage: 20
-   das:
+
+   -  replace: das
       to: dass
       percentage: 10
       alcohol: 40
+
+   -  replace: '!'
+      to: '!!'
+      pre: '!'
+      match: false
+      percentage: 90
+
+   -  replace: '!!'
+      to: '!!!111!!einself!1!'
+      pre: '!'
+      match: false
+      percentage: 20
+      alcohol: 70
+
+   -  replace: betrunken
+      to: brhetriunkhn
+      pre: bist,seid
+      match: false
+      percentage: 70
+      alcohol: 65
+
+   -  replace: laufen
+      to: lnhfeeehn
+      pre: kannst,kannst noch,kannst nicht
+      match: false
+      percentage: 80
+      alcohol: 85
+
+   -  replace: gehen
+      to: hgheehn
+      pre: kannst,kannst noch,kannst nicht
+      match: false
+      percentage: 80
+      alcohol: 85
+
+   -  replace: -space
+      to: ''
+      pre: h,g,w
+      match: true
+      alcohol: 10
+
+   -  replace: -space
+      to: ''
+      percentage: 50
+      alcohol: 35
+
+   -  replace: -space
+      to: ''
+      percentage: 10
+
+   -  replace: -start
+      to: dssho
+      percentage: 20
+      alcohol: 50
+
+   -  replace: -start
+      to: hhng
+      percentage: 30
+      alcohol: 50
+
+   -  replace: -random
+      to: lrg
+      percentage: 10
+
+   -  replace: -random
+      to: lu
+      percentage: 60
+      alcohol: 40
+
+   -  replace: -random
+      to: blub
+      percentage: 60
+      alcohol: 70
+
+   -  replace: -random
+      to: lerg
+      percentage: 40
+      alcohol: 75
+
+   -  replace: -random
+      to: grulg
+      percentage: 50
+      alcohol: 80
+
+   -  replace: -random
+      to: ''
+      percentage: 30
+
+   -  replace: -random
+      to: ''
+      percentage: 50
+      alcohol: 70
+
+   -  replace: -end
+      to: '!'
+      percentage: 30
+      alcohol: 30
+
+   -  replace: -end
+      to: ' *hicks*'
+      percentage: 70
+      alcohol: 30

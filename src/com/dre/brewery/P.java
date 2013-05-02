@@ -105,13 +105,7 @@ public class P extends JavaPlugin{
 		}
 
 		//telling Words the path, it will load it when needed
-		configSection = config.getConfigurationSection("words");
-		if(configSection != null){
-			if(!configSection.getKeys(false).isEmpty()){
-				Words.config = configSection;
-			}
-		}
-
+		Words.config = config;
 	}
 
 	//load all Data
@@ -186,6 +180,15 @@ public class P extends JavaPlugin{
 					}
 				}
 			}
+
+			//loading BPlayer
+			section = data.getConfigurationSection("Player");
+			if(section != null){
+				//keys have players name
+				for(String name:section.getKeys(false)) {
+					new BPlayer(name, section.getInt(name+".quality"), section.getInt(name+".drunk"));
+				}
+			}
 			
 		} else {
 			errorLog("No data.yml found, will create new one!");
@@ -234,7 +237,10 @@ public class P extends JavaPlugin{
 		if(!Barrel.barrels.isEmpty()){
 			Barrel.save(configFile.createSection("Barrel"));
 		}
-		//BPlayer is not yet saved, as it is WIP
+
+		if(!BPlayer.players.isEmpty()){
+			BPlayer.save(configFile.createSection("Player"));
+		}
 
 		try {
 			configFile.save(datafile);
@@ -261,6 +267,7 @@ public class P extends JavaPlugin{
 				cauldron.onUpdate();//runs every min to update cooking time
 			}
 			Barrel.onUpdate();//runs every min to check and update ageing time
+			BPlayer.onUpdate();//updates players drunkeness
 
 			saveData();//save all data
 		}

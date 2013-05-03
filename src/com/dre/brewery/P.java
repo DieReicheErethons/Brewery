@@ -20,205 +20,196 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import java.io.IOException;
 
-public class P extends JavaPlugin{
+public class P extends JavaPlugin {
 	public static P p;
 	public static int lastBackup = 0;
-	
-	//Listeners
+
+	// Listeners
 	public BlockListener blockListener;
 	public PlayerListener playerListener;
 	public EntityListener entityListener;
-	
-	
+
 	@Override
-	public void onEnable(){
+	public void onEnable() {
 		p = this;
 
 		readConfig();
 		readData();
-		 
-		//Listeners
+
+		// Listeners
 		blockListener = new BlockListener();
 		playerListener = new PlayerListener();
 		entityListener = new EntityListener();
-		 
+
 		p.getServer().getPluginManager().registerEvents(blockListener, p);
 		p.getServer().getPluginManager().registerEvents(playerListener, p);
 		p.getServer().getPluginManager().registerEvents(entityListener, p);
 		p.getServer().getScheduler().runTaskTimer(p, new BreweryRunnable(), 1200, 1200);
 
-
-		this.log(this.getDescription().getName()+" enabled!");
+		this.log(this.getDescription().getName() + " enabled!");
 	}
-	
+
 	@Override
-	public void onDisable(){
+	public void onDisable() {
 
-
-		//Disable listeners
+		// Disable listeners
 		HandlerList.unregisterAll(p);
 
-		//Stop shedulers
+		// Stop shedulers
 		p.getServer().getScheduler().cancelTasks(this);
-		
+
 		saveData();
 
-		this.log(this.getDescription().getName()+" disabled!");
+		this.log(this.getDescription().getName() + " disabled!");
 	}
 
-	public void msg(CommandSender sender,String msg){
-		sender.sendMessage(ChatColor.DARK_GREEN+"[Brewery] "+ChatColor.WHITE+msg);
+	public void msg(CommandSender sender, String msg) {
+		sender.sendMessage(ChatColor.DARK_GREEN + "[Brewery] " + ChatColor.WHITE + msg);
 	}
 
-	public void log(String msg){
+	public void log(String msg) {
 		this.msg(Bukkit.getConsoleSender(), msg);
 	}
 
-	public void errorLog(String msg){
-		Bukkit.getConsoleSender().sendMessage(ChatColor.DARK_GREEN+"[Brewery] "+ChatColor.DARK_RED+"ERROR: "+ChatColor.RED+msg);
+	public void errorLog(String msg) {
+		Bukkit.getConsoleSender().sendMessage(ChatColor.DARK_GREEN + "[Brewery] " + ChatColor.DARK_RED + "ERROR: " + ChatColor.RED + msg);
 	}
 
+	public void readConfig() {
 
-	public void readConfig(){
-
-		File file=new File(p.getDataFolder(), "config.yml");
-		if(!file.exists()){
+		File file = new File(p.getDataFolder(), "config.yml");
+		if (!file.exists()) {
 			saveDefaultConfig();
 		}
 		FileConfiguration config = getConfig();
 
-		//loading recipes
+		// loading recipes
 		ConfigurationSection configSection = config.getConfigurationSection("recipes");
-		if(configSection != null){
-			for(String recipeId:configSection.getKeys(false)){
-				BIngredients.recipes.add(new BRecipe(configSection,recipeId));
+		if (configSection != null) {
+			for (String recipeId : configSection.getKeys(false)) {
+				BIngredients.recipes.add(new BRecipe(configSection, recipeId));
 			}
 		}
 
-		//loading cooked names and possible ingredients
+		// loading cooked names and possible ingredients
 		configSection = config.getConfigurationSection("cooked");
-		if(configSection != null){
-			for(String ingredient:configSection.getKeys(false)){
-				BIngredients.cookedNames.put(Material.getMaterial(ingredient.toUpperCase()),(configSection.getString(ingredient)));
+		if (configSection != null) {
+			for (String ingredient : configSection.getKeys(false)) {
+				BIngredients.cookedNames.put(Material.getMaterial(ingredient.toUpperCase()), (configSection.getString(ingredient)));
 				BIngredients.possibleIngredients.add(Material.getMaterial(ingredient.toUpperCase()));
 			}
 		}
 
-		//telling Words the path, it will load it when needed
+		// telling Words the path, it will load it when needed
 		Words.config = config;
 	}
 
-	//load all Data
-	public void readData(){
-
-		File file=new File(p.getDataFolder(), "data.yml");
-		if(file.exists()){
+	// load all Data
+	public void readData() {
+		File file = new File(p.getDataFolder(), "data.yml");
+		if (file.exists()) {
 
 			FileConfiguration data = YamlConfiguration.loadConfiguration(file);
 
-			//loading Brew
+			// loading Brew
 			ConfigurationSection section = data.getConfigurationSection("Brew");
-			if(section != null){
-				//All sections have the UID as name
-				for(String uid:section.getKeys(false)) {
-						new Brew(
-							parseInt(uid), loadIngredients(section.getConfigurationSection(uid+".ingredients")),
-							section.getInt(uid+".quality",0), section.getInt(uid+".distillRuns",0), (float)section.getDouble(uid+".ageTime",0.0),  section.getInt(uid+".alcohol",0));
+			if (section != null) {
+				// All sections have the UID as name
+				for (String uid : section.getKeys(false)) {
+					new Brew(parseInt(uid), loadIngredients(section.getConfigurationSection(uid + ".ingredients")), section.getInt(uid + ".quality", 0), section.getInt(uid + ".distillRuns", 0),
+							(float) section.getDouble(uid + ".ageTime", 0.0), section.getInt(uid + ".alcohol", 0));
 				}
 			}
 
-			//loading BCauldron
+			// loading BCauldron
 			section = data.getConfigurationSection("BCauldron");
-			if(section != null){
-				for(String cauldron:section.getKeys(false)) {
-					//block is splitted into worldname/x/y/z
-					String block = section.getString(cauldron+".block");
-					if(block != null){
+			if (section != null) {
+				for (String cauldron : section.getKeys(false)) {
+					// block is splitted into worldname/x/y/z
+					String block = section.getString(cauldron + ".block");
+					if (block != null) {
 						String[] splitted = block.split("/");
-						if(splitted.length == 4){
-							new BCauldron(
-								getServer().getWorld(splitted[0]).getBlockAt(parseInt(splitted[1]),parseInt(splitted[2]),parseInt(splitted[3])),
-								loadIngredients(section.getConfigurationSection(cauldron+".ingredients")), section.getInt(cauldron+".state",1));
+						if (splitted.length == 4) {
+							new BCauldron(getServer().getWorld(splitted[0]).getBlockAt(parseInt(splitted[1]), parseInt(splitted[2]), parseInt(splitted[3])),
+									loadIngredients(section.getConfigurationSection(cauldron + ".ingredients")), section.getInt(cauldron + ".state", 1));
 						} else {
-							errorLog("Incomplete Block-Data in data.yml: "+section.getCurrentPath()+"."+cauldron);
+							errorLog("Incomplete Block-Data in data.yml: " + section.getCurrentPath() + "." + cauldron);
 						}
 					} else {
-						errorLog("Missing Block-Data in data.yml: "+section.getCurrentPath()+"."+cauldron);
+						errorLog("Missing Block-Data in data.yml: " + section.getCurrentPath() + "." + cauldron);
 					}
 				}
 			}
 
-			//loading Barrel
+			// loading Barrel
 			section = data.getConfigurationSection("Barrel");
-			if(section != null){
-				for(String barrel:section.getKeys(false)) {
-					//block spigot is splitted into worldname/x/y/z
-					String spigot = section.getString(barrel+".spigot");
-					if(spigot != null){
+			if (section != null) {
+				for (String barrel : section.getKeys(false)) {
+					// block spigot is splitted into worldname/x/y/z
+					String spigot = section.getString(barrel + ".spigot");
+					if (spigot != null) {
 						String[] splitted = spigot.split("/");
-						if(splitted.length == 4){
-							//load itemStacks from invSection
-							ConfigurationSection invSection = section.getConfigurationSection(barrel+".inv");
-							if(invSection != null){
-								//Map<String,ItemStack> inventory = section.getValues(barrel+"inv");
-								new Barrel(
-									getServer().getWorld(splitted[0]).getBlockAt(parseInt(splitted[1]),parseInt(splitted[2]),parseInt(splitted[3])),
-									invSection.getValues(true), (float)section.getDouble(barrel+".time",0.0));
+						if (splitted.length == 4) {
+							// load itemStacks from invSection
+							ConfigurationSection invSection = section.getConfigurationSection(barrel + ".inv");
+							if (invSection != null) {
+								// Map<String,ItemStack> inventory =
+								// section.getValues(barrel+"inv");
+								new Barrel(getServer().getWorld(splitted[0]).getBlockAt(parseInt(splitted[1]), parseInt(splitted[2]), parseInt(splitted[3])), invSection.getValues(true),
+										(float) section.getDouble(barrel + ".time", 0.0));
 
 							} else {
-								//errorLog("Inventory of "+section.getCurrentPath()+"."+barrel+" in data.yml is missing");
-								//Barrel has no inventory
-								new Barrel(
-									getServer().getWorld(splitted[0]).getBlockAt(parseInt(splitted[1]),parseInt(splitted[2]),parseInt(splitted[3])),
-									(float)section.getDouble(barrel+".time",0.0));
+								// errorLog("Inventory of "+section.getCurrentPath()+"."+barrel+" in data.yml is missing");
+								// Barrel has no inventory
+								new Barrel(getServer().getWorld(splitted[0]).getBlockAt(parseInt(splitted[1]), parseInt(splitted[2]), parseInt(splitted[3])), (float) section.getDouble(barrel
+										+ ".time", 0.0));
 							}
 						} else {
-							errorLog("Incomplete Block-Data in data.yml: "+section.getCurrentPath()+"."+barrel);
+							errorLog("Incomplete Block-Data in data.yml: " + section.getCurrentPath() + "." + barrel);
 						}
 					} else {
-						errorLog("Missing Block-Data in data.yml: "+section.getCurrentPath()+"."+barrel);
+						errorLog("Missing Block-Data in data.yml: " + section.getCurrentPath() + "." + barrel);
 					}
 				}
 			}
 
-			//loading BPlayer
+			// loading BPlayer
 			section = data.getConfigurationSection("Player");
-			if(section != null){
-				//keys have players name
-				for(String name:section.getKeys(false)) {
-					new BPlayer(name, section.getInt(name+".quality"), section.getInt(name+".drunk"));
+			if (section != null) {
+				// keys have players name
+				for (String name : section.getKeys(false)) {
+					new BPlayer(name, section.getInt(name + ".quality"), section.getInt(name + ".drunk"));
 				}
 			}
-			
+
 		} else {
 			errorLog("No data.yml found, will create new one!");
 		}
 	}
 
-
-	//loads BIngredients from ingredient section
-	public BIngredients loadIngredients(ConfigurationSection config){
-		if(config != null){
+	// loads BIngredients from ingredient section
+	public BIngredients loadIngredients(ConfigurationSection config) {
+		if (config != null) {
 			ConfigurationSection matSection = config.getConfigurationSection("mats");
-			if(matSection != null){
-				//matSection has all the materials + amount in Integer form
-				Map<Material,Integer> ingredients = new HashMap<Material,Integer>();
-				for(String ingredient:matSection.getKeys(false)){
-					//convert to Material
+			if (matSection != null) {
+				// matSection has all the materials + amount in Integer form
+				Map<Material, Integer> ingredients = new HashMap<Material, Integer>();
+				for (String ingredient : matSection.getKeys(false)) {
+					// convert to Material
 					ingredients.put(Material.getMaterial(parseInt(ingredient)), matSection.getInt(ingredient));
 				}
-				return new BIngredients(ingredients, config.getInt("cookedTime",0));
+				return new BIngredients(ingredients, config.getInt("cookedTime", 0));
 			}
 		}
 		errorLog("Ingredient section not found or incomplete in data.yml");
 		return new BIngredients();
 	}
 
-	//save all Data
-	public void saveData(){
+	// save all Data
+	public void saveData() {
 		File datafile = new File(p.getDataFolder(), "data.yml");
-		if(datafile.exists()){
-			if(lastBackup > 10){
+		if (datafile.exists()) {
+			if (lastBackup > 10) {
 				datafile.renameTo(new File(p.getDataFolder(), "dataBackup.yml"));
 			} else {
 				lastBackup++;
@@ -227,18 +218,18 @@ public class P extends JavaPlugin{
 
 		FileConfiguration configFile = new YamlConfiguration();
 
-		if(!Brew.potions.isEmpty()){
+		if (!Brew.potions.isEmpty()) {
 			Brew.save(configFile.createSection("Brew"));
 		}
-		if(!BCauldron.bcauldrons.isEmpty()){
+		if (!BCauldron.bcauldrons.isEmpty()) {
 			BCauldron.save(configFile.createSection("BCauldron"));
 		}
 
-		if(!Barrel.barrels.isEmpty()){
+		if (!Barrel.barrels.isEmpty()) {
 			Barrel.save(configFile.createSection("Barrel"));
 		}
 
-		if(!BPlayer.players.isEmpty()){
+		if (!BPlayer.players.isEmpty()) {
 			BPlayer.save(configFile.createSection("Player"));
 		}
 
@@ -249,13 +240,11 @@ public class P extends JavaPlugin{
 		}
 	}
 
-	public int parseInt(String string){
+	public int parseInt(String string) {
 		return NumberUtils.toInt(string, 0);
 	}
 
-
-
-	public class BreweryRunnable implements Runnable  {
+	public class BreweryRunnable implements Runnable {
 
 		public BreweryRunnable() {
 		}
@@ -263,13 +252,13 @@ public class P extends JavaPlugin{
 		@Override
 		public void run() {
 			p.log("Update");
-			for(BCauldron cauldron:BCauldron.bcauldrons){
-				cauldron.onUpdate();//runs every min to update cooking time
+			for (BCauldron cauldron : BCauldron.bcauldrons) {
+				cauldron.onUpdate();// runs every min to update cooking time
 			}
-			Barrel.onUpdate();//runs every min to check and update ageing time
-			BPlayer.onUpdate();//updates players drunkeness
+			Barrel.onUpdate();// runs every min to check and update ageing time
+			BPlayer.onUpdate();// updates players drunkeness
 
-			saveData();//save all data
+			saveData();// save all data
 		}
 
 	}

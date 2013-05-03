@@ -11,38 +11,39 @@ import org.bukkit.configuration.ConfigurationSection;
 
 public class Barrel {
 
-public static CopyOnWriteArrayList<Barrel> barrels = new CopyOnWriteArrayList<Barrel>();
+	public static CopyOnWriteArrayList<Barrel> barrels = new CopyOnWriteArrayList<Barrel>();
 
-//private CopyOnWriteArrayList<Brew> brews = new CopyOnWriteArrayList<Brew>();
-private Block spigot;
-private Inventory inventory;
-private float time;
+	// private CopyOnWriteArrayList<Brew> brews = new
+	// CopyOnWriteArrayList<Brew>();
+	private Block spigot;
+	private Inventory inventory;
+	private float time;
 
-	public Barrel(Block spigot){
+	public Barrel(Block spigot) {
 		this.spigot = spigot;
 	}
 
-	//load from file
-	public Barrel(Block spigot,Map<String,Object> items,float time){
+	// load from file
+	public Barrel(Block spigot, Map<String, Object> items, float time) {
 		this.spigot = spigot;
-		if(isLarge()){
+		if (isLarge()) {
 			this.inventory = org.bukkit.Bukkit.createInventory(null, 27, "Fass");
 		} else {
 			this.inventory = org.bukkit.Bukkit.createInventory(null, 9, "Fass");
 		}
-		for(String slot:items.keySet()){
-			if(items.get(slot) instanceof ItemStack){
-				this.inventory.setItem(P.p.parseInt(slot), (ItemStack)items.get(slot));
+		for (String slot : items.keySet()) {
+			if (items.get(slot) instanceof ItemStack) {
+				this.inventory.setItem(P.p.parseInt(slot), (ItemStack) items.get(slot));
 			}
 		}
 		this.time = time;
 		barrels.add(this);
 	}
 
-	//load from file (without inventory)
-	public Barrel(Block spigot,float time){
+	// load from file (without inventory)
+	public Barrel(Block spigot, float time) {
 		this.spigot = spigot;
-		if(isLarge()){
+		if (isLarge()) {
 			this.inventory = org.bukkit.Bukkit.createInventory(null, 27, "Fass");
 		} else {
 			this.inventory = org.bukkit.Bukkit.createInventory(null, 9, "Fass");
@@ -51,38 +52,38 @@ private float time;
 		barrels.add(this);
 	}
 
-	public static void onUpdate(){
+	public static void onUpdate() {
 		Block broken;
-		for(Barrel barrel:barrels){
+		for (Barrel barrel : barrels) {
 			broken = getBrokenBlock(barrel.spigot);
-			//remove the barrel if it was destroyed
-			if(broken != null){
+			// remove the barrel if it was destroyed
+			if (broken != null) {
 				barrel.remove(broken);
 			} else {
-				//Minecraft day is 20 min, so add 1/20 to the time every minute
-				barrel.time += 1.0/20.0;
+				// Minecraft day is 20 min, so add 1/20 to the time every minute
+				barrel.time += 1.0 / 20.0;
 			}
 		}
 	}
 
-	//player opens the barrel
-	public void open(Player player){
-		if(inventory == null){
-			if(isLarge()){
+	// player opens the barrel
+	public void open(Player player) {
+		if (inventory == null) {
+			if (isLarge()) {
 				inventory = org.bukkit.Bukkit.createInventory(null, 27, "Fass");
 			} else {
 				inventory = org.bukkit.Bukkit.createInventory(null, 9, "Fass");
 			}
 		} else {
-			//if nobody has the inventory opened
-			if(inventory.getViewers().isEmpty()){
-				//if inventory contains potions
-				if(inventory.contains(373)){
-					for(ItemStack item:inventory.getContents()){
-						if(item != null){
-							if(item.getTypeId() == 373){
-								if(item.hasItemMeta()){
-									Brew.age(item,time,getWood());
+			// if nobody has the inventory opened
+			if (inventory.getViewers().isEmpty()) {
+				// if inventory contains potions
+				if (inventory.contains(373)) {
+					for (ItemStack item : inventory.getContents()) {
+						if (item != null) {
+							if (item.getTypeId() == 373) {
+								if (item.hasItemMeta()) {
+									Brew.age(item, time, getWood());
 								}
 							}
 						}
@@ -90,27 +91,27 @@ private float time;
 				}
 			}
 		}
-		//reset barreltime, potions have new age
+		// reset barreltime, potions have new age
 		time = 0;
 		player.openInventory(inventory);
 	}
 
-	public static Barrel get(Block spigot){
-		//convert spigot if neccessary
+	public static Barrel get(Block spigot) {
+		// convert spigot if neccessary
 		spigot = getSpigotOfSign(spigot);
-		for(Barrel barrel:barrels){
-			if(barrel.spigot.equals(spigot)){
+		for (Barrel barrel : barrels) {
+			if (barrel.spigot.equals(spigot)) {
 				return barrel;
 			}
 		}
 		return null;
 	}
 
-	//creates a new Barrel out of a sign
-	public static boolean create(Block spigot){
+	// creates a new Barrel out of a sign
+	public static boolean create(Block spigot) {
 		spigot = getSpigotOfSign(spigot);
-		if(getBrokenBlock(spigot) == null){
-			if(get(spigot) == null){
+		if (getBrokenBlock(spigot) == null) {
+			if (get(spigot) == null) {
 				barrels.add(new Barrel(spigot));
 				return true;
 			}
@@ -118,18 +119,18 @@ private float time;
 		return false;
 	}
 
-	//removes a barrel, throwing included potions to the ground
-	public void remove(Block broken){
-		if(inventory != null){
+	// removes a barrel, throwing included potions to the ground
+	public void remove(Block broken) {
+		if (inventory != null) {
 			ItemStack[] items = inventory.getContents();
-			for(ItemStack item:items){
-				if(item != null){
-					if(item.getTypeId() == 373){
-						//Brew before throwing
-						Brew.age(item,time,getWood());
+			for (ItemStack item : items) {
+				if (item != null) {
+					if (item.getTypeId() == 373) {
+						// Brew before throwing
+						Brew.age(item, time, getWood());
 					}
-					//"broken" is the block that destroyed, throw them there!
-					if(broken != null){
+					// "broken" is the block that destroyed, throw them there!
+					if (broken != null) {
 						broken.getLocation().getWorld().dropItem(broken.getLocation(), item);
 					} else {
 						spigot.getLocation().getWorld().dropItem(spigot.getLocation(), item);
@@ -140,33 +141,34 @@ private float time;
 		barrels.remove(this);
 	}
 
-	//Saves all data
-	public static void save(ConfigurationSection config){
+	// Saves all data
+	public static void save(ConfigurationSection config) {
 		int id = 0;
-		for(Barrel barrel:barrels){
-			//barrels are listed randomly
-			ConfigurationSection idConfig = config.createSection(""+id);
+		for (Barrel barrel : barrels) {
+			// barrels are listed randomly
+			ConfigurationSection idConfig = config.createSection("" + id);
 
-			//block: worldname/x/y/z
-			idConfig.set("spigot",barrel.spigot.getWorld().getName()+"/"+barrel.spigot.getX()+"/"+barrel.spigot.getY()+"/"+barrel.spigot.getZ());
-			if(barrel.time != 0){
+			// block: worldname/x/y/z
+			idConfig.set("spigot", barrel.spigot.getWorld().getName() + "/" + barrel.spigot.getX() + "/" + barrel.spigot.getY() + "/" + barrel.spigot.getZ());
+			if (barrel.time != 0) {
 				idConfig.set("time", barrel.time);
 			}
 
-			//not saving the inventory if there is none, or it is empty
-			if(barrel.inventory != null){
+			// not saving the inventory if there is none, or it is empty
+			if (barrel.inventory != null) {
 				int slot = 0;
 				ItemStack item = null;
 				ConfigurationSection invConfig = null;
-				while(slot < barrel.inventory.getSize()){
+				while (slot < barrel.inventory.getSize()) {
 					item = barrel.inventory.getItem(slot);
-					if(item != null){
-						if(invConfig == null){
-							//create section only when items in inventory
+					if (item != null) {
+						if (invConfig == null) {
+							// create section only when items in inventory
 							invConfig = idConfig.createSection("inv");
 						}
-						//ItemStacks are configurationSerializeable, makes them really easy to save
-						invConfig.set(slot+"",item);
+						// ItemStacks are configurationSerializeable, makes them
+						// really easy to save
+						invConfig.set(slot + "", item);
 					}
 
 					slot++;
@@ -177,32 +179,32 @@ private float time;
 		}
 	}
 
-	//direction of the barrel from the spigot
-	public static int getDirection(Block spigot){
-		int direction = 0;//1=x+  2=x-  3=z+  4=z-
-		int typeId = spigot.getRelative(0,0,1).getTypeId();
-		if(typeId == 5 || typeId == 53 || typeId == 134 || typeId == 135 || typeId == 136){
+	// direction of the barrel from the spigot
+	public static int getDirection(Block spigot) {
+		int direction = 0;// 1=x+ 2=x- 3=z+ 4=z-
+		int typeId = spigot.getRelative(0, 0, 1).getTypeId();
+		if (typeId == 5 || typeId == 53 || typeId == 134 || typeId == 135 || typeId == 136) {
 			direction = 3;
 		}
-		typeId = spigot.getRelative(0,0,-1).getTypeId();
-		if(typeId == 5 || typeId == 53 || typeId == 134 || typeId == 135 || typeId == 136){
-			if(direction == 0){
+		typeId = spigot.getRelative(0, 0, -1).getTypeId();
+		if (typeId == 5 || typeId == 53 || typeId == 134 || typeId == 135 || typeId == 136) {
+			if (direction == 0) {
 				direction = 4;
 			} else {
 				return 0;
 			}
 		}
-		typeId = spigot.getRelative(1,0,0).getTypeId();
-		if(typeId == 5 || typeId == 53 || typeId == 134 || typeId == 135 || typeId == 136){
-			if(direction == 0){
+		typeId = spigot.getRelative(1, 0, 0).getTypeId();
+		if (typeId == 5 || typeId == 53 || typeId == 134 || typeId == 135 || typeId == 136) {
+			if (direction == 0) {
 				direction = 1;
 			} else {
 				return 0;
 			}
 		}
-		typeId = spigot.getRelative(-1,0,0).getTypeId();
-		if(typeId == 5 || typeId == 53 || typeId == 134 || typeId == 135 || typeId == 136){
-			if(direction == 0){
+		typeId = spigot.getRelative(-1, 0, 0).getTypeId();
+		if (typeId == 5 || typeId == 53 || typeId == 134 || typeId == 135 || typeId == 136) {
+			if (direction == 0) {
 				direction = 2;
 			} else {
 				return 0;
@@ -211,84 +213,84 @@ private float time;
 		return direction;
 	}
 
-	//is this a Large barrel?
-	public boolean isLarge(){
-		if(spigot.getTypeId() == 63 || spigot.getTypeId() == 68){
+	// is this a Large barrel?
+	public boolean isLarge() {
+		if (spigot.getTypeId() == 63 || spigot.getTypeId() == 68) {
 			return false;
 		}
 		return true;
 	}
 
-	//true for small barrels
-	public static boolean isSign(Block spigot){
-		if(spigot.getTypeId() == 63 || spigot.getTypeId() == 68){
+	// true for small barrels
+	public static boolean isSign(Block spigot) {
+		if (spigot.getTypeId() == 63 || spigot.getTypeId() == 68) {
 			return true;
 		}
 		return false;
 	}
 
-	//woodtype of the block the spigot is attached to
-	public byte getWood(){
-		int direction = getDirection(this.spigot);//1=x+  2=x-  3=z+  4=z-
+	// woodtype of the block the spigot is attached to
+	public byte getWood() {
+		int direction = getDirection(this.spigot);// 1=x+ 2=x- 3=z+ 4=z-
 		Block wood = null;
-		if(direction == 0){
+		if (direction == 0) {
 			return 0;
-		} else if (direction == 1){
-			wood = this.spigot.getRelative(1,0,0);
-		} else if (direction == 2){
-			wood = this.spigot.getRelative(-1,0,0);
-		} else if (direction == 3){
-			wood = this.spigot.getRelative(0,0,1);
+		} else if (direction == 1) {
+			wood = this.spigot.getRelative(1, 0, 0);
+		} else if (direction == 2) {
+			wood = this.spigot.getRelative(-1, 0, 0);
+		} else if (direction == 3) {
+			wood = this.spigot.getRelative(0, 0, 1);
 		} else {
-			wood = this.spigot.getRelative(0,0,-1);
+			wood = this.spigot.getRelative(0, 0, -1);
 		}
-		if(wood.getTypeId() == 5){
+		if (wood.getTypeId() == 5) {
 			return wood.getData();
 		}
-		if(wood.getTypeId() == 53){
+		if (wood.getTypeId() == 53) {
 			return 0x0;
 		}
-		if(wood.getTypeId() == 134){
+		if (wood.getTypeId() == 134) {
 			return 0x1;
 		}
-		if(wood.getTypeId() == 135){
+		if (wood.getTypeId() == 135) {
 			return 0x2;
 		}
-		if(wood.getTypeId() == 136){
+		if (wood.getTypeId() == 136) {
 			return 0x3;
 		}
 		return 0;
 	}
 
-	//returns the fence above/below a block, itself if there is none
-	public static Block getSpigotOfSign(Block block){
+	// returns the fence above/below a block, itself if there is none
+	public static Block getSpigotOfSign(Block block) {
 
 		int y = -2;
-		while(y <= 1){
-			//Fence and Netherfence
-			if(block.getRelative(0,y,0).getTypeId() == 85 ||
-			block.getRelative(0,y,0).getTypeId() == 113){
-				return (block.getRelative(0,y,0));
+		while (y <= 1) {
+			// Fence and Netherfence
+			if (block.getRelative(0, y, 0).getTypeId() == 85 || block.getRelative(0, y, 0).getTypeId() == 113) {
+				return (block.getRelative(0, y, 0));
 			}
 			y++;
 		}
 		return block;
 	}
 
-	//returns null if Barrel is correctly placed; the block that is missing when not
-	//the barrel needs to be formed correctly
-	public static Block getBrokenBlock(Block spigot){
+	// returns null if Barrel is correctly placed; the block that is missing
+	// when not
+	// the barrel needs to be formed correctly
+	public static Block getBrokenBlock(Block spigot) {
 		spigot = getSpigotOfSign(spigot);
-		if(isSign(spigot)){
+		if (isSign(spigot)) {
 			return checkSBarrel(spigot);
 		} else {
 			return checkLBarrel(spigot);
 		}
 	}
 
-	public static Block checkSBarrel(Block spigot){
-		int direction = getDirection(spigot);//1=x+  2=x-  3=z+  4=z-
-		if(direction == 0){
+	public static Block checkSBarrel(Block spigot) {
+		int direction = getDirection(spigot);// 1=x+ 2=x- 3=z+ 4=z-
+		if (direction == 0) {
 			return spigot;
 		}
 		int startX = 0;
@@ -296,17 +298,17 @@ private float time;
 		int endX;
 		int endZ;
 
-		if (direction == 1){
+		if (direction == 1) {
 			startX = 1;
 			endX = startX + 1;
 			startZ = -1;
 			endZ = 0;
-		} else if (direction == 2){
+		} else if (direction == 2) {
 			startX = -2;
 			endX = startX + 1;
 			startZ = 0;
 			endZ = 1;
-		} else if (direction == 3){
+		} else if (direction == 3) {
 			startX = 0;
 			endX = 1;
 			startZ = 1;
@@ -322,23 +324,23 @@ private float time;
 		int x = startX;
 		int y = 0;
 		int z = startZ;
-		//P.p.log("startX="+startX+" startZ="+startZ+" endX="+endX+" endZ="+endZ+" direction="+direction);
-		while(y <= 1){
-			while(x <= endX){
-				while(z <= endZ){
-					typeId = spigot.getRelative(x,y,z).getTypeId();
+		// P.p.log("startX="+startX+" startZ="+startZ+" endX="+endX+" endZ="+endZ+" direction="+direction);
+		while (y <= 1) {
+			while (x <= endX) {
+				while (z <= endZ) {
+					typeId = spigot.getRelative(x, y, z).getTypeId();
 
-					if(typeId == 53 || typeId == 134 || typeId == 135 || typeId == 136){
-						if(y == 0){
-							//stairs have to be upside down
-							if(spigot.getRelative(x,y,z).getData() < 4){
-								return spigot.getRelative(x,y,z);
+					if (typeId == 53 || typeId == 134 || typeId == 135 || typeId == 136) {
+						if (y == 0) {
+							// stairs have to be upside down
+							if (spigot.getRelative(x, y, z).getData() < 4) {
+								return spigot.getRelative(x, y, z);
 							}
 						}
 						z++;
 						continue;
 					} else {
-						return spigot.getRelative(x,y,z);
+						return spigot.getRelative(x, y, z);
 					}
 				}
 				z = startZ;
@@ -352,9 +354,9 @@ private float time;
 
 	}
 
-	public static Block checkLBarrel(Block spigot){
-		int direction = getDirection(spigot);//1=x+  2=x-  3=z+  4=z-
-		if(direction == 0){
+	public static Block checkLBarrel(Block spigot) {
+		int direction = getDirection(spigot);// 1=x+ 2=x- 3=z+ 4=z-
+		if (direction == 0) {
 			return spigot;
 		}
 		int startX = 0;
@@ -362,17 +364,17 @@ private float time;
 		int endX;
 		int endZ;
 
-		if (direction == 1){
+		if (direction == 1) {
 			startX = 1;
 			endX = startX + 3;
 			startZ = -1;
 			endZ = 1;
-		} else if (direction == 2){
+		} else if (direction == 2) {
 			startX = -4;
 			endX = startX + 3;
 			startZ = -1;
 			endZ = 1;
-		} else if (direction == 3){
+		} else if (direction == 3) {
 			startX = -1;
 			endX = 1;
 			startZ = 1;
@@ -388,42 +390,42 @@ private float time;
 		int x = startX;
 		int y = 0;
 		int z = startZ;
-		//P.p.log("startX="+startX+" startZ="+startZ+" endX="+endX+" endZ="+endZ+" direction="+direction);
-		while(y <= 2){
-			while(x <= endX){
-				while(z <= endZ){
-					typeId = spigot.getRelative(x,y,z).getTypeId();
-					//spigot.getRelative(x,y,z).setTypeId(1);
-					if(direction == 1 || direction == 2){
-						if(y == 1 && z == 0){
-							if(x == -2 || x == -3 || x == 2 || x == 3){
+		// P.p.log("startX="+startX+" startZ="+startZ+" endX="+endX+" endZ="+endZ+" direction="+direction);
+		while (y <= 2) {
+			while (x <= endX) {
+				while (z <= endZ) {
+					typeId = spigot.getRelative(x, y, z).getTypeId();
+					// spigot.getRelative(x,y,z).setTypeId(1);
+					if (direction == 1 || direction == 2) {
+						if (y == 1 && z == 0) {
+							if (x == -2 || x == -3 || x == 2 || x == 3) {
 								z++;
 								continue;
-							} else if (x == -1 || x == -4 || x == 1 || x == 4){
-								if(typeId != 0){
+							} else if (x == -1 || x == -4 || x == 1 || x == 4) {
+								if (typeId != 0) {
 									z++;
 									continue;
 								}
 							}
 						}
 					} else {
-						if(y == 1 && x == 0){
-							if(z == -2 || z == -3 || z == 2 || z == 3){
+						if (y == 1 && x == 0) {
+							if (z == -2 || z == -3 || z == 2 || z == 3) {
 								z++;
 								continue;
-							} else if (z == -1 || z == -4 || z == 1 || z == 4){
-								if(typeId != 0){
+							} else if (z == -1 || z == -4 || z == 1 || z == 4) {
+								if (typeId != 0) {
 									z++;
 									continue;
 								}
 							}
 						}
 					}
-					if(typeId == 5 || typeId == 53 || typeId == 134 || typeId == 135 || typeId == 136){
+					if (typeId == 5 || typeId == 53 || typeId == 134 || typeId == 135 || typeId == 136) {
 						z++;
 						continue;
 					} else {
-						return spigot.getRelative(x,y,z);
+						return spigot.getRelative(x, y, z);
 					}
 				}
 				z = startZ;

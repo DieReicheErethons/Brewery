@@ -111,8 +111,10 @@ public class Brew {
 		if (distillRuns == 0) {
 			distillRuns = 1;
 		}
-		alc /= distillRuns;
-		alc *= distillRuns * ((float) quality / 10.0);
+		alc *= ((float) quality / 10.0);
+		if (distillRuns > 1) {
+			alc *= (float) distillRuns / 2.0;
+		}
 		return alc;
 	}
 
@@ -121,7 +123,10 @@ public class Brew {
 		// calculate quality from all of the factors
 		float quality = (
 
-		ingredients.getIngredientQuality(recipe) + ingredients.getCookingQuality(recipe) + ingredients.getWoodQuality(recipe, wood) + ingredients.getAgeQuality(recipe, ageTime));
+		ingredients.getIngredientQuality(recipe) +
+		ingredients.getCookingQuality(recipe) +
+		ingredients.getWoodQuality(recipe, wood) +
+		ingredients.getAgeQuality(recipe, ageTime));
 
 		quality /= 4;
 		return (int) Math.round(quality);

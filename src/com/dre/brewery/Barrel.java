@@ -151,7 +151,7 @@ public class Barrel {
 	}
 
 	// Saves all data
-	public static void save(ConfigurationSection config, ConfigurationSection oldConfig) {
+	public static void save(ConfigurationSection config, ConfigurationSection oldData) {
 		int id = 0;
 		for (Barrel barrel : barrels) {
 			// barrels are sorted in worldUUID.randomId
@@ -187,9 +187,11 @@ public class Barrel {
 			id++;
 		}
 		// also save barrels that are not loaded
-		for (String uuid : oldConfig.getKeys(false)) {
-			if (!config.contains(uuid)) {
-				config.set(uuid, oldConfig.get(uuid));
+		if (oldData != null){
+			for (String uuid : oldData.getKeys(false)) {
+				if (!config.contains(uuid)) {
+					config.set(uuid, oldData.get(uuid));
+				}
 			}
 		}
 	}

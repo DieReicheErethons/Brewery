@@ -114,7 +114,7 @@ public class BCauldron {
 		}
 	}
 
-	public static void save(ConfigurationSection config, ConfigurationSection oldConfig) {
+	public static void save(ConfigurationSection config, ConfigurationSection oldData) {
 		int id = 0;
 		for (BCauldron cauldron : bcauldrons) {
 			// cauldrons are sorted in worldUUID.randomId
@@ -128,9 +128,11 @@ public class BCauldron {
 			id++;
 		}
 		// copy cauldrons that are not loaded
-		for (String uuid : oldConfig.getKeys(false)) {
-			if (!config.contains(uuid)) {
-				config.set(uuid, oldConfig.get(uuid));
+		if (oldData != null){
+			for (String uuid : oldData.getKeys(false)) {
+				if (!config.contains(uuid)) {
+					config.set(uuid, oldData.get(uuid));
+				}
 			}
 		}
 	}

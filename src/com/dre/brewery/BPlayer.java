@@ -101,10 +101,12 @@ public class BPlayer {
 	// decreasing drunkeness over time
 	public static void onUpdate() {
 		if (!players.isEmpty()) {
-			for (BPlayer bplayer : players.values()) {
+			for (String name : players.keySet()) {
+				BPlayer bplayer = players.get(name);
+				bplayer.quality -= bplayer.getQuality();
 				bplayer.drunkeness -= 2;
 				if (bplayer.drunkeness <= 0) {
-					players.remove(bplayer);
+					players.remove(name);
 				}
 			}
 		}

@@ -6,7 +6,7 @@
 # age: Zeit in Minecraft-Tagen, die das Getränk im Fass reifen muss 0= kein reifen
 # color: Farbe des Getränks nach destillieren/reifen
 # difficulty: 1-10 Genauigkeit der Einhaltung der Vorgaben (1 = ungenau/einfach 10 = sehr genau/schwer)
-# alcohol: Alkoholgehalt 0-100 in Vol.% bei perfektem Getränk
+# alcohol: Alkoholgehalt 0-100 in absoluter Menge bei perfektem Getränk (wird dem Spieler hinzugefügt, bei 100 = tot)
 
 #cooked: Auflistung ALLER möglichen Zutaten und die daraus entstehenden Tranknamen: (leer für undef.)
 
@@ -62,7 +62,7 @@ recipes:
       age: 4
       color: ORANGE
       difficulty: 2
-      alcohol: 10
+      alcohol: 9
    5:
       name: Apfelmet/Süßer Apfelmet/Goldensüßer Apfelmet
       ingredients: 
@@ -76,7 +76,7 @@ recipes:
       difficulty: 4
       alcohol: 12
    6:
-      name: Rum/Goldener Rum/Perfekter Rum
+      name: Leichter Rum/Goldener Rum/Perfekter Rum
       ingredients: 
       - SUGAR_CANE/14
       cookingtime: 5
@@ -85,7 +85,7 @@ recipes:
       age: 14
       color: DARK_RED
       difficulty: 6
-      alcohol: 60
+      alcohol: 30
    7:
       name: Abgeranzter Vodka/Vodka/Russischer Vodka
       ingredients: 
@@ -95,7 +95,7 @@ recipes:
       age: 0
       color: BRIGHT_GREY
       difficulty: 4
-      alcohol: 40
+      alcohol: 20
    8:
       name: minderwertiger Absinth/Absinth/Starker Absinth
       ingredients:
@@ -104,6 +104,7 @@ recipes:
       distillruns: 6
       color: GREEN
       difficulty: 8
+      alcohol: 45
    9:
       name: Kartoffelsuppe
       ingredients:
@@ -193,12 +194,12 @@ words:
 
    -  replace: -start
       to: dssho
-      percentage: 20
+      percentage: 15
       alcohol: 50
 
    -  replace: -start
       to: hhng
-      percentage: 30
+      percentage: 10
       alcohol: 50
 
    -  replace: -random
@@ -228,6 +229,11 @@ words:
    -  replace: -random
       to: ''
       percentage: 30
+
+   -  replace: -random
+      to: ''
+      percentage: 50
+      alcohol: 50
 
    -  replace: -random
       to: ''

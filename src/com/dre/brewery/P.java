@@ -232,7 +232,7 @@ public class P extends JavaPlugin {
 	public void saveData() {
 		File datafile = new File(p.getDataFolder(), "data.yml");
 
-		FileConfiguration oldConfig = YamlConfiguration.loadConfiguration(datafile);
+		FileConfiguration oldData = YamlConfiguration.loadConfiguration(datafile);
 
 		if (datafile.exists()) {
 			if (lastBackup > 10) {
@@ -249,11 +249,11 @@ public class P extends JavaPlugin {
 			Brew.save(configFile.createSection("Brew"));
 		}
 		if (!BCauldron.bcauldrons.isEmpty()) {
-			BCauldron.save(configFile.createSection("BCauldron"), oldConfig.getConfigurationSection("BCauldron"));
+			BCauldron.save(configFile.createSection("BCauldron"), oldData.getConfigurationSection("BCauldron"));
 		}
 
 		if (!Barrel.barrels.isEmpty()) {
-			Barrel.save(configFile.createSection("Barrel"), oldConfig.getConfigurationSection("Barrel"));
+			Barrel.save(configFile.createSection("Barrel"), oldData.getConfigurationSection("Barrel"));
 		}
 
 		if (!BPlayer.players.isEmpty()) {

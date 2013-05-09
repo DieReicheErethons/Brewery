@@ -2,6 +2,7 @@ package com.dre.brewery;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.util.UUID;
 
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -13,6 +14,8 @@ import org.apache.commons.lang.math.NumberUtils;
 import com.dre.brewery.listeners.BlockListener;
 import com.dre.brewery.listeners.PlayerListener;
 import com.dre.brewery.listeners.EntityListener;
+import com.dre.brewery.listeners.InventoryListener;
+import com.dre.brewery.listeners.WorldListener;
 import org.bukkit.event.HandlerList;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -28,6 +31,8 @@ public class P extends JavaPlugin {
 	public BlockListener blockListener;
 	public PlayerListener playerListener;
 	public EntityListener entityListener;
+	public InventoryListener inventoryListener;
+	public WorldListener worldListener;
 
 	@Override
 	public void onEnable() {
@@ -40,10 +45,15 @@ public class P extends JavaPlugin {
 		blockListener = new BlockListener();
 		playerListener = new PlayerListener();
 		entityListener = new EntityListener();
+		inventoryListener = new InventoryListener();
+		worldListener = new WorldListener();
 
 		p.getServer().getPluginManager().registerEvents(blockListener, p);
 		p.getServer().getPluginManager().registerEvents(playerListener, p);
 		p.getServer().getPluginManager().registerEvents(entityListener, p);
+		p.getServer().getPluginManager().registerEvents(inventoryListener, p);
+		p.getServer().getPluginManager().registerEvents(worldListener, p);
+
 		p.getServer().getScheduler().runTaskTimer(p, new BreweryRunnable(), 1200, 1200);
 
 		this.log(this.getDescription().getName() + " enabled!");
@@ -121,58 +131,6 @@ public class P extends JavaPlugin {
 				}
 			}
 
-			// loading BCauldron
-			section = data.getConfigurationSection("BCauldron");
-			if (section != null) {
-				for (String cauldron : section.getKeys(false)) {
-					// block is splitted into worldname/x/y/z
-					String block = section.getString(cauldron + ".block");
-					if (block != null) {
-						String[] splitted = block.split("/");
-						if (splitted.length == 4) {
-							new BCauldron(getServer().getWorld(splitted[0]).getBlockAt(parseInt(splitted[1]), parseInt(splitted[2]), parseInt(splitted[3])),
-									loadIngredients(section.getConfigurationSection(cauldron + ".ingredients")), section.getInt(cauldron + ".state", 1));
-						} else {
-							errorLog("Incomplete Block-Data in data.yml: " + section.getCurrentPath() + "." + cauldron);
-						}
-					} else {
-						errorLog("Missing Block-Data in data.yml: " + section.getCurrentPath() + "." + cauldron);
-					}
-				}
-			}
-
-			// loading Barrel
-			section = data.getConfigurationSection("Barrel");
-			if (section != null) {
-				for (String barrel : section.getKeys(false)) {
-					// block spigot is splitted into worldname/x/y/z
-					String spigot = section.getString(barrel + ".spigot");
-					if (spigot != null) {
-						String[] splitted = spigot.split("/");
-						if (splitted.length == 4) {
-							// load itemStacks from invSection
-							ConfigurationSection invSection = section.getConfigurationSection(barrel + ".inv");
-							if (invSection != null) {
-								// Map<String,ItemStack> inventory =
-								// section.getValues(barrel+"inv");
-								new Barrel(getServer().getWorld(splitted[0]).getBlockAt(parseInt(splitted[1]), parseInt(splitted[2]), parseInt(splitted[3])), invSection.getValues(true),
-										(float) section.getDouble(barrel + ".time", 0.0));
-
-							} else {
-								// errorLog("Inventory of "+section.getCurrentPath()+"."+barrel+" in data.yml is missing");
-								// Barrel has no inventory
-								new Barrel(getServer().getWorld(splitted[0]).getBlockAt(parseInt(splitted[1]), parseInt(splitted[2]), parseInt(splitted[3])), (float) section.getDouble(barrel
-										+ ".time", 0.0));
-							}
-						} else {
-							errorLog("Incomplete Block-Data in data.yml: " + section.getCurrentPath() + "." + barrel);
-						}
-					} else {
-						errorLog("Missing Block-Data in data.yml: " + section.getCurrentPath() + "." + barrel);
-					}
-				}
-			}
-
 			// loading BPlayer
 			section = data.getConfigurationSection("Player");
 			if (section != null) {
@@ -180,6 +138,10 @@ public class P extends JavaPlugin {
 				for (String name : section.getKeys(false)) {
 					new BPlayer(name, section.getInt(name + ".quality"), section.getInt(name + ".drunk"));
 				}
+			}
+
+			for (org.bukkit.World world : p.getServer().getWorlds()) {
+				loadWorldData(world.getUID().toString());
 			}
 
 		} else {
@@ -205,12 +167,77 @@ public class P extends JavaPlugin {
 		return new BIngredients();
 	}
 
+	// load Block locations of given world
+	public void loadWorldData(String uuid) {
+
+		File file = new File(p.getDataFolder(), "data.yml");
+		if (file.exists()) {
+
+			FileConfiguration data = YamlConfiguration.loadConfiguration(file);
+
+			// loading BCauldron
+			if (data.contains("BCauldron." + uuid)) {
+				ConfigurationSection section = data.getConfigurationSection("BCauldron." + uuid);
+				for (String cauldron : section.getKeys(false)) {
+					// block is splitted into x/y/z
+					String block = section.getString(cauldron + ".block");
+					if (block != null) {
+						String[] splitted = block.split("/");
+						if (splitted.length == 3) {
+							new BCauldron(getServer().getWorld(UUID.fromString(uuid)).getBlockAt(parseInt(splitted[0]), parseInt(splitted[1]), parseInt(splitted[2])),
+									loadIngredients(section.getConfigurationSection(cauldron + ".ingredients")), section.getInt(cauldron + ".state", 1));
+						} else {
+							errorLog("Incomplete Block-Data in data.yml: " + section.getCurrentPath() + "." + cauldron);
+						}
+					} else {
+						errorLog("Missing Block-Data in data.yml: " + section.getCurrentPath() + "." + cauldron);
+					}
+				}
+			}
+
+			// loading Barrel
+			if (data.contains("Barrel." + uuid)) {
+				ConfigurationSection section = data.getConfigurationSection("Barrel." + uuid);
+				for (String barrel : section.getKeys(false)) {
+					// block spigot is splitted into x/y/z
+					String spigot = section.getString(barrel + ".spigot");
+					if (spigot != null) {
+						String[] splitted = spigot.split("/");
+						if (splitted.length == 3) {
+							// load itemStacks from invSection
+							ConfigurationSection invSection = section.getConfigurationSection(barrel + ".inv");
+							if (invSection != null) {
+
+								new Barrel(getServer().getWorld(UUID.fromString(uuid)).getBlockAt(parseInt(splitted[0]), parseInt(splitted[1]), parseInt(splitted[2])),
+									invSection.getValues(true), (float) section.getDouble(barrel + ".time", 0.0));
+
+							} else {
+								// Barrel has no inventory
+								new Barrel(getServer().getWorld(UUID.fromString(uuid)).getBlockAt(parseInt(splitted[0]), parseInt(splitted[1]), parseInt(splitted[2])),
+									(float) section.getDouble(barrel + ".time", 0.0));
+							}
+						} else {
+							errorLog("Incomplete Block-Data in data.yml: " + section.getCurrentPath() + "." + barrel);
+						}
+					} else {
+						errorLog("Missing Block-Data in data.yml: " + section.getCurrentPath() + "." + barrel);
+					}
+				}
+			}
+
+		}
+	}
+
 	// save all Data
 	public void saveData() {
 		File datafile = new File(p.getDataFolder(), "data.yml");
+
+		FileConfiguration oldConfig = YamlConfiguration.loadConfiguration(datafile);
+
 		if (datafile.exists()) {
 			if (lastBackup > 10) {
 				datafile.renameTo(new File(p.getDataFolder(), "dataBackup.yml"));
+				lastBackup = 0;
 			} else {
 				lastBackup++;
 			}
@@ -222,11 +249,11 @@ public class P extends JavaPlugin {
 			Brew.save(configFile.createSection("Brew"));
 		}
 		if (!BCauldron.bcauldrons.isEmpty()) {
-			BCauldron.save(configFile.createSection("BCauldron"));
+			BCauldron.save(configFile.createSection("BCauldron"), oldConfig.getConfigurationSection("BCauldron"));
 		}
 
 		if (!Barrel.barrels.isEmpty()) {
-			Barrel.save(configFile.createSection("Barrel"));
+			Barrel.save(configFile.createSection("Barrel"), oldConfig.getConfigurationSection("Barrel"));
 		}
 
 		if (!BPlayer.players.isEmpty()) {

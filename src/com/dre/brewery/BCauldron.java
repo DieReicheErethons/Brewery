@@ -105,17 +105,33 @@ public class BCauldron {
 		}
 	}
 
-	public static void save(ConfigurationSection config) {
+	//unloads cauldrons that are in a unloading world
+	public static void onUnload(String name) {
+		for (BCauldron bcauldron : bcauldrons) {
+			if (bcauldron.block.getWorld().getName().equals(name)) {
+				bcauldrons.remove(bcauldron);
+			}
+		}
+	}
+
+	public static void save(ConfigurationSection config, ConfigurationSection oldConfig) {
 		int id = 0;
 		for (BCauldron cauldron : bcauldrons) {
-			// cauldrons are randomly listed
-			ConfigurationSection section = config.createSection("" + id);
-			section.set("block", cauldron.block.getWorld().getName() + "/" + cauldron.block.getX() + "/" + cauldron.block.getY() + "/" + cauldron.block.getZ());
+			// cauldrons are sorted in worldUUID.randomId
+			String prefix = cauldron.block.getWorld().getUID().toString() + "." + id;
+
+			config.set(prefix + ".block", cauldron.block.getX() + "/" + cauldron.block.getY() + "/" + cauldron.block.getZ());
 			if (cauldron.state != 1) {
-				section.set("state", cauldron.state);
+				config.set(prefix + ".state", cauldron.state);
 			}
-			cauldron.ingredients.save(section.createSection("ingredients"));
+			cauldron.ingredients.save(config.createSection(prefix + ".ingredients"));
 			id++;
+		}
+		// copy cauldrons that are not loaded
+		for (String uuid : oldConfig.getKeys(false)) {
+			if (!config.contains(uuid)) {
+				config.set(uuid, oldConfig.get(uuid));
+			}
 		}
 	}
 

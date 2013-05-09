@@ -131,9 +131,9 @@ public class Barrel {
 					}
 					// "broken" is the block that destroyed, throw them there!
 					if (broken != null) {
-						broken.getLocation().getWorld().dropItem(broken.getLocation(), item);
+						broken.getWorld().dropItem(broken.getLocation(), item);
 					} else {
-						spigot.getLocation().getWorld().dropItem(spigot.getLocation(), item);
+						spigot.getWorld().dropItem(spigot.getLocation(), item);
 					}
 				}
 			}
@@ -141,18 +141,23 @@ public class Barrel {
 		barrels.remove(this);
 	}
 
+	//unloads barrels that are in a unloading world
+	public static void onUnload(String name) {
+		for (Barrel barrel : barrels) {
+			if (barrel.spigot.getWorld().getName().equals(name)) {
+				barrels.remove(barrel);
+			}
+		}
+	}
+
 	// Saves all data
-	public static void save(ConfigurationSection config) {
+	public static void save(ConfigurationSection config, ConfigurationSection oldConfig) {
 		int id = 0;
 		for (Barrel barrel : barrels) {
-			// barrels are listed randomly
-			ConfigurationSection idConfig = config.createSection("" + id);
-
-			// block: worldname/x/y/z
-			idConfig.set("spigot", barrel.spigot.getWorld().getName() + "/" + barrel.spigot.getX() + "/" + barrel.spigot.getY() + "/" + barrel.spigot.getZ());
-			if (barrel.time != 0) {
-				idConfig.set("time", barrel.time);
-			}
+			// barrels are sorted in worldUUID.randomId
+			String prefix = barrel.spigot.getWorld().getUID().toString() + "." + id;
+			// block: x/y/z
+			config.set(prefix + ".spigot", barrel.spigot.getX() + "/" + barrel.spigot.getY() + "/" + barrel.spigot.getZ());
 
 			// not saving the inventory if there is none, or it is empty
 			if (barrel.inventory != null) {
@@ -163,8 +168,12 @@ public class Barrel {
 					item = barrel.inventory.getItem(slot);
 					if (item != null) {
 						if (invConfig == null) {
+							if (barrel.time != 0) {
+								//time is only needed when there are items in inventory
+								config.set(prefix + ".time", barrel.time);
+							}
 							// create section only when items in inventory
-							invConfig = idConfig.createSection("inv");
+							invConfig = config.createSection(prefix + ".inv");
 						}
 						// ItemStacks are configurationSerializeable, makes them
 						// really easy to save
@@ -176,6 +185,12 @@ public class Barrel {
 			}
 
 			id++;
+		}
+		// also save barrels that are not loaded
+		for (String uuid : oldConfig.getKeys(false)) {
+			if (!config.contains(uuid)) {
+				config.set(uuid, oldConfig.get(uuid));
+			}
 		}
 	}
 

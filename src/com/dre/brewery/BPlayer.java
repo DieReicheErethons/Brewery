@@ -12,10 +12,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import com.dre.brewery.Brew;
 
 public class BPlayer {
-	public static Map<String, BPlayer> players = new HashMap<String, BPlayer>();// Players
-																				// name
-																				// and
-																				// BPlayer
+	public static Map<String, BPlayer> players = new HashMap<String, BPlayer>();// Players name and BPlayer
 
 	private int quality = 0;// = quality of drunkeness * drunkeness
 	private int drunkeness = 0;// = amount of drunkeness

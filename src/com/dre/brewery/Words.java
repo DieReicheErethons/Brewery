@@ -68,9 +68,9 @@ public class Words {
 			}
 			if (!words.isEmpty()) {
 				String message = event.getMessage();
-				for (Words w : words) {
-					if (w.alcohol <= bPlayer.getDrunkeness()) {
-						message = distort(message, w.from, w.to, w.pre, w.match, w.percentage);
+				for (Words word : words) {
+					if (word.alcohol <= bPlayer.getDrunkeness()) {
+						message = word.distort(message);
 					}
 				}
 				event.setMessage(message);
@@ -81,7 +81,7 @@ public class Words {
 	// replace "percent"% of "from" -> "to" in "words", when the string before
 	// each "from" "match"es "pre"
 	// Not yet ignoring case :(
-	public static String distort(String words, String from, String to, String[] pre, boolean match, int percent) {
+	public String distort(String words) {
 		if (from.equalsIgnoreCase("-end")) {
 			from = words;
 			to = words + to;
@@ -106,7 +106,7 @@ public class Words {
 			// some characters (*,?) disturb split() which then throws
 			// PatternSyntaxException
 			try {
-				if (pre == null && percent == 100) {
+				if (pre == null && percentage == 100) {
 					// All occurences of "from" need to be replaced
 					return words.replaceAll(from, to);
 				}
@@ -129,7 +129,7 @@ public class Words {
 						newWords = newWords + part;
 						// check if the part ends with correct string
 
-						if (doesPreMatch(part, pre, match) && Math.random() * 100.0 <= percent) {
+						if (doesPreMatch(part) && Math.random() * 100.0 <= percentage) {
 							// add replacement
 							newWords = newWords + to;
 						} else {
@@ -155,7 +155,7 @@ public class Words {
 		return words;
 	}
 
-	public static boolean doesPreMatch(String part, String[] pre, boolean match) {
+	public boolean doesPreMatch(String part) {
 		boolean isBefore = !match;
 		if (pre != null) {
 			for (String pr : pre) {

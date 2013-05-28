@@ -152,39 +152,38 @@ public class Barrel {
 
 	// Saves all data
 	public static void save(ConfigurationSection config, ConfigurationSection oldData) {
-		int id = 0;
-		for (Barrel barrel : barrels) {
-			// barrels are sorted in worldUUID.randomId
-			String prefix = barrel.spigot.getWorld().getUID().toString() + "." + id;
-			// block: x/y/z
-			config.set(prefix + ".spigot", barrel.spigot.getX() + "/" + barrel.spigot.getY() + "/" + barrel.spigot.getZ());
+		if (!barrels.isEmpty()) {
+			int id = 0;
+			for (Barrel barrel : barrels) {
+				// barrels are sorted in worldUUID.randomId
+				String prefix = barrel.spigot.getWorld().getUID().toString() + "." + id;
+				// block: x/y/z
+				config.set(prefix + ".spigot", barrel.spigot.getX() + "/" + barrel.spigot.getY() + "/" + barrel.spigot.getZ());
 
-			// not saving the inventory if there is none, or it is empty
-			if (barrel.inventory != null) {
-				int slot = 0;
-				ItemStack item = null;
-				ConfigurationSection invConfig = null;
-				while (slot < barrel.inventory.getSize()) {
-					item = barrel.inventory.getItem(slot);
-					if (item != null) {
-						if (invConfig == null) {
-							if (barrel.time != 0) {
-								//time is only needed when there are items in inventory
-								config.set(prefix + ".time", barrel.time);
+				if (barrel.inventory != null) {
+					int slot = 0;
+					ItemStack item = null;
+					ConfigurationSection invConfig = null;
+					while (slot < barrel.inventory.getSize()) {
+						item = barrel.inventory.getItem(slot);
+						if (item != null) {
+							if (invConfig == null) {
+								if (barrel.time != 0) {
+									config.set(prefix + ".time", barrel.time);
+								}
+								invConfig = config.createSection(prefix + ".inv");
 							}
-							// create section only when items in inventory
-							invConfig = config.createSection(prefix + ".inv");
+							// ItemStacks are configurationSerializeable, makes them
+							// really easy to save
+							invConfig.set(slot + "", item);
 						}
-						// ItemStacks are configurationSerializeable, makes them
-						// really easy to save
-						invConfig.set(slot + "", item);
+
+						slot++;
 					}
-
-					slot++;
 				}
-			}
 
-			id++;
+				id++;
+			}
 		}
 		// also save barrels that are not loaded
 		if (oldData != null){

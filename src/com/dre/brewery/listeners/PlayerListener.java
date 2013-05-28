@@ -5,6 +5,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -93,7 +94,7 @@ public class PlayerListener implements Listener {
 		if (item != null) {
 			if (item.getType() == Material.POTION) {
 				if (item.hasItemMeta()) {
-					if (BPlayer.drink(Brew.getUID(item), event.getPlayer().getName())) {
+					if (BPlayer.drink(Brew.getUID(item), event.getPlayer())) {
 						if (event.getPlayer().getGameMode() != org.bukkit.GameMode.CREATIVE) {
 							Brew.remove(item);
 						}
@@ -116,6 +117,28 @@ public class PlayerListener implements Listener {
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
 		if (BPlayer.players.containsKey(event.getPlayer().getName())) {
 			Words.playerChat(event);
+		}
+	}
+
+	// player joins while passed out
+	@EventHandler(priority = EventPriority.LOW)
+	public void onPlayerLogin(PlayerLoginEvent event) {
+		final Player player = event.getPlayer();
+		BPlayer bplayer = BPlayer.get(player.getName());
+		if (bplayer != null) {
+			switch (bplayer.canJoin()) {
+			case 0:
+				bplayer.join(player);
+				return;
+			case 1:
+				event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "Dein Charakter ist angetrunken und reagiert nicht. Versuch es noch einmal!");
+				return;
+			case 2:
+				event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "Dein Charakter ist betrunken und reagiert nicht. Versuch es in ein paar Minuten noch einmal!");
+				return;
+			case 3:
+				event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "Dein Charakter ist sturzbesoffen und ohne Besinnung. Versuch es morgen noch einmal!");
+			}
 		}
 	}
 }

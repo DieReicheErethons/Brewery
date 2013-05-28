@@ -1,22 +1,36 @@
+# config für Brewery.jar
+
+# Ob der Spieler beim nächsten Einloggen nach starker Trunkenheit am nächsten morgen Zuhause "aufwacht" (Ein home Plugin muss installiert sein!)
+enableHome: true
+
+# Art des Nachhause-teleports:
+# bed= Spieler wird zu seinem Spawn Bett teleportiert
+# SamplePlugin = installiertes home plugin. Unterstützt: ManagerXL. Wenn dies nicht geht:
+# 'cmd: home' = /home wird vom spieler ausgelöst. Es sollte kein Verzögerungs, etc. plugin installiert sein!
+# 'cmd: spawn' = /spawn wird vom spieler ausgelöst
+homeType: 'cmd: home'
+
+# Ob der Spieler nach etwas kürzerem Ausloggen an einem zufälligen Ort "aufwacht" (diese müssen durch /setwake von einem Admin festgelegt werden)
+# Der Spieler wacht nur an einem Ort auf, der sich in seiner jetzigen Welt befindet.
+# Work in Progress!
+enableWake: true
+
+# Ob der Spieler sich bei großer Trunkenheit teilweise nicht einloggen kann und kurz warten muss, da sein Charakter nicht reagiert
+enableLoginDisallow: true
+
+# Ob der Spieler sich übertrinken kann und dann in Ohnmacht fällt (gekickt wird)
+enableKickOnOverdrink: true
+
 # name: versch. Namen für schlecht/mittel/gut
-# ingredients: material/Anzahl
+# ingredients: Auflistung von material/Anzahl
 # cookingtime: Zeit in Echtminuten die die Zutaten kochen müssen
 # distillruns: Wie oft destilliert werden muss 0-10 (0=ohne Destillieren)
 # wood: Holz des Fasses 0=alle Holzsorten 1=Birch 2=Oak 3=Jungle 4=Pine
 # age: Zeit in Minecraft-Tagen, die das Getränk im Fass reifen muss 0= kein reifen
-# color: Farbe des Getränks nach destillieren/reifen
+# color: Farbe des Getränks nach destillieren/reifen. DARK_RED, RED, BRIGHT_RED, ORANGE, PINK, BLUE, CYAN, WATER, GREEN, BLACK, GREY, BRIGHT_GREY
 # difficulty: 1-10 Genauigkeit der Einhaltung der Vorgaben (1 = ungenau/einfach 10 = sehr genau/schwer)
 # alcohol: Alkoholgehalt 0-100 in absoluter Menge bei perfektem Getränk (wird dem Spieler hinzugefügt, bei 100 = tot)
-
-#cooked: Auflistung ALLER möglichen Zutaten und die daraus entstehenden Tranknamen: (leer für undef.)
-
-#words: Wörter und Buchstaben die bei Trunkenheit ersetzt werden sollen (besondere: -start = an den anfang, -end = ans ende, -random = zufällige position, -space anstatt leerzeichen)
-#to: in welches wort es ersetzt werden soll
-#pre: Wörter und Buchstaben vor dem gesuchten wort
-#match: true = eines der "pre"-Wörter muss vor dem gesuchten Wort stehen,  false = keines der "pre" Wörter darf vor dem gesuchten stehen
-#alcohol: 1-100 trunkenheit ab der die Wörter ersetzt werden
-#percentage: Wahrscheinlichkeit des Ersetzen eines Wortes in Prozent
-
+# effect: Besonderer Trank-Effekt beim Trinken / Dauer in sek. Die Dauer wird bestehenden, gleichen Effekten hinzugefügt. Siehe: http://jd.bukkit.org/rb/apidocs/org/bukkit/potion/PotionEffectType.html
 
 recipes:
    1:
@@ -75,8 +89,9 @@ recipes:
       COLOR: ORANGE
       difficulty: 4
       alcohol: 12
+      effect: WATER_BREATHING/150
    6:
-      name: Leichter Rum/Goldener Rum/Perfekter Rum
+      name: Bitterer Rum/Würziger Rum/Goldener Rum
       ingredients: 
       - SUGAR_CANE/14
       cookingtime: 5
@@ -86,6 +101,7 @@ recipes:
       color: DARK_RED
       difficulty: 6
       alcohol: 30
+      effect: FIRE_RESISTANCE/100
    7:
       name: Abgeranzter Vodka/Vodka/Russischer Vodka
       ingredients: 
@@ -96,6 +112,7 @@ recipes:
       color: BRIGHT_GREY
       difficulty: 4
       alcohol: 20
+      effect: WEAKNESS/15
    8:
       name: minderwertiger Absinth/Absinth/Starker Absinth
       ingredients:
@@ -105,6 +122,7 @@ recipes:
       color: GREEN
       difficulty: 8
       alcohol: 45
+      effect: POISON/10
    9:
       name: Kartoffelsuppe
       ingredients:
@@ -113,139 +131,157 @@ recipes:
       cookingtime: 3
       color: PINK
       difficulty: 1
+      effect: HEAL
+
+
+
+#cooked: ALLE möglichen Zutaten und die nach dem Gähren daraus entstehenden Tranknamen: (leer für undefiniert)
+
 cooked:
    WHEAT: Getreideferment
    SUGAR_CANE: Zuckersud
    APPLE: Apfelmost
    POTATO_ITEM: Kartoffelmaische
    LONG_GRASS: Kräuterbrühe
+   RED_MUSHROOM:
+
+
+
+#words: Wörter und Buchstaben die bei Trunkenheit ersetzt werden sollen 
+#replace: zu ersetzendes Wort oder Buchstabe.   (Besondere: "-space": ersetzt ein Leerzeichen, "-random": Eine zufällige Position, "-start": Ganz am Anfang, "-end": Ganz ans Ende.)
+#to: in welches Wort es ersetzt werden soll.
+#pre: Wörter und Buchstaben vor dem gesuchten Wort (durch "," getrennt)
+#match: true = eines der "pre"-Wörter muss vor dem gesuchten Wort stehen,  false = keines der "pre" Wörter darf vor dem gesuchten stehen
+#alcohol: 1-100 trunkenheit ab der die Wörter ersetzt werden
+#percentage: Wahrscheinlichkeit des Ersetzen eines Wortes in Prozent
+
 words:
-   -  replace: ch
-      to: sch
-      pre: u,s,o,a
-      match: false
-      alcohol: 10
-      percentage: 70
+-  replace: ch
+   to: sch
+   pre: u,s,o,a
+   match: false
+   alcohol: 10
+   percentage: 70
 
-   -  replace: h
-      to: hh
-      pre: sch,h,t
-      match: false
-      percentage: 60
-      alcohol: 20
+-  replace: h
+   to: hh
+   pre: sch,h,t
+   match: false
+   percentage: 60
+   alcohol: 20
 
-   -  replace: u
-      to: uuh
-      percentage: 20
+-  replace: u
+   to: uuh
+   percentage: 20
 
-   -  replace: das
-      to: dass
-      percentage: 10
-      alcohol: 40
+-  replace: das
+   to: dass
+   percentage: 10
+   alcohol: 40
 
-   -  replace: '!'
-      to: '!!'
-      pre: '!'
-      match: false
-      percentage: 90
+-  replace: '!'
+   to: '!!'
+   pre: '!'
+   match: false
+   percentage: 90
 
-   -  replace: '!!'
-      to: '!!!111!!einself!1!'
-      pre: '!'
-      match: false
-      percentage: 20
-      alcohol: 70
+-  replace: '!!'
+   to: '!!!111!!!einself!1!'
+   pre: '!'
+   match: false
+   percentage: 20
+   alcohol: 70
 
-   -  replace: betrunken
-      to: brhetriunkhn
-      pre: bist,seid
-      match: false
-      percentage: 70
-      alcohol: 65
+-  replace: betrunken
+   to: brhetriunkhn
+   pre: bist,seid
+   match: false
+   percentage: 70
+   alcohol: 65
 
-   -  replace: laufen
-      to: lnhfeeehn
-      pre: kannst,kannst noch,kannst nicht
-      match: false
-      percentage: 80
-      alcohol: 85
+-  replace: laufen
+   to: lnhfeeehn
+   pre: kannst,kannst noch,kannst nicht
+   match: false
+   percentage: 80
+   alcohol: 85
 
-   -  replace: gehen
-      to: hgheehn
-      pre: kannst,kannst noch,kannst nicht
-      match: false
-      percentage: 80
-      alcohol: 85
+-  replace: gehen
+   to: hgheehn
+   pre: kannst,kannst noch,kannst nicht
+   match: false
+   percentage: 80
+   alcohol: 85
 
-   -  replace: -space
-      to: ''
-      pre: h,g,w
-      match: true
-      alcohol: 10
+-  replace: -space
+   to: ''
+   pre: h,g,w
+   match: true
+   alcohol: 10
 
-   -  replace: -space
-      to: ''
-      percentage: 50
-      alcohol: 35
+-  replace: -space
+   to: ''
+   percentage: 50
+   alcohol: 35
 
-   -  replace: -space
-      to: ''
-      percentage: 10
+-  replace: -space
+   to: ''
+   percentage: 10
 
-   -  replace: -start
-      to: dssho
-      percentage: 15
-      alcohol: 50
+-  replace: -start
+   to: dssho
+   percentage: 15
+   alcohol: 50
 
-   -  replace: -start
-      to: hhng
-      percentage: 10
-      alcohol: 50
+-  replace: -start
+   to: hhng
+   percentage: 10
+   alcohol: 50
 
-   -  replace: -random
-      to: lrg
-      percentage: 10
+-  replace: -random
+   to: lrg
+   percentage: 10
 
-   -  replace: -random
-      to: lu
-      percentage: 60
-      alcohol: 40
+-  replace: -random
+   to: lu
+   percentage: 60
+   alcohol: 40
 
-   -  replace: -random
-      to: blub
-      percentage: 60
-      alcohol: 70
+-  replace: -random
+   to: blub
+   percentage: 60
+   alcohol: 70
 
-   -  replace: -random
-      to: lerg
-      percentage: 40
-      alcohol: 75
+-  replace: -random
+   to: lerg
+   percentage: 40
+   alcohol: 75
 
-   -  replace: -random
-      to: grulg
-      percentage: 50
-      alcohol: 80
+-  replace: -random
+   to: grulg
+   percentage: 50
+   alcohol: 80
 
-   -  replace: -random
-      to: ''
-      percentage: 30
+-  replace: -random
+   to: ''
+   percentage: 30
 
-   -  replace: -random
-      to: ''
-      percentage: 50
-      alcohol: 50
+-  replace: -random
+   to: ''
+   percentage: 50
+   alcohol: 50
 
-   -  replace: -random
-      to: ''
-      percentage: 50
-      alcohol: 70
+-  replace: -random
+   to: ''
+   percentage: 50
+   alcohol: 70
 
-   -  replace: -end
-      to: '!'
-      percentage: 30
-      alcohol: 30
+-  replace: -end
+   to: '!'
+   percentage: 30
+   alcohol: 30
 
-   -  replace: -end
-      to: ' *hicks*'
-      percentage: 70
-      alcohol: 30
+-  replace: -end
+   to: ' *hicks*'
+   percentage: 70
+   alcohol: 30

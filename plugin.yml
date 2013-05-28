@@ -1,5 +1,5 @@
 name: Brewery
-version: 0.2
+version: 0.3
 main: com.dre.brewery.P
 authors: [Frank Baumann]
 softdepend: [Vault]

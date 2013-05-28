@@ -3,6 +3,7 @@ package com.dre.brewery;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
@@ -23,7 +24,7 @@ public class Brew {
 	private int quality;
 	private int distillRuns;
 	private float ageTime;
-	private int alcohol;
+	private BRecipe currentRecipe;
 
 	public Brew(int uid, BIngredients ingredients) {
 		this.ingredients = ingredients;
@@ -31,20 +32,20 @@ public class Brew {
 	}
 
 	// quality already set
-	public Brew(int uid, int quality, int alcohol, BIngredients ingredients) {
+	public Brew(int uid, int quality, BRecipe recipe, BIngredients ingredients) {
 		this.ingredients = ingredients;
 		this.quality = quality;
-		this.alcohol = calcAlcohol(alcohol);
+		this.currentRecipe = recipe;
 		potions.put(uid, this);
 	}
 
 	// loading from file
-	public Brew(int uid, BIngredients ingredients, int quality, int distillRuns, float ageTime, int alcohol) {
+	public Brew(int uid, BIngredients ingredients, int quality, int distillRuns, float ageTime, String recipe) {
 		this.ingredients = ingredients;
 		this.quality = quality;
 		this.distillRuns = distillRuns;
 		this.ageTime = ageTime;
-		this.alcohol = alcohol;
+		this.currentRecipe = BIngredients.getRecipeByName(recipe);
 		potions.put(uid, this);
 	}
 
@@ -92,7 +93,7 @@ public class Brew {
 		return 0;
 	}
 
-	// remove potion from map (drinking, despawning, should be more!)
+	// remove potion from file (drinking, despawning, should be more!)
 	public static void remove(ItemStack item) {
 		potions.remove(getUID(item));
 	}
@@ -107,15 +108,16 @@ public class Brew {
 	}
 
 	// calculate alcohol from recipe
-	public int calcAlcohol(int alc) {
-		if (distillRuns == 0) {
-			distillRuns = 1;
+	public int calcAlcohol() {
+		if (currentRecipe != null) {
+			int alc = currentRecipe.getAlcohol();
+			alc *= ((float) quality / 10.0);
+			if (distillRuns > 1) {
+				alc *= (float) distillRuns / 2.0;
+			}
+			return alc;
 		}
-		alc *= ((float) quality / 10.0);
-		if (distillRuns > 1) {
-			alc *= (float) distillRuns / 2.0;
-		}
-		return alc;
+		return 0;
 	}
 
 	// calculating quality
@@ -136,9 +138,19 @@ public class Brew {
 		return quality;
 	}
 
-	// return prev calculated alcohol
-	public int getAlcohol() {
-		return alcohol;
+	// return special effect
+	public String getEffect() {
+		if (currentRecipe != null) {
+			return currentRecipe.getEffect();
+		}
+		return null;
+	}
+
+	public int getEffectDur() {
+		if (currentRecipe != null) {
+			return currentRecipe.getEffectDur();
+		}
+		return 0;
 	}
 
 	// Distilling section ---------------
@@ -165,19 +177,18 @@ public class Brew {
 			brew.quality = brew.calcQuality(recipe, (byte) 0);
 			P.p.log("destilled " + recipe.getName(5) + " has Quality: " + brew.quality);
 			brew.distillRuns += 1;
-			// distillRuns will have an effect on the amount of alcohol, not the
-			// quality
+			// distillRuns will have an effect on the amount of alcohol, not the quality
 			if (brew.distillRuns > 1) {
-				ArrayList<String> lore = new ArrayList<String>();
+				List<String> lore = new ArrayList<String>();
 				lore.add(brew.distillRuns + " fach Destilliert");
 				potionMeta.setLore(lore);
 			}
-			brew.alcohol = brew.calcAlcohol(recipe.getAlcohol());
+			brew.currentRecipe = recipe;
 
 			potionMeta.setDisplayName(recipe.getName(brew.quality));
 
 			// if the potion should be further distillable
-			if (recipe.getDistillRuns() > 1) {
+			if (recipe.getDistillRuns() > 1 && brew.distillRuns <= 5) {
 				slotItem.setDurability(PotionColor.valueOf(recipe.getColor()).getColorId(true));
 			} else {
 				slotItem.setDurability(PotionColor.valueOf(recipe.getColor()).getColorId(false));
@@ -204,8 +215,36 @@ public class Brew {
 					if (!recipe.needsDistilling() || brew.distillRuns > 0) {
 
 						brew.quality = brew.calcQuality(recipe, wood);
-						brew.alcohol = brew.calcAlcohol(recipe.getAlcohol());
+						brew.currentRecipe = recipe;
 						P.p.log("Final " + recipe.getName(5) + " has Quality: " + brew.quality);
+
+						if (brew.ageTime >= 2) {
+							List<String> lore;
+							String newLore;
+							int index = 0;
+
+							if (brew.ageTime < 201) {
+								newLore = (int) Math.floor(brew.ageTime) + " Jahre Fassgereift";
+							} else {
+								newLore = "Hunderte Jahre Fassgereift";
+							}
+
+							if (potionMeta.hasLore()) {
+								lore = potionMeta.getLore();
+								while (index < lore.size()) {
+									String existingLore = lore.get(index);
+									if (existingLore.contains("Jahre Fassgereift")) {
+										lore.set(index, newLore);
+										break;
+									}
+									index++;
+								}
+							} else {
+								lore = new ArrayList<String>();
+								lore.add(newLore);
+							}
+							potionMeta.setLore(lore);
+						}
 
 						potionMeta.setDisplayName(recipe.getName(brew.quality));
 						item.setDurability(PotionColor.valueOf(recipe.getColor()).getColorId(false));
@@ -231,8 +270,8 @@ public class Brew {
 			if (brew.ageTime != 0) {
 				idConfig.set("ageTime", brew.ageTime);
 			}
-			if (brew.alcohol != 0) {
-				idConfig.set("alcohol", brew.alcohol);
+			if (brew.currentRecipe != null) {
+				idConfig.set("recipe", brew.currentRecipe.getName(5));
 			}
 			// save the ingredients
 			brew.ingredients.save(idConfig.createSection("ingredients"));
@@ -240,7 +279,18 @@ public class Brew {
 	}
 
 	public static enum PotionColor {
-		PINK(1), CYAN(2), ORANGE(3), GREEN(4), BRIGHT_RED(5), BLUE(6), BLACK(8), RED(9), GREY(10), WATER(11), DARK_RED(12), BRIGHT_GREY(14);
+		PINK(1),
+		CYAN(2),
+		ORANGE(3),
+		GREEN(4),
+		BRIGHT_RED(5),
+		BLUE(6),
+		BLACK(8),
+		RED(9),
+		GREY(10),
+		WATER(11),
+		DARK_RED(12),
+		BRIGHT_GREY(14);
 
 		private final int colorId;
 

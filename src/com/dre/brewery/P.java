@@ -21,6 +21,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import java.io.IOException;
 
 public class P extends JavaPlugin {
@@ -105,8 +106,8 @@ public class P extends JavaPlugin {
 		configSection = config.getConfigurationSection("cooked");
 		if (configSection != null) {
 			for (String ingredient : configSection.getKeys(false)) {
-				BIngredients.cookedNames.put(Material.getMaterial(ingredient.toUpperCase()), (configSection.getString(ingredient)));
-				BIngredients.possibleIngredients.add(Material.getMaterial(ingredient.toUpperCase()));
+				BIngredients.cookedNames.put(Material.matchMaterial(ingredient), (configSection.getString(ingredient)));
+				BIngredients.possibleIngredients.add(Material.matchMaterial(ingredient));
 			}
 		}
 
@@ -126,8 +127,13 @@ public class P extends JavaPlugin {
 			if (section != null) {
 				// All sections have the UID as name
 				for (String uid : section.getKeys(false)) {
-					new Brew(parseInt(uid), loadIngredients(section.getConfigurationSection(uid + ".ingredients")), section.getInt(uid + ".quality", 0), section.getInt(uid + ".distillRuns", 0),
-							(float) section.getDouble(uid + ".ageTime", 0.0), section.getInt(uid + ".alcohol", 0));
+					BIngredients ingredients = loadIngredients(section.getConfigurationSection(uid + ".ingredients"));
+					int quality = section.getInt(uid + ".quality", 0);
+					int distillRuns = section.getInt(uid + ".distillRuns", 0);
+					float ageTime = (float) section.getDouble(uid + ".ageTime", 0.0);
+					String recipe = section.getString(uid + ".recipe", null);
+
+					new Brew(parseInt(uid), ingredients, quality, distillRuns, ageTime, recipe);
 				}
 			}
 
@@ -136,7 +142,12 @@ public class P extends JavaPlugin {
 			if (section != null) {
 				// keys have players name
 				for (String name : section.getKeys(false)) {
-					new BPlayer(name, section.getInt(name + ".quality"), section.getInt(name + ".drunk"));
+					int quality = section.getInt(name + ".quality");
+					int drunk = section.getInt(name + ".drunk");
+					int offDrunk = section.getInt(name + ".offDrunk", 0);
+					boolean passedOut = section.getBoolean(name + ".passedOut", false);
+
+					new BPlayer(name, quality, drunk, offDrunk, passedOut);
 				}
 			}
 
@@ -184,8 +195,11 @@ public class P extends JavaPlugin {
 					if (block != null) {
 						String[] splitted = block.split("/");
 						if (splitted.length == 3) {
-							new BCauldron(getServer().getWorld(UUID.fromString(uuid)).getBlockAt(parseInt(splitted[0]), parseInt(splitted[1]), parseInt(splitted[2])),
-									loadIngredients(section.getConfigurationSection(cauldron + ".ingredients")), section.getInt(cauldron + ".state", 1));
+							Block worldBlock = getServer().getWorld(UUID.fromString(uuid)).getBlockAt(parseInt(splitted[0]), parseInt(splitted[1]), parseInt(splitted[2]));
+							BIngredients ingredients = loadIngredients(section.getConfigurationSection(cauldron + ".ingredients"));
+							int state = section.getInt(cauldron + ".state", 1);
+
+							new BCauldron(worldBlock, ingredients, state);
 						} else {
 							errorLog("Incomplete Block-Data in data.yml: " + section.getCurrentPath() + "." + cauldron);
 						}
@@ -206,15 +220,13 @@ public class P extends JavaPlugin {
 						if (splitted.length == 3) {
 							// load itemStacks from invSection
 							ConfigurationSection invSection = section.getConfigurationSection(barrel + ".inv");
+							Block block = getServer().getWorld(UUID.fromString(uuid)).getBlockAt(parseInt(splitted[0]), parseInt(splitted[1]), parseInt(splitted[2]));
+							float time = (float) section.getDouble(barrel + ".time", 0.0);
 							if (invSection != null) {
-
-								new Barrel(getServer().getWorld(UUID.fromString(uuid)).getBlockAt(parseInt(splitted[0]), parseInt(splitted[1]), parseInt(splitted[2])),
-									invSection.getValues(true), (float) section.getDouble(barrel + ".time", 0.0));
-
+								new Barrel(block, invSection.getValues(true), time);
 							} else {
 								// Barrel has no inventory
-								new Barrel(getServer().getWorld(UUID.fromString(uuid)).getBlockAt(parseInt(splitted[0]), parseInt(splitted[1]), parseInt(splitted[2])),
-									(float) section.getDouble(barrel + ".time", 0.0));
+								new Barrel(block, time);
 							}
 						} else {
 							errorLog("Incomplete Block-Data in data.yml: " + section.getCurrentPath() + "." + barrel);
@@ -248,11 +260,11 @@ public class P extends JavaPlugin {
 		if (!Brew.potions.isEmpty()) {
 			Brew.save(configFile.createSection("Brew"));
 		}
-		if (!BCauldron.bcauldrons.isEmpty()) {
+		if (!BCauldron.bcauldrons.isEmpty() || oldData.contains("BCauldron")) {
 			BCauldron.save(configFile.createSection("BCauldron"), oldData.getConfigurationSection("BCauldron"));
 		}
 
-		if (!Barrel.barrels.isEmpty()) {
+		if (!Barrel.barrels.isEmpty() || oldData.contains("Barrel")) {
 			Barrel.save(configFile.createSection("Barrel"), oldData.getConfigurationSection("Barrel"));
 		}
 

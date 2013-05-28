@@ -115,17 +115,19 @@ public class BCauldron {
 	}
 
 	public static void save(ConfigurationSection config, ConfigurationSection oldData) {
-		int id = 0;
-		for (BCauldron cauldron : bcauldrons) {
-			// cauldrons are sorted in worldUUID.randomId
-			String prefix = cauldron.block.getWorld().getUID().toString() + "." + id;
+		if (!bcauldrons.isEmpty()) {
+			int id = 0;
+			for (BCauldron cauldron : bcauldrons) {
+				// cauldrons are sorted in worldUUID.randomId
+				String prefix = cauldron.block.getWorld().getUID().toString() + "." + id;
 
-			config.set(prefix + ".block", cauldron.block.getX() + "/" + cauldron.block.getY() + "/" + cauldron.block.getZ());
-			if (cauldron.state != 1) {
-				config.set(prefix + ".state", cauldron.state);
+				config.set(prefix + ".block", cauldron.block.getX() + "/" + cauldron.block.getY() + "/" + cauldron.block.getZ());
+				if (cauldron.state != 1) {
+					config.set(prefix + ".state", cauldron.state);
+				}
+				cauldron.ingredients.save(config.createSection(prefix + ".ingredients"));
+				id++;
 			}
-			cauldron.ingredients.save(config.createSection(prefix + ".ingredients"));
-			id++;
 		}
 		// copy cauldrons that are not loaded
 		if (oldData != null){

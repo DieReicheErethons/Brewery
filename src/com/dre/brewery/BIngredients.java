@@ -48,8 +48,7 @@ public class BIngredients {
 		ItemStack potion = new ItemStack(Material.POTION);
 		PotionMeta potionMeta = (PotionMeta) potion.getItemMeta();
 
-		// cookedTime is always time in minutes, state may differ with number of
-		// ticks
+		// cookedTime is always time in minutes, state may differ with number of ticks
 		cookedTime = state;
 		String cookedName = null;
 		BRecipe cookRecipe = getCookRecipe();
@@ -60,7 +59,7 @@ public class BIngredients {
 			// Potion is best with cooking only, can still be destilled, etc.
 			int quality = (int) Math.round((getIngredientQuality(cookRecipe) + getCookingQuality(cookRecipe)) / 2.0);
 			P.p.log("cooked potion has Quality: " + quality);
-			new Brew(uid, quality, cookRecipe.getAlcohol(), new BIngredients(ingredients, cookedTime));
+			new Brew(uid, quality, cookRecipe, new BIngredients(ingredients, cookedTime));
 
 			cookedName = cookRecipe.getName(quality);
 			potion.setDurability(Brew.PotionColor.valueOf(cookRecipe.getColor()).getColorId(false));
@@ -69,7 +68,7 @@ public class BIngredients {
 			// new base potion
 			new Brew(uid, new BIngredients(ingredients, cookedTime));
 
-			if (state == 0) {// TESTING sonst 1
+			if (state == 0) {// TODO sonst 1
 				cookedName = "Schlammiger Sud";
 				potion.setDurability(Brew.PotionColor.BLUE.getColorId(false));
 			} else {
@@ -105,6 +104,16 @@ public class BIngredients {
 			count += value;
 		}
 		return count;
+	}
+
+	//returns the recipe with the given name
+	public static BRecipe getRecipeByName(String name) {
+		for (BRecipe recipe : recipes) {
+			if (recipe.getName(5).equalsIgnoreCase(name)) {
+				return recipe;
+			}
+		}
+		return null;
 	}
 
 	// best recipe for current state of potion, STILL not always returns the
@@ -169,7 +178,7 @@ public class BIngredients {
 
 		// Check if best recipe needs to be destilled
 		if (bestRecipe != null) {
-			if (bestRecipe.getDistillRuns() != 0) {
+			if (bestRecipe.needsDistilling()) {
 				return bestRecipe;
 			}
 		}

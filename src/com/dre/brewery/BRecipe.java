@@ -10,17 +10,16 @@ import org.bukkit.Material;
 public class BRecipe {
 
 	private String[] name;
-	private Map<Material, Integer> ingredients = new HashMap<Material, Integer>();// material
-																					// and
-																					// amount
+	private Map<Material, Integer> ingredients = new HashMap<Material, Integer>();// material and amount
 	private int cookingTime;// time to cook in cauldron
 	private int distillruns;// runs through the brewer
 	private int wood;// type of wood the barrel has to consist of
 	private int age;// time in minecraft days for the potions to age in barrels
 	private String color;// color of the destilled/finished potion
-	private int difficulty;// difficulty to brew the potion, how exact the
-							// instruction has to be followed
-	private int alcohol;// Vol% of alcohol in perfect potion
+	private int difficulty;// difficulty to brew the potion, how exact the instruction has to be followed
+	private int alcohol;// Alcohol in perfect potion
+	private String effect;// Special Effect
+	private int effectDur;// Duration of the special effect
 
 	public BRecipe(ConfigurationSection configSectionRecipes, String recipeId) {
 		String[] name = configSectionRecipes.getString(recipeId + ".name").split("/");
@@ -43,10 +42,18 @@ public class BRecipe {
 		this.color = configSectionRecipes.getString(recipeId + ".color");
 		this.difficulty = configSectionRecipes.getInt(recipeId + ".difficulty");
 		this.alcohol = configSectionRecipes.getInt(recipeId + ".alcohol");
+
+		String effectString = configSectionRecipes.getString(recipeId + ".effect");
+		if (effectString != null) {
+			String[] effectSplit = effectString.split("/");
+			this.effect = effectSplit[0];
+			if (effectSplit.length > 1) {
+				this.effectDur = P.p.parseInt(effectSplit[1]);
+			}
+		}
 	}
 
-	// allowed deviation to the recipes count of ingredients at the given
-	// difficulty
+	// allowed deviation to the recipes count of ingredients at the given difficulty
 	public int allowedCountDiff(int count) {
 		int allowedCountDiff = Math.round((float) ((11.0 - difficulty) * (count / 10.0)));
 
@@ -93,9 +100,9 @@ public class BRecipe {
 
 	public boolean needsDistilling() {
 		if (distillruns == 0) {
-			return true;
+			return false;
 		}
-		return false;
+		return true;
 	}
 
 	public boolean needsToAge() {
@@ -117,6 +124,7 @@ public class BRecipe {
 		}
 		return false;
 	}
+
 
 	// Getter
 
@@ -179,6 +187,14 @@ public class BRecipe {
 
 	public int getAlcohol() {
 		return alcohol;
+	}
+
+	public String getEffect() {
+		return effect;
+	}
+
+	public int getEffectDur() {
+		return effectDur;
 	}
 
 }

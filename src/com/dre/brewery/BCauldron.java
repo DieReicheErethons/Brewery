@@ -118,8 +118,14 @@ public class BCauldron {
 		if (!bcauldrons.isEmpty()) {
 			int id = 0;
 			for (BCauldron cauldron : bcauldrons) {
-				// cauldrons are sorted in worldUUID.randomId
-				String prefix = cauldron.block.getWorld().getUID().toString() + "." + id;
+				String worldName = cauldron.block.getWorld().getName();
+				String prefix = null;
+
+				if (worldName.startsWith("DXL_")) {
+					prefix = P.p.getDxlName(worldName) + "." + id;
+				} else {
+					prefix = cauldron.block.getWorld().getUID().toString() + "." + id;
+				}
 
 				config.set(prefix + ".block", cauldron.block.getX() + "/" + cauldron.block.getY() + "/" + cauldron.block.getZ());
 				if (cauldron.state != 1) {

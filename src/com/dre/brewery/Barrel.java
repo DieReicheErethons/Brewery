@@ -155,8 +155,16 @@ public class Barrel {
 		if (!barrels.isEmpty()) {
 			int id = 0;
 			for (Barrel barrel : barrels) {
-				// barrels are sorted in worldUUID.randomId
-				String prefix = barrel.spigot.getWorld().getUID().toString() + "." + id;
+
+				String worldName = barrel.spigot.getWorld().getName();
+				String prefix = null;
+
+				if (worldName.startsWith("DXL_")) {
+					prefix = P.p.getDxlName(worldName) + "." + id;
+				} else {
+					prefix = barrel.spigot.getWorld().getUID().toString() + "." + id;
+				}
+
 				// block: x/y/z
 				config.set(prefix + ".spigot", barrel.spigot.getX() + "/" + barrel.spigot.getY() + "/" + barrel.spigot.getZ());
 

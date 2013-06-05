@@ -2,13 +2,13 @@ package com.dre.brewery;
 
 import java.util.Map;
 import java.util.HashMap;
-import java.util.UUID;
+import java.io.IOException;
+import java.io.File;
 
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.ConfigurationSection;
-import java.io.File;
 import org.apache.commons.lang.math.NumberUtils;
 
 import com.dre.brewery.listeners.BlockListener;
@@ -18,11 +18,11 @@ import com.dre.brewery.listeners.InventoryListener;
 import com.dre.brewery.listeners.WorldListener;
 import org.bukkit.event.HandlerList;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import java.io.IOException;
 
 public class P extends JavaPlugin {
 	public static P p;
@@ -151,8 +151,12 @@ public class P extends JavaPlugin {
 				}
 			}
 
-			for (org.bukkit.World world : p.getServer().getWorlds()) {
-				loadWorldData(world.getUID().toString());
+			for (World world : p.getServer().getWorlds()) {
+				if (world.getName().startsWith("DXL_")) {
+					loadWorldData(getDxlName(world.getName()), world);
+				} else {
+					loadWorldData(world.getUID().toString(), world);
+				}
 			}
 
 		} else {
@@ -179,7 +183,7 @@ public class P extends JavaPlugin {
 	}
 
 	// load Block locations of given world
-	public void loadWorldData(String uuid) {
+	public void loadWorldData(String uuid, World world) {
 
 		File file = new File(p.getDataFolder(), "data.yml");
 		if (file.exists()) {
@@ -195,7 +199,8 @@ public class P extends JavaPlugin {
 					if (block != null) {
 						String[] splitted = block.split("/");
 						if (splitted.length == 3) {
-							Block worldBlock = getServer().getWorld(UUID.fromString(uuid)).getBlockAt(parseInt(splitted[0]), parseInt(splitted[1]), parseInt(splitted[2]));
+
+							Block worldBlock = world.getBlockAt(parseInt(splitted[0]), parseInt(splitted[1]), parseInt(splitted[2]));
 							BIngredients ingredients = loadIngredients(section.getConfigurationSection(cauldron + ".ingredients"));
 							int state = section.getInt(cauldron + ".state", 1);
 
@@ -218,16 +223,19 @@ public class P extends JavaPlugin {
 					if (spigot != null) {
 						String[] splitted = spigot.split("/");
 						if (splitted.length == 3) {
+
 							// load itemStacks from invSection
 							ConfigurationSection invSection = section.getConfigurationSection(barrel + ".inv");
-							Block block = getServer().getWorld(UUID.fromString(uuid)).getBlockAt(parseInt(splitted[0]), parseInt(splitted[1]), parseInt(splitted[2]));
+							Block block = world.getBlockAt(parseInt(splitted[0]), parseInt(splitted[1]), parseInt(splitted[2]));
 							float time = (float) section.getDouble(barrel + ".time", 0.0);
+
 							if (invSection != null) {
 								new Barrel(block, invSection.getValues(true), time);
 							} else {
 								// Barrel has no inventory
 								new Barrel(block, time);
 							}
+
 						} else {
 							errorLog("Incomplete Block-Data in data.yml: " + section.getCurrentPath() + "." + barrel);
 						}
@@ -281,6 +289,20 @@ public class P extends JavaPlugin {
 
 	public int parseInt(String string) {
 		return NumberUtils.toInt(string, 0);
+	}
+
+	public String getDxlName(String worldName) {
+		File dungeonFolder = new File(worldName);
+		if (dungeonFolder.isDirectory()) {
+			for (File file : dungeonFolder.listFiles()) {
+				if (!file.isDirectory()) {
+					if (file.getName().startsWith(".id_")) {
+						return file.getName().substring(1);
+					}
+				}
+			}
+		}
+		return null;
 	}
 
 	public class BreweryRunnable implements Runnable {

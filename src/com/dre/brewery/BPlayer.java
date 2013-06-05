@@ -65,6 +65,10 @@ public class BPlayer {
 	public static boolean drink(int uid, Player player) {
 		Brew brew = Brew.get(uid);
 		if (brew != null) {
+			if (brew.calcAlcohol() == 0) {
+				addBrewEffects(brew, player);
+				return true;
+			}
 			BPlayer bPlayer = get(player.getName());
 			if (bPlayer == null) {
 				bPlayer = new BPlayer();
@@ -74,21 +78,15 @@ public class BPlayer {
 			bPlayer.quality += brew.getQuality() * brew.calcAlcohol();
 
 			if (bPlayer.drunkeness <= 100) {
-				if (brew.getEffect() != null) {
-					int duration = (brew.getEffectDur() / 8) * brew.getQuality() * 20;
-					int amplifier = brew.getQuality() / 3;
-
-					PotionEffectType type = PotionEffectType.getByName(brew.getEffect());
-					type.createEffect(duration, amplifier).apply(player);
-				}
-
+				addBrewEffects(brew, player);
 			} else {
 				if (P.p.getConfig().getBoolean("enableKickOnOverdrink", false)) {
 					bPlayer.passOut(player);
 				} else {
 					bPlayer.quality = bPlayer.getQuality() * 100;
 					bPlayer.drunkeness = 100;
-					P.p.msg(player, "Du kannst einfach nicht mehr trinken und spuckst es wieder aus!");
+					P.p.msg(player, "Du kannst einfach nicht mehr trinken");
+					return false;
 				}
 			}
 			P.p.log(player.getName() + " ist nun " + bPlayer.drunkeness + "% betrunken, mit einer Qualität von " + bPlayer.getQuality());
@@ -249,12 +247,26 @@ public class BPlayer {
 		PotionEffectType.getByName("HUNGER").createEffect(duration, amplifier).apply(player);
 	}
 
+	public static void addBrewEffects(Brew brew, Player player) {
+		if (brew.getEffect() != null) {
+			int duration = (brew.getEffectDur() / 8) * brew.getQuality() * 20;
+			int amplifier = brew.getQuality() / 3;
+
+			PotionEffectType type = PotionEffectType.getByName(brew.getEffect());
+			type.createEffect(duration, amplifier).apply(player);
+		}
+	}
+
 	// decreasing drunkeness over time
 	public static void onUpdate() {
 		if (!players.isEmpty()) {
 			int soberPerMin = 2;
 			for (String name : players.keySet()) {
 				BPlayer bplayer = players.get(name);
+				if (bplayer.drunkeness == soberPerMin) {
+					// Prevent 0 drunkeness
+					soberPerMin++;
+				}
 				bplayer.quality -= bplayer.getQuality() * soberPerMin;
 				bplayer.drunkeness -= soberPerMin;
 				if (bplayer.drunkeness > 0) {
@@ -280,7 +292,7 @@ public class BPlayer {
 				section.set("offDrunk", players.get(name).offlineDrunk);
 			}
 			if (players.get(name).passedOut) {
-				section.set("passedOut", players.get(name).passedOut);
+				section.set("passedOut", true);
 			}
 		}
 	}
@@ -291,6 +303,10 @@ public class BPlayer {
 	}
 
 	public int getQuality() {
+		if (drunkeness == 0) {
+			P.p.errorLog("drunkeness should not be 0!");
+			return quality;
+		}
 		return Math.round(quality / drunkeness);
 	}
 

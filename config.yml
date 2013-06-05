@@ -4,15 +4,16 @@
 enableHome: true
 
 # Art des Nachhause-teleports:
-# bed= Spieler wird zu seinem Spawn Bett teleportiert
+# bed = Spieler wird zu seinem Spawn Bett teleportiert
 # SamplePlugin = installiertes home plugin. Unterstützt: ManagerXL. Wenn dies nicht geht:
-# 'cmd: home' = /home wird vom spieler ausgelöst. Es sollte kein Verzögerungs, etc. plugin installiert sein!
-# 'cmd: spawn' = /spawn wird vom spieler ausgelöst
+# 'cmd: home' = /home wird vom Spieler ausgelöst. Es sollte kein Verzögerungs, etc. plugin installiert sein!
+# 'cmd: spawn' = /spawn wird vom Spieler ausgelöst
+# 'cmd: exmpl' = /exmpl wird vom Spieler ausgelöst
 homeType: 'cmd: home'
 
 # Ob der Spieler nach etwas kürzerem Ausloggen an einem zufälligen Ort "aufwacht" (diese müssen durch /setwake von einem Admin festgelegt werden)
 # Der Spieler wacht nur an einem Ort auf, der sich in seiner jetzigen Welt befindet.
-# Work in Progress!
+# Work in Progress, noch nicht implementiert!
 enableWake: true
 
 # Ob der Spieler sich bei großer Trunkenheit teilweise nicht einloggen kann und kurz warten muss, da sein Charakter nicht reagiert
@@ -34,7 +35,7 @@ autosave: 3
 # color: Farbe des Getränks nach destillieren/reifen. DARK_RED, RED, BRIGHT_RED, ORANGE, PINK, BLUE, CYAN, WATER, GREEN, BLACK, GREY, BRIGHT_GREY
 # difficulty: 1-10 Genauigkeit der Einhaltung der Vorgaben (1 = ungenau/einfach 10 = sehr genau/schwer)
 # alcohol: Alkoholgehalt 0-100 in absoluter Menge bei perfektem Getränk (wird dem Spieler hinzugefügt, bei 100 = tot)
-# effect: Besonderer Trank-Effekt beim Trinken / Dauer in sek. Die Dauer wird bestehenden, gleichen Effekten hinzugefügt. Siehe: http://jd.bukkit.org/rb/apidocs/org/bukkit/potion/PotionEffectType.html
+# effect: Effekt/Dauer Besonderer Trank-Effekt beim Trinken, Dauer in sek. Siehe: http://jd.bukkit.org/rb/apidocs/org/bukkit/potion/PotionEffectType.html
 
 recipes:
    1:
@@ -152,8 +153,8 @@ cooked:
 
 
 #words: Wörter und Buchstaben die bei Trunkenheit ersetzt werden sollen 
-#replace: zu ersetzendes Wort oder Buchstabe.   (Besondere: "-space": ersetzt ein Leerzeichen, "-random": Eine zufällige Position, "-start": Ganz am Anfang, "-end": Ganz ans Ende.)
-#to: in welches Wort es ersetzt werden soll.
+#replace: Zu ersetzendes Wort oder Buchstabe.   (Besondere: "-space": ersetzt ein Leerzeichen, "-random": Eine zufällige Position, "-start": Ganz am Anfang, "-end": Ganz ans Ende.)
+#to: In welches Wort es ersetzt werden soll.
 #pre: Wörter und Buchstaben vor dem gesuchten Wort (durch "," getrennt)
 #match: true = eines der "pre"-Wörter muss vor dem gesuchten Wort stehen,  false = keines der "pre" Wörter darf vor dem gesuchten stehen
 #alcohol: 1-100 trunkenheit ab der die Wörter ersetzt werden

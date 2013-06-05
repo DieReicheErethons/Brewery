@@ -21,6 +21,10 @@ enableLoginDisallow: true
 # Ob der Spieler sich übertrinken kann und dann in Ohnmacht fällt (gekickt wird)
 enableKickOnOverdrink: true
 
+# Autosave Intervall in Minuten
+autosave: 3
+
+
 # name: versch. Namen für schlecht/mittel/gut
 # ingredients: Auflistung von material/Anzahl
 # cookingtime: Zeit in Echtminuten die die Zutaten kochen müssen

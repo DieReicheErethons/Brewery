@@ -27,6 +27,8 @@ import org.bukkit.block.Block;
 public class P extends JavaPlugin {
 	public static P p;
 	public static int lastBackup = 0;
+	public static int lastSave = 1;
+	public static int autosave = 3;
 
 	// Listeners
 	public BlockListener blockListener;
@@ -93,6 +95,9 @@ public class P extends JavaPlugin {
 			saveDefaultConfig();
 		}
 		FileConfiguration config = getConfig();
+
+		// various Settings
+		autosave = config.getInt("autosave", 3);
 
 		// loading recipes
 		ConfigurationSection configSection = config.getConfigurationSection("recipes");
@@ -250,6 +255,7 @@ public class P extends JavaPlugin {
 
 	// save all Data
 	public void saveData() {
+		log("saving");
 		File datafile = new File(p.getDataFolder(), "data.yml");
 
 		FileConfiguration oldData = YamlConfiguration.loadConfiguration(datafile);
@@ -285,6 +291,8 @@ public class P extends JavaPlugin {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
+		lastSave = 1;
 	}
 
 	public int parseInt(String string) {
@@ -319,7 +327,11 @@ public class P extends JavaPlugin {
 			Barrel.onUpdate();// runs every min to check and update ageing time
 			BPlayer.onUpdate();// updates players drunkeness
 
-			saveData();// save all data
+			if (lastSave >= autosave) {
+				saveData();// save all data
+			} else {
+				lastSave++;
+			}
 		}
 
 	}

@@ -160,7 +160,7 @@ cooked:
 # words: Wörter und Buchstaben die bei Chatten während Trunkenheit ersetzt werden sollen.
 # Diese werden von oben nach unten gelesen und in dieser Reihenfolge wird ein geschriebener Satz dann verändert.
 
-# replace: Zu ersetzendes Wort oder Buchstabe.   (Besondere: "-space": ersetzt Leerzeichen, "-random": Eine zufällige Position, "-start": Ganz am Anfang, "-end": Ganz ans Ende.)
+# replace: Zu ersetzendes Wort oder Buchstabe.   (Besondere: "-space": ersetzt Leerzeichen, "-random": Einfügen in zufällige Position, "-start": Ganz am Anfang, "-end": Ganz ans Ende.)
 # to: In welches Wort es ersetzt werden soll.
 # pre: Wörter und Buchstaben vor dem gesuchten Wort (durch "," getrennt)
 # match: true = eines der "pre"-Wörter muss vor dem gesuchten Wort stehen,  false = keines der "pre" Wörter darf vor dem gesuchten stehen
@@ -299,7 +299,7 @@ words:
 
 -  replace: -space
    to: ''
-   percentage: 40
+   percentage: 30
    alcohol: 35
 
 -  replace: -space
@@ -322,12 +322,12 @@ words:
 
 -  replace: -random
    to: lu
-   percentage: 60
+   percentage: 20
    alcohol: 40
 
 -  replace: -random
    to: blub
-   percentage: 60
+   percentage: 20
    alcohol: 70
 
 -  replace: -random
@@ -339,20 +339,6 @@ words:
    to: gul
    percentage: 50
    alcohol: 80
-
--  replace: -random
-   to: ''
-   percentage: 30
-
--  replace: -random
-   to: ''
-   percentage: 50
-   alcohol: 50
-
--  replace: -random
-   to: ''
-   percentage: 50
-   alcohol: 70
 
 -  replace: -random
    to: ' '
@@ -381,15 +367,15 @@ words:
 
 -  replace: -random
    to: ' *hicks* '
-   percentage: 20
+   percentage: 15
    alcohol: 40
 
 -  replace: -space
    to: ' *hicks* '
-   percentage: 20
+   percentage: 5
    alcohol: 20
 
 -  replace: -end
    to: ' *hicks*'
    percentage: 70
-   alcohol: 30
+   alcohol: 50

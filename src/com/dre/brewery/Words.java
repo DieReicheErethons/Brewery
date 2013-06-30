@@ -82,6 +82,9 @@ public class Words {
 	// each "from" "match"es "pre"
 	// Not yet ignoring case :(
 	public String distort(String words) {
+		String from = this.from;
+		String to = this.to;
+
 		if (from.equalsIgnoreCase("-end")) {
 			from = words;
 			to = words + to;
@@ -92,12 +95,8 @@ public class Words {
 			from = " ";
 		} else if (from.equalsIgnoreCase("-random")) {
 			// inserts "to" on a random position in "words"
-			int charIndex = (int) (Math.random() * 100.0);
-			P.p.log("random: " + charIndex);
-			charIndex *= (words.length() - 1);
-			charIndex /= 100;
-			P.p.log("charIndex: " + charIndex);
-			if (charIndex > words.length() / 2) {
+			int charIndex = (int) (Math.random() * (words.length() - 1));
+			if (charIndex < words.length() / 2) {
 				from = words.substring(charIndex);
 				to = to + from;
 			} else {

@@ -1,5 +1,8 @@
 # config für Brewery.jar
 
+
+# Verschiedene Einstellungen
+
 # Ob der Spieler beim nächsten Einloggen nach starker Trunkenheit am nächsten morgen Zuhause "aufwacht" (Ein home Plugin muss installiert sein!)
 enableHome: true
 
@@ -19,14 +22,16 @@ enableWake: true
 # Ob der Spieler sich bei großer Trunkenheit teilweise nicht einloggen kann und kurz warten muss, da sein Charakter nicht reagiert
 enableLoginDisallow: true
 
-# Ob der Spieler sich übertrinken kann und dann in Ohnmacht fällt (gekickt wird)
+# Ob der Spieler sich übertrinken kann und dann in Ohnmacht fällt (gekickt wird) und sich für einige Stunden nicht einloggen kann
 enableKickOnOverdrink: true
 
 # Autosave Intervall in Minuten
 autosave: 3
 
 
-# name: versch. Namen für schlecht/mittel/gut
+# Rezepte für Getränke
+
+# name: Verschiedene Namen für schlecht/mittel/gut
 # ingredients: Auflistung von material/Anzahl
 # cookingtime: Zeit in Echtminuten die die Zutaten kochen müssen
 # distillruns: Wie oft destilliert werden muss 0-10 (0=ohne Destillieren)
@@ -140,7 +145,7 @@ recipes:
 
 
 
-#cooked: ALLE möglichen Zutaten und die nach dem Gähren daraus entstehenden Tranknamen: (leer für undefiniert)
+# cooked: ALLE möglichen Zutaten und die nach dem Gähren daraus entstehenden Tranknamen: (leer für undefiniert)
 
 cooked:
    WHEAT: Getreideferment
@@ -152,13 +157,15 @@ cooked:
 
 
 
-#words: Wörter und Buchstaben die bei Trunkenheit ersetzt werden sollen 
-#replace: Zu ersetzendes Wort oder Buchstabe.   (Besondere: "-space": ersetzt ein Leerzeichen, "-random": Eine zufällige Position, "-start": Ganz am Anfang, "-end": Ganz ans Ende.)
-#to: In welches Wort es ersetzt werden soll.
-#pre: Wörter und Buchstaben vor dem gesuchten Wort (durch "," getrennt)
-#match: true = eines der "pre"-Wörter muss vor dem gesuchten Wort stehen,  false = keines der "pre" Wörter darf vor dem gesuchten stehen
-#alcohol: 1-100 trunkenheit ab der die Wörter ersetzt werden
-#percentage: Wahrscheinlichkeit des Ersetzen eines Wortes in Prozent
+# words: Wörter und Buchstaben die bei Chatten während Trunkenheit ersetzt werden sollen.
+# Diese werden von oben nach unten gelesen und in dieser Reihenfolge wird ein geschriebener Satz dann verändert.
+
+# replace: Zu ersetzendes Wort oder Buchstabe.   (Besondere: "-space": ersetzt Leerzeichen, "-random": Eine zufällige Position, "-start": Ganz am Anfang, "-end": Ganz ans Ende.)
+# to: In welches Wort es ersetzt werden soll.
+# pre: Wörter und Buchstaben vor dem gesuchten Wort (durch "," getrennt)
+# match: true = eines der "pre"-Wörter muss vor dem gesuchten Wort stehen,  false = keines der "pre" Wörter darf vor dem gesuchten stehen
+# alcohol: 1-100 Trunkenheit ab der die Wörter ersetzt werden
+# percentage: Wahrscheinlichkeit des Ersetzen eines Wortes in Prozent
 
 words:
 -  replace: ch
@@ -179,23 +186,55 @@ words:
    to: uuh
    percentage: 20
 
+-  replace: u
+   to: uo
+   pre: u
+   match: false
+   percentage: 60
+
 -  replace: das
    to: dass
-   percentage: 10
+   percentage: 20
    alcohol: 40
+
+-  replace: p
+   to: b
+   percentage: 30
+
+-  replace: p
+   to: b
+   percentage: 70
+   alcohol: 60
+
+-  replace: up
+   to: ubb
+   percentage: 80
+
+-  replace: o
+   to: oh
+   percentage: 20
+
+-  replace: ei
+   to: i
+   percentage: 15
+
+-  replace: b
+   to: bb
+   percentage: 80
+   alcohol: 40
+
+-  replace: '!!!'
+   to: '!!!111!!!einself!1!'
+   pre: '!'
+   match: false
+   percentage: 20
+   alcohol: 70
 
 -  replace: '!'
    to: '!!'
    pre: '!'
    match: false
    percentage: 90
-
--  replace: '!!'
-   to: '!!!111!!!einself!1!'
-   pre: '!'
-   match: false
-   percentage: 20
-   alcohol: 70
 
 -  replace: betrunken
    to: brhetriunkhn
@@ -209,14 +248,48 @@ words:
    pre: kannst,kannst noch,kannst nicht
    match: false
    percentage: 80
-   alcohol: 85
+   alcohol: 30
 
 -  replace: gehen
    to: hgheehn
    pre: kannst,kannst noch,kannst nicht
    match: false
    percentage: 80
-   alcohol: 85
+   alcohol: 40
+
+-  replace: wtf
+   to: wft
+   percentage: 20
+   alcohol: 40
+
+-  replace: lol
+   to: loool
+   percentage: 80
+   alcohol: 10
+
+-  replace: afk
+   to: aafka
+   percentage: 20
+   alcohol: 30
+
+-  replace: schreiben
+   to: schribeen
+   pre: kannst,kannst noch,kannst nicht
+   match: false
+   percentage: 80
+   alcohol: 50
+
+-  replace: trinken
+   to: saufen
+   percentage: 80
+   alcohol: 70
+
+-  replace: '?'
+   to: '????'
+   pre: '?'
+   match: false
+   percentage: 80
+   alcohol: 40
 
 -  replace: -space
    to: ''
@@ -226,7 +299,7 @@ words:
 
 -  replace: -space
    to: ''
-   percentage: 50
+   percentage: 40
    alcohol: 35
 
 -  replace: -space
@@ -234,17 +307,17 @@ words:
    percentage: 10
 
 -  replace: -start
-   to: dssho
+   to: dho
    percentage: 15
    alcohol: 50
 
 -  replace: -start
-   to: hhng
+   to: hhn
    percentage: 10
    alcohol: 50
 
 -  replace: -random
-   to: lrg
+   to: lug
    percentage: 10
 
 -  replace: -random
@@ -263,7 +336,7 @@ words:
    alcohol: 75
 
 -  replace: -random
-   to: grulg
+   to: gul
    percentage: 50
    alcohol: 80
 
@@ -281,10 +354,40 @@ words:
    percentage: 50
    alcohol: 70
 
+-  replace: -random
+   to: ' '
+   percentage: 100
+   alcohol: 70
+
+-  replace: -random
+   to: ' '
+   percentage: 60
+   alcohol: 40
+
+-  replace: -random
+   to: ' '
+   percentage: 50
+   alcohol: 30
+
 -  replace: -end
    to: '!'
-   percentage: 30
+   percentage: 40
    alcohol: 30
+
+-  replace: -random
+   to: ' *hicks* '
+   percentage: 80
+   alcohol: 70
+
+-  replace: -random
+   to: ' *hicks* '
+   percentage: 20
+   alcohol: 40
+
+-  replace: -space
+   to: ' *hicks* '
+   percentage: 20
+   alcohol: 20
 
 -  replace: -end
    to: ' *hicks*'

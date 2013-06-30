@@ -57,7 +57,8 @@ public class P extends JavaPlugin {
 		p.getServer().getPluginManager().registerEvents(inventoryListener, p);
 		p.getServer().getPluginManager().registerEvents(worldListener, p);
 
-		p.getServer().getScheduler().runTaskTimer(p, new BreweryRunnable(), 1200, 1200);
+		p.getServer().getScheduler().runTaskTimer(p, new BreweryRunnable(), 650, 1200);
+		p.getServer().getScheduler().runTaskTimer(p, new DrunkRunnable(), 120, 120);
 
 		this.log(this.getDescription().getName() + " enabled!");
 	}
@@ -255,7 +256,6 @@ public class P extends JavaPlugin {
 
 	// save all Data
 	public void saveData() {
-		log("saving");
 		File datafile = new File(p.getDataFolder(), "data.yml");
 
 		FileConfiguration oldData = YamlConfiguration.loadConfiguration(datafile);
@@ -311,6 +311,19 @@ public class P extends JavaPlugin {
 			}
 		}
 		return null;
+	}
+
+	public class DrunkRunnable implements Runnable {
+
+		public DrunkRunnable() {
+		}
+
+		@Override
+		public void run() {
+			if (!BPlayer.players.isEmpty()) {
+				BPlayer.drunkeness();
+			}
+		}
 	}
 
 	public class BreweryRunnable implements Runnable {

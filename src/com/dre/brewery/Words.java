@@ -92,7 +92,11 @@ public class Words {
 			from = " ";
 		} else if (from.equalsIgnoreCase("-random")) {
 			// inserts "to" on a random position in "words"
-			int charIndex = (int) (Math.random() * (words.length() - 1));
+			int charIndex = (int) (Math.random() * 100.0);
+			P.p.log("random: " + charIndex);
+			charIndex *= (words.length() - 1);
+			charIndex /= 100;
+			P.p.log("charIndex: " + charIndex);
 			if (charIndex > words.length() / 2) {
 				from = words.substring(charIndex);
 				to = to + from;

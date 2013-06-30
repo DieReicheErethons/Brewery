@@ -44,7 +44,7 @@ public class BPlayer {
 		return null;
 	}
 
-	public String getPlayerName() {
+	/*public String getPlayerName() {
 		for (Map.Entry<String,BPlayer> entry : players.entrySet()) {
 			if (entry.getValue() == this) {
 				return entry.getKey();
@@ -55,7 +55,7 @@ public class BPlayer {
 
 	public Player getPlayer() {
 		return org.bukkit.Bukkit.getPlayer(getPlayerName());
-	}
+	}*/
 
 	public static Player getPlayer(String name) {
 		return org.bukkit.Bukkit.getPlayer(name);
@@ -65,7 +65,9 @@ public class BPlayer {
 	public static boolean drink(int uid, Player player) {
 		Brew brew = Brew.get(uid);
 		if (brew != null) {
-			if (brew.calcAlcohol() == 0) {
+			int brewAlc = brew.calcAlcohol();
+			if (brewAlc == 0) {
+				//no alcohol so we dont need to add a BPlayer
 				addBrewEffects(brew, player);
 				return true;
 			}
@@ -74,22 +76,26 @@ public class BPlayer {
 				bPlayer = new BPlayer();
 				players.put(player.getName(), bPlayer);
 			}
-			bPlayer.drunkeness += brew.calcAlcohol();
-			bPlayer.quality += brew.getQuality() * brew.calcAlcohol();
+			bPlayer.drunkeness += brewAlc;
+			bPlayer.quality += brew.getQuality() * brewAlc;
 
 			if (bPlayer.drunkeness <= 100) {
+
 				addBrewEffects(brew, player);
+				if (brew.getQuality() < 5) {
+					addQualityEffects(brew.getQuality(), brewAlc, player);
+				}
+
 			} else {
 				if (P.p.getConfig().getBoolean("enableKickOnOverdrink", false)) {
 					bPlayer.passOut(player);
 				} else {
 					bPlayer.quality = bPlayer.getQuality() * 100;
 					bPlayer.drunkeness = 100;
-					P.p.msg(player, "Du kannst einfach nicht mehr trinken");
-					return false;
+					P.p.msg(player, "Du kannst nicht mehr trinken");
 				}
 			}
-			P.p.log(player.getName() + " ist nun " + bPlayer.drunkeness + "% betrunken, mit einer Qualität von " + bPlayer.getQuality());
+			P.p.msg(player, "Du bist nun " + bPlayer.drunkeness + "% betrunken, mit einer Qualität von " + bPlayer.getQuality());
 			return true;
 		}
 		return false;
@@ -197,7 +203,7 @@ public class BPlayer {
 		}, 1L);
 	}
 
-	// he is having a hangover
+	// he may be having a hangover
 	public void login(final Player player) {
 		if (drunkeness < 10) {
 			if (offlineDrunk > 60) {
@@ -205,14 +211,14 @@ public class BPlayer {
 					goHome(player);
 				}
 			}
+			hangoverEffects(player);
+			// wird der spieler noch gebraucht?
+			players.remove(player.getName());
+
 		} else if (offlineDrunk - drunkeness >= 20) {
 			// do some random teleport later
 		}
 
-		hangoverEffects(player);
-
-		// wird der spieler noch gebraucht?
-		players.remove(player.getName());
 		offlineDrunk = 0;
 	}
 
@@ -231,7 +237,7 @@ public class BPlayer {
 			} else if (homeType.startsWith("cmd:")) {
 				player.performCommand(homeType.substring(4));
 			} else {
-				P.p.errorLog("'homeType: " + homeType + "' unknown!");
+				P.p.errorLog("Config.yml 'homeType: " + homeType + "' unknown!");
 			}
 			if (home != null) {
 				player.teleport(home);
@@ -243,8 +249,35 @@ public class BPlayer {
 		int duration = offlineDrunk * 50 * getHangoverQuality();
 		int amplifier = getHangoverQuality() / 3;
 
-		PotionEffectType.getByName("SLOW").createEffect(duration, amplifier).apply(player);
-		PotionEffectType.getByName("HUNGER").createEffect(duration, amplifier).apply(player);
+		PotionEffectType.SLOW.createEffect(duration, amplifier).apply(player);
+		PotionEffectType.HUNGER.createEffect(duration, amplifier).apply(player);
+	}
+
+	public void drunkEffects(Player player) {
+		int duration = 10 - getQuality();
+		duration += drunkeness / 2;
+		duration *= 20;
+		if (duration > 960) {
+			duration *= 5;
+		} else if (duration < 460) {
+			duration = 460;
+		}
+		PotionEffectType.CONFUSION.createEffect(duration, 0).apply(player);
+	}
+
+	public static void addQualityEffects(int quality, int brewAlc, Player player) {
+		int duration = 7 - quality;
+		duration *= 250;
+		PotionEffectType.BLINDNESS.createEffect(duration, 0).apply(player);
+
+		if (brewAlc > 15) {
+			duration = 10 - quality;
+			duration += brewAlc;
+			duration *= 40;
+		} else {
+			duration = 200;
+		}
+		PotionEffectType.POISON.createEffect(duration, 0).apply(player);
 	}
 
 	public static void addBrewEffects(Brew brew, Player player) {
@@ -254,6 +287,20 @@ public class BPlayer {
 
 			PotionEffectType type = PotionEffectType.getByName(brew.getEffect());
 			type.createEffect(duration, amplifier).apply(player);
+		}
+	}
+
+	public static void drunkeness() {
+		for (String name : players.keySet()) {
+			BPlayer bplayer = players.get(name);
+			if (bplayer.drunkeness > 30) {
+				if (bplayer.offlineDrunk == 0) {
+					Player player = getPlayer(name);
+					if (player != null) {
+						bplayer.drunkEffects(player);
+					}
+				}
+			}
 		}
 	}
 
@@ -271,7 +318,7 @@ public class BPlayer {
 				bplayer.drunkeness -= soberPerMin;
 				if (bplayer.drunkeness > 0) {
 					if (bplayer.offlineDrunk == 0) {
-						if (getPlayer(name) == null) {// working offline check?
+						if (getPlayer(name) == null) {
 							bplayer.offlineDrunk = bplayer.drunkeness;
 						}
 					}

@@ -304,12 +304,15 @@ public class Barrel {
 	// when not
 	// the barrel needs to be formed correctly
 	public static Block getBrokenBlock(Block spigot) {
-		spigot = getSpigotOfSign(spigot);
-		if (isSign(spigot)) {
+		if (spigot.getChunk().isLoaded()) {
+			spigot = getSpigotOfSign(spigot);
+			if (isSign(spigot)) {
 			return checkSBarrel(spigot);
-		} else {
+			} else {
 			return checkLBarrel(spigot);
+			}
 		}
+		return null;
 	}
 
 	public static Block checkSBarrel(Block spigot) {

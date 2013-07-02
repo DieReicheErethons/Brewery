@@ -1,5 +1,4 @@
 # Brewery
-=======
 
 **Brewery ist ein Bukkit-Plugin zum brauen auch alkoholischer Getränke.**
 
@@ -116,11 +115,12 @@ Schlägt man den Zapfhahn mit einer Axt ab, so werden alle Getränke herausgesch
 
 Der Alkoholgehalt des Trankes wird beim trinken auf den Spieler übertragen. Je nach Qualität hat dies verschiedene Auswirkungen.
 
-* Der Spieler kann nicht mehr richtig laufen, er wird Torkeln und für eine Strecke weit aus länger brauchen
+* Der Spieler kann nicht mehr richtig laufen, er wird Torkeln und für eine Strecke weitaus länger brauchen
 * Es können Effekte wie Blindness, Confusion, Poison usw. auftreten
-* Der Chat wird stark verändert, vieles was geschrieben wird ist fast unverständlich, teilweise nur gebrabbel
+* Der Chat wird stark verändert, vieles was geschrieben wird ist fast unverständlich, teilweise nur Gebrabbel
 * Ist der getrunkene Alkohol sehr stark wird er sich leicht vergiften
-* Loggt der Spieler sich aus wird er Schwierigkeiten haben sich wieder ein zu loggen
+* Hat er sehr viel getrunken, besteht die Wahrscheinlichkeit, dass er sich übergibt
+* Loggt der Spieler sich aus wird er Schwierigkeiten haben sich wieder ein zu loggen, da sein Charakter nicht reagiert
 * Trinkt er zu viel wird er in Ohnmacht fallen (Disconnect)
 
 ### Ausnüchtern

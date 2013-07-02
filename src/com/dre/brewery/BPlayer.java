@@ -6,6 +6,8 @@ import java.util.HashMap;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Item;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 import org.bukkit.Location;
 import org.bukkit.potion.PotionEffectType;
@@ -15,6 +17,9 @@ import com.dre.brewery.Brew;
 
 public class BPlayer {
 	public static Map<String, BPlayer> players = new HashMap<String, BPlayer>();// Players name and BPlayer
+	private static Map<Player, Integer> pTasks = new HashMap<Player, Integer>();// Player and count
+	private static int taskId;
+	public static int pukeItemId;
 
 	private int quality = 0;// = quality of drunkeness * drunkeness
 	private int drunkeness = 0;// = amount of drunkeness
@@ -92,6 +97,7 @@ public class BPlayer {
 				} else {
 					bPlayer.quality = bPlayer.getQuality() * 100;
 					bPlayer.drunkeness = 100;
+					addPuke(player, 60 + (int) (Math.random() * 60));
 					P.p.msg(player, "Du kannst nicht mehr trinken");
 				}
 			}
@@ -253,6 +259,66 @@ public class BPlayer {
 		PotionEffectType.HUNGER.createEffect(duration, amplifier).apply(player);
 	}
 
+	// Chance that players puke on big drunkeness
+	// runs every 6 sec, average chance is 10%, so should puke about every 60 sec
+	// good quality can decrease the chance by up to 10%
+	public void drunkPuke(Player player) {
+		if (drunkeness >= 80) {
+			if (drunkeness >= 90) {
+				if (Math.random() < 0.15 - (getQuality() / 100)) {
+					addPuke(player, 20 + (int) (Math.random() * 40));
+				}
+			} else {
+				if (Math.random() < 0.08 - (getQuality() / 100)) {
+					addPuke(player, 10 + (int) (Math.random() * 30));
+				}
+			}
+		}
+	}
+
+	// make a Player puke "count" items
+	public static void addPuke(Player player, int count) {
+		if (!P.p.getConfig().getBoolean("enablePuke", false)) {
+			return;
+		}
+
+		if (pTasks.isEmpty()) {
+			taskId = P.p.getServer().getScheduler().scheduleSyncRepeatingTask(P.p, new Runnable() {
+				public void run() {
+					pukeTask();
+				}
+			}, 1L, 1L);
+		}
+		pTasks.put(player, count);
+	}
+
+	public static void pukeTask() {
+		for (Player player : pTasks.keySet()) {
+			puke(player);
+			int newCount = pTasks.get(player) - 1;
+			if (newCount == 0) {
+				pTasks.remove(player);
+			} else {
+				pTasks.put(player, newCount);
+			}
+		}
+		if (pTasks.isEmpty()) {
+			P.p.getServer().getScheduler().cancelTask(taskId);
+		}
+	}
+
+	public static void puke(Player player) {
+		Location loc = player.getLocation();
+		Vector direction = loc.getDirection();
+		direction.multiply(0.5);
+		loc.setY(loc.getY() + 1.5);
+		loc.setPitch(loc.getPitch() + 10);
+		loc.add(direction);
+		Item item = player.getWorld().dropItem(loc, new ItemStack(pukeItemId));
+		item.setVelocity(direction);
+		item.setPickupDelay(Integer.MAX_VALUE);
+	}
+
 	public void drunkEffects(Player player) {
 		int duration = 10 - getQuality();
 		duration += drunkeness / 2;
@@ -293,11 +359,18 @@ public class BPlayer {
 	public static void drunkeness() {
 		for (String name : players.keySet()) {
 			BPlayer bplayer = players.get(name);
+
 			if (bplayer.drunkeness > 30) {
 				if (bplayer.offlineDrunk == 0) {
 					Player player = getPlayer(name);
 					if (player != null) {
+
 						bplayer.drunkEffects(player);
+
+						if (P.p.getConfig().getBoolean("enablePuke", false)) {
+							bplayer.drunkPuke(player);
+						}
+
 					}
 				}
 			}

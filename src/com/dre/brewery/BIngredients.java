@@ -62,13 +62,13 @@ public class BIngredients {
 			new Brew(uid, quality, cookRecipe, new BIngredients(ingredients, cookedTime));
 
 			cookedName = cookRecipe.getName(quality);
-			potion.setDurability(Brew.PotionColor.valueOf(cookRecipe.getColor()).getColorId(false));
+			potion.setDurability(Brew.PotionColor.valueOf(cookRecipe.getColor()).getColorId(true));
 
 		} else {
 			// new base potion
 			new Brew(uid, new BIngredients(ingredients, cookedTime));
 
-			if (state == 0) {// TODO sonst 1
+			if (state == 1) {
 				cookedName = "Schlammiger Sud";
 				potion.setDurability(Brew.PotionColor.BLUE.getColorId(false));
 			} else {

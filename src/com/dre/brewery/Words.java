@@ -91,6 +91,8 @@ public class Words {
 		} else if (from.equalsIgnoreCase("-start")) {
 			from = words;
 			to = to + words;
+		} else if (from.equalsIgnoreCase("-all")) {
+			from = words;
 		} else if (from.equalsIgnoreCase("-space")) {
 			from = " ";
 		} else if (from.equalsIgnoreCase("-random")) {

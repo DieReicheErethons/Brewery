@@ -25,6 +25,12 @@ enableLoginDisallow: true
 # Ob der Spieler sich übertrinken kann und dann in Ohnmacht fällt (gekickt wird) und sich für einige Stunden nicht einloggen kann
 enableKickOnOverdrink: true
 
+# Ob der Spieler sich bei großer Trunkenheit übergibt (unten definiertes Item aus dem Mund fallen lässt, dass nicht aufgesammelt werden kann und bis zum Despawnen liegen bleibt)
+enablePuke: true
+
+# Item das beim Erbrechen mehrfach unaufsammelbar fallen gelassen wird
+pukeItem: SOUL_SAND
+
 # Autosave Intervall in Minuten
 autosave: 3
 
@@ -145,7 +151,7 @@ recipes:
 
 
 
-# cooked: ALLE möglichen Zutaten und die nach dem Gähren daraus entstehenden Tranknamen: (leer für undefiniert)
+# cooked: ALLE möglichen Zutaten und die nach dem Gähren daraus entstehenden Tranknamen:
 
 cooked:
    WHEAT: Getreideferment
@@ -153,14 +159,14 @@ cooked:
    APPLE: Apfelmost
    POTATO_ITEM: Kartoffelmaische
    LONG_GRASS: Kräuterbrühe
-   RED_MUSHROOM:
+   RED_MUSHROOM: Pilzsud
 
 
 
 # words: Wörter und Buchstaben die bei Chatten während Trunkenheit ersetzt werden sollen.
 # Diese werden von oben nach unten gelesen und in dieser Reihenfolge wird ein geschriebener Satz dann verändert.
 
-# replace: Zu ersetzendes Wort oder Buchstabe.   (Besondere: "-space": ersetzt Leerzeichen, "-random": Einfügen in zufällige Position, "-start": Ganz am Anfang, "-end": Ganz ans Ende.)
+# replace: Zu ersetzendes Wort oder Buchstabe.   (Besondere: "-space": ersetzt Leerzeichen, "-random": Einfügen in zufällige Position, "-all": Alles, "-start": Ganz am Anfang, "-end": Ganz ans Ende.)
 # to: In welches Wort es ersetzt werden soll.
 # pre: Wörter und Buchstaben vor dem gesuchten Wort (durch "," getrennt)
 # match: true = eines der "pre"-Wörter muss vor dem gesuchten Wort stehen,  false = keines der "pre" Wörter darf vor dem gesuchten stehen
@@ -379,3 +385,8 @@ words:
    to: ' *hicks*'
    percentage: 70
    alcohol: 50
+
+-  replace: -all
+   to: '*rülps*'
+   percentage: 3
+   alcohol: 60

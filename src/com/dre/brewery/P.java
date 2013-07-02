@@ -99,6 +99,7 @@ public class P extends JavaPlugin {
 
 		// various Settings
 		autosave = config.getInt("autosave", 3);
+		BPlayer.pukeItemId = Material.matchMaterial(config.getString("pukeItem", "SOUL_SAND")).getId();
 
 		// loading recipes
 		ConfigurationSection configSection = config.getConfigurationSection("recipes");
@@ -112,8 +113,9 @@ public class P extends JavaPlugin {
 		configSection = config.getConfigurationSection("cooked");
 		if (configSection != null) {
 			for (String ingredient : configSection.getKeys(false)) {
-				BIngredients.cookedNames.put(Material.matchMaterial(ingredient), (configSection.getString(ingredient)));
-				BIngredients.possibleIngredients.add(Material.matchMaterial(ingredient));
+				Material mat = Material.matchMaterial(ingredient);
+				BIngredients.cookedNames.put(mat, (configSection.getString(ingredient, null)));
+				BIngredients.possibleIngredients.add(mat);
 			}
 		}
 

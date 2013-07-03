@@ -2,6 +2,7 @@ package com.dre.brewery;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.entity.Player;
@@ -381,8 +382,10 @@ public class BPlayer {
 	public static void onUpdate() {
 		if (!players.isEmpty()) {
 			int soberPerMin = 2;
-			for (String name : players.keySet()) {
-				BPlayer bplayer = players.get(name);
+			for (Iterator<Map.Entry<String, BPlayer>> iter = players.entrySet().iterator(); iter.hasNext();) {
+				Map.Entry<String, BPlayer> entry = iter.next();
+				String name = entry.getKey();
+				BPlayer bplayer = entry.getValue();
 				if (bplayer.drunkeness == soberPerMin) {
 					// Prevent 0 drunkeness
 					soberPerMin++;

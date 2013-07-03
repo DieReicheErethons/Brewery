@@ -335,7 +335,8 @@ public class P extends JavaPlugin {
 
 		@Override
 		public void run() {
-			p.log("Update");
+			long time = System.nanoTime();
+
 			for (BCauldron cauldron : BCauldron.bcauldrons) {
 				cauldron.onUpdate();// runs every min to update cooking time
 			}
@@ -344,8 +345,16 @@ public class P extends JavaPlugin {
 
 			if (lastSave >= autosave) {
 				saveData();// save all data
+
+				time = System.nanoTime() - time;
+				float ftime = (float) (time / 1000000.0);
+				p.log("Update and saving (" + ftime + "ms)");
 			} else {
 				lastSave++;
+
+				time = System.nanoTime() - time;
+				float ftime = (float) (time / 1000000.0);
+				p.log("Update (" + ftime + "ms)");
 			}
 		}
 

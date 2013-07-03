@@ -79,6 +79,7 @@ public class Barrel {
 			if (inventory.getViewers().isEmpty()) {
 				// if inventory contains potions
 				if (inventory.contains(373)) {
+					long loadTime = System.nanoTime();
 					for (ItemStack item : inventory.getContents()) {
 						if (item != null) {
 							if (item.getTypeId() == 373) {
@@ -88,6 +89,9 @@ public class Barrel {
 							}
 						}
 					}
+					loadTime = System.nanoTime() - loadTime;
+					float ftime = (float) (loadTime / 1000000.0);
+					P.p.log("opening Barrel with potions (" + ftime + "ms)");
 				}
 			}
 		}

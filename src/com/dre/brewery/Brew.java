@@ -112,8 +112,11 @@ public class Brew {
 		if (currentRecipe != null) {
 			int alc = currentRecipe.getAlcohol();
 			alc *= ((float) quality / 10.0);
-			if (distillRuns > 1) {
-				alc *= (float) distillRuns / 2.0;
+			if (currentRecipe.needsDistilling()) {
+				// distillable Potions should have full alc after 6 distills
+				float factor = 1.4F / (distillRuns + 1);
+				factor += 0.8;
+				alc /= factor;
 			}
 			return alc;
 		}
@@ -121,12 +124,12 @@ public class Brew {
 	}
 
 	// calculating quality
-	public int calcQuality(BRecipe recipe, byte wood) {
+	public int calcQuality(BRecipe recipe, byte wood, boolean distilled) {
 		// calculate quality from all of the factors
 		float quality = (
 
 		ingredients.getIngredientQuality(recipe) +
-		ingredients.getCookingQuality(recipe) +
+		ingredients.getCookingQuality(recipe, distilled) +
 		ingredients.getWoodQuality(recipe, wood) +
 		ingredients.getAgeQuality(recipe, ageTime));
 
@@ -136,6 +139,17 @@ public class Brew {
 
 	public int getQuality() {
 		return quality;
+	}
+
+	public boolean canDistill() {
+		if (distillRuns >= 6) {
+			return false;
+		} else {
+			if (currentRecipe != null) {
+				return currentRecipe.needsDistilling();
+			}
+		}
+		return true;
 	}
 
 	// return special effect
@@ -156,10 +170,10 @@ public class Brew {
 	// Distilling section ---------------
 
 	// distill all custom potions in the brewer
-	public static void distillAll(BrewerInventory inv, Integer[] contents) {
+	public static void distillAll(BrewerInventory inv, Boolean[] contents) {
 		int slot = 0;
 		while (slot < 3) {
-			if (contents[slot] == 1) {
+			if (contents[slot]) {
 				distillSlot(inv, slot);
 			}
 			slot++;
@@ -174,8 +188,7 @@ public class Brew {
 		BRecipe recipe = brew.ingredients.getdistillRecipe();
 
 		if (recipe != null) {
-			brew.quality = brew.calcQuality(recipe, (byte) 0);
-			P.p.log("destilled " + recipe.getName(5) + " has Quality: " + brew.quality);
+			brew.quality = brew.calcQuality(recipe, (byte) 0, true);
 			brew.distillRuns += 1;
 			// distillRuns will have an effect on the amount of alcohol, not the quality
 			if (brew.distillRuns > 1) {
@@ -184,6 +197,7 @@ public class Brew {
 				potionMeta.setLore(lore);
 			}
 			brew.currentRecipe = recipe;
+			P.p.log("destilled " + recipe.getName(5) + " has Quality: " + brew.quality + ", alc: " + brew.calcAlcohol());
 
 			potionMeta.setDisplayName(recipe.getName(brew.quality));
 
@@ -195,7 +209,7 @@ public class Brew {
 			}
 		} else {
 			potionMeta.setDisplayName("Undefinierbares Destillat");
-			slotItem.setDurability(PotionColor.GREY.getColorId(true));
+			slotItem.setDurability(PotionColor.GREY.getColorId(brew.distillRuns <= 5));
 		}
 
 		slotItem.setItemMeta(potionMeta);
@@ -210,11 +224,11 @@ public class Brew {
 			brew.ageTime += time;
 			// if younger than half a day, it shouldnt get aged form
 			if (brew.ageTime > 0.5) {
-				BRecipe recipe = brew.ingredients.getAgeRecipe(wood, brew.ageTime);
+				BRecipe recipe = brew.ingredients.getAgeRecipe(wood, brew.ageTime, brew.distillRuns > 0);
 				if (recipe != null) {
-					if (!recipe.needsDistilling() || brew.distillRuns > 0) {
+					//if (!recipe.needsDistilling() || brew.distillRuns > 0) {
 
-						brew.quality = brew.calcQuality(recipe, wood);
+						brew.quality = brew.calcQuality(recipe, wood, brew.distillRuns > 0);
 						brew.currentRecipe = recipe;
 						P.p.log("Final " + recipe.getName(5) + " has Quality: " + brew.quality);
 
@@ -249,7 +263,7 @@ public class Brew {
 						potionMeta.setDisplayName(recipe.getName(brew.quality));
 						item.setDurability(PotionColor.valueOf(recipe.getColor()).getColorId(false));
 						item.setItemMeta(potionMeta);
-					}
+					//}
 				}
 			}
 		}

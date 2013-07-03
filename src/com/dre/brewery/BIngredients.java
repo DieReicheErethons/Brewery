@@ -57,7 +57,7 @@ public class BIngredients {
 
 		if (cookRecipe != null) {
 			// Potion is best with cooking only, can still be destilled, etc.
-			int quality = (int) Math.round((getIngredientQuality(cookRecipe) + getCookingQuality(cookRecipe)) / 2.0);
+			int quality = (int) Math.round((getIngredientQuality(cookRecipe) + getCookingQuality(cookRecipe, false)) / 2.0);
 			P.p.log("cooked potion has Quality: " + quality);
 			new Brew(uid, quality, cookRecipe, new BIngredients(ingredients, cookedTime));
 
@@ -118,7 +118,7 @@ public class BIngredients {
 
 	// best recipe for current state of potion, STILL not always returns the
 	// correct one...
-	public BRecipe getBestRecipe(byte wood, float time) {
+	public BRecipe getBestRecipe(byte wood, float time, boolean distilled) {
 		float quality = 0;
 		int ingredientQuality = 0;
 		int cookingQuality = 0;
@@ -127,7 +127,7 @@ public class BIngredients {
 		BRecipe bestRecipe = null;
 		for (BRecipe recipe : recipes) {
 			ingredientQuality = getIngredientQuality(recipe);
-			cookingQuality = getCookingQuality(recipe);
+			cookingQuality = getCookingQuality(recipe, distilled);
 
 			if (ingredientQuality > -1) {
 				P.p.log("Ingredient Quality: " + ingredientQuality + " Cooking Quality: " + cookingQuality + " Wood Quality: " + getWoodQuality(recipe, wood) + " age Quality: "
@@ -160,7 +160,7 @@ public class BIngredients {
 	// returns recipe that is cooking only and matches the ingredients and
 	// cooking time
 	public BRecipe getCookRecipe() {
-		BRecipe bestRecipe = getBestRecipe((byte) 0, 0);
+		BRecipe bestRecipe = getBestRecipe((byte) 0, 0, false);
 
 		// Check if best recipe is cooking only
 		if (bestRecipe != null) {
@@ -174,7 +174,7 @@ public class BIngredients {
 	// returns the currently best matching recipe for distilling for the
 	// ingredients and cooking time
 	public BRecipe getdistillRecipe() {
-		BRecipe bestRecipe = getBestRecipe((byte) 0, 0);
+		BRecipe bestRecipe = getBestRecipe((byte) 0, 0, true);
 
 		// Check if best recipe needs to be destilled
 		if (bestRecipe != null) {
@@ -187,8 +187,8 @@ public class BIngredients {
 
 	// returns currently best matching recipe for ingredients, cooking- and
 	// ageingtime
-	public BRecipe getAgeRecipe(byte wood, float time) {
-		BRecipe bestRecipe = getBestRecipe(wood, time);
+	public BRecipe getAgeRecipe(byte wood, float time, boolean distilled) {
+		BRecipe bestRecipe = getBestRecipe(wood, time, distilled);
 
 		if (bestRecipe != null) {
 			if (bestRecipe.needsToAge()) {
@@ -240,7 +240,10 @@ public class BIngredients {
 	}
 
 	// returns the quality regarding the cooking-time conditioning given Recipe
-	public int getCookingQuality(BRecipe recipe) {
+	public int getCookingQuality(BRecipe recipe, boolean distilled) {
+		if (!recipe.needsDistilling() == distilled) {
+			return 0;
+		}
 		int quality = 10 - (int) Math.round(((float) Math.abs(cookedTime - recipe.getCookingTime()) / recipe.allowedTimeDiff(recipe.getCookingTime())) * 10.0);
 
 		if (quality > 0) {

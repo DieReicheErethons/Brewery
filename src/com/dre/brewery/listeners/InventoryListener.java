@@ -18,17 +18,21 @@ public class InventoryListener implements Listener {
 		BrewerInventory inv = event.getContents();
 		ItemStack item;
 		boolean custom = false;
-		Integer[] contents = new Integer[3];
+		Boolean[] contents = new Boolean[3];
 		while (slot < 3) {
 			item = inv.getItem(slot);
-			contents[slot] = 0;
+			contents[slot] = false;
 			if (item != null) {
 				if (item.getType() == Material.POTION) {
 					if (item.hasItemMeta()) {
-						if (Brew.potions.containsKey(Brew.getUID(item))) {
+						int uid = Brew.getUID(item);
+						if (Brew.potions.containsKey(uid)) {
 							// has custom potion in "slot"
-							contents[slot] = 1;
-							custom = true;
+							if (Brew.get(uid).canDistill()) {
+								// is further distillable
+								contents[slot] = true;
+								custom = true;
+							}
 						}
 					}
 				}

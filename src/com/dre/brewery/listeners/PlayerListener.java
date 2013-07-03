@@ -130,14 +130,11 @@ public class PlayerListener implements Listener {
 			case 0:
 				bplayer.join(player);
 				return;
-			case 1:
-				event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "Dein Charakter ist angetrunken und reagiert nicht. Versuch es noch einmal!");
-				return;
 			case 2:
-				event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "Dein Charakter ist betrunken und reagiert nicht. Versuch es in ein paar Minuten noch einmal!");
+				event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "Dein Charakter ist betrunken und reagiert nicht. Versuch es noch einmal!");
 				return;
 			case 3:
-				event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "Dein Charakter ist sturzbesoffen und ohne Besinnung. Versuch es morgen noch einmal!");
+				event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "Dein Charakter ist sturzbesoffen und ohne Besinnung. Versuch es in 10 Minuten noch einmal!");
 			}
 		}
 	}

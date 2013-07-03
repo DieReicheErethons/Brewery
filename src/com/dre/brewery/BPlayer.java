@@ -159,7 +159,7 @@ public class BPlayer {
 
 	// can the player login or is he too drunk
 	public int canJoin() {
-		if (drunkeness <= 30) {
+		if (drunkeness <= 70) {
 			return 0;
 		}
 		if (P.p.getConfig().getBoolean("enableLoginDisallow", false) == false) {
@@ -169,25 +169,20 @@ public class BPlayer {
 				return 3;
 			}
 		}
-		if (drunkeness <= 50) {
-			if ((Math.random() > 0.3 && !passedOut) || Math.random() > 0.5) {
+		if (drunkeness <= 80) {
+			if (passedOut) {
+				// he has suffered enough. Let him through
+				return 0;
+			}
+			if (Math.random() > 0.4) {
 				return 0;
 			} else {
-				return 1;
-			}
-		}
-		if (drunkeness <= 70) {
-			if(!passedOut) {
-				if (Math.random() > 0.5) {
-					return 0;
-				} else {
-					return 1;
-				}
+				return 2;
 			}
 		}
 		if (drunkeness <= 100) {
 			if (!passedOut) {
-				if (Math.random() > 0.8) {
+				if (Math.random() > 0.6) {
 					return 0;
 				} else {
 					return 2;
@@ -223,10 +218,11 @@ public class BPlayer {
 			players.remove(player.getName());
 
 		} else if (offlineDrunk - drunkeness >= 20) {
-			// do some random teleport later
+			// TODO some random teleport later
 		}
 
 		offlineDrunk = 0;
+		passedOut = false;
 	}
 
 	public void goHome(final Player player) {

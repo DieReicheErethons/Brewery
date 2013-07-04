@@ -89,7 +89,7 @@ public class BIngredients {
 			potion.setDurability(Brew.PotionColor.CYAN.getColorId(true));
 		}
 
-		potionMeta.setDisplayName(cookedName);
+		potionMeta.setDisplayName(P.p.white() + cookedName);
 		// This effect stores the UID in its Duration
 		potionMeta.addCustomEffect((PotionEffectType.REGENERATION).createEffect((uid * 4), 0), true);
 		potion.setItemMeta(potionMeta);

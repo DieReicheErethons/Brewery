@@ -199,7 +199,7 @@ public class Brew {
 			brew.currentRecipe = recipe;
 			P.p.log("destilled " + recipe.getName(5) + " has Quality: " + brew.quality + ", alc: " + brew.calcAlcohol());
 
-			potionMeta.setDisplayName(recipe.getName(brew.quality));
+			potionMeta.setDisplayName(P.p.white() + recipe.getName(brew.quality));
 
 			// if the potion should be further distillable
 			if (recipe.getDistillRuns() > 1 && brew.distillRuns <= 5) {
@@ -208,7 +208,7 @@ public class Brew {
 				slotItem.setDurability(PotionColor.valueOf(recipe.getColor()).getColorId(false));
 			}
 		} else {
-			potionMeta.setDisplayName("Undefinierbares Destillat");
+			potionMeta.setDisplayName(P.p.white() + "Undefinierbares Destillat");
 			slotItem.setDurability(PotionColor.GREY.getColorId(brew.distillRuns <= 5));
 		}
 
@@ -260,7 +260,7 @@ public class Brew {
 							potionMeta.setLore(lore);
 						}
 
-						potionMeta.setDisplayName(recipe.getName(brew.quality));
+						potionMeta.setDisplayName(P.p.white() + recipe.getName(brew.quality));
 						item.setDurability(PotionColor.valueOf(recipe.getColor()).getColorId(false));
 						item.setItemMeta(potionMeta);
 					//}

@@ -315,6 +315,10 @@ public class P extends JavaPlugin {
 		return null;
 	}
 
+	public String white() {
+		return ChatColor.WHITE + "";
+	}
+
 	public class DrunkRunnable implements Runnable {
 
 		public DrunkRunnable() {

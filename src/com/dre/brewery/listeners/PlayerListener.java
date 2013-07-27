@@ -36,16 +36,10 @@ public class PlayerListener implements Listener {
 						Player player = event.getPlayer();
 						ItemStack item = event.getItem();
 
-						// add ingredient to cauldron that meet the previous
-						// contitions
-						if (BIngredients.possibleIngredients.contains(materialInHand)) {
-							if (BCauldron.ingredientAdd(clickedBlock, materialInHand)) {
-								if (item.getAmount() > 1) {
-									item.setAmount(item.getAmount() - 1);
-								} else {
-									player.setItemInHand(new ItemStack(0));
-								}
-							}
+						
+						if (materialInHand == Material.WATCH) {
+							BCauldron.printTime(player, clickedBlock);
+
 							// fill a glass bottle with potion
 						} else if (materialInHand == Material.GLASS_BOTTLE) {
 							if (BCauldron.fill(player, clickedBlock)) {
@@ -56,6 +50,7 @@ public class PlayerListener implements Listener {
 									player.setItemInHand(new ItemStack(0));
 								}
 							}
+
 							// reset cauldron when refilling to prevent
 							// unlimited source of potions
 						} else if (materialInHand == Material.WATER_BUCKET) {
@@ -63,6 +58,17 @@ public class PlayerListener implements Listener {
 								if (clickedBlock.getData() < 3) {
 									// will only remove when existing
 									BCauldron.remove(clickedBlock);
+								}
+							}
+
+							// add ingredient to cauldron that meet the previous
+							// contitions
+						} else if (BIngredients.possibleIngredients.contains(materialInHand)) {
+							if (BCauldron.ingredientAdd(clickedBlock, materialInHand)) {
+								if (item.getAmount() > 1) {
+									item.setAmount(item.getAmount() - 1);
+								} else {
+									player.setItemInHand(new ItemStack(0));
 								}
 							}
 						}

@@ -53,55 +53,75 @@ public class BCauldron {
 		}
 	}
 
+	// get cauldron by Block
+	public static BCauldron get(Block block) {
+		for (BCauldron bcauldron : bcauldrons) {
+			if (bcauldron.block.equals(block)) {
+				return bcauldron;
+			}
+		}
+		return null;
+	}
+
 	// get cauldron from block and add given ingredient
 	public static boolean ingredientAdd(Block block, Material ingredient) {
 		// if not empty
 		if (block.getData() != 0) {
-			for (BCauldron bcauldron : bcauldrons) {
-				if (bcauldron.block.equals(block)) {
-					bcauldron.add(ingredient);
-					return true;
-				}
+			BCauldron bcauldron = get(block);
+			if (bcauldron != null) {
+				bcauldron.add(ingredient);
+				return true;
+			} else {
+				new BCauldron(block, ingredient);
+				return true;
 			}
-			new BCauldron(block, ingredient);
-			return true;
 		}
 		return false;
 	}
 
 	// fills players bottle with cooked brew
 	public static boolean fill(Player player, Block block) {
-		for (BCauldron bcauldron : bcauldrons) {
-			if (bcauldron.block.equals(block)) {
-				ItemStack potion = bcauldron.ingredients.cook(bcauldron.state);
-				if (potion != null) {
-					// Bukkit Bug, inventory not updating while in event so this
-					// will delay the give
-					// but could also just use deprecated updateInventory()
-					giveItem(player, potion);
-					// player.getInventory().addItem(potion);
-					// player.getInventory().updateInventory();
-					if (block.getData() > 3) {
-						block.setData((byte) 3);
-					}
-					block.setData((byte) (block.getData() - 1));
-
-					if (block.getData() == 0) {
-						bcauldrons.remove(bcauldron);
-					}
-					return true;
+		BCauldron bcauldron = get(block);
+		if (bcauldron != null) {
+			ItemStack potion = bcauldron.ingredients.cook(bcauldron.state);
+			if (potion != null) {
+				// Bukkit Bug, inventory not updating while in event so this
+				// will delay the give
+				// but could also just use deprecated updateInventory()
+				giveItem(player, potion);
+				// player.getInventory().addItem(potion);
+				// player.getInventory().updateInventory();
+				if (block.getData() > 3) {
+					block.setData((byte) 3);
 				}
+				block.setData((byte) (block.getData() - 1));
+
+				if (block.getData() == 0) {
+					bcauldrons.remove(bcauldron);
+				}
+				return true;
 			}
 		}
 		return false;
 	}
 
+	// prints the current cooking time to the player
+	public static void printTime(Player player, Block block) {
+		BCauldron bcauldron = get(block);
+		if (bcauldron != null) {
+			if (bcauldron.state > 1) {
+				P.p.msg(player, "Dieser Kessel siedet nun seit " + bcauldron.state + " Minuten");
+			} else {
+				P.p.msg(player, "Dieser Kessel siedet seit weniger als einer Minute");
+			}
+		}
+	}
+
 	// reset to normal cauldron
 	public static void remove(Block block) {
-		for (BCauldron bcauldron : bcauldrons) {
-			if (bcauldron.block.equals(block)) {
-				bcauldrons.remove(bcauldron);
-			}
+		BCauldron bcauldron = get(block);
+		if (bcauldron != null) {
+			bcauldrons.remove(bcauldron);
 		}
 	}
 

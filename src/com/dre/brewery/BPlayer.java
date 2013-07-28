@@ -93,19 +93,24 @@ public class BPlayer {
 				}
 
 			} else {
-				if (P.p.getConfig().getBoolean("enableKickOnOverdrink", false)) {
-					bPlayer.passOut(player);
-				} else {
-					bPlayer.quality = bPlayer.getQuality() * 100;
-					bPlayer.drunkeness = 100;
-					addPuke(player, 60 + (int) (Math.random() * 60));
-					P.p.msg(player, "Du kannst nicht mehr trinken");
-				}
+				bPlayer.drinkCap(player);
 			}
 			P.p.msg(player, "Du bist nun " + bPlayer.drunkeness + "% betrunken, mit einer Qualität von " + bPlayer.getQuality());
 			return true;
 		}
 		return false;
+	}
+
+	// Player has drunken too much
+	public void drinkCap(Player player) {
+		if (P.p.getConfig().getBoolean("enableKickOnOverdrink", false)) {
+			passOut(player);
+		} else {
+			quality = getQuality() * 100;
+			drunkeness = 100;
+			addPuke(player, 60 + (int) (Math.random() * 60.0));
+			P.p.msg(player, "Du kannst nicht mehr trinken");
+		}
 	}
 
 	// push the player around if he moves
@@ -217,8 +222,12 @@ public class BPlayer {
 			// wird der spieler noch gebraucht?
 			players.remove(player.getName());
 
-		} else if (offlineDrunk - drunkeness >= 20) {
-			// TODO some random teleport later
+		} else if (offlineDrunk - drunkeness >= 30) {
+			Location randomLoc = Wakeup.getRandom(player.getLocation());
+			if (randomLoc != null) {
+				player.teleport(randomLoc);
+				P.p.msg(player, P.p.getConfig().getString("wakeString", "Ohh nein! Ich kann mich nicht erinnern, wie ich hier hergekommen bin..."));
+			}
 		}
 
 		offlineDrunk = 0;
@@ -419,6 +428,19 @@ public class BPlayer {
 	// getter
 	public int getDrunkeness() {
 		return drunkeness;
+	}
+
+	public void setData(int drunkeness, int quality) {
+		if (quality > 0) {
+			this.quality = quality * drunkeness;
+		} else {
+			if (this.quality == 0) {
+				this.quality = 5 * drunkeness;
+			} else {
+				this.quality = getQuality() * drunkeness;
+			}
+		}
+		this.drunkeness = drunkeness;
 	}
 
 	public int getQuality() {

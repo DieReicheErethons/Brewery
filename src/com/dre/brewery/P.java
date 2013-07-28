@@ -1,28 +1,30 @@
 package com.dre.brewery;
 
 import java.util.Map;
+import java.util.ArrayList;
+import java.util.ListIterator;
 import java.util.HashMap;
 import java.io.IOException;
 import java.io.File;
 
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.apache.commons.lang.math.NumberUtils;
+import net.milkbowl.vault.permission.Permission;
 
-import com.dre.brewery.listeners.BlockListener;
-import com.dre.brewery.listeners.PlayerListener;
-import com.dre.brewery.listeners.EntityListener;
-import com.dre.brewery.listeners.InventoryListener;
-import com.dre.brewery.listeners.WorldListener;
 import org.bukkit.event.HandlerList;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+
+import com.dre.brewery.listeners.*;
 
 public class P extends JavaPlugin {
 	public static P p;
@@ -37,6 +39,8 @@ public class P extends JavaPlugin {
 	public InventoryListener inventoryListener;
 	public WorldListener worldListener;
 
+	public Permission permission = null;
+
 	@Override
 	public void onEnable() {
 		p = this;
@@ -44,12 +48,15 @@ public class P extends JavaPlugin {
 		readConfig();
 		readData();
 
+		initPermissions();
+
 		// Listeners
 		blockListener = new BlockListener();
 		playerListener = new PlayerListener();
 		entityListener = new EntityListener();
 		inventoryListener = new InventoryListener();
 		worldListener = new WorldListener();
+		getCommand("Brewery").setExecutor(new CommandListener());
 
 		p.getServer().getPluginManager().registerEvents(blockListener, p);
 		p.getServer().getPluginManager().registerEvents(playerListener, p);
@@ -87,6 +94,13 @@ public class P extends JavaPlugin {
 
 	public void errorLog(String msg) {
 		Bukkit.getConsoleSender().sendMessage(ChatColor.DARK_GREEN + "[Brewery] " + ChatColor.DARK_RED + "ERROR: " + ChatColor.RED + msg);
+	}
+
+	public void initPermissions() {
+		RegisteredServiceProvider<Permission> permissionProvider = getServer().getServicesManager().getRegistration(Permission.class);
+		if (permissionProvider != null) {
+			permission = permissionProvider.getProvider();
+		}
 	}
 
 	public void readConfig() {
@@ -253,6 +267,32 @@ public class P extends JavaPlugin {
 				}
 			}
 
+			// loading Wakeup
+			if (data.contains("Wakeup." + uuid)) {
+				ConfigurationSection section = data.getConfigurationSection("Wakeup." + uuid);
+				for (String wakeup : section.getKeys(false)) {
+					// loc of wakeup is splitted into x/y/z/pitch/yaw
+					String loc = section.getString(wakeup);
+					if (loc != null) {
+						String[] splitted = loc.split("/");
+						if (splitted.length == 5) {
+
+							double x = NumberUtils.toDouble(splitted[0]);
+							double y = NumberUtils.toDouble(splitted[1]);
+							double z = NumberUtils.toDouble(splitted[2]);
+							float pitch = NumberUtils.toFloat(splitted[3]);
+							float yaw = NumberUtils.toFloat(splitted[4]);
+							Location location = new Location(world, x, y, z, yaw, pitch);
+
+							Wakeup.wakeups.add(new Wakeup(location));
+
+						} else {
+							errorLog("Incomplete Location-Data in data.yml: " + section.getCurrentPath() + "." + wakeup);
+						}
+					}
+				}
+			}
+
 		}
 	}
 
@@ -288,6 +328,10 @@ public class P extends JavaPlugin {
 			BPlayer.save(configFile.createSection("Player"));
 		}
 
+		if (!Wakeup.wakeups.isEmpty() || oldData.contains("Wakeup")) {
+			Wakeup.save(configFile.createSection("Wakeup"), oldData.getConfigurationSection("Wakeup"));
+		}
+
 		try {
 			configFile.save(datafile);
 		} catch (IOException e) {
@@ -297,10 +341,16 @@ public class P extends JavaPlugin {
 		lastSave = 1;
 	}
 
+
+
+	// Utility
+
+
 	public int parseInt(String string) {
 		return NumberUtils.toInt(string, 0);
 	}
 
+	// gets the Name of a DXL World
 	public String getDxlName(String worldName) {
 		File dungeonFolder = new File(worldName);
 		if (dungeonFolder.isDirectory()) {
@@ -315,9 +365,46 @@ public class P extends JavaPlugin {
 		return null;
 	}
 
+	// create empty World save Sections
+	public void createWorldSections(ConfigurationSection section) {
+		for (World world : p.getServer().getWorlds()) {
+			String worldName = world.getName();
+			if (worldName.startsWith("DXL_")) {
+				worldName = getDxlName(worldName);
+			} else {
+				worldName = world.getUID().toString();
+			}
+			section.createSection(worldName);
+		}
+	}
+
+	// prints a list of Strings at the specified page
+	public void list (CommandSender sender, ArrayList<String> strings, int page) {
+		int pages = (int) Math.ceil(strings.size() / 7F);
+		if (page > pages || page < 1) {
+			page = 1;
+		}
+
+		msg(sender, ChatColor.GRAY + "-------------- " + ChatColor.WHITE + "Seite " + ChatColor.GOLD + page + ChatColor.WHITE + "/" + ChatColor.GOLD + pages + ChatColor.GRAY + " --------------");
+
+		ListIterator<String> iter = strings.listIterator((page - 1) * 7);
+
+		for (int i = 0; i < 7; i++) {
+			if (iter.hasNext()) {
+				msg(sender, iter.next());
+			} else {
+				break;
+			}
+		}
+	}
+
 	public String white() {
 		return ChatColor.WHITE + "";
 	}
+
+
+
+	// Runnables
 
 	public class DrunkRunnable implements Runnable {
 

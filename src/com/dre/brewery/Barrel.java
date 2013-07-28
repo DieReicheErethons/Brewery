@@ -156,6 +156,8 @@ public class Barrel {
 
 	// Saves all data
 	public static void save(ConfigurationSection config, ConfigurationSection oldData) {
+		P.p.createWorldSections(config);
+
 		if (!barrels.isEmpty()) {
 			int id = 0;
 			for (Barrel barrel : barrels) {

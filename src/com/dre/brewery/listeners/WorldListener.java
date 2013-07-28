@@ -1,6 +1,7 @@
 package com.dre.brewery.listeners;
 
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.event.world.WorldUnloadEvent;
@@ -14,7 +15,6 @@ public class WorldListener implements Listener {
 
 	@EventHandler
 	public void onWorldLoad(WorldLoadEvent event) {
-		P.p.log("loading world with uuid " + event.getWorld().getUID().toString());
 		World world = event.getWorld();
 
 		if (world.getName().startsWith("DXL_")) {
@@ -24,10 +24,8 @@ public class WorldListener implements Listener {
 		}
 	}
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.MONITOR)
 	public void onWorldUnload(WorldUnloadEvent event) {
-		P.p.log("Unloading world with uuid " + event.getWorld().getUID().toString());
-
 		if (!event.isCancelled()) {
 			P.p.saveData();
 			Barrel.onUnload(event.getWorld().getName());

@@ -11,21 +11,24 @@ enableHome: true
 # SamplePlugin = installiertes home plugin. Unterstützt: ManagerXL. Wenn dies nicht geht:
 # 'cmd: home' = /home wird vom Spieler ausgelöst. Es sollte kein Verzögerungs, etc. plugin installiert sein!
 # 'cmd: spawn' = /spawn wird vom Spieler ausgelöst
-# 'cmd: exmpl' = /exmpl wird vom Spieler ausgelöst
+# 'cmd: whatever' = /whatever wird vom Spieler ausgelöst
 homeType: 'cmd: home'
 
-# Ob der Spieler nach etwas kürzerem Ausloggen an einem zufälligen Ort "aufwacht" (diese müssen durch /setwake von einem Admin festgelegt werden)
+# Ob der Spieler nach etwas kürzerem Ausloggen an einem zufälligen Ort "aufwacht" (diese müssen durch '/br Wakeup add' von einem Admin festgelegt werden)
 # Der Spieler wacht nur an einem Ort auf, der sich in seiner jetzigen Welt befindet.
-# Work in Progress, noch nicht implementiert!
 enableWake: true
+
+# Der Text, den der Spieler beim Aufwachen sieht
+wakeString: 'Ohh nein! Ich kann mich nicht erinnern, wie ich hier hergekommen bin...'
 
 # Ob der Spieler sich bei großer Trunkenheit teilweise nicht einloggen kann und kurz warten muss, da sein Charakter nicht reagiert
 enableLoginDisallow: true
 
-# Ob der Spieler sich übertrinken kann und dann in Ohnmacht fällt (gekickt wird) und sich für einige Stunden nicht einloggen kann
+# Ob der Spieler sich übertrinken kann und dann in Ohnmacht fällt (gekickt wird) und sich für einige Minuten nicht einloggen kann
 enableKickOnOverdrink: true
 
-# Ob der Spieler sich bei großer Trunkenheit übergibt (unten definiertes Item aus dem Mund fallen lässt, dass nicht aufgesammelt werden kann und bis zum Despawnen liegen bleibt)
+# Ob der Spieler sich bei großer Trunkenheit übergibt (unten definiertes Item aus dem Mund fallen lässt)
+# Das Item kann nicht aufgesammelt werden und bleibt bis zum Despawnen liegen. (Achtung: Kann nach Serverrestart, oder durch Hopper aufgesammelt werden.)
 enablePuke: true
 
 # Item das beim Erbrechen mehrfach unaufsammelbar fallen gelassen wird

@@ -21,6 +21,7 @@ import com.dre.brewery.Brew;
 import com.dre.brewery.Barrel;
 import com.dre.brewery.BPlayer;
 import com.dre.brewery.Words;
+import com.dre.brewery.Wakeup;
 
 public class PlayerListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGH)
@@ -91,6 +92,16 @@ public class PlayerListener implements Listener {
 			}
 		}
 
+		if (event.getAction() == Action.LEFT_CLICK_AIR) {
+			if (!event.hasItem()) {
+				if (Wakeup.checkPlayer != null) {
+					if (event.getPlayer() == Wakeup.checkPlayer) {
+						Wakeup.tpNext();
+					}
+				}
+			}
+		}
+
 	}
 
 	// player drinks a custom potion
@@ -119,7 +130,7 @@ public class PlayerListener implements Listener {
 	}
 
 	// player talks while drunk, but he cant speak very well
-	@EventHandler(priority = EventPriority.NORMAL)
+	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
 		if (BPlayer.players.containsKey(event.getPlayer().getName())) {
 			Words.playerChat(event);

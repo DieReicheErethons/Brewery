@@ -135,6 +135,8 @@ public class BCauldron {
 	}
 
 	public static void save(ConfigurationSection config, ConfigurationSection oldData) {
+		P.p.createWorldSections(config);
+
 		if (!bcauldrons.isEmpty()) {
 			int id = 0;
 			for (BCauldron cauldron : bcauldrons) {

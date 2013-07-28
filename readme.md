@@ -7,6 +7,9 @@ Der schwierige Brauprozess belohnt dich mit verschiedensten Getränken, die durc
 ## Installation
 
 * Brewery.jar in den Plugins-Ordner kopieren
+* Permissions festlegen
+* Server starten
+* Optional Aufwachpunkte festlegen
  
 Die Config.yml wird beim Serverstart erstellt.
 
@@ -45,6 +48,67 @@ Wichtig: Werdem die Namen der Rezepte verändert werden vorhandene Tränke der g
 Die Wörter sind eine Auflistung von Worten, Sätzen und Buchstaben, die je nach Alkoholisierung des Spielers seinen Chat beeinflussen und dort Wörter verändern. So kann z.B. jedes "a" in ein "b" geändert werden.
 
 Auch hier können anhand der Erklärungen und Beispiele bestehende "Wörter" verändert oder hinzugefügt werden.
+
+## Commands
+
+<table>
+  <tr>
+    <th>Befehl</th><th>Beschreibung</th>
+  </tr>
+  <tr>
+    <td>/br Info</td><td>Informationen über die eigene Trunkenheit</td>
+  </tr>
+  <tr>
+    <td>/br Info [Spieler]</td><td>Informationen über Trunkenheit von [Spieler]</td>
+  </tr>
+  <tr>
+    <td>/br [Spieler] [Trunkenheit] [Qualität]</td><td>Setzen der Spielerwerte. Trunkenheit in %, Qualität von 1-10.</td>
+  </tr>
+  <tr>
+    <td>/br Wakeup Add</td><td>Setzen eines neuen Aufwachpunktes an die eigene Position</td>
+  </tr>
+  <tr>
+    <td>/br Wakeup List [Seite]</td><td>Auflisten aller Aufwachpunkte auf [Seite]</td>
+  </tr>
+  <tr>
+    <td>/br Wakeup List [Seite] [Welt]</td><td>Auflisten aller Aufwachpunkte auf [Seite] einer bestimmten [Welt]</td>
+  </tr>
+  <tr>
+    <td>/br Wakeup Check</td><td>Teleportiert nacheinander zu allen Aufwachpunkten, um sie zu überprüfen</td>
+  </tr>
+  <tr>
+    <td>/br Wakeup Check [id]</td><td>Teleportiert zum Aufwachpunkt mit der [id], um ihn zu überprüfen</td>
+  </tr>
+  <tr>
+    <td>/br Wakeup Remove [id]</td><td>Entfernt den Aufwachpunkt mit der [id]</td>
+  </tr>
+  <tr>
+    <td>/br Reload</td><td>Neuladen der Config mitsamt Rezepten</td>
+  </tr>
+</table>
+
+## Permissions
+
+<table>
+  <tr>
+    <th>Permission</th><th>Ermöglichter Befehl</th><th>Beschreibung</th>
+  </tr>
+  <tr>
+    <td>brewery.cmd.info</td><td>Info</td><td>Informationen über die eigene Trunkenheit</td>
+  </tr>
+  <tr>
+    <td>brewery.cmd.infoOther</td><td>Info [Spieler]</td><td>Informationen über Trunkenheit von [Spieler]</td>
+  </tr>
+  <tr>
+    <td>brewery.cmd.player</td><td>[Spieler] *</td><td>Setzen der Spielerwerte</td>
+  </tr>
+  <tr>
+    <td>brewery.cmd.wakeup</td><td>Wakeup *</td><td>Setzen, Überprüfen und Entfernen von Aufwachpunkten</td>
+  </tr>
+  <tr>
+    <td>brewery.cmd.reload</td><td>Reload</td><td>Config neuladen</td>
+  </tr>
+</table>
 
 ## Benutzung
 

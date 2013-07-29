@@ -35,7 +35,8 @@ public class CommandListener implements CommandExecutor {
 		} else if (cmd.equalsIgnoreCase("reload")) {
 
 			if (p.permission.has(sender, "brewery.cmd.reload")) {
-				// TODO: reloading
+				p.reload();
+				p.msg(sender, gr + "Config wurde neu eingelesen");
 			} else {
 				p.msg(sender, r + "Du hast keine Rechte dies zu tun!");
 			}
@@ -118,7 +119,7 @@ public class CommandListener implements CommandExecutor {
 		cmds.add(g + "/br help <Seite> " + b + "Zeigt eine bestimmte Hilfeseite an");
 
 		if (p.permission.has(sender, "brewery.cmd.reload")) {
-			cmds.add(g + "/br reload " + b + " Plugin neuladen");
+			cmds.add(g + "/br reload " + b + " Config neuladen");
 		}
 
 		if (p.permission.has(sender, "brewery.cmd.wakeup")) {

@@ -79,9 +79,30 @@ public class P extends JavaPlugin {
 		// Stop shedulers
 		p.getServer().getScheduler().cancelTasks(this);
 
+		// save Data to Disk
 		saveData();
 
+		// delete Data from Ram
+		Barrel.barrels.clear();
+		BCauldron.bcauldrons.clear();
+		BIngredients.possibleIngredients.clear();
+		BIngredients.recipes.clear();
+		BIngredients.cookedNames.clear();
+		BPlayer.players.clear();
+		Brew.potions.clear();
+		Wakeup.wakeups.clear();
+		Words.words.clear();
+
 		this.log(this.getDescription().getName() + " disabled!");
+	}
+
+	public void reload() {
+		BIngredients.possibleIngredients.clear();
+		BIngredients.recipes.clear();
+		BIngredients.cookedNames.clear();
+		Words.words.clear();
+
+		readConfig();
 	}
 
 	public void msg(CommandSender sender, String msg) {
@@ -109,7 +130,7 @@ public class P extends JavaPlugin {
 		if (!file.exists()) {
 			saveDefaultConfig();
 		}
-		FileConfiguration config = getConfig();
+		FileConfiguration config = YamlConfiguration.loadConfiguration(file);
 
 		// various Settings
 		autosave = config.getInt("autosave", 3);

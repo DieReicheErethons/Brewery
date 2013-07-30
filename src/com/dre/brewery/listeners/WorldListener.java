@@ -20,7 +20,7 @@ public class WorldListener implements Listener {
 		if (world.getName().startsWith("DXL_")) {
 			P.p.loadWorldData(P.p.getDxlName(world.getName()), world);
 		} else {
-			P.p.loadWorldData(event.getWorld().getUID().toString(), world);
+			P.p.loadWorldData(world.getUID().toString(), world);
 		}
 	}
 

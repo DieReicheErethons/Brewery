@@ -383,7 +383,7 @@ public class P extends JavaPlugin {
 				}
 			}
 		}
-		return null;
+		return worldName;
 	}
 
 	// create empty World save Sections
@@ -406,13 +406,13 @@ public class P extends JavaPlugin {
 			page = 1;
 		}
 
-		msg(sender, ChatColor.GRAY + "-------------- " + ChatColor.WHITE + "Seite " + ChatColor.GOLD + page + ChatColor.WHITE + "/" + ChatColor.GOLD + pages + ChatColor.GRAY + " --------------");
+		sender.sendMessage(ChatColor.GRAY + "-------------- " + ChatColor.WHITE + "Seite " + ChatColor.GOLD + page + ChatColor.WHITE + "/" + ChatColor.GOLD + pages + ChatColor.GRAY + " --------------");
 
 		ListIterator<String> iter = strings.listIterator((page - 1) * 7);
 
 		for (int i = 0; i < 7; i++) {
 			if (iter.hasNext()) {
-				msg(sender, iter.next());
+				sender.sendMessage(iter.next());
 			} else {
 				break;
 			}

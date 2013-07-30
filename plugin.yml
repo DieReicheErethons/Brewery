@@ -1,9 +1,9 @@
 name: Brewery
-version: 0.3
+version: 0.4
 main: com.dre.brewery.P
-authors: [Frank Baumann]
+authors: [Milan Albrecht, Frank Baumann]
 softdepend: [Vault]
 commands:
   brewery:
-    description: Reference command for Brewery.
+    description: Command for Administration
     aliases: [brew,br]

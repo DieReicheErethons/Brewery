@@ -19,7 +19,7 @@ homeType: 'cmd: home'
 enableWake: true
 
 # Der Text, den der Spieler beim Aufwachen sieht
-wakeString: 'Ohh nein! Ich kann mich nicht erinnern, wie ich hier hergekommen bin...'
+wakeString: 'Ohh nein! Ich kann mich nicht erinnern, wie ich hier hergekommen bin... *hicks*'
 
 # Ob der Spieler sich bei großer Trunkenheit teilweise nicht einloggen kann und kurz warten muss, da sein Charakter nicht reagiert
 enableLoginDisallow: true
@@ -33,6 +33,11 @@ enablePuke: true
 
 # Item das beim Erbrechen mehrfach unaufsammelbar fallen gelassen wird
 pukeItem: SOUL_SAND
+
+# Konsumierbares Item/<Stärke>. Senkt den Alkoholpegel um <Stärke>% wenn konsumiert.
+drainItems:
+- BREAD/4
+- MILK_BUCKET/2
 
 # Autosave Intervall in Minuten
 autosave: 3

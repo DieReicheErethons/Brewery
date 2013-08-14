@@ -46,7 +46,6 @@ public class BRecipe {
 		if (effectStringList != null) {
 			for (String effectString : effectStringList) {
 				String[] effectSplit = effectString.split("/");
-				P.p.log("effekt: " + effectSplit[0]);
 				if (effectSplit.length > 1) {
 					effects.put(effectSplit[0], P.p.parseInt(effectSplit[1]));
 				} else {

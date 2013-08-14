@@ -107,15 +107,21 @@ public class PlayerListener implements Listener {
 	// player drinks a custom potion
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerItemConsume(PlayerItemConsumeEvent event) {
+		Player player = event.getPlayer();
 		ItemStack item = event.getItem();
 		if (item != null) {
 			if (item.getType() == Material.POTION) {
 				if (item.hasItemMeta()) {
-					if (BPlayer.drink(Brew.getUID(item), event.getPlayer())) {
-						if (event.getPlayer().getGameMode() != org.bukkit.GameMode.CREATIVE) {
+					if (BPlayer.drink(Brew.getUID(item), player)) {
+						if (player.getGameMode() != org.bukkit.GameMode.CREATIVE) {
 							Brew.remove(item);
 						}
 					}
+				}
+			} else if (BPlayer.drainItems.containsKey(item.getType())) {
+				BPlayer bplayer = BPlayer.get(player.getName());
+				if (bplayer != null) {
+					bplayer.drainByItem(player.getName(), item.getType());
 				}
 			}
 		}

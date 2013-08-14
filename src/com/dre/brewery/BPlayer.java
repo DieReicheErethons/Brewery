@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.Material;
 import org.bukkit.util.Vector;
 import org.bukkit.Location;
 import org.bukkit.potion.PotionEffectType;
@@ -18,6 +19,7 @@ import com.dre.brewery.Brew;
 
 public class BPlayer {
 	public static Map<String, BPlayer> players = new HashMap<String, BPlayer>();// Players name and BPlayer
+	public static Map<Material, Integer> drainItems = new HashMap<Material, Integer>();// DrainItem Material and Strength
 	private static Map<Player, Integer> pTasks = new HashMap<Player, Integer>();// Player and count
 	private static int taskId;
 	public static int pukeItemId;
@@ -119,6 +121,30 @@ public class BPlayer {
 		if (bPlayer != null) {
 			bPlayer.move(event);
 		}
+	}
+
+	// Eat something to drain the drunkeness
+	public void drainByItem(String name, Material mat) {
+		int strength = drainItems.get(mat);
+		if (drain(name, strength)) {
+			players.remove(name);
+		}
+	}
+
+	// drain the drunkeness by amount, returns true when player has to be removed
+	public boolean drain(String name, int amount) {
+		quality -= getQuality() * amount;
+		drunkeness -= amount;
+		if (drunkeness > 0) {
+			if (offlineDrunk == 0) {
+				if (getPlayer(name) == null) {
+					offlineDrunk = drunkeness;
+				}
+			}
+		} else if (drunkeness <= (-1) * offlineDrunk) {
+			return true;
+		}
+		return false;
 	}
 
 	// player is drunk
@@ -400,15 +426,7 @@ public class BPlayer {
 					// Prevent 0 drunkeness
 					soberPerMin++;
 				}
-				bplayer.quality -= bplayer.getQuality() * soberPerMin;
-				bplayer.drunkeness -= soberPerMin;
-				if (bplayer.drunkeness > 0) {
-					if (bplayer.offlineDrunk == 0) {
-						if (getPlayer(name) == null) {
-							bplayer.offlineDrunk = bplayer.drunkeness;
-						}
-					}
-				} else if (bplayer.drunkeness <= (-1) * bplayer.offlineDrunk) {
+				if (bplayer.drain(name, soberPerMin)) {
 					iter.remove();
 				}
 			}

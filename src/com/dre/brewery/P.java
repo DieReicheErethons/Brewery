@@ -1,6 +1,7 @@
 package com.dre.brewery;
 
 import java.util.Map;
+import java.util.List;
 import java.util.ArrayList;
 import java.util.ListIterator;
 import java.util.HashMap;
@@ -101,6 +102,7 @@ public class P extends JavaPlugin {
 		BIngredients.recipes.clear();
 		BIngredients.cookedNames.clear();
 		Words.words.clear();
+		BPlayer.drainItems.clear();
 
 		readConfig();
 	}
@@ -151,6 +153,21 @@ public class P extends JavaPlugin {
 				Material mat = Material.matchMaterial(ingredient);
 				BIngredients.cookedNames.put(mat, (configSection.getString(ingredient, null)));
 				BIngredients.possibleIngredients.add(mat);
+			}
+		}
+
+		// loading drainItems
+		List<String> drainList = config.getStringList("drainItems");
+		if (drainList != null) {
+			for (String drainString : drainList) {
+				String[] drainSplit = drainString.split("/");
+				if (drainSplit.length > 1) {
+					Material mat = Material.matchMaterial(drainSplit[0]);
+					int strength = p.parseInt(drainSplit[1]);
+					if (mat != null && strength > 0) {
+						BPlayer.drainItems.put(mat, strength);
+					}
+				}
 			}
 		}
 

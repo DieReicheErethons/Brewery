@@ -353,12 +353,17 @@ public class BPlayer {
 	}
 
 	public static void addBrewEffects(Brew brew, Player player) {
-		if (brew.getEffect() != null) {
-			int duration = (brew.getEffectDur() / 8) * brew.getQuality() * 20;
-			int amplifier = brew.getQuality() / 3;
+		Map<String, Integer> effects = brew.getEffects();
+		if (effects != null) {
+			for (Map.Entry<String, Integer> entry : effects.entrySet()) {
+				PotionEffectType type = PotionEffectType.getByName(entry.getKey());
+				if (type != null) {
+					int duration = (entry.getValue() / 8) * brew.getQuality() * 20;
+					int amplifier = brew.getQuality() / 3;
 
-			PotionEffectType type = PotionEffectType.getByName(brew.getEffect());
-			type.createEffect(duration, amplifier).apply(player);
+					type.createEffect(duration, amplifier).apply(player);
+				}
+			}
 		}
 	}
 
@@ -404,7 +409,7 @@ public class BPlayer {
 						}
 					}
 				} else if (bplayer.drunkeness <= (-1) * bplayer.offlineDrunk) {
-					players.remove(name);
+					iter.remove();
 				}
 			}
 		}

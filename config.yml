@@ -49,7 +49,7 @@ autosave: 3
 # color: Farbe des Getränks nach destillieren/reifen. DARK_RED, RED, BRIGHT_RED, ORANGE, PINK, BLUE, CYAN, WATER, GREEN, BLACK, GREY, BRIGHT_GREY
 # difficulty: 1-10 Genauigkeit der Einhaltung der Vorgaben (1 = ungenau/einfach 10 = sehr genau/schwer)
 # alcohol: Alkoholgehalt 0-100 in absoluter Menge bei perfektem Getränk (wird dem Spieler hinzugefügt, bei 100 = tot)
-# effect: Effekt/Dauer Besonderer Trank-Effekt beim Trinken, Dauer in sek. Siehe: http://jd.bukkit.org/rb/apidocs/org/bukkit/potion/PotionEffectType.html
+# effect: Auflistung Effekt/Dauer Besonderere Trank-Effekte beim Trinken, Dauer in sek. Siehe: http://jd.bukkit.org/rb/apidocs/org/bukkit/potion/PotionEffectType.html
 
 recipes:
    1:
@@ -108,7 +108,8 @@ recipes:
       COLOR: ORANGE
       difficulty: 4
       alcohol: 12
-      effect: WATER_BREATHING/150
+      effects:
+      - WATER_BREATHING/150
    6:
       name: Bitterer Rum/Würziger Rum/Goldener Rum
       ingredients: 
@@ -120,7 +121,10 @@ recipes:
       color: DARK_RED
       difficulty: 6
       alcohol: 30
-      effect: FIRE_RESISTANCE/100
+      effects:
+      - FIRE_RESISTANCE/100
+      - WEAKNESS/30
+      - POISON/20
    7:
       name: Abgeranzter Vodka/Vodka/Russischer Vodka
       ingredients: 
@@ -131,7 +135,8 @@ recipes:
       color: BRIGHT_GREY
       difficulty: 4
       alcohol: 20
-      effect: WEAKNESS/15
+      effects:
+      - WEAKNESS/15
    8:
       name: minderwertiger Absinth/Absinth/Starker Absinth
       ingredients:
@@ -141,7 +146,8 @@ recipes:
       color: GREEN
       difficulty: 8
       alcohol: 45
-      effect: POISON/10
+      effects:
+      - POISON/10
    9:
       name: Kartoffelsuppe
       ingredients:
@@ -150,7 +156,8 @@ recipes:
       cookingtime: 3
       color: PINK
       difficulty: 1
-      effect: HEAL
+      effects:
+      - HEAL
 
 
 

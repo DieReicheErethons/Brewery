@@ -125,7 +125,8 @@ public class BCauldron {
 		}
 	}
 
-	//unloads cauldrons that are in a unloading world
+	// unloads cauldrons that are in a unloading world
+	// as they were written to file just before, this is safe to do
 	public static void onUnload(String name) {
 		for (BCauldron bcauldron : bcauldrons) {
 			if (bcauldron.block.getWorld().getName().equals(name)) {

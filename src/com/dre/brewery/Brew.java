@@ -153,18 +153,11 @@ public class Brew {
 	}
 
 	// return special effect
-	public String getEffect() {
+	public Map<String, Integer> getEffects() {
 		if (currentRecipe != null) {
-			return currentRecipe.getEffect();
+			return currentRecipe.getEffects();
 		}
 		return null;
-	}
-
-	public int getEffectDur() {
-		if (currentRecipe != null) {
-			return currentRecipe.getEffectDur();
-		}
-		return 0;
 	}
 
 	// Distilling section ---------------
@@ -267,6 +260,10 @@ public class Brew {
 				}
 			}
 		}
+	}
+
+	public PotionMeta addQualityLore(PotionMeta meta, String prefix, String lore) {
+		return null;
 	}
 
 	// Saves all data

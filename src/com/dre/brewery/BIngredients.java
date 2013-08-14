@@ -130,12 +130,12 @@ public class BIngredients {
 			cookingQuality = getCookingQuality(recipe, distilled);
 
 			if (ingredientQuality > -1) {
-				P.p.log("Ingredient Quality: " + ingredientQuality + " Cooking Quality: " + cookingQuality + " Wood Quality: " + getWoodQuality(recipe, wood) + " age Quality: "
-						+ getAgeQuality(recipe, time) + " for " + recipe.getName(5));
 				if (recipe.needsToAge()) {
 					// needs riping in barrel
 					ageQuality = getAgeQuality(recipe, time);
 					woodQuality = getWoodQuality(recipe, wood);
+					P.p.log("Ingredient Quality: " + ingredientQuality + " Cooking Quality: " + cookingQuality + " Wood Quality: " + getWoodQuality(recipe, wood) + 
+						" age Quality: " + getAgeQuality(recipe, time) + " for " + recipe.getName(5));
 
 					// is this recipe better than the previous best?
 					if ((((float) ingredientQuality + cookingQuality + woodQuality + ageQuality) / 4) > quality) {
@@ -143,6 +143,7 @@ public class BIngredients {
 						bestRecipe = recipe;
 					}
 				} else {
+					P.p.log("Ingredient Quality: " + ingredientQuality + " Cooking Quality: " + cookingQuality + " for " + recipe.getName(5));
 					// calculate quality without age and barrel
 					if ((((float) ingredientQuality + cookingQuality) / 2) > quality) {
 						quality = ((float) ingredientQuality + cookingQuality) / 2;
@@ -230,9 +231,6 @@ public class BIngredients {
 			// calculate the quality
 			quality -= (((float) Math.abs(count - recipe.amountOf(ingredient)) / recipe.allowedCountDiff(recipe.amountOf(ingredient))) * 10.0);
 		}
-		/*
-		 * if(quality != 0){ quality /= ingredients.size(); }
-		 */
 		if (quality >= 0) {
 			return Math.round(quality);
 		}

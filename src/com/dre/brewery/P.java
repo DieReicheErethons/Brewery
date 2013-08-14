@@ -319,6 +319,7 @@ public class P extends JavaPlugin {
 
 	// save all Data
 	public void saveData() {
+		long time = System.nanoTime();
 		File datafile = new File(p.getDataFolder(), "data.yml");
 
 		FileConfiguration oldData = YamlConfiguration.loadConfiguration(datafile);
@@ -334,24 +335,55 @@ public class P extends JavaPlugin {
 
 		FileConfiguration configFile = new YamlConfiguration();
 
+		time = System.nanoTime() - time;
+		float ftime = (float) (time / 1000000.0);
+		p.log("Creating a savefile (" + ftime + "ms)");
+		time = System.nanoTime();
+
 		if (!Brew.potions.isEmpty()) {
 			Brew.save(configFile.createSection("Brew"));
 		}
+
+		time = System.nanoTime() - time;
+		ftime = (float) (time / 1000000.0);
+		p.log("Saving Brew (" + ftime + "ms)");
+		time = System.nanoTime();
+
 		if (!BCauldron.bcauldrons.isEmpty() || oldData.contains("BCauldron")) {
 			BCauldron.save(configFile.createSection("BCauldron"), oldData.getConfigurationSection("BCauldron"));
 		}
+
+		time = System.nanoTime() - time;
+		ftime = (float) (time / 1000000.0);
+		p.log("Saving BCauldrons (" + ftime + "ms)");
+		time = System.nanoTime();
 
 		if (!Barrel.barrels.isEmpty() || oldData.contains("Barrel")) {
 			Barrel.save(configFile.createSection("Barrel"), oldData.getConfigurationSection("Barrel"));
 		}
 
+		time = System.nanoTime() - time;
+		ftime = (float) (time / 1000000.0);
+		p.log("Saving Barrels (" + ftime + "ms)");
+		time = System.nanoTime();
+
 		if (!BPlayer.players.isEmpty()) {
 			BPlayer.save(configFile.createSection("Player"));
 		}
 
+		time = System.nanoTime() - time;
+		ftime = (float) (time / 1000000.0);
+		p.log("Saving players (" + ftime + "ms)");
+		time = System.nanoTime();
+
 		if (!Wakeup.wakeups.isEmpty() || oldData.contains("Wakeup")) {
 			Wakeup.save(configFile.createSection("Wakeup"), oldData.getConfigurationSection("Wakeup"));
 		}
+
+		time = System.nanoTime() - time;
+		ftime = (float) (time / 1000000.0);
+		p.log("Saving Wakeups (" + ftime + "ms)");
+		time = System.nanoTime();
 
 		try {
 			configFile.save(datafile);
@@ -360,6 +392,10 @@ public class P extends JavaPlugin {
 		}
 
 		lastSave = 1;
+
+		time = System.nanoTime() - time;
+		ftime = (float) (time / 1000000.0);
+		p.log("Writing Data to File (" + ftime + "ms)");
 	}
 
 
@@ -420,7 +456,7 @@ public class P extends JavaPlugin {
 	}
 
 	public String white() {
-		return ChatColor.WHITE + "";
+		return ChatColor.WHITE.toString();
 	}
 
 

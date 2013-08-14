@@ -18,8 +18,7 @@ public class BRecipe {
 	private String color;// color of the destilled/finished potion
 	private int difficulty;// difficulty to brew the potion, how exact the instruction has to be followed
 	private int alcohol;// Alcohol in perfect potion
-	private String effect;// Special Effect
-	private int effectDur;// Duration of the special effect
+	private Map<String, Integer> effects = new HashMap<String, Integer>(); // Special Effect, Duration
 
 	public BRecipe(ConfigurationSection configSectionRecipes, String recipeId) {
 		String[] name = configSectionRecipes.getString(recipeId + ".name").split("/");
@@ -43,12 +42,16 @@ public class BRecipe {
 		this.difficulty = configSectionRecipes.getInt(recipeId + ".difficulty");
 		this.alcohol = configSectionRecipes.getInt(recipeId + ".alcohol");
 
-		String effectString = configSectionRecipes.getString(recipeId + ".effect");
-		if (effectString != null) {
-			String[] effectSplit = effectString.split("/");
-			this.effect = effectSplit[0];
-			if (effectSplit.length > 1) {
-				this.effectDur = P.p.parseInt(effectSplit[1]);
+		List<String> effectStringList = configSectionRecipes.getStringList(recipeId + ".effects");
+		if (effectStringList != null) {
+			for (String effectString : effectStringList) {
+				String[] effectSplit = effectString.split("/");
+				P.p.log("effekt: " + effectSplit[0]);
+				if (effectSplit.length > 1) {
+					effects.put(effectSplit[0], P.p.parseInt(effectSplit[1]));
+				} else {
+					effects.put(effectSplit[0], 20);
+				}
 			}
 		}
 	}
@@ -189,12 +192,8 @@ public class BRecipe {
 		return alcohol;
 	}
 
-	public String getEffect() {
-		return effect;
-	}
-
-	public int getEffectDur() {
-		return effectDur;
+	public Map<String, Integer> getEffects() {
+		return effects;
 	}
 
 }

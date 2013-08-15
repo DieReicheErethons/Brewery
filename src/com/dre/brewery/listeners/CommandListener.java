@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import com.dre.brewery.P;
@@ -15,10 +14,6 @@ import com.dre.brewery.BPlayer;
 public class CommandListener implements CommandExecutor {
 
 	public P p = P.p;
-	public ChatColor g = ChatColor.GOLD;
-	public ChatColor b = ChatColor.BLUE;
-	public ChatColor r = ChatColor.RED;
-	public ChatColor gr = ChatColor.GREEN;
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -36,9 +31,9 @@ public class CommandListener implements CommandExecutor {
 
 			if (p.permission.has(sender, "brewery.cmd.reload")) {
 				p.reload();
-				p.msg(sender, gr + "Config wurde neu eingelesen");
+				p.msg(sender, "&aConfig wurde neu eingelesen");
 			} else {
-				p.msg(sender, r + "Du hast keine Rechte dies zu tun!");
+				p.msg(sender, "&cDu hast keine Rechte dies zu tun!");
 			}
 
 		} else if (cmd.equalsIgnoreCase("wakeup")) {
@@ -46,7 +41,7 @@ public class CommandListener implements CommandExecutor {
 			if (p.permission.has(sender, "brewery.cmd.wakeup")) {
 				cmdWakeup(sender, args);
 			} else {
-				p.msg(sender, r + "Du hast keine Rechte dies zu tun!");
+				p.msg(sender, "&cDu hast keine Rechte dies zu tun!");
 			}
 
 		} else if (cmd.equalsIgnoreCase("create")) {
@@ -59,13 +54,13 @@ public class CommandListener implements CommandExecutor {
 				if (p.permission.has(sender, "brewery.cmd.infoOther")) {
 					cmdInfo(sender, args[1]);
 				} else {
-					p.msg(sender, r + "Du hast keine Rechte dies zu tun!");
+					p.msg(sender, "&cDu hast keine Rechte dies zu tun!");
 				}
 			} else {
 				if (p.permission.has(sender, "brewery.cmd.info")) {
 					cmdInfo(sender, null);
 				} else {
-					p.msg(sender, r + "Du hast keine Rechte dies zu tun!");
+					p.msg(sender, "&cDu hast keine Rechte dies zu tun!");
 				}
 			}
 
@@ -81,14 +76,14 @@ public class CommandListener implements CommandExecutor {
 					if (p.permission.has(sender, "brewery.cmd.player")) {
 						cmdPlayer(sender, args);
 					} else {
-						p.msg(sender, r + "Du hast keine Rechte dies zu tun!");
+						p.msg(sender, "&cDu hast keine Rechte dies zu tun!");
 					}
 				}
 
 			} else {
 
 				p.msg(sender, "Unbekannter Befehl.");
-				p.msg(sender, "benutze " + g + "/br help " + ChatColor.WHITE + "um die Hilfe anzuzeigen");
+				p.msg(sender, "benutze &6/br help &fum die Hilfe anzuzeigen");
 
 			}
 		}
@@ -106,7 +101,7 @@ public class CommandListener implements CommandExecutor {
 		ArrayList<String> commands = getCommands(sender);
 
 		if (page == 1) {
-			p.msg(sender, g + p.getDescription().getName() + " v" + p.getDescription().getVersion());	
+			p.msg(sender, "&6" + p.getDescription().getName() + " v" + p.getDescription().getVersion());	
 		}
 
 		p.list(sender, commands, page);
@@ -116,31 +111,31 @@ public class CommandListener implements CommandExecutor {
 	public ArrayList<String> getCommands(CommandSender sender) {
 
 		ArrayList<String> cmds = new ArrayList<String>();
-		cmds.add(g + "/br help <Seite> " + b + "Zeigt eine bestimmte Hilfeseite an");
+		cmds.add("&6/br help <Seite> &9Zeigt eine bestimmte Hilfeseite an");
 
 		if (p.permission.has(sender, "brewery.cmd.reload")) {
-			cmds.add(g + "/br reload " + b + " Config neuladen");
+			cmds.add("&6/br reload &9Config neuladen");
 		}
 
 		if (p.permission.has(sender, "brewery.cmd.wakeup")) {
-			cmds.add(g + "/br Wakeup List <Seite>" + b + " Listet alle Aufwachpunkte auf");
-			cmds.add(g + "/br Wakeup List <Seite> <Welt>" + b + " Listet die Aufwachpunkte einer Welt auf");
-			cmds.add(g + "/br Wakeup Check " + b + " Teleportiert zu allen Aufwachpunkten");
-			cmds.add(g + "/br Wakeup Check <id> " + b + " Teleportiert zu einem Aufwachpunkt");
-			cmds.add(g + "/br Wakeup Add " + b + " Setzt einen Aufwachpunkt");
-			cmds.add(g + "/br Wakeup Remove <id> " + b + " Entfernt einen Aufwachpunkt");
+			cmds.add("&6/br Wakeup List <Seite>&9 Listet alle Aufwachpunkte auf");
+			cmds.add("&6/br Wakeup List <Seite> <Welt>&9 Listet die Aufwachpunkte einer Welt auf");
+			cmds.add("&6/br Wakeup Check &9Teleportiert zu allen Aufwachpunkten");
+			cmds.add("&6/br Wakeup Check <id> &9Teleportiert zu einem Aufwachpunkt");
+			cmds.add("&6/br Wakeup Add &9Setzt einen Aufwachpunkt");
+			cmds.add("&6/br Wakeup Remove <id> &9Entfernt einen Aufwachpunkt");
 		}
 
 		if (p.permission.has(sender, "brewery.cmd.player")) {
-			cmds.add (g + "/br <Spieler> <%Trunkenheit> <Qualität>" + b + " Setzt Trunkenheit (und Qualität) eines Spielers");
+			cmds.add ("&6/br <Spieler> <%Trunkenheit> <Qualität>&9 Setzt Trunkenheit (und Qualität) eines Spielers");
 		}
 
 		if (p.permission.has(sender, "brewery.cmd.info")) {
-			cmds.add (g + "/br Info" + b + " Zeigt deine aktuelle Trunkenheit und Qualität an");
+			cmds.add ("&6/br Info&9 Zeigt deine aktuelle Trunkenheit und Qualität an");
 		}
 
 		if (p.permission.has(sender, "brewery.cmd.infoOther")) {
-			cmds.add (g + "/br Info <Spieler>" + b + " Zeigt die aktuelle Trunkenheit und Qualität von <Spieler> an");
+			cmds.add ("&6/br Info <Spieler>&9 Zeigt die aktuelle Trunkenheit und Qualität von <Spieler> an");
 		}
 
 		return cmds;
@@ -176,7 +171,7 @@ public class CommandListener implements CommandExecutor {
 				Wakeup.remove(sender, id);
 			} else {
 				p.msg(sender, "Benutzung:");
-				p.msg(sender, g + "/br Wakeup Remove <id>");
+				p.msg(sender, "&6/br Wakeup Remove <id>");
 			}
 
 		} else if (args[1].equalsIgnoreCase("check")){
@@ -197,7 +192,7 @@ public class CommandListener implements CommandExecutor {
 		} else {
 
 			p.msg(sender, "Unbekannter Befehl.");
-			p.msg(sender, "benutze " + g + "/br help " + ChatColor.WHITE + "um die Hilfe anzuzeigen");
+			p.msg(sender, "benutze &6/br help &fum die Hilfe anzuzeigen");
 
 		}
 	}
@@ -209,7 +204,7 @@ public class CommandListener implements CommandExecutor {
 		if (args.length > 2) {
 			quality = p.parseInt(args[2]);
 			if (quality < 1 || quality > 10) {
-				p.msg(sender, r + "Die Qualität muss zwischen 1 und 10 liegen!");
+				p.msg(sender, "&cDie Qualität muss zwischen 1 und 10 liegen!");
 				return;
 			}
 		}
@@ -230,7 +225,7 @@ public class CommandListener implements CommandExecutor {
 			bPlayer.setData(drunkeness, quality);
 		}
 
-		p.msg(sender, gr + playerName + " ist nun " + g + drunkeness + "% " + gr + "betrunken, mit einer Qualität von " + g + bPlayer.getQuality());
+		p.msg(sender, "&a" + playerName + " ist nun &6" + drunkeness + "% &abetrunken, mit einer Qualität von &6" + bPlayer.getQuality());
 		if (drunkeness > 100) {
 			bPlayer.drinkCap(p.getServer().getPlayer(playerName));
 		}
@@ -244,7 +239,7 @@ public class CommandListener implements CommandExecutor {
 				Player player = (Player) sender;
 				playerName = player.getName();
 			} else {
-				p.msg(sender, r + "Dieser Befehl kann nur als Spieler ausgeführt werden");
+				p.msg(sender, "&cDieser Befehl kann nur als Spieler ausgeführt werden");
 				return;
 			}
 		}
@@ -253,7 +248,7 @@ public class CommandListener implements CommandExecutor {
 		if (bPlayer == null) {
 			p.msg(sender, playerName + " ist nicht betrunken");
 		} else {
-			p.msg(sender, playerName + " ist " + g + bPlayer.getDrunkeness() + "% " + ChatColor.WHITE + "betrunken, mit einer Qualität von " + g + bPlayer.getQuality());
+			p.msg(sender, playerName + " ist &6" + bPlayer.getDrunkeness() + "% &fbetrunken, mit einer Qualität von &6" + bPlayer.getQuality());
 		}
 
 	}

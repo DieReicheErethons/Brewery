@@ -181,18 +181,23 @@ public class Brew {
 		BRecipe recipe = brew.ingredients.getdistillRecipe();
 
 		if (recipe != null) {
+			// distillRuns will have an effect on the amount of alcohol, not the quality
 			brew.quality = brew.calcQuality(recipe, (byte) 0, true);
 			brew.distillRuns += 1;
-			// distillRuns will have an effect on the amount of alcohol, not the quality
-			if (brew.distillRuns > 1) {
-				List<String> lore = new ArrayList<String>();
-				lore.add(brew.distillRuns + " fach Destilliert");
-				potionMeta.setLore(lore);
-			}
 			brew.currentRecipe = recipe;
+
+			// Distill Lore
+			String lore = "destilliert";
+			String prefix = P.p.color("&7");
+			if (brew.distillRuns > 1) {
+				prefix = prefix + brew.distillRuns + "-fach ";
+			}
+			addOrReplaceLore(potionMeta, prefix, lore);
+			addOrReplaceEffects(potionMeta, brew.getEffects());
+
 			P.p.log("destilled " + recipe.getName(5) + " has Quality: " + brew.quality + ", alc: " + brew.calcAlcohol());
 
-			potionMeta.setDisplayName(P.p.white() + recipe.getName(brew.quality));
+			potionMeta.setDisplayName(P.p.color("&f" + recipe.getName(brew.quality)));
 
 			// if the potion should be further distillable
 			if (recipe.getDistillRuns() > 1 && brew.distillRuns <= 5) {
@@ -201,7 +206,7 @@ public class Brew {
 				slotItem.setDurability(PotionColor.valueOf(recipe.getColor()).getColorId(false));
 			}
 		} else {
-			potionMeta.setDisplayName(P.p.white() + "Undefinierbares Destillat");
+			potionMeta.setDisplayName(P.p.color("&f" + "Undefinierbares Destillat"));
 			slotItem.setDurability(PotionColor.GREY.getColorId(brew.distillRuns <= 5));
 		}
 
@@ -219,51 +224,89 @@ public class Brew {
 			if (brew.ageTime > 0.5) {
 				BRecipe recipe = brew.ingredients.getAgeRecipe(wood, brew.ageTime, brew.distillRuns > 0);
 				if (recipe != null) {
-					//if (!recipe.needsDistilling() || brew.distillRuns > 0) {
+					brew.quality = brew.calcQuality(recipe, wood, brew.distillRuns > 0);
+					brew.currentRecipe = recipe;
+					P.p.log("Final " + recipe.getName(5) + " has Quality: " + brew.quality);
 
-						brew.quality = brew.calcQuality(recipe, wood, brew.distillRuns > 0);
-						brew.currentRecipe = recipe;
-						P.p.log("Final " + recipe.getName(5) + " has Quality: " + brew.quality);
-
-						if (brew.ageTime >= 2) {
-							List<String> lore;
-							String newLore;
-							int index = 0;
-
-							if (brew.ageTime < 201) {
-								newLore = (int) Math.floor(brew.ageTime) + " Jahre Fassgereift";
-							} else {
-								newLore = "Hunderte Jahre Fassgereift";
-							}
-
-							if (potionMeta.hasLore()) {
-								lore = potionMeta.getLore();
-								while (index < lore.size()) {
-									String existingLore = lore.get(index);
-									if (existingLore.contains("Jahre Fassgereift")) {
-										lore.set(index, newLore);
-										break;
-									}
-									index++;
-								}
-							} else {
-								lore = new ArrayList<String>();
-								lore.add(newLore);
-							}
-							potionMeta.setLore(lore);
+					if (brew.ageTime >= 1) {
+						String lore = " Fassgereift";
+						String prefix = P.p.color("&7");
+						if (brew.ageTime == 1) {
+							prefix = prefix + "Ein Jahr";
+						} else if (brew.ageTime < 201) {
+							prefix = prefix + (int) Math.floor(brew.ageTime) + " Jahre";
+						} else {
+							prefix = prefix + "Hunderte Jahre";
 						}
+						addOrReplaceLore(potionMeta, prefix, lore);
+						addOrReplaceEffects(potionMeta, brew.getEffects());
+					}
 
-						potionMeta.setDisplayName(P.p.white() + recipe.getName(brew.quality));
-						item.setDurability(PotionColor.valueOf(recipe.getColor()).getColorId(false));
-						item.setItemMeta(potionMeta);
-					//}
+					potionMeta.setDisplayName(P.p.color("&f" + recipe.getName(brew.quality)));
+					item.setDurability(PotionColor.valueOf(recipe.getColor()).getColorId(false));
+					item.setItemMeta(potionMeta);
 				}
 			}
 		}
 	}
 
-	public PotionMeta addQualityLore(PotionMeta meta, String prefix, String lore) {
-		return null;
+	public static void addOrReplaceEffects(PotionMeta meta, Map<String, Integer> effects) {
+		if (effects != null) {
+			for (Map.Entry<String, Integer> entry : effects.entrySet()) {
+				if (!entry.getKey().endsWith("X")) {
+					PotionEffectType type = PotionEffectType.getByName(entry.getKey());
+					if (type != null) {
+						meta.addCustomEffect(type.createEffect(0, 0), true);
+					}
+				}
+			}
+
+		}
+	}
+
+	public static void addOrReplaceLore(PotionMeta meta, String prefix, String lore) {
+		if (meta.hasLore()) {
+			List<String> existingLore = meta.getLore();
+			int index = indexOfSubstring(existingLore, lore);
+			if (index > -1) {
+				existingLore.set(index, prefix + lore);
+			} else {
+				existingLore.add(prefix + lore);
+			}
+			meta.setLore(existingLore);
+			return;
+		}
+		List<String> newLore = new ArrayList<String>();
+		newLore.add("");
+		newLore.add(prefix + lore);
+		meta.setLore(newLore);
+	}
+
+	public static int indexOfSubstring(List<String> list, String substring) {
+		for (int index = 0; index < list.size(); index++) {
+			String string = list.get(index);
+			if (string.contains(substring)) {
+				return index;
+			}
+		}
+		return -1;
+	}
+
+	// gets the Color that represents a quality in Lore
+	public static String getQualityColor(int quality) {
+		String color;
+		if (quality > 8) {
+			color = "&a";
+		} else if (quality > 6) {
+			color = "&e";
+		} else if (quality > 4) {
+			color = "&6";
+		} else if (quality > 2) {
+			color = "&c";
+		} else {
+			color = "&4";
+		}
+		return P.p.color(color);
 	}
 
 	// Saves all data

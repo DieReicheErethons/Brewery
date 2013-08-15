@@ -15,7 +15,7 @@ enableHome: true
 homeType: 'cmd: home'
 
 # Ob der Spieler nach etwas kürzerem Ausloggen an einem zufälligen Ort "aufwacht" (diese müssen durch '/br Wakeup add' von einem Admin festgelegt werden)
-# Der Spieler wacht nur an einem Ort auf, der sich in seiner jetzigen Welt befindet.
+# Der Spieler wacht an dem nähesten zweier zufälliger Orte aus seiner Welt auf.
 enableWake: true
 
 # Der Text, den der Spieler beim Aufwachen sieht
@@ -34,7 +34,7 @@ enablePuke: true
 # Item das beim Erbrechen mehrfach unaufsammelbar fallen gelassen wird
 pukeItem: SOUL_SAND
 
-# Konsumierbares Item/<Stärke>. Senkt den Alkoholpegel um <Stärke>% wenn konsumiert.
+# Konsumierbares Item/Stärke. Senkt den Alkoholpegel um <Stärke> wenn konsumiert.
 drainItems:
 - BREAD/4
 - MILK_BUCKET/2
@@ -54,7 +54,8 @@ autosave: 3
 # color: Farbe des Getränks nach destillieren/reifen. DARK_RED, RED, BRIGHT_RED, ORANGE, PINK, BLUE, CYAN, WATER, GREEN, BLACK, GREY, BRIGHT_GREY
 # difficulty: 1-10 Genauigkeit der Einhaltung der Vorgaben (1 = ungenau/einfach 10 = sehr genau/schwer)
 # alcohol: Alkoholgehalt 0-100 in absoluter Menge bei perfektem Getränk (wird dem Spieler hinzugefügt, bei 100 = tot)
-# effect: Auflistung Effekt/Dauer Besonderere Trank-Effekte beim Trinken, Dauer in sek. Siehe: http://jd.bukkit.org/rb/apidocs/org/bukkit/potion/PotionEffectType.html
+# effects: Auflistung Effekt/Dauer  Besonderere Trank-Effekte beim Trinken, Dauer in sek. Ein 'X' an den Namen anhängen, um ihn zu verbergen. Bsp: POISONX/10
+# (WEAKNESS, INCREASE_DAMAGE, SLOW und SPEED sind immer verborgen.)  Mögliche Effekte: http://jd.bukkit.org/rb/apidocs/org/bukkit/potion/PotionEffectType.html
 
 recipes:
    1:
@@ -114,7 +115,7 @@ recipes:
       difficulty: 4
       alcohol: 12
       effects:
-      - WATER_BREATHING/150
+      - WATER_BREATHINGX/150
    6:
       name: Bitterer Rum/Würziger Rum/Goldener Rum
       ingredients: 
@@ -128,8 +129,6 @@ recipes:
       alcohol: 30
       effects:
       - FIRE_RESISTANCE/100
-      - WEAKNESS/30
-      - POISON/20
    7:
       name: Abgeranzter Vodka/Vodka/Russischer Vodka
       ingredients: 
@@ -142,6 +141,7 @@ recipes:
       alcohol: 20
       effects:
       - WEAKNESS/15
+      - POISON/10
    8:
       name: minderwertiger Absinth/Absinth/Starker Absinth
       ingredients:
@@ -152,7 +152,7 @@ recipes:
       difficulty: 8
       alcohol: 45
       effects:
-      - POISON/10
+      - POISON/20
    9:
       name: Kartoffelsuppe
       ingredients:

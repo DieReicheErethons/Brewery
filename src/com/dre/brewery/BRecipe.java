@@ -46,10 +46,15 @@ public class BRecipe {
 		if (effectStringList != null) {
 			for (String effectString : effectStringList) {
 				String[] effectSplit = effectString.split("/");
+				String effect = effectSplit[0];
+				if (effect.equalsIgnoreCase("WEAKNESS") || effect.equalsIgnoreCase("INCREASE_DAMAGE") || effect.equalsIgnoreCase("SLOW") || effect.equalsIgnoreCase("SPEED") || effect.equalsIgnoreCase("REGERATION")) {
+					// hide these effects as they put crap into lore
+					effect = effect + "X";
+				}
 				if (effectSplit.length > 1) {
-					effects.put(effectSplit[0], P.p.parseInt(effectSplit[1]));
+					effects.put(effect, P.p.parseInt(effectSplit[1]));
 				} else {
-					effects.put(effectSplit[0], 20);
+					effects.put(effect, 20);
 				}
 			}
 		}

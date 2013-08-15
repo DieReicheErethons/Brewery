@@ -382,7 +382,7 @@ public class BPlayer {
 		Map<String, Integer> effects = brew.getEffects();
 		if (effects != null) {
 			for (Map.Entry<String, Integer> entry : effects.entrySet()) {
-				PotionEffectType type = PotionEffectType.getByName(entry.getKey());
+				PotionEffectType type = PotionEffectType.getByName(entry.getKey().replace("X", ""));
 				if (type != null) {
 					int duration = (entry.getValue() / 8) * brew.getQuality() * 20;
 					int amplifier = brew.getQuality() / 3;

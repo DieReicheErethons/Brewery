@@ -5,7 +5,6 @@ import java.util.Iterator;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.command.CommandSender;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -13,10 +12,10 @@ public class Wakeup {
 
 	public static ArrayList<Wakeup> wakeups = new ArrayList<Wakeup>();
 	public static P p = P.p;
-	public static ChatColor g = ChatColor.GOLD;
-	public static ChatColor w = ChatColor.WHITE;
-	public static ChatColor r = ChatColor.RED;
-	public static ChatColor gr = ChatColor.GREEN;
+	//public static ChatColor g = ChatColor.GOLD;
+	//public static ChatColor w = ChatColor.WHITE;
+	//public static ChatColor r = ChatColor.RED;
+	//public static ChatColor gr = ChatColor.GREEN;
 	public static int checkId = -1;
 	public static Player checkPlayer = null;
 
@@ -51,7 +50,7 @@ public class Wakeup {
 		worldWakes.remove(w1);
 
 		while (!w1.check()) {
-			p.errorLog("Please Check Wakeup-Location with id: " + g + wakeups.indexOf(w1));
+			p.errorLog("Please Check Wakeup-Location with id: &6" + wakeups.indexOf(w1));
 
 			w1 = calcRandom(worldWakes);
 			if (w1 == null) {
@@ -65,7 +64,7 @@ public class Wakeup {
 			worldWakes.remove(w2);
 
 			while (!w2.check()) {
-				p.errorLog("Please Check Wakeup-Location with id: " + g + wakeups.indexOf(w2));
+				p.errorLog("Please Check Wakeup-Location with id: &6" + wakeups.indexOf(w2));
 
 				w2 = calcRandom(worldWakes);
 				if (w2 == null) {
@@ -94,16 +93,16 @@ public class Wakeup {
 
 			Player player = (Player) sender;
 			wakeups.add(new Wakeup(player.getLocation()));
-			p.msg(sender, gr + "Aufwachpunkt mit id: " + g + (wakeups.size() - 1) + gr + " wurde erfolgreich erstellt!");
+			p.msg(sender, "&aAufwachpunkt mit id: &6" + (wakeups.size() - 1) + " &awurde erfolgreich erstellt!");
 
 		} else {
-			p.msg(sender, r + "Dieser Befehl kann nur als Spieler ausgeführt werden");
+			p.msg(sender, "&cDieser Befehl kann nur als Spieler ausgeführt werden");
 		}
 	}
 
 	public static void remove(CommandSender sender, int id) {
 		if (wakeups.isEmpty() || id < 0 || id >= wakeups.size()) {
-			p.msg(sender, r +"Der Aufwachpunkt mit der id: " + g + id + r + " existiert nicht!");
+			p.msg(sender, "&cDer Aufwachpunkt mit der id: &6" + id + " &cexistiert nicht!");
 			return;
 		}
 
@@ -111,16 +110,16 @@ public class Wakeup {
 
 		if (wakeup.active) {
 			wakeup.active = false;
-			p.msg(sender, gr + "Der Aufwachpunkt mit der id: " + g + id + gr  + " wurde erfolgreich gelöscht!");
+			p.msg(sender, "&aDer Aufwachpunkt mit der id: &6" + id + " &awurde erfolgreich gelöscht!");
 
 		} else {
-			p.msg(sender, r + "Der Aufwachpunkt mit der id: " + g + id + r  + " wurde bereits gelöscht!");
+			p.msg(sender, "&cDer Aufwachpunkt mit der id: &6" + id + " &cwurde bereits gelöscht!");
 		}
 	}
 
 	public static void list(CommandSender sender, int page, String worldOnly) {
 		if (wakeups.isEmpty()) {
-			p.msg(sender, r + "Es wurden noch keine Aufwachpunkte erstellt!");
+			p.msg(sender, "&cEs wurden noch keine Aufwachpunkte erstellt!");
 			return;
 		}
 
@@ -129,7 +128,7 @@ public class Wakeup {
 
 			Wakeup wakeup = wakeups.get(id);
 
-			String s = ChatColor.STRIKETHROUGH.toString();
+			String s = "&m";
 			if (wakeup.active) {
 				s = "";
 			}
@@ -141,7 +140,7 @@ public class Wakeup {
 				int y = (int) wakeup.loc.getY();
 				int z = (int) wakeup.loc.getZ();
 
-				locs.add(g + s + id + w + s + ": " + world + " " + x + "," + y + "," + z);
+				locs.add("&6" + s + id + "&f" + s + ": " + world + " " + x + "," + y + "," + z);
 			}
 		}
 		p.list(sender, locs, page);
@@ -153,7 +152,7 @@ public class Wakeup {
 
 			if (!all) {
 				if (wakeups.isEmpty() || id >= wakeups.size()) {
-					p.msg(sender, r + "Der Aufwachpunkt mit der id: " + g + id + r + " existiert nicht!");
+					p.msg(sender, "&cDer Aufwachpunkt mit der id: &6" + id + "&c existiert nicht!");
 					return;
 				}
 
@@ -165,12 +164,12 @@ public class Wakeup {
 					int x = (int) wakeup.loc.getX();
 					int y = (int) wakeup.loc.getY();
 					int z = (int) wakeup.loc.getZ();
-					p.msg(sender, r + "Der Aufwachpunkt mit der id: " + g + id + r + " An Position " + g + world + " " + x + "," + y + "," + z + r + " ist mit Blöcken gefüllt!");
+					p.msg(sender, "&cDer Aufwachpunkt mit der id: &6" + id + "&c An Position &6" + world + " " + x + "," + y + "," + z + "&c ist mit Blöcken gefüllt!");
 				}
 
 			} else {
 				if (wakeups.isEmpty()) {
-					p.msg(sender, r + "Es wurden noch keine Aufwachpunkte erstellt!");
+					p.msg(sender, "&cEs wurden noch keine Aufwachpunkte erstellt!");
 					return;
 				}
 				if (checkPlayer != null && checkPlayer != player) {
@@ -182,7 +181,7 @@ public class Wakeup {
 
 
 		} else {
-			p.msg(sender, r + "Dieser Befehl kann nur als Spieler ausgeführt werden");
+			p.msg(sender, "&cDieser Befehl kann nur als Spieler ausgeführt werden");
 		}
 	}
 
@@ -193,7 +192,7 @@ public class Wakeup {
 	public static void tpNext() {
 		checkId++;
 		if (checkId >= wakeups.size()) {
-			p.msg(checkPlayer, gr + "Dies war der letzte Aufwachpunkt");
+			p.msg(checkPlayer, "&aDies war der letzte Aufwachpunkt");
 			checkId = -1;
 			checkPlayer = null;
 			return;
@@ -211,23 +210,23 @@ public class Wakeup {
 		int z = (int) wakeup.loc.getZ();
 
 		if (wakeup.check()) {
-			p.msg(checkPlayer, "Teleport zu Aufwachpunkt mit der id: " + g + checkId + w + " An Position: " + g + world + " " + x + "," + y + "," + z);
+			p.msg(checkPlayer, "Teleport zu Aufwachpunkt mit der id: &6" + checkId + "&f An Position: &6" + world + " " + x + "," + y + "," + z);
 			checkPlayer.teleport(wakeup.loc);
 		} else {
-			p.msg(checkPlayer, r + "Der Aufwachpunkt mit der id: " + g + checkId + r + " An Position " + g + world + " " + x + "," + y + "," + z + r + " ist mit Blöcken gefüllt!");
+			p.msg(checkPlayer, "&cDer Aufwachpunkt mit der id: &6" + checkId + "&c An Position &6" + world + " " + x + "," + y + "," + z + "&c ist mit Blöcken gefüllt!");
 		}			
 		p.msg(checkPlayer, "Zum nächsten Aufwachpunkt: Mit Faust in die Luft schlagen");
-		p.msg(checkPlayer, "Zum Abbrechen: " + ChatColor.BLUE + "/br Wakeup Cancel");
+		p.msg(checkPlayer, "Zum Abbrechen: &9/br Wakeup Cancel");
 	}
 
 	public static void cancel(CommandSender sender) {
 		if (checkPlayer != null) {
 			checkPlayer = null;
 			checkId = -1;
-			p.msg(sender, g + "Aufwachpunkte-Check wurde abgebrochen");
+			p.msg(sender, "&6Aufwachpunkte-Check wurde abgebrochen");
 			return;
 		}
-		p.msg(sender, r + "Es läuft kein Aufwachpunkte-Check");
+		p.msg(sender, "&cEs läuft kein Aufwachpunkte-Check");
 	}
 
 

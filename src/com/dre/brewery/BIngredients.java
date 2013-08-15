@@ -26,10 +26,20 @@ public class BIngredients {
 	public BIngredients() {
 	}
 
-	// Init a copy of BIngredients with existing values
+	// Load from File
 	public BIngredients(Map<Material, Integer> ingredients, int cookedTime) {
-		this.ingredients.putAll(ingredients);
+		this.ingredients = ingredients;
 		this.cookedTime = cookedTime;
+	}
+
+	//returns the recipe with the given name
+	public static BRecipe getRecipeByName(String name) {
+		for (BRecipe recipe : recipes) {
+			if (recipe.getName(5).equalsIgnoreCase(name)) {
+				return recipe;
+			}
+		}
+		return null;
 	}
 
 	// Add an ingredient to this
@@ -56,19 +66,20 @@ public class BIngredients {
 		int uid = Brew.generateUID();
 
 		if (cookRecipe != null) {
-			// Potion is best with cooking only, can still be destilled, etc.
+			// Potion is best with cooking only
 			int quality = (int) Math.round((getIngredientQuality(cookRecipe) + getCookingQuality(cookRecipe, false)) / 2.0);
 			P.p.log("cooked potion has Quality: " + quality);
-			new Brew(uid, quality, cookRecipe, new BIngredients(ingredients, cookedTime));
+			Brew brew = new Brew(uid, quality, cookRecipe, clone());
+			Brew.addOrReplaceEffects(potionMeta, brew.getEffects());
 
 			cookedName = cookRecipe.getName(quality);
-			potion.setDurability(Brew.PotionColor.valueOf(cookRecipe.getColor()).getColorId(true));
+			potion.setDurability(Brew.PotionColor.valueOf(cookRecipe.getColor()).getColorId(false));
 
 		} else {
 			// new base potion
-			new Brew(uid, new BIngredients(ingredients, cookedTime));
+			new Brew(uid, clone());
 
-			if (state == 1) {
+			if (state <= 1) {
 				cookedName = "Schlammiger Sud";
 				potion.setDurability(Brew.PotionColor.BLUE.getColorId(false));
 			} else {
@@ -89,7 +100,7 @@ public class BIngredients {
 			potion.setDurability(Brew.PotionColor.CYAN.getColorId(true));
 		}
 
-		potionMeta.setDisplayName(P.p.white() + cookedName);
+		potionMeta.setDisplayName(P.p.color("&f" + cookedName));
 		// This effect stores the UID in its Duration
 		potionMeta.addCustomEffect((PotionEffectType.REGENERATION).createEffect((uid * 4), 0), true);
 		potion.setItemMeta(potionMeta);
@@ -106,14 +117,19 @@ public class BIngredients {
 		return count;
 	}
 
-	//returns the recipe with the given name
-	public static BRecipe getRecipeByName(String name) {
-		for (BRecipe recipe : recipes) {
-			if (recipe.getName(5).equalsIgnoreCase(name)) {
-				return recipe;
-			}
+	public void qualityLore(PotionMeta meta, BRecipe recipe, boolean distilled) {
+		// Ingredients
+		String prefix = Brew.getQualityColor(getIngredientQuality(recipe));
+		String lore = "Zutaten";
+		Brew.addOrReplaceLore(meta, prefix, lore);
+
+		// Cookingtime
+		prefix = Brew.getQualityColor(getCookingQuality(recipe, distilled)) + cookedTime + " minute";
+		if (cookedTime > 1) {
+			prefix = prefix + "n";
 		}
-		return null;
+		lore = " gegärt";
+		Brew.addOrReplaceLore(meta, prefix, lore);
 	}
 
 	// best recipe for current state of potion, STILL not always returns the
@@ -250,6 +266,14 @@ public class BIngredients {
 		return 0;
 	}
 
+	// returns pseudo quality of distilling. 0 if doesnt match the need of the recipes distilling
+	public int getDistillQuality(BRecipe recipe, int distillRuns) {
+		if (recipe.needsDistilling() != distillRuns > 0) {
+			return 0;
+		}
+		return 10 - Math.abs(recipe.getDistillRuns() - distillRuns);
+	}
+
 	// returns the quality regarding the barrel wood conditioning given Recipe
 	public int getWoodQuality(BRecipe recipe, byte wood) {
 		if (recipe.getWood() == 0x8) {
@@ -272,6 +296,14 @@ public class BIngredients {
 			return quality;
 		}
 		return 0;
+	}
+
+	// Creates a copy ingredients
+	public BIngredients clone() {
+		BIngredients copy = new BIngredients();
+		copy.ingredients.putAll(ingredients);
+		copy.cookedTime = cookedTime;
+		return copy;
 	}
 
 	// saves data into ingredient section of Brew/BCauldron

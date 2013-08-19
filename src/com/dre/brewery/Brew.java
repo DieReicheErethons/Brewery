@@ -102,7 +102,7 @@ public class Brew {
 		return 0;
 	}
 
-	// remove potion from file (drinking, despawning, should be more!)
+	// remove potion from file (drinking, despawning, combusting, should be more!)
 	public static void remove(ItemStack item) {
 		potions.remove(getUID(item));
 	}

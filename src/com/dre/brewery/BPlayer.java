@@ -21,8 +21,16 @@ public class BPlayer {
 	public static Map<String, BPlayer> players = new HashMap<String, BPlayer>();// Players name and BPlayer
 	public static Map<Material, Integer> drainItems = new HashMap<Material, Integer>();// DrainItem Material and Strength
 	private static Map<Player, Integer> pTasks = new HashMap<Player, Integer>();// Player and count
+	
+	// Settings
 	private static int taskId;
 	public static int pukeItemId;
+	public static boolean overdrinkKick;
+	public static boolean enableHome;
+	public static boolean enableLoginDisallow;
+	public static boolean enablePuke;
+	public static String wakeString;
+	public static String homeType;
 
 	private int quality = 0;// = quality of drunkeness * drunkeness
 	private int drunkeness = 0;// = amount of drunkeness
@@ -105,7 +113,7 @@ public class BPlayer {
 
 	// Player has drunken too much
 	public void drinkCap(Player player) {
-		if (P.p.getConfig().getBoolean("enableKickOnOverdrink", false)) {
+		if (overdrinkKick) {
 			passOut(player);
 		} else {
 			quality = getQuality() * 100;
@@ -193,7 +201,7 @@ public class BPlayer {
 		if (drunkeness <= 70) {
 			return 0;
 		}
-		if (P.p.getConfig().getBoolean("enableLoginDisallow", false) == false) {
+		if (!enableLoginDisallow) {
 			if (drunkeness <= 100) {
 				return 0;
 			} else {
@@ -240,7 +248,7 @@ public class BPlayer {
 	public void login(final Player player) {
 		if (drunkeness < 10) {
 			if (offlineDrunk > 60) {
-				if (P.p.getConfig().getBoolean("enableHome", false)) {
+				if (enableHome) {
 					goHome(player);
 				}
 			}
@@ -252,7 +260,7 @@ public class BPlayer {
 			Location randomLoc = Wakeup.getRandom(player.getLocation());
 			if (randomLoc != null) {
 				player.teleport(randomLoc);
-				P.p.msg(player, P.p.getConfig().getString("wakeString", "Ohh nein! Ich kann mich nicht erinnern, wie ich hier hergekommen bin..."));
+				P.p.msg(player, wakeString);
 			}
 		}
 
@@ -261,7 +269,6 @@ public class BPlayer {
 	}
 
 	public void goHome(final Player player) {
-		String homeType = P.p.getConfig().getString("homeType", null);
 		if (homeType != null) {
 			Location home = null;
 			if (homeType.equalsIgnoreCase("bed")) {
@@ -310,7 +317,7 @@ public class BPlayer {
 
 	// make a Player puke "count" items
 	public static void addPuke(Player player, int count) {
-		if (!P.p.getConfig().getBoolean("enablePuke", false)) {
+		if (!enablePuke) {
 			return;
 		}
 
@@ -404,7 +411,7 @@ public class BPlayer {
 
 						bplayer.drunkEffects(player);
 
-						if (P.p.getConfig().getBoolean("enablePuke", false)) {
+						if (enablePuke) {
 							bplayer.drunkPuke(player);
 						}
 

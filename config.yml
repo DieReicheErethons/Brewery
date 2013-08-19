@@ -39,6 +39,10 @@ drainItems:
 - BREAD/4
 - MILK_BUCKET/2
 
+# Färben der Iteminformationen je nach Qualität während sie sich 1. im Fass und/oder 2. im Braustand befinden
+colorInBarrels: true
+colorInBrewer: true
+
 # Autosave Intervall in Minuten
 autosave: 3
 

@@ -137,6 +137,14 @@ public class P extends JavaPlugin {
 		// various Settings
 		autosave = config.getInt("autosave", 3);
 		BPlayer.pukeItemId = Material.matchMaterial(config.getString("pukeItem", "SOUL_SAND")).getId();
+		BPlayer.overdrinkKick = config.getBoolean("enableKickOnOverdrink", false);
+		BPlayer.enableHome = config.getBoolean("enableHome", false);
+		BPlayer.enableLoginDisallow = config.getBoolean("enableLoginDisallow", false);
+		BPlayer.enablePuke = config.getBoolean("enablePuke", false);
+		BPlayer.wakeString = config.getString("wakeString", "Ohh nein! Ich kann mich nicht erinnern, wie ich hier hergekommen bin...");
+		BPlayer.homeType = config.getString("homeType", null);
+		Brew.colorInBarrels = config.getBoolean("colorInBarrels", false);
+		Brew.colorInBrewer = config.getBoolean("colorInBrewer", false);
 
 		// loading recipes
 		ConfigurationSection configSection = config.getConfigurationSection("recipes");

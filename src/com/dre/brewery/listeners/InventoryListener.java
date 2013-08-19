@@ -4,7 +4,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.BrewEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.BrewerInventory;
+import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.Material;
 
@@ -46,4 +49,31 @@ public class InventoryListener implements Listener {
 
 	}
 
+	// convert to non colored Lore when taking out of Barrel/Brewer
+	@EventHandler(priority = EventPriority.HIGH)
+	public void onInventoryClick(InventoryClickEvent event) {
+		if (event.getInventory().getType() == InventoryType.BREWING) {
+			if (event.getSlot() > 2) {
+				return;
+			}
+		} else if (event.getInventory().getType() != InventoryType.CHEST) {
+			if (!event.getInventory().getTitle().equals("Fass")) {
+				return;
+			}
+		}
+
+		ItemStack item = event.getCurrentItem();
+		if (item != null) {
+			if (item.getTypeId() == 373) {
+				if (item.hasItemMeta()) {
+					PotionMeta meta = (PotionMeta) item.getItemMeta();
+					Brew brew = Brew.get(meta);
+					if (brew != null) {
+						brew.convertLore(meta, false);
+						item.setItemMeta(meta);
+					}
+				}
+			}
+		}
+	}
 }

@@ -117,19 +117,8 @@ public class BIngredients {
 		return count;
 	}
 
-	public void qualityLore(PotionMeta meta, BRecipe recipe, boolean distilled) {
-		// Ingredients
-		String prefix = Brew.getQualityColor(getIngredientQuality(recipe));
-		String lore = "Zutaten";
-		Brew.addOrReplaceLore(meta, prefix, lore);
-
-		// Cookingtime
-		prefix = Brew.getQualityColor(getCookingQuality(recipe, distilled)) + cookedTime + " minute";
-		if (cookedTime > 1) {
-			prefix = prefix + "n";
-		}
-		lore = " gegärt";
-		Brew.addOrReplaceLore(meta, prefix, lore);
+	public int getCookedTime() {
+		return cookedTime;
 	}
 
 	// best recipe for current state of potion, STILL not always returns the

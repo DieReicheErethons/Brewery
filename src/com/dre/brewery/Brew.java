@@ -16,9 +16,13 @@ import com.dre.brewery.BIngredients;
 
 public class Brew {
 
-	public static Map<Integer, Brew> potions = new HashMap<Integer, Brew>();
-
 	// represents the liquid in the brewed Potions
+
+	public static Map<Integer, Brew> potions = new HashMap<Integer, Brew>();
+	public static Boolean colorInBarrels; // color the Lore while in Barrels
+	public static Boolean colorInBrewer; // color the Lore while in Brewer
+
+	//public static Map<ItemStack, List<String>> oldLore = new HashMap<ItemStack, List<String>>();
 
 	private BIngredients ingredients;
 	private int quality;
@@ -68,11 +72,16 @@ public class Brew {
 	}
 
 	// returns a Brew by ItemStack
-	/*
-	 * public static Brew get(ItemStack item){ if(item.getTypeId() == 373){
-	 * PotionMeta potionMeta = (PotionMeta) item.getItemMeta(); return
-	 * get(potionMeta); } return null; }
-	 */
+/*	public static Brew get(ItemStack item) {
+ *		if (item.getTypeId() == 373) {
+ *			if (item.hasItemMeta()) {
+ *				PotionMeta potionMeta = (PotionMeta) item.getItemMeta();
+ *				return get(potionMeta);
+ *			}
+ *		}
+ *		return null;
+ *	}
+ */
 
 	// returns UID of custom Potion item
 	public static int getUID(ItemStack item) {
@@ -187,12 +196,15 @@ public class Brew {
 			brew.currentRecipe = recipe;
 
 			// Distill Lore
-			String lore = "destilliert";
-			String prefix = P.p.color("&7");
-			if (brew.distillRuns > 1) {
-				prefix = prefix + brew.distillRuns + "-fach ";
+			if (colorInBrewer != hasColorLore(potionMeta)) {
+				brew.convertLore(potionMeta, colorInBrewer);
+			} else {
+				String prefix = P.p.color("&7");
+				if (colorInBrewer) {
+					prefix = getQualityColor(brew.ingredients.getDistillQuality(recipe, brew.distillRuns));
+				}
+				brew.updateDistillLore(prefix, potionMeta);
 			}
-			addOrReplaceLore(potionMeta, prefix, lore);
 			addOrReplaceEffects(potionMeta, brew.getEffects());
 
 			P.p.log("destilled " + recipe.getName(5) + " has Quality: " + brew.quality + ", alc: " + brew.calcAlcohol());
@@ -228,25 +240,25 @@ public class Brew {
 					brew.currentRecipe = recipe;
 					P.p.log("Final " + recipe.getName(5) + " has Quality: " + brew.quality);
 
-					if (brew.ageTime >= 1) {
-						String lore = " Fassgereift";
-						String prefix = P.p.color("&7");
-						if (brew.ageTime == 1) {
-							prefix = prefix + "Ein Jahr";
-						} else if (brew.ageTime < 201) {
-							prefix = prefix + (int) Math.floor(brew.ageTime) + " Jahre";
-						} else {
-							prefix = prefix + "Hunderte Jahre";
-						}
-						addOrReplaceLore(potionMeta, prefix, lore);
-						addOrReplaceEffects(potionMeta, brew.getEffects());
-					}
-
 					potionMeta.setDisplayName(P.p.color("&f" + recipe.getName(brew.quality)));
 					item.setDurability(PotionColor.valueOf(recipe.getColor()).getColorId(false));
-					item.setItemMeta(potionMeta);
 				}
 			}
+
+			// Lore
+			if (colorInBarrels != hasColorLore(potionMeta)) {
+				brew.convertLore(potionMeta, colorInBarrels);
+			} else {
+				if (brew.ageTime >= 1) {
+					String prefix = P.p.color("&7");
+					if (colorInBarrels) {
+						prefix = getQualityColor(brew.ingredients.getAgeQuality(brew.currentRecipe, brew.ageTime));
+					}
+					brew.updateAgeLore(prefix, potionMeta);
+					addOrReplaceEffects(potionMeta, brew.getEffects());
+				}
+			}
+			item.setItemMeta(potionMeta);
 		}
 	}
 
@@ -264,6 +276,83 @@ public class Brew {
 		}
 	}
 
+	// Lore -----------
+
+	// Converts to/from qualitycolored Lore
+	public void convertLore(PotionMeta meta, Boolean toQuality) {
+		if (currentRecipe == null) {
+			return;
+		}
+		if (meta == null) {
+			P.p.log("has no meta");
+			return;
+		}
+		meta.setLore(null);
+
+		// Ingredients
+		int quality;
+		String prefix = P.p.color("&7");
+		String lore;
+		if (toQuality) {
+			quality = ingredients.getIngredientQuality(currentRecipe);
+			prefix = getQualityColor(quality);
+			lore = "Zutaten";
+			addOrReplaceLore(meta, prefix, lore);
+		}
+
+		// Cooking
+		if (toQuality) {
+			if (distillRuns > 0 == currentRecipe.needsDistilling()) {
+				quality = ingredients.getCookingQuality(currentRecipe, distillRuns > 0);
+				prefix = getQualityColor(quality) + ingredients.getCookedTime() + " minute";
+				if (ingredients.getCookedTime() > 1) {
+					prefix = prefix + "n";
+				}
+				lore = " gegärt";
+				addOrReplaceLore(meta, prefix, lore);
+			}
+		}
+
+		// Distilling
+		if (distillRuns > 0) {
+			if (toQuality) {
+				quality = ingredients.getDistillQuality(currentRecipe, distillRuns);
+				prefix = getQualityColor(quality);
+			}
+			updateDistillLore(prefix, meta);
+		}
+
+		// Ageing
+		if (ageTime >= 1) {
+			if (toQuality) {
+				quality = ingredients.getAgeQuality(currentRecipe, ageTime);
+				prefix = getQualityColor(quality);
+			}
+			updateAgeLore(prefix, meta);
+		}
+	}
+
+	// sets the DistillLore. Prefix is the color to be used
+	public void updateDistillLore(String prefix, PotionMeta meta) {
+		if (distillRuns > 1) {
+			prefix = prefix + distillRuns + "-fach ";
+		}
+		addOrReplaceLore(meta, prefix, "destilliert");
+	}
+
+	// sets the AgeLore. Prefix is the color to be used
+	public void updateAgeLore(String prefix, PotionMeta meta) {
+		if (ageTime >= 1 && ageTime < 2) {
+			prefix = prefix + "Ein Jahr";
+		} else if (ageTime < 201) {
+			prefix = prefix + (int) Math.floor(ageTime) + " Jahre";
+		} else {
+			prefix = prefix + "Hunderte Jahre";
+		}
+		addOrReplaceLore(meta, prefix, " Fassgereift");
+	}
+
+	// Adds or replaces a line of Lore. Searches for Substring lore and replaces it
 	public static void addOrReplaceLore(PotionMeta meta, String prefix, String lore) {
 		if (meta.hasLore()) {
 			List<String> existingLore = meta.getLore();
@@ -282,6 +371,7 @@ public class Brew {
 		meta.setLore(newLore);
 	}
 
+	// Returns the Index of a String from the list that contains this substring
 	public static int indexOfSubstring(List<String> list, String substring) {
 		for (int index = 0; index < list.size(); index++) {
 			String string = list.get(index);
@@ -290,6 +380,14 @@ public class Brew {
 			}
 		}
 		return -1;
+	}
+
+	// True if the PotionMeta has colored Lore
+	public  static Boolean hasColorLore(PotionMeta meta) {
+		if (meta.hasLore()) {
+			return !meta.getLore().get(1).startsWith(P.p.color("&7"));
+		}
+		return false;
 	}
 
 	// gets the Color that represents a quality in Lore

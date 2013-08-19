@@ -21,7 +21,7 @@ public class BPlayer {
 	public static Map<String, BPlayer> players = new HashMap<String, BPlayer>();// Players name and BPlayer
 	public static Map<Material, Integer> drainItems = new HashMap<Material, Integer>();// DrainItem Material and Strength
 	private static Map<Player, Integer> pTasks = new HashMap<Player, Integer>();// Player and count
-	
+
 	// Settings
 	private static int taskId;
 	public static int pukeItemId;
@@ -391,10 +391,13 @@ public class BPlayer {
 			for (Map.Entry<String, Integer> entry : effects.entrySet()) {
 				PotionEffectType type = PotionEffectType.getByName(entry.getKey().replace("X", ""));
 				if (type != null) {
-					int duration = (entry.getValue() / 8) * brew.getQuality() * 20;
-					int amplifier = brew.getQuality() / 3;
-
-					type.createEffect(duration, amplifier).apply(player);
+					int duration = (entry.getValue() * brew.getQuality()) / 8;
+					if (type.isInstant()) {
+						type.createEffect(0, duration - 1).apply(player);
+					} else {
+						int amplifier = brew.getQuality() / 3;
+						type.createEffect(duration * 20, amplifier).apply(player);
+					}
 				}
 			}
 		}

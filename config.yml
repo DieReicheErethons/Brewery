@@ -60,6 +60,7 @@ autosave: 3
 # alcohol: Alkoholgehalt 0-100 in absoluter Menge bei perfektem Getränk (wird dem Spieler hinzugefügt, bei 100 = tot)
 # effects: Auflistung Effekt/Dauer  Besonderere Trank-Effekte beim Trinken, Dauer in sek. Ein 'X' an den Namen anhängen, um ihn zu verbergen. Bsp: POISONX/10
 # (WEAKNESS, INCREASE_DAMAGE, SLOW und SPEED sind immer verborgen.)  Mögliche Effekte: http://jd.bukkit.org/rb/apidocs/org/bukkit/potion/PotionEffectType.html
+# Bei Effekten mit sofortiger Wirkung (z.B. HEAL) muss anstatt der Dauer das Level angegeben werden.
 
 recipes:
    1:
@@ -166,7 +167,7 @@ recipes:
       color: PINK
       difficulty: 1
       effects:
-      - HEAL
+      - HEAL/1
 
 
 

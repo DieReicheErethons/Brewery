@@ -68,6 +68,9 @@ Auch hier können anhand der Erklärungen und Beispiele bestehende "Wörter" ver
     <td>/br Copy [Anzahl]</td><td>Kopiert den Trank in der Hand. Optional kann die Anzahl angegeben werden</td>
   </tr>
   <tr>
+    <td>/br Delete</td><td>Entfernt den Trank in der Hand</td>
+  </tr>
+  <tr>
     <td>/br Wakeup Add</td><td>Setzen eines neuen Aufwachpunktes an die eigene Position</td>
   </tr>
   <tr>
@@ -112,6 +115,9 @@ Auch hier können anhand der Erklärungen und Beispiele bestehende "Wörter" ver
     <td>brewery.cmd.copy</td><td>Copy</td><td>Kopieren von Tränken per Command</td>
   </tr>
   <tr>
+    <td>brewery.cmd.delete</td><td>Delete</td><td>Entfernen von Tränken per Command</td>
+  </tr>
+  <tr>
     <td>brewery.cmd.reload</td><td>Reload</td><td>Config neuladen</td>
   </tr>
 </table>
@@ -123,6 +129,8 @@ Nach der Installation und Konfiguration kann es ans Brauen von Getränken gehen.
 Um ein sinnvolles Brauen der Getränke zu ermöglichen sollten die Spieler die genaue Zusammensetzung der wertvolleren Rezepte nicht kennen (z.B. Rum). Dies steigert den Wert eines hochqualitativen Getränks stark und ein experimentieren und perfektionieren der Getränke wird gefördert.
 
 Je nach Rezept sind einzelne Arbeitsschritte nicht nötig, diese Anleitung beschreibt den allgemeinen Vorgang des Brauens.
+
+**Hinweis:** Tränke sollten nicht per Creative Mode entfernt oder kopiert werden. Dazu bitte /br copy und /br remove verwenden
 
 ### Gähren
 
@@ -141,7 +149,7 @@ Schritt 1 besteht aus dem Gähren/Fermentieren der Zutaten.
 
 ### Reifen
 
-Für das reifen ist ein Fass notwendig. Dieses kann auf zwei Arten gebaut werden.
+Für die Reifung ist ein Fass notwendig. Dieses kann auf zwei Arten gebaut werden.
 
 **Kleines Fass**
 
@@ -173,11 +181,11 @@ Meldung "Fass wurde erfolgreich erstellt" sollte erscheinen
 
 Das kleine Fass wird mit einem Rechtsklick auf das Schild geöffnet, das Große mit einem Rechtsklick auf den Zapfhahn (Zaun).
 
-Dort hinein kommen nun die Flaschen zum reifen.
+Dort hinein kommen nun die Flaschen zur Reifung.
 
 Je nach Rezept kann die Art des benutzten Holzes über die Qualität des gereiften Trankes entscheiden
 
-Das Fass sollte während des reifens nicht kaputt gehen, da es sonst ausläuft (nach kurzer Zeit).
+Das Fass sollte während der Reifung nicht kaputt gehen, da es sonst ausläuft (nach kurzer Zeit).
 
 Schlägt man den Zapfhahn mit einer Axt ab, so werden alle Getränke herausgeschleudert.
 
@@ -195,7 +203,7 @@ Der Alkoholgehalt des Trankes wird beim trinken auf den Spieler übertragen. Je 
 
 ### Ausnüchtern
 
-Nach dem Trinken dauert es eine Weile, bis der Alkohol wieder verschwunden ist. In der Zeit nimmt der Pegel stetig ab.
+Nach dem Trinken dauert es eine Weile, bis der Alkohol wieder verschwunden ist. In der Zeit nimmt der Pegel stetig ab. Der Alkoholpegel kann auch durch das konsumieren der in der config bestimmten Items gesenkt werden.
 
 * Loggt der Spieler sich stark betrunken aus, kann es sein, dass er sich beim nächsten einloggen (wenn etwas Zeit vergangen ist) an einen ihm völlig unbekannten Ort mitten in der Pampa wiederfindet und keine Ahnung hat wie er dort hingkommen ist
 * Loggt er sich erst nach einigen Stunden oder am nächsten Morgen wieder ein befindet er sich bei seinem home, ebenfalls ohne jede Erinnerung

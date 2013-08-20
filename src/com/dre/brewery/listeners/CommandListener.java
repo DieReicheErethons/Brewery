@@ -78,6 +78,14 @@ public class CommandListener implements CommandExecutor {
 				p.msg(sender, "&cDu hast keine Rechte dies zu tun!");
 			}
 
+		} else if (cmd.equalsIgnoreCase("delete") || cmd.equalsIgnoreCase("rm")) {
+
+			if (p.permission.has(sender, "brewery.cmd.delete")) {
+				cmdDelete(sender);
+			} else {
+				p.msg(sender, "&cDu hast keine Rechte dies zu tun!");
+			}
+
 		} else {
 
 			if (p.getServer().getPlayerExact(cmd) != null || BPlayer.players.containsKey(cmd)) {
@@ -137,6 +145,10 @@ public class CommandListener implements CommandExecutor {
 
 		if (p.permission.has(sender, "brewery.cmd.copy")) {
 			cmds.add ("&6/br Copy <Anzahl>&9 Kopiert den Trank in deiner Hand");
+		}
+
+		if (p.permission.has(sender, "brewery.cmd.delete")) {
+			cmds.add ("&6/br Delete &9Entfernt den Trank in deiner Hand");
 		}
 
 		if (p.permission.has(sender, "brewery.cmd.infoOther")) {
@@ -285,7 +297,7 @@ public class CommandListener implements CommandExecutor {
 				Brew brew = Brew.get(hand);
 				if (brew != null) {
 					while (count > 0) {
-						ItemStack item = brew.copy(player.getItemInHand());
+						ItemStack item = brew.copy(hand);
 						if (!(player.getInventory().addItem(item)).isEmpty()) {
 							P.p.msg(sender, "&6" + count + " &cTränke haben nicht mehr in das Inventar gepasst");
 							return;
@@ -298,6 +310,25 @@ public class CommandListener implements CommandExecutor {
 
 			p.msg(sender, "&cDas Item in deiner Hand konnte nicht als Trank identifiziert werden");
 
+		} else {
+			p.msg(sender, "&cDieser Befehl kann nur als Spieler ausgeführt werden");
+		}
+
+	}
+
+	public void cmdDelete(CommandSender sender) {
+
+		if (sender instanceof Player) {
+			Player player = (Player) sender;
+			ItemStack hand = player.getItemInHand();
+			if (hand != null) {
+				if (Brew.get(hand) != null) {
+					Brew.remove(hand);
+					player.setItemInHand(new ItemStack(0));
+					return;
+				}
+			}
+			p.msg(sender, "&cDas Item in deiner Hand konnte nicht als Trank identifiziert werden");
 		} else {
 			p.msg(sender, "&cDieser Befehl kann nur als Spieler ausgeführt werden");
 		}

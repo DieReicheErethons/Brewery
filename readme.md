@@ -65,6 +65,9 @@ Auch hier können anhand der Erklärungen und Beispiele bestehende "Wörter" ver
     <td>/br [Spieler] [Trunkenheit] [Qualität]</td><td>Setzen der Spielerwerte. Trunkenheit in %, Qualität von 1-10.</td>
   </tr>
   <tr>
+    <td>/br Copy [Anzahl]</td><td>Kopiert den Trank in der Hand. Optional kann die Anzahl angegeben werden</td>
+  </tr>
+  <tr>
     <td>/br Wakeup Add</td><td>Setzen eines neuen Aufwachpunktes an die eigene Position</td>
   </tr>
   <tr>
@@ -104,6 +107,9 @@ Auch hier können anhand der Erklärungen und Beispiele bestehende "Wörter" ver
   </tr>
   <tr>
     <td>brewery.cmd.wakeup</td><td>Wakeup *</td><td>Setzen, Überprüfen und Entfernen von Aufwachpunkten</td>
+  </tr>
+  <tr>
+    <td>brewery.cmd.copy</td><td>Copy</td><td>Kopieren von Tränken per Command</td>
   </tr>
   <tr>
     <td>brewery.cmd.reload</td><td>Reload</td><td>Config neuladen</td>

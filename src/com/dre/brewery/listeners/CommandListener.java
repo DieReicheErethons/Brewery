@@ -6,10 +6,12 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import com.dre.brewery.P;
 import com.dre.brewery.Wakeup;
 import com.dre.brewery.BPlayer;
+import com.dre.brewery.Brew;
 
 public class CommandListener implements CommandExecutor {
 
@@ -64,6 +66,18 @@ public class CommandListener implements CommandExecutor {
 				}
 			}
 
+		} else if (cmd.equalsIgnoreCase("copy") || cmd.equalsIgnoreCase("cp")) {
+
+			if (p.permission.has(sender, "brewery.cmd.copy")) {
+				if (args.length > 1) {
+					cmdCopy(sender, P.p.parseInt(args[1]));
+				} else {
+					cmdCopy(sender, 1);
+				}
+			} else {
+				p.msg(sender, "&cDu hast keine Rechte dies zu tun!");
+			}
+
 		} else {
 
 			if (p.getServer().getPlayerExact(cmd) != null || BPlayer.players.containsKey(cmd)) {
@@ -113,8 +127,20 @@ public class CommandListener implements CommandExecutor {
 		ArrayList<String> cmds = new ArrayList<String>();
 		cmds.add("&6/br help <Seite> &9Zeigt eine bestimmte Hilfeseite an");
 
-		if (p.permission.has(sender, "brewery.cmd.reload")) {
-			cmds.add("&6/br reload &9Config neuladen");
+		if (p.permission.has(sender, "brewery.cmd.player")) {
+			cmds.add ("&6/br <Spieler> <%Trunkenheit> <Qualität>&9 Setzt Trunkenheit (und Qualität) eines Spielers");
+		}
+
+		if (p.permission.has(sender, "brewery.cmd.info")) {
+			cmds.add ("&6/br Info&9 Zeigt deine aktuelle Trunkenheit und Qualität an");
+		}
+
+		if (p.permission.has(sender, "brewery.cmd.copy")) {
+			cmds.add ("&6/br Copy <Anzahl>&9 Kopiert den Trank in deiner Hand");
+		}
+
+		if (p.permission.has(sender, "brewery.cmd.infoOther")) {
+			cmds.add ("&6/br Info <Spieler>&9 Zeigt die aktuelle Trunkenheit und Qualität von <Spieler> an");
 		}
 
 		if (p.permission.has(sender, "brewery.cmd.wakeup")) {
@@ -126,16 +152,8 @@ public class CommandListener implements CommandExecutor {
 			cmds.add("&6/br Wakeup Remove <id> &9Entfernt einen Aufwachpunkt");
 		}
 
-		if (p.permission.has(sender, "brewery.cmd.player")) {
-			cmds.add ("&6/br <Spieler> <%Trunkenheit> <Qualität>&9 Setzt Trunkenheit (und Qualität) eines Spielers");
-		}
-
-		if (p.permission.has(sender, "brewery.cmd.info")) {
-			cmds.add ("&6/br Info&9 Zeigt deine aktuelle Trunkenheit und Qualität an");
-		}
-
-		if (p.permission.has(sender, "brewery.cmd.infoOther")) {
-			cmds.add ("&6/br Info <Spieler>&9 Zeigt die aktuelle Trunkenheit und Qualität von <Spieler> an");
+		if (p.permission.has(sender, "brewery.cmd.reload")) {
+			cmds.add("&6/br reload &9Config neuladen");
 		}
 
 		return cmds;
@@ -249,6 +267,39 @@ public class CommandListener implements CommandExecutor {
 			p.msg(sender, playerName + " ist nicht betrunken");
 		} else {
 			p.msg(sender, playerName + " ist &6" + bPlayer.getDrunkeness() + "% &fbetrunken, mit einer Qualität von &6" + bPlayer.getQuality());
+		}
+
+	}
+
+	public void cmdCopy(CommandSender sender, int count) {
+
+		if (sender instanceof Player) {
+			if (count < 1 || count > 36) {
+				p.msg(sender, "Benutzung:");
+				p.msg(sender, "&6/br Copy <Anzahl>");
+				return;
+			}
+			Player player = (Player) sender;
+			ItemStack hand = player.getItemInHand();
+			if (hand != null) {
+				Brew brew = Brew.get(hand);
+				if (brew != null) {
+					while (count > 0) {
+						ItemStack item = brew.copy(player.getItemInHand());
+						if (!(player.getInventory().addItem(item)).isEmpty()) {
+							P.p.msg(sender, "&6" + count + " &cTränke haben nicht mehr in das Inventar gepasst");
+							return;
+						}
+						count--;
+					}
+					return;
+				}
+			}
+
+			p.msg(sender, "&cDas Item in deiner Hand konnte nicht als Trank identifiziert werden");
+
+		} else {
+			p.msg(sender, "&cDieser Befehl kann nur als Spieler ausgeführt werden");
 		}
 
 	}

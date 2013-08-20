@@ -72,16 +72,16 @@ public class Brew {
 	}
 
 	// returns a Brew by ItemStack
-/*	public static Brew get(ItemStack item) {
- *		if (item.getTypeId() == 373) {
- *			if (item.hasItemMeta()) {
- *				PotionMeta potionMeta = (PotionMeta) item.getItemMeta();
- *				return get(potionMeta);
- *			}
- *		}
- *		return null;
- *	}
- */
+	public static Brew get(ItemStack item) {
+		if (item.getTypeId() == 373) {
+			if (item.hasItemMeta()) {
+				PotionMeta potionMeta = (PotionMeta) item.getItemMeta();
+				return get(potionMeta);
+			}
+		}
+		return null;
+	}
+
 
 	// returns UID of custom Potion item
 	public static int getUID(ItemStack item) {
@@ -114,6 +114,26 @@ public class Brew {
 			uid -= 1;
 		}
 		return uid;
+	}
+
+
+	// Copy a Brew with a new unique ID and return its item
+	public ItemStack copy(ItemStack item) {
+		ItemStack copy = item.clone();
+		int uid = generateUID();
+		clone(uid);
+		PotionMeta meta = (PotionMeta) copy.getItemMeta();
+		meta.addCustomEffect((PotionEffectType.REGENERATION).createEffect((uid * 4), 0), true);
+		copy.setItemMeta(meta);
+		return copy;
+	}
+
+	// Clones this instance with a new unique ID
+	public Brew clone(int uid) {
+		Brew brew = new Brew(uid, quality, currentRecipe, ingredients);
+		brew.distillRuns = distillRuns;
+		brew.ageTime = ageTime;
+		return brew;
 	}
 
 	// calculate alcohol from recipe

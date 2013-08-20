@@ -43,13 +43,17 @@ public class PlayerListener implements Listener {
 
 							// fill a glass bottle with potion
 						} else if (materialInHand == Material.GLASS_BOTTLE) {
-							if (BCauldron.fill(player, clickedBlock)) {
-								event.setCancelled(true);
-								if (item.getAmount() > 1) {
-									item.setAmount(item.getAmount() - 1);
-								} else {
-									player.setItemInHand(new ItemStack(0));
+							if (player.getInventory().firstEmpty() != -1 || item.getAmount() == 1) {
+								if (BCauldron.fill(player, clickedBlock)) {
+									event.setCancelled(true);
+									if (item.getAmount() > 1) {
+										item.setAmount(item.getAmount() - 1);
+									} else {
+										player.setItemInHand(new ItemStack(0));
+									}
 								}
+							} else {
+								event.setCancelled(true);
 							}
 
 							// reset cauldron when refilling to prevent

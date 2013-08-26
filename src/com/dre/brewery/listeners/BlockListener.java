@@ -21,7 +21,7 @@ public class BlockListener implements Listener {
 
 		if (lines[0].equalsIgnoreCase("Fass")) {
 			if (Barrel.create(event.getBlock())) {
-				P.p.msg(event.getPlayer(), "Fass erfolgreich erstellt");
+				P.p.msg(event.getPlayer(), P.p.languageReader.get("Player_BarrelCreated"));
 			}
 		}
 	}

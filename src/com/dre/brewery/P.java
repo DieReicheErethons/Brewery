@@ -14,6 +14,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.apache.commons.lang.math.NumberUtils;
+
 import net.milkbowl.vault.permission.Permission;
 
 import org.bukkit.event.HandlerList;
@@ -26,6 +27,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 
 import com.dre.brewery.listeners.*;
+import com.dre.managerxl.LanguageReader;
 
 public class P extends JavaPlugin {
 	public static P p;
@@ -40,6 +42,10 @@ public class P extends JavaPlugin {
 	public InventoryListener inventoryListener;
 	public WorldListener worldListener;
 
+	// Language
+	public String language;
+	public LanguageReader languageReader;
+
 	public Permission permission = null;
 
 	@Override
@@ -48,6 +54,9 @@ public class P extends JavaPlugin {
 
 		readConfig();
 		readData();
+
+		// Load LanguageReader
+		languageReader = new LanguageReader(new File(p.getDataFolder(), "languages/" + language + ".yml"));
 
 		initPermissions();
 
@@ -141,7 +150,6 @@ public class P extends JavaPlugin {
 		BPlayer.enableHome = config.getBoolean("enableHome", false);
 		BPlayer.enableLoginDisallow = config.getBoolean("enableLoginDisallow", false);
 		BPlayer.enablePuke = config.getBoolean("enablePuke", false);
-		BPlayer.wakeString = config.getString("wakeString", "Ohh nein! Ich kann mich nicht erinnern, wie ich hier hergekommen bin...");
 		BPlayer.homeType = config.getString("homeType", null);
 		Brew.colorInBarrels = config.getBoolean("colorInBarrels", false);
 		Brew.colorInBrewer = config.getBoolean("colorInBrewer", false);
@@ -423,10 +431,7 @@ public class P extends JavaPlugin {
 		p.log("Writing Data to File (" + ftime + "ms)");
 	}
 
-
-
 	// Utility
-
 
 	public int parseInt(String string) {
 		return NumberUtils.toInt(string, 0);
@@ -461,7 +466,7 @@ public class P extends JavaPlugin {
 	}
 
 	// prints a list of Strings at the specified page
-	public void list (CommandSender sender, ArrayList<String> strings, int page) {
+	public void list(CommandSender sender, ArrayList<String> strings, int page) {
 		int pages = (int) Math.ceil(strings.size() / 7F);
 		if (page > pages || page < 1) {
 			page = 1;
@@ -508,8 +513,6 @@ public class P extends JavaPlugin {
 
 		return msg;
 	}
-
-
 
 	// Runnables
 

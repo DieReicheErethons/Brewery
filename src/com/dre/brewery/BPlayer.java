@@ -29,7 +29,6 @@ public class BPlayer {
 	public static boolean enableHome;
 	public static boolean enableLoginDisallow;
 	public static boolean enablePuke;
-	public static String wakeString;
 	public static String homeType;
 
 	private int quality = 0;// = quality of drunkeness * drunkeness
@@ -260,7 +259,7 @@ public class BPlayer {
 			Location randomLoc = Wakeup.getRandom(player.getLocation());
 			if (randomLoc != null) {
 				player.teleport(randomLoc);
-				P.p.msg(player, wakeString);
+				P.p.msg(player, "");
 			}
 		}
 

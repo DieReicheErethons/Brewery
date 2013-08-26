@@ -201,7 +201,7 @@ public class CommandListener implements CommandExecutor {
 				Wakeup.remove(sender, id);
 			} else {
 				p.msg(sender, "Benutzung:");
-				p.msg(sender, "&6/br Wakeup Remove <id>");
+				p.msg(sender, "&6/br wakeup Remove <id>");
 			}
 
 		} else if (args[1].equalsIgnoreCase("check")){
@@ -299,7 +299,7 @@ public class CommandListener implements CommandExecutor {
 					while (count > 0) {
 						ItemStack item = brew.copy(hand);
 						if (!(player.getInventory().addItem(item)).isEmpty()) {
-							P.p.msg(sender, "&6" + count + " &cTränke haben nicht mehr in das Inventar gepasst");
+							p.msg(sender, "&6" + count + " &cTränke haben nicht mehr in das Inventar gepasst");
 							return;
 						}
 						count--;

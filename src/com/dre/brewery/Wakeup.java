@@ -12,10 +12,6 @@ public class Wakeup {
 
 	public static ArrayList<Wakeup> wakeups = new ArrayList<Wakeup>();
 	public static P p = P.p;
-	//public static ChatColor g = ChatColor.GOLD;
-	//public static ChatColor w = ChatColor.WHITE;
-	//public static ChatColor r = ChatColor.RED;
-	//public static ChatColor gr = ChatColor.GREEN;
 	public static int checkId = -1;
 	public static Player checkPlayer = null;
 

@@ -41,7 +41,7 @@ drainItems:
 
 # Färben der Iteminformationen je nach Qualität während sie sich 1. im Fass und/oder 2. im Braustand befinden
 colorInBarrels: true
-colorInBrewer: true
+colorInBrewer: false
 
 # Autosave Intervall in Minuten
 autosave: 3
@@ -49,11 +49,11 @@ autosave: 3
 
 # Rezepte für Getränke
 
-# name: Verschiedene Namen für schlecht/mittel/gut
+# name: Verschiedene Namen für schlecht/mittel/gut (Farbcodes möglich: z.b. &6)
 # ingredients: Auflistung von material/Anzahl
 # cookingtime: Zeit in Echtminuten die die Zutaten kochen müssen
-# distillruns: Wie oft destilliert werden muss 0-10 (0=ohne Destillieren)
-# wood: Holz des Fasses 0=alle Holzsorten 1=Birch 2=Oak 3=Jungle 4=Pine
+# distillruns: Wie oft destilliert werden muss für vollen Alkoholgehalt (0=ohne Destillieren)
+# wood: Holz des Fasses 0=alle Holzsorten 1=Birch 2=Oak 3=Jungle 4=Spruce
 # age: Zeit in Minecraft-Tagen, die das Getränk im Fass reifen muss 0= kein reifen
 # color: Farbe des Getränks nach destillieren/reifen. DARK_RED, RED, BRIGHT_RED, ORANGE, PINK, BLUE, CYAN, WATER, GREEN, BLACK, GREY, BRIGHT_GREY
 # difficulty: 1-10 Genauigkeit der Einhaltung der Vorgaben (1 = ungenau/einfach 10 = sehr genau/schwer)
@@ -97,7 +97,7 @@ recipes:
       difficulty: 2
       alcohol: 7
    4:
-      name: Scheußlicher Met/Met/Goldener Met
+      name: Scheußlicher Met/Met/&6Goldener Met
       ingredients: 
       - SUGAR_CANE/6
       cookingtime: 3
@@ -108,7 +108,7 @@ recipes:
       difficulty: 2
       alcohol: 9
    5:
-      name: Apfelmet/Süßer Apfelmet/Goldensüßer Apfelmet
+      name: Apfelmet/Süßer Apfelmet/&6Goldensüßer Apfelmet
       ingredients: 
       - SUGAR_CANE/6
       - APPLE/2
@@ -122,7 +122,7 @@ recipes:
       effects:
       - WATER_BREATHINGX/150
    6:
-      name: Bitterer Rum/Würziger Rum/Goldener Rum
+      name: Bitterer Rum/Würziger Rum/&6Goldener Rum
       ingredients: 
       - SUGAR_CANE/14
       cookingtime: 5

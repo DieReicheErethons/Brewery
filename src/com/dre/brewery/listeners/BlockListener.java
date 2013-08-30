@@ -7,7 +7,6 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 
 import com.dre.brewery.BCauldron;
 import com.dre.brewery.Barrel;
@@ -31,12 +30,9 @@ public class BlockListener implements Listener {
 		Block block = event.getBlock();
 		// remove cauldron
 		if (block.getType() == Material.CAULDRON) {
-			if (block.getRelative(BlockFace.DOWN).getType() == Material.FIRE || block.getRelative(BlockFace.DOWN).getType() == Material.STATIONARY_LAVA
-					|| block.getRelative(BlockFace.DOWN).getType() == Material.LAVA) {
-				if (block.getData() != 0) {
-					// will only remove when existing
-					BCauldron.remove(block);
-				}
+			if (block.getData() != 0) {
+				// will only remove when existing
+				BCauldron.remove(block);
 			}
 			// remove barrel and throw potions on the ground
 		} else if (block.getType() == Material.FENCE || block.getType() == Material.NETHER_FENCE) {

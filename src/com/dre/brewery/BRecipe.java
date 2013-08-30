@@ -84,7 +84,7 @@ public class BRecipe {
 	}
 
 	// difference between given and recipe-wanted woodtype
-	public float getWoodDiff(byte wood) {
+	public int getWoodDiff(byte wood) {
 		int woodType = 0;
 		if (wood == 0x0) {
 			woodType = 2;
@@ -95,7 +95,7 @@ public class BRecipe {
 		} else if (wood == 0x3) {
 			woodType = 3;
 		}
-		return Math.abs(woodType - wood);
+		return Math.abs(woodType - this.wood);
 	}
 
 	public boolean isCookingOnly() {

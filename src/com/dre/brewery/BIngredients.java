@@ -139,8 +139,8 @@ public class BIngredients {
 					// needs riping in barrel
 					ageQuality = getAgeQuality(recipe, time);
 					woodQuality = getWoodQuality(recipe, wood);
-					P.p.log("Ingredient Quality: " + ingredientQuality + " Cooking Quality: " + cookingQuality + " Wood Quality: " + getWoodQuality(recipe, wood) + 
-						" age Quality: " + getAgeQuality(recipe, time) + " for " + recipe.getName(5));
+					P.p.log("Ingredient Quality: " + ingredientQuality + " Cooking Quality: " + cookingQuality + " Wood Quality: " + woodQuality + 
+						" age Quality: " + ageQuality + " for " + recipe.getName(5));
 
 					// is this recipe better than the previous best?
 					if ((((float) ingredientQuality + cookingQuality + woodQuality + ageQuality) / 4) > quality) {
@@ -269,7 +269,7 @@ public class BIngredients {
 			// type of wood doesnt matter
 			return 10;
 		}
-		int quality = 10 - (int) Math.round(recipe.getWoodDiff(wood) * recipe.getDifficulty());
+		int quality = 10 - (recipe.getWoodDiff(wood) * recipe.getDifficulty());
 
 		if (quality > 0) {
 			return quality;

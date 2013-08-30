@@ -56,10 +56,12 @@ public class InventoryListener implements Listener {
 			if (event.getSlot() > 2) {
 				return;
 			}
-		} else if (event.getInventory().getType() != InventoryType.CHEST) {
+		} else if (event.getInventory().getType() == InventoryType.CHEST) {
 			if (!event.getInventory().getTitle().equals("Fass")) {
 				return;
 			}
+		} else {
+			return;
 		}
 
 		ItemStack item = event.getCurrentItem();
@@ -69,8 +71,10 @@ public class InventoryListener implements Listener {
 					PotionMeta meta = (PotionMeta) item.getItemMeta();
 					Brew brew = Brew.get(meta);
 					if (brew != null) {
-						brew.convertLore(meta, false);
-						item.setItemMeta(meta);
+						if (Brew.hasColorLore(meta)) {
+							brew.convertLore(meta, false);
+							item.setItemMeta(meta);
+						}
 					}
 				}
 			}

@@ -86,6 +86,14 @@ public class CommandListener implements CommandExecutor {
 				p.msg(sender, "&cDu hast keine Rechte dies zu tun!");
 			}
 
+		} else if (cmd.equalsIgnoreCase("unlabel")) {
+
+			if (p.permission.has(sender, "brewery.cmd.unlabel")) {
+				cmdUnlabel(sender);
+			} else {
+				p.msg(sender, "&cDu hast keine Rechte dies zu tun!");
+			}
+
 		} else {
 
 			if (p.getServer().getPlayerExact(cmd) != null || BPlayer.players.containsKey(cmd)) {
@@ -141,6 +149,10 @@ public class CommandListener implements CommandExecutor {
 
 		if (p.permission.has(sender, "brewery.cmd.info")) {
 			cmds.add ("&6/br Info&9 Zeigt deine aktuelle Trunkenheit und Qualität an");
+		}
+
+		if (p.permission.has(sender, "brewery.cmd.unlabel")) {
+			cmds.add ("&6/br UnLabel &9Entfernt die genaue Beschriftung des Trankes");
 		}
 
 		if (p.permission.has(sender, "brewery.cmd.copy")) {
@@ -325,6 +337,26 @@ public class CommandListener implements CommandExecutor {
 				if (Brew.get(hand) != null) {
 					Brew.remove(hand);
 					player.setItemInHand(new ItemStack(0));
+					return;
+				}
+			}
+			p.msg(sender, "&cDas Item in deiner Hand konnte nicht als Trank identifiziert werden");
+		} else {
+			p.msg(sender, "&cDieser Befehl kann nur als Spieler ausgeführt werden");
+		}
+
+	}
+
+	public void cmdUnlabel(CommandSender sender) {
+
+		if (sender instanceof Player) {
+			Player player = (Player) sender;
+			ItemStack hand = player.getItemInHand();
+			if (hand != null) {
+				Brew brew = Brew.get(hand);
+				if (brew != null) {
+					brew.unLabel(hand);
+					p.msg(sender, "&aDas Label wurde entfernt");
 					return;
 				}
 			}

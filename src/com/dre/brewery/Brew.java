@@ -29,6 +29,7 @@ public class Brew {
 	private int distillRuns;
 	private float ageTime;
 	private BRecipe currentRecipe;
+	private boolean unlabeled;
 
 	public Brew(int uid, BIngredients ingredients) {
 		this.ingredients = ingredients;
@@ -44,12 +45,13 @@ public class Brew {
 	}
 
 	// loading from file
-	public Brew(int uid, BIngredients ingredients, int quality, int distillRuns, float ageTime, String recipe) {
+	public Brew(int uid, BIngredients ingredients, int quality, int distillRuns, float ageTime, String recipe, Boolean unlabeled) {
 		this.ingredients = ingredients;
 		this.quality = quality;
 		this.distillRuns = distillRuns;
 		this.ageTime = ageTime;
 		this.currentRecipe = BIngredients.getRecipeByName(recipe);
+		this.unlabeled = unlabeled;
 		potions.put(uid, this);
 	}
 
@@ -133,21 +135,38 @@ public class Brew {
 		Brew brew = new Brew(uid, quality, currentRecipe, ingredients);
 		brew.distillRuns = distillRuns;
 		brew.ageTime = ageTime;
+		brew.unlabeled = unlabeled;
 		return brew;
 	}
 
 	// calculate alcohol from recipe
 	public int calcAlcohol() {
+		if (quality == 0) {
+			// Give bad potions some alc
+			if (distillRuns > 1) {
+				return distillRuns;
+			} else {
+				return 1;
+			}
+		}
 		if (currentRecipe != null) {
 			int alc = currentRecipe.getAlcohol();
-			alc *= ((float) quality / 10.0);
 			if (currentRecipe.needsDistilling()) {
-				// distillable Potions should have full alc after 6 distills
-				float factor = 1.4F / (distillRuns + 1);
-				factor += 0.8;
-				alc /= factor;
+				if (distillRuns == 0) {
+					return 0;
+				}
+				// bad quality can decrease alc by up to 40%
+				alc *= 1 - ((float) (10 - quality) * 0.04);
+				// distillable Potions should have half alc after one and full alc after all needed distills
+				alc /= 2;
+				alc *= 1.0F + ((float) distillRuns / currentRecipe.getDistillRuns()) ;
+			} else {
+				// quality decides 10% - 100%
+				alc *= ((float) quality / 10.0);
 			}
-			return alc;
+			if (alc > 0) {
+				return alc;
+			}
 		}
 		return 0;
 	}
@@ -171,22 +190,35 @@ public class Brew {
 	}
 
 	public boolean canDistill() {
-		if (distillRuns >= 6) {
+		if (currentRecipe != null) {
+			return currentRecipe.getDistillRuns() > distillRuns;
+		} else if (distillRuns >= 6) {
 			return false;
-		} else {
-			if (currentRecipe != null) {
-				return currentRecipe.needsDistilling();
-			}
 		}
 		return true;
 	}
 
 	// return special effect
 	public Map<String, Integer> getEffects() {
-		if (currentRecipe != null) {
+		if (currentRecipe != null && quality > 0) {
 			return currentRecipe.getEffects();
 		}
 		return null;
+	}
+
+	// Set unlabeled to true to hide the numbers in Lore
+	public void unLabel(ItemStack item) {
+		PotionMeta meta = (PotionMeta) item.getItemMeta();
+		if (meta.hasLore()) {
+			if (distillRuns > 0) {
+				addOrReplaceLore(meta, P.p.color("&7"), "Destilliert");
+			}
+			if (ageTime >= 1) {
+				addOrReplaceLore(meta, P.p.color("&7"), "Fassgereift");
+			}
+			item.setItemMeta(meta);
+		}
+		unlabeled = true;
 	}
 
 	// Distilling section ---------------
@@ -196,104 +228,87 @@ public class Brew {
 		int slot = 0;
 		while (slot < 3) {
 			if (contents[slot]) {
-				distillSlot(inv, slot);
+				ItemStack slotItem = inv.getItem(slot);
+				PotionMeta potionMeta = (PotionMeta) slotItem.getItemMeta();
+				Brew brew = get(potionMeta);
+				brew.distillSlot(slotItem, potionMeta);
 			}
 			slot++;
 		}
 	}
 
 	// distill custom potion in given slot
-	public static void distillSlot(BrewerInventory inv, int slot) {
-		ItemStack slotItem = inv.getItem(slot);
-		PotionMeta potionMeta = (PotionMeta) slotItem.getItemMeta();
-		Brew brew = get(potionMeta);
-		BRecipe recipe = brew.ingredients.getdistillRecipe();
-
+	public void distillSlot(ItemStack slotItem, PotionMeta potionMeta) {
+		distillRuns += 1;
+		BRecipe recipe = ingredients.getdistillRecipe();
 		if (recipe != null) {
 			// distillRuns will have an effect on the amount of alcohol, not the quality
-			brew.quality = brew.calcQuality(recipe, (byte) 0, true);
-			brew.distillRuns += 1;
-			brew.currentRecipe = recipe;
+			quality = calcQuality(recipe, (byte) 0, true);
+			currentRecipe = recipe;
+			P.p.log("destilled " + recipe.getName(5) + " has Quality: " + quality + ", alc: " + calcAlcohol());
 
-			// Distill Lore
-			if (colorInBrewer != hasColorLore(potionMeta)) {
-				brew.convertLore(potionMeta, colorInBrewer);
-			} else {
-				String prefix = P.p.color("&7");
-				if (colorInBrewer) {
-					prefix = getQualityColor(brew.ingredients.getDistillQuality(recipe, brew.distillRuns));
-				}
-				brew.updateDistillLore(prefix, potionMeta);
-			}
-			addOrReplaceEffects(potionMeta, brew.getEffects());
-
-			P.p.log("destilled " + recipe.getName(5) + " has Quality: " + brew.quality + ", alc: " + brew.calcAlcohol());
-
-			potionMeta.setDisplayName(P.p.color("&f" + recipe.getName(brew.quality)));
-
-			// if the potion should be further distillable
-			if (recipe.getDistillRuns() > 1 && brew.distillRuns <= 5) {
-				slotItem.setDurability(PotionColor.valueOf(recipe.getColor()).getColorId(true));
-			} else {
-				slotItem.setDurability(PotionColor.valueOf(recipe.getColor()).getColorId(false));
-			}
+			addOrReplaceEffects(potionMeta, getEffects());
+			potionMeta.setDisplayName(P.p.color("&f" + recipe.getName(quality)));
+			slotItem.setDurability(PotionColor.valueOf(recipe.getColor()).getColorId(canDistill()));
 		} else {
+			quality = 0;
 			potionMeta.setDisplayName(P.p.color("&f" + "Undefinierbares Destillat"));
-			slotItem.setDurability(PotionColor.GREY.getColorId(brew.distillRuns <= 5));
+			slotItem.setDurability(PotionColor.GREY.getColorId(canDistill()));
 		}
+
+		// Distill Lore
+		if (currentRecipe != null) {
+			if (colorInBrewer != hasColorLore(potionMeta)) {
+				convertLore(potionMeta, colorInBrewer);
+			}
+		}
+		String prefix = P.p.color("&7");
+		if (colorInBrewer && currentRecipe != null) {
+			prefix = getQualityColor(ingredients.getDistillQuality(recipe, distillRuns));
+		}
+		updateDistillLore(prefix, potionMeta);
 
 		slotItem.setItemMeta(potionMeta);
 	}
 
 	// Ageing Section ------------------
 
-	public static void age(ItemStack item, float time, byte wood) {
+	public void age(ItemStack item, float time, byte wood) {
 		PotionMeta potionMeta = (PotionMeta) item.getItemMeta();
-		Brew brew = get(potionMeta);
-		if (brew != null) {
-			brew.ageTime += time;
-			// if younger than half a day, it shouldnt get aged form
-			if (brew.ageTime > 0.5) {
-				BRecipe recipe = brew.ingredients.getAgeRecipe(wood, brew.ageTime, brew.distillRuns > 0);
-				if (recipe != null) {
-					brew.quality = brew.calcQuality(recipe, wood, brew.distillRuns > 0);
-					brew.currentRecipe = recipe;
-					P.p.log("Final " + recipe.getName(5) + " has Quality: " + brew.quality);
+		ageTime += time;
+		
+		// if younger than half a day, it shouldnt get aged form
+		if (ageTime > 0.5) {
+			BRecipe recipe = ingredients.getAgeRecipe(wood, ageTime, distillRuns > 0);
+			if (recipe != null) {
+				currentRecipe = recipe;
+				quality = calcQuality(recipe, wood, distillRuns > 0);
+				P.p.log("Final " + recipe.getName(5) + " has Quality: " + quality + ", alc: " + calcAlcohol());
 
-					potionMeta.setDisplayName(P.p.color("&f" + recipe.getName(brew.quality)));
-					item.setDurability(PotionColor.valueOf(recipe.getColor()).getColorId(false));
-				}
-			}
-
-			// Lore
-			if (colorInBarrels != hasColorLore(potionMeta)) {
-				brew.convertLore(potionMeta, colorInBarrels);
+				addOrReplaceEffects(potionMeta, getEffects());
+				potionMeta.setDisplayName(P.p.color("&f" + recipe.getName(quality)));
+				item.setDurability(PotionColor.valueOf(recipe.getColor()).getColorId(canDistill()));
 			} else {
-				if (brew.ageTime >= 1) {
-					String prefix = P.p.color("&7");
-					if (colorInBarrels) {
-						prefix = getQualityColor(brew.ingredients.getAgeQuality(brew.currentRecipe, brew.ageTime));
-					}
-					brew.updateAgeLore(prefix, potionMeta);
-					addOrReplaceEffects(potionMeta, brew.getEffects());
-				}
+				quality = 0;
+				potionMeta.setDisplayName(P.p.color("&f" + "Verdorbenes Getränk"));
+				item.setDurability(PotionColor.GREY.getColorId(canDistill()));
 			}
-			item.setItemMeta(potionMeta);
 		}
-	}
 
-	public static void addOrReplaceEffects(PotionMeta meta, Map<String, Integer> effects) {
-		if (effects != null) {
-			for (Map.Entry<String, Integer> entry : effects.entrySet()) {
-				if (!entry.getKey().endsWith("X")) {
-					PotionEffectType type = PotionEffectType.getByName(entry.getKey());
-					if (type != null) {
-						meta.addCustomEffect(type.createEffect(0, 0), true);
-					}
-				}
+		// Lore
+		if (currentRecipe != null) {
+			if (colorInBarrels != hasColorLore(potionMeta)) {
+				convertLore(potionMeta, colorInBarrels);
 			}
-
 		}
+		if (ageTime >= 1) {
+			String prefix = P.p.color("&7");
+			if (colorInBarrels && currentRecipe != null) {
+				prefix = getQualityColor(ingredients.getAgeQuality(currentRecipe, ageTime));
+			}
+			updateAgeLore(prefix, potionMeta);
+		}
+		item.setItemMeta(potionMeta);
 	}
 
 	// Lore -----------
@@ -303,17 +318,13 @@ public class Brew {
 		if (currentRecipe == null) {
 			return;
 		}
-		if (meta == null) {
-			P.p.log("has no meta");
-			return;
-		}
 		meta.setLore(null);
-
-		// Ingredients
 		int quality;
 		String prefix = P.p.color("&7");
 		String lore;
-		if (toQuality) {
+
+		// Ingredients
+		if (toQuality && !unlabeled) {
 			quality = ingredients.getIngredientQuality(currentRecipe);
 			prefix = getQualityColor(quality);
 			lore = "Zutaten";
@@ -321,7 +332,7 @@ public class Brew {
 		}
 
 		// Cooking
-		if (toQuality) {
+		if (toQuality && !unlabeled) {
 			if (distillRuns > 0 == currentRecipe.needsDistilling()) {
 				quality = ingredients.getCookingQuality(currentRecipe, distillRuns > 0);
 				prefix = getQualityColor(quality) + ingredients.getCookedTime() + " minute";
@@ -354,22 +365,26 @@ public class Brew {
 
 	// sets the DistillLore. Prefix is the color to be used
 	public void updateDistillLore(String prefix, PotionMeta meta) {
-		if (distillRuns > 1) {
-			prefix = prefix + distillRuns + "-fach ";
+		if (!unlabeled) {
+			if (distillRuns > 1) {
+				prefix = prefix + distillRuns + "-fach ";
+			}
 		}
-		addOrReplaceLore(meta, prefix, "destilliert");
+		addOrReplaceLore(meta, prefix, "Destilliert");
 	}
 
 	// sets the AgeLore. Prefix is the color to be used
 	public void updateAgeLore(String prefix, PotionMeta meta) {
-		if (ageTime >= 1 && ageTime < 2) {
-			prefix = prefix + "Ein Jahr";
-		} else if (ageTime < 201) {
-			prefix = prefix + (int) Math.floor(ageTime) + " Jahre";
-		} else {
-			prefix = prefix + "Hunderte Jahre";
+		if (!unlabeled) {
+			if (ageTime >= 1 && ageTime < 2) {
+				prefix = prefix + "Ein Jahr ";
+			} else if (ageTime < 201) {
+				prefix = prefix + (int) Math.floor(ageTime) + " Jahre ";
+			} else {
+				prefix = prefix + "Hunderte Jahre ";
+			}
 		}
-		addOrReplaceLore(meta, prefix, " Fassgereift");
+		addOrReplaceLore(meta, prefix, "Fassgereift");
 	}
 
 	// Adds or replaces a line of Lore. Searches for Substring lore and replaces it
@@ -389,6 +404,20 @@ public class Brew {
 		newLore.add("");
 		newLore.add(prefix + lore);
 		meta.setLore(newLore);
+	}
+
+	// Adds the Effect names to the Items description
+	public static void addOrReplaceEffects(PotionMeta meta, Map<String, Integer> effects) {
+		if (effects != null) {
+			for (Map.Entry<String, Integer> entry : effects.entrySet()) {
+				if (!entry.getKey().endsWith("X")) {
+					PotionEffectType type = PotionEffectType.getByName(entry.getKey());
+					if (type != null) {
+						meta.addCustomEffect(type.createEffect(0, 0), true);
+					}
+				}
+			}
+		}
 	}
 
 	// Returns the Index of a String from the list that contains this substring
@@ -444,6 +473,9 @@ public class Brew {
 			}
 			if (brew.currentRecipe != null) {
 				idConfig.set("recipe", brew.currentRecipe.getName(5));
+			}
+			if (brew.unlabeled) {
+				idConfig.set("unlabeled", true);
 			}
 			// save the ingredients
 			brew.ingredients.save(idConfig.createSection("ingredients"));

@@ -79,13 +79,13 @@ public class Barrel {
 			if (inventory.getViewers().isEmpty()) {
 				// if inventory contains potions
 				if (inventory.contains(373)) {
+					byte wood = getWood();
 					long loadTime = System.nanoTime();
 					for (ItemStack item : inventory.getContents()) {
 						if (item != null) {
-							if (item.getTypeId() == 373) {
-								if (item.hasItemMeta()) {
-									Brew.age(item, time, getWood());
-								}
+							Brew brew = Brew.get(item);
+							if (brew != null) {
+								brew.age(item, time, wood);
 							}
 						}
 					}
@@ -129,9 +129,10 @@ public class Barrel {
 			ItemStack[] items = inventory.getContents();
 			for (ItemStack item : items) {
 				if (item != null) {
-					if (item.getTypeId() == 373) {
+					Brew brew = Brew.get(item);
+					if (brew != null) {
 						// Brew before throwing
-						Brew.age(item, time, getWood());
+						brew.age(item, time, getWood());
 					}
 					// "broken" is the block that destroyed, throw them there!
 					if (broken != null) {

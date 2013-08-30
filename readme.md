@@ -65,6 +65,9 @@ Auch hier können anhand der Erklärungen und Beispiele bestehende "Wörter" ver
     <td>/br [Spieler] [Trunkenheit] [Qualität]</td><td>Setzen der Spielerwerte. Trunkenheit in %, Qualität von 1-10.</td>
   </tr>
   <tr>
+    <td>/br UnLabel</td><td>Versteckt die genauen Zahlen in der Beschriftung des Trankes in der Hand unwiederbringlich</td>
+  </tr>
+  <tr>
     <td>/br Copy [Anzahl]</td><td>Kopiert den Trank in der Hand. Optional kann die Anzahl angegeben werden</td>
   </tr>
   <tr>
@@ -98,6 +101,9 @@ Auch hier können anhand der Erklärungen und Beispiele bestehende "Wörter" ver
 <table>
   <tr>
     <th>Permission</th><th>Ermöglichter Befehl</th><th>Beschreibung</th>
+  </tr>
+  <tr>
+    <td>brewery.cmd.unlabel</td><td>UnLabel</td><td>Teile der Trankbeschriftung verstecken</td>
   </tr>
   <tr>
     <td>brewery.cmd.info</td><td>Info</td><td>Informationen über die eigene Trunkenheit</td>

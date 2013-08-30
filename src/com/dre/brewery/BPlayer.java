@@ -73,8 +73,9 @@ public class BPlayer {
 		return org.bukkit.Bukkit.getPlayer(getPlayerName());
 	}*/
 
+	// returns the Player if online
 	public static Player getPlayer(String name) {
-		return org.bukkit.Bukkit.getPlayer(name);
+		return org.bukkit.Bukkit.getPlayerExact(name);
 	}
 
 	// returns true if drinking was successful
@@ -93,14 +94,16 @@ public class BPlayer {
 				players.put(player.getName(), bPlayer);
 			}
 			bPlayer.drunkeness += brewAlc;
-			bPlayer.quality += brew.getQuality() * brewAlc;
+			if (brew.getQuality() > 0) {
+				bPlayer.quality += brew.getQuality() * brewAlc;
+			} else {
+				bPlayer.quality += brewAlc;
+			}
 
 			if (bPlayer.drunkeness <= 100) {
 
 				addBrewEffects(brew, player);
-				if (brew.getQuality() < 5) {
-					addQualityEffects(brew.getQuality(), brewAlc, player);
-				}
+				addQualityEffects(brew.getQuality(), brewAlc, player);
 
 			} else {
 				bPlayer.drinkCap(player);
@@ -196,6 +199,9 @@ public class BPlayer {
 		passedOut = true;
 	}
 
+
+	// #### Login ####
+
 	// can the player login or is he too drunk
 	public int canJoin() {
 		if (drunkeness <= 70) {
@@ -290,13 +296,8 @@ public class BPlayer {
 		}
 	}
 
-	public void hangoverEffects(final Player player) {
-		int duration = offlineDrunk * 50 * getHangoverQuality();
-		int amplifier = getHangoverQuality() / 3;
 
-		PotionEffectType.SLOW.createEffect(duration, amplifier).apply(player);
-		PotionEffectType.HUNGER.createEffect(duration, amplifier).apply(player);
-	}
+	// #### Puking ####
 
 	// Chance that players puke on big drunkeness
 	// runs every 6 sec, average chance is 10%, so should puke about every 60 sec
@@ -358,6 +359,9 @@ public class BPlayer {
 		item.setPickupDelay(Integer.MAX_VALUE);
 	}
 
+
+	// #### Effects ####
+
 	public void drunkEffects(Player player) {
 		int duration = 10 - getQuality();
 		duration += drunkeness / 2;
@@ -372,17 +376,21 @@ public class BPlayer {
 
 	public static void addQualityEffects(int quality, int brewAlc, Player player) {
 		int duration = 7 - quality;
-		duration *= 250;
-		PotionEffectType.BLINDNESS.createEffect(duration, 0).apply(player);
-
-		if (brewAlc > 15) {
-			duration = 10 - quality;
-			duration += brewAlc;
-			duration *= 40;
+		if (quality <= 5) {
+			duration *= 250;
 		} else {
 			duration = 200;
 		}
 		PotionEffectType.POISON.createEffect(duration, 0).apply(player);
+
+		if (brewAlc > 10 && quality <= 5) {
+			duration = 10 - quality;
+			duration += brewAlc;
+			duration *= 60;
+		} else {
+			duration = 240;
+		}
+		PotionEffectType.BLINDNESS.createEffect(duration, 0).apply(player);
 	}
 
 	public static void addBrewEffects(Brew brew, Player player) {
@@ -396,12 +404,24 @@ public class BPlayer {
 						type.createEffect(0, duration - 1).apply(player);
 					} else {
 						int amplifier = brew.getQuality() / 3;
+						duration /= type.getDurationModifier();
 						type.createEffect(duration * 20, amplifier).apply(player);
 					}
 				}
 			}
 		}
 	}
+
+	public void hangoverEffects(final Player player) {
+		int duration = offlineDrunk * 50 * getHangoverQuality();
+		int amplifier = getHangoverQuality() / 3;
+
+		PotionEffectType.SLOW.createEffect(duration, amplifier).apply(player);
+		PotionEffectType.HUNGER.createEffect(duration, amplifier).apply(player);
+	}
+
+
+	// #### Sheduled ####
 
 	public static void drunkeness() {
 		for (String name : players.keySet()) {
@@ -458,7 +478,9 @@ public class BPlayer {
 		}
 	}
 
-	// getter
+
+	// #### getter/setter ####
+
 	public int getDrunkeness() {
 		return drunkeness;
 	}

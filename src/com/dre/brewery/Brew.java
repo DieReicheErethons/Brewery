@@ -143,12 +143,22 @@ public class Brew {
 	public int calcAlcohol() {
 		if (quality == 0) {
 			// Give bad potions some alc
+			int badAlc = 0;
 			if (distillRuns > 1) {
-				return distillRuns;
+				badAlc = distillRuns;
+			}
+			if (ageTime > 10) {
+				badAlc += 5;
+			} else if (ageTime > 2) {
+				badAlc += 3;
+			}
+			if (currentRecipe != null) {
+				return badAlc;
 			} else {
-				return 1;
+				return badAlc / 2;
 			}
 		}
+
 		if (currentRecipe != null) {
 			int alc = currentRecipe.getAlcohol();
 			if (currentRecipe.needsDistilling()) {

@@ -376,7 +376,9 @@ public class BPlayer {
 
 	public static void addQualityEffects(int quality, int brewAlc, Player player) {
 		int duration = 7 - quality;
-		if (quality <= 5) {
+		if (quality == 0) {
+			duration *= 500;
+		} else if (quality <= 5) {
 			duration *= 250;
 		} else {
 			duration = 200;

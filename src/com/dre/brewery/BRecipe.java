@@ -47,7 +47,11 @@ public class BRecipe {
 			for (String effectString : effectStringList) {
 				String[] effectSplit = effectString.split("/");
 				String effect = effectSplit[0];
-				if (effect.equalsIgnoreCase("WEAKNESS") || effect.equalsIgnoreCase("INCREASE_DAMAGE") || effect.equalsIgnoreCase("SLOW") || effect.equalsIgnoreCase("SPEED") || effect.equalsIgnoreCase("REGERATION")) {
+				if (effect.equalsIgnoreCase("WEAKNESS") ||
+					effect.equalsIgnoreCase("INCREASE_DAMAGE") ||
+					effect.equalsIgnoreCase("SLOW") ||
+					effect.equalsIgnoreCase("SPEED") ||
+					effect.equalsIgnoreCase("REGENERATION")) {
 					// hide these effects as they put crap into lore
 					effect = effect + "X";
 				}
@@ -62,6 +66,9 @@ public class BRecipe {
 
 	// allowed deviation to the recipes count of ingredients at the given difficulty
 	public int allowedCountDiff(int count) {
+		if (count < 8) {
+			count = 8;
+		}
 		int allowedCountDiff = Math.round((float) ((11.0 - difficulty) * (count / 10.0)));
 
 		if (allowedCountDiff == 0) {

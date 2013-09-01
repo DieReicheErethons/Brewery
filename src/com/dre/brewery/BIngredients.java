@@ -226,7 +226,7 @@ public class BIngredients {
 				badStuff++;
 				if (badStuff < ingredients.size()) {
 					// when there are other ingredients
-					quality -= count * 2;
+					quality -= count * (recipe.getDifficulty() / 2);
 					continue;
 				} else {
 					// ingredients dont fit at all
@@ -234,7 +234,7 @@ public class BIngredients {
 				}
 			}
 			// calculate the quality
-			quality -= (((float) Math.abs(count - recipe.amountOf(ingredient)) / recipe.allowedCountDiff(recipe.amountOf(ingredient))) * 10.0);
+			quality -= ((float) Math.abs(count - recipe.amountOf(ingredient)) / recipe.allowedCountDiff(recipe.amountOf(ingredient))) * 10.0;
 		}
 		if (quality >= 0) {
 			return Math.round(quality);

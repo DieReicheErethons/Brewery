@@ -6,6 +6,7 @@ import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -163,6 +164,14 @@ public class PlayerListener implements Listener {
 			case 3:
 				event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "Dein Charakter ist sturzbesoffen und ohne Besinnung. Versuch es in 10 Minuten noch einmal!");
 			}
+		}
+	}
+
+	@EventHandler
+	public void onPlayerQuit(PlayerQuitEvent event) {
+		BPlayer bplayer = BPlayer.get(event.getPlayer().getName());
+		if (bplayer != null) {
+			bplayer.disconnecting();
 		}
 	}
 }

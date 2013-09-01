@@ -19,12 +19,13 @@ import com.dre.brewery.Brew;
 
 public class BPlayer {
 	public static Map<String, BPlayer> players = new HashMap<String, BPlayer>();// Players name and BPlayer
-	public static Map<Material, Integer> drainItems = new HashMap<Material, Integer>();// DrainItem Material and Strength
 	private static Map<Player, Integer> pTasks = new HashMap<Player, Integer>();// Player and count
+	private static int taskId;
 
 	// Settings
-	private static int taskId;
+	public static Map<Material, Integer> drainItems = new HashMap<Material, Integer>();// DrainItem Material and Strength
 	public static int pukeItemId;
+	public static int hangoverTime;
 	public static boolean overdrinkKick;
 	public static boolean enableHome;
 	public static boolean enableLoginDisallow;
@@ -144,7 +145,9 @@ public class BPlayer {
 
 	// drain the drunkeness by amount, returns true when player has to be removed
 	public boolean drain(String name, int amount) {
-		quality -= getQuality() * amount;
+		if (drunkeness > 0) {
+			quality -= getQuality() * amount;
+		}
 		drunkeness -= amount;
 		if (drunkeness > 0) {
 			if (offlineDrunk == 0) {
@@ -152,8 +155,13 @@ public class BPlayer {
 					offlineDrunk = drunkeness;
 				}
 			}
-		} else if (drunkeness <= (-1) * offlineDrunk) {
-			return true;
+		} else {
+			quality = getQuality();
+			if (drunkeness <= -offlineDrunk) {
+				if (drunkeness <= -hangoverTime) {
+				return true;
+				}
+			}
 		}
 		return false;
 	}
@@ -272,6 +280,10 @@ public class BPlayer {
 
 		offlineDrunk = 0;
 		passedOut = false;
+	}
+
+	public void disconnecting() {
+		offlineDrunk = drunkeness;
 	}
 
 	public void goHome(final Player player) {
@@ -505,16 +517,18 @@ public class BPlayer {
 			P.p.errorLog("drunkeness should not be 0!");
 			return quality;
 		}
+		if (drunkeness < 0) {
+			return quality;
+		}
 		return Math.round(quality / drunkeness);
 	}
 
 	// opposite of quality
 	public int getHangoverQuality() {
-		return -getQuality() + 10;
-	}
-
-	public int getHangoverProgress() {
-		return offlineDrunk + drunkeness;
+		if (drunkeness < 0) {
+			return quality + 11;
+		}
+		return -getQuality() + 11;
 	}
 
 }

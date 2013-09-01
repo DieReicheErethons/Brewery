@@ -137,6 +137,7 @@ public class P extends JavaPlugin {
 		// various Settings
 		autosave = config.getInt("autosave", 3);
 		BPlayer.pukeItemId = Material.matchMaterial(config.getString("pukeItem", "SOUL_SAND")).getId();
+		BPlayer.hangoverTime = config.getInt("hangoverDays", 0) * 24 * 60;
 		BPlayer.overdrinkKick = config.getBoolean("enableKickOnOverdrink", false);
 		BPlayer.enableHome = config.getBoolean("enableHome", false);
 		BPlayer.enableLoginDisallow = config.getBoolean("enableLoginDisallow", false);

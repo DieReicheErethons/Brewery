@@ -242,6 +242,9 @@ public class CommandListener implements CommandExecutor {
 	public void cmdPlayer(CommandSender sender, String[] args) {
 
 		int drunkeness = p.parseInt(args[1]);
+		if (drunkeness < 0) {
+			return;
+		}
 		int quality = -1;
 		if (args.length > 2) {
 			quality = p.parseInt(args[2]);

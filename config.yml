@@ -2,11 +2,13 @@
 
 
 # Verschiedene Einstellungen
+# Standardeinstellungen sind in [] angegeben
+# Löschen einzelner Einstellungen deaktiviert sie
 
-# Ob der Spieler beim nächsten Einloggen nach starker Trunkenheit am nächsten morgen Zuhause "aufwacht" (Ein home Plugin muss installiert sein!)
+# Ob der Spieler beim nächsten Einloggen nach starker Trunkenheit am nächsten morgen Zuhause "aufwacht" (Ein home Plugin muss installiert sein!) [true]
 enableHome: true
 
-# Art des Nachhause-teleports:
+# Art des Nachhause-teleports: ['cmd: home']
 # bed = Spieler wird zu seinem Spawn Bett teleportiert
 # SamplePlugin = installiertes home plugin. Unterstützt: ManagerXL. Wenn dies nicht geht:
 # 'cmd: home' = /home wird vom Spieler ausgelöst. Es sollte kein Verzögerungs, etc. plugin installiert sein!
@@ -15,23 +17,23 @@ enableHome: true
 homeType: 'cmd: home'
 
 # Ob der Spieler nach etwas kürzerem Ausloggen an einem zufälligen Ort "aufwacht" (diese müssen durch '/br Wakeup add' von einem Admin festgelegt werden)
-# Der Spieler wacht an dem nähesten zweier zufälliger Orte aus seiner Welt auf.
+# Der Spieler wacht an dem nähesten zweier zufälliger Orte aus seiner Welt auf. [true]
 enableWake: true
 
 # Der Text, den der Spieler beim Aufwachen sieht
 wakeString: 'Ohh nein! Ich kann mich nicht erinnern, wie ich hier hergekommen bin... *hicks*'
 
-# Ob der Spieler sich bei großer Trunkenheit teilweise nicht einloggen kann und kurz warten muss, da sein Charakter nicht reagiert
+# Ob der Spieler sich bei großer Trunkenheit teilweise nicht einloggen kann und kurz warten muss, da sein Charakter nicht reagiert [true]
 enableLoginDisallow: true
 
-# Ob der Spieler sich übertrinken kann und dann in Ohnmacht fällt (gekickt wird) und sich für einige Minuten nicht einloggen kann
+# Ob der Spieler sich übertrinken kann und dann in Ohnmacht fällt (gekickt wird) und sich für einige Minuten nicht einloggen kann [true]
 enableKickOnOverdrink: true
 
-# Ob der Spieler sich bei großer Trunkenheit übergibt (unten definiertes Item aus dem Mund fallen lässt)
+# Ob der Spieler sich bei großer Trunkenheit übergibt (unten definiertes Item aus dem Mund fallen lässt) [true]
 # Das Item kann nicht aufgesammelt werden und bleibt bis zum Despawnen liegen. (Achtung: Kann nach Serverrestart, oder durch Hopper aufgesammelt werden.)
 enablePuke: true
 
-# Item das beim Erbrechen mehrfach unaufsammelbar fallen gelassen wird
+# Item das beim Erbrechen mehrfach unaufsammelbar fallen gelassen wird [SOUL_SAND]
 pukeItem: SOUL_SAND
 
 # Konsumierbares Item/Stärke. Senkt den Alkoholpegel um <Stärke> wenn konsumiert.
@@ -39,11 +41,14 @@ drainItems:
 - BREAD/4
 - MILK_BUCKET/2
 
-# Färben der Iteminformationen je nach Qualität während sie sich 1. im Fass und/oder 2. im Braustand befinden
+# Zeit (in Tagen) die Trunkenheitsdaten nach offlinegehen eines Spielers im Speicher verbleiben, um z.B. Kater-Effekte anzuwenden. [7]
+hangoverDays: 7
+
+# Färben der Iteminformationen je nach Qualität während sie sich 1. im Fass und/oder 2. im Braustand befinden [true, false]
 colorInBarrels: true
 colorInBrewer: false
 
-# Autosave Intervall in Minuten
+# Autosave Intervall in Minuten [3]
 autosave: 3
 
 

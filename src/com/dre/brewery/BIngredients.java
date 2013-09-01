@@ -134,7 +134,7 @@ public class BIngredients {
 			ingredientQuality = getIngredientQuality(recipe);
 			cookingQuality = getCookingQuality(recipe, distilled);
 
-			if (ingredientQuality > -1) {
+			if (ingredientQuality > -1 && cookingQuality > -1) {
 				if (recipe.needsToAge()) {
 					// needs riping in barrel
 					ageQuality = getAgeQuality(recipe, time);
@@ -245,17 +245,17 @@ public class BIngredients {
 	// returns the quality regarding the cooking-time conditioning given Recipe
 	public int getCookingQuality(BRecipe recipe, boolean distilled) {
 		if (!recipe.needsDistilling() == distilled) {
-			return 0;
-		}
-		if (cookedTime <= 1) {
-			return 0;
+			return -1;
 		}
 		int quality = 10 - (int) Math.round(((float) Math.abs(cookedTime - recipe.getCookingTime()) / recipe.allowedTimeDiff(recipe.getCookingTime())) * 10.0);
 
-		if (quality > 0) {
+		if (quality >= 0) {
+			if (cookedTime <= 1) {
+				return 0;
+			}
 			return quality;
 		}
-		return 0;
+		return -1;
 	}
 
 	// returns pseudo quality of distilling. 0 if doesnt match the need of the recipes distilling

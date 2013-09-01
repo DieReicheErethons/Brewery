@@ -79,11 +79,11 @@ public class BRecipe {
 
 	// allowed deviation to the recipes cooking-time at the given difficulty
 	public int allowedTimeDiff(int time) {
+		if (time < 8) {
+			time = 8;
+		}
 		int allowedTimeDiff = Math.round((float) ((11.0 - difficulty) * (time / 10.0)));
 
-		while (allowedTimeDiff >= time) {
-			allowedTimeDiff -= 1;
-		}
 		if (allowedTimeDiff == 0) {
 			return 1;
 		}

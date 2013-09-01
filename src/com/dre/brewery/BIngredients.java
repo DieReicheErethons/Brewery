@@ -247,6 +247,9 @@ public class BIngredients {
 		if (!recipe.needsDistilling() == distilled) {
 			return 0;
 		}
+		if (cookedTime <= 1) {
+			return 0;
+		}
 		int quality = 10 - (int) Math.round(((float) Math.abs(cookedTime - recipe.getCookingTime()) / recipe.allowedTimeDiff(recipe.getCookingTime())) * 10.0);
 
 		if (quality > 0) {

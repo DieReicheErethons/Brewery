@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.block.Block;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.configuration.ConfigurationSection;
 
 public class Barrel {
@@ -133,6 +134,11 @@ public class Barrel {
 					if (brew != null) {
 						// Brew before throwing
 						brew.age(item, time, getWood());
+						PotionMeta meta = (PotionMeta) item.getItemMeta();
+						if (Brew.hasColorLore(meta)) {
+							brew.convertLore(meta, false);
+							item.setItemMeta(meta);
+						}
 					}
 					// "broken" is the block that destroyed, throw them there!
 					if (broken != null) {

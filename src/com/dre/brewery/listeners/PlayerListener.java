@@ -31,66 +31,68 @@ public class PlayerListener implements Listener {
 
 		if (clickedBlock != null) {
 			if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-				if (clickedBlock.getType() == Material.CAULDRON) {
-					if (clickedBlock.getRelative(BlockFace.DOWN).getType() == Material.FIRE || clickedBlock.getRelative(BlockFace.DOWN).getType() == Material.STATIONARY_LAVA
-							|| clickedBlock.getRelative(BlockFace.DOWN).getType() == Material.LAVA) {
-						Material materialInHand = event.getMaterial();
-						Player player = event.getPlayer();
-						ItemStack item = event.getItem();
+				Player player = event.getPlayer();
+				if (!player.isSneaking()) {
+					if (clickedBlock.getType() == Material.CAULDRON) {
+						if (clickedBlock.getRelative(BlockFace.DOWN).getType() == Material.FIRE || clickedBlock.getRelative(BlockFace.DOWN).getType() == Material.STATIONARY_LAVA
+								|| clickedBlock.getRelative(BlockFace.DOWN).getType() == Material.LAVA) {
+							Material materialInHand = event.getMaterial();
+							ItemStack item = event.getItem();
 
-						
-						if (materialInHand == Material.WATCH) {
-							BCauldron.printTime(player, clickedBlock);
+							
+							if (materialInHand == Material.WATCH) {
+								BCauldron.printTime(player, clickedBlock);
 
-							// fill a glass bottle with potion
-						} else if (materialInHand == Material.GLASS_BOTTLE) {
-							if (player.getInventory().firstEmpty() != -1 || item.getAmount() == 1) {
-								if (BCauldron.fill(player, clickedBlock)) {
+								// fill a glass bottle with potion
+							} else if (materialInHand == Material.GLASS_BOTTLE) {
+								if (player.getInventory().firstEmpty() != -1 || item.getAmount() == 1) {
+									if (BCauldron.fill(player, clickedBlock)) {
+										event.setCancelled(true);
+										if (item.getAmount() > 1) {
+											item.setAmount(item.getAmount() - 1);
+										} else {
+											player.setItemInHand(new ItemStack(0));
+										}
+									}
+								} else {
 									event.setCancelled(true);
+								}
+
+								// reset cauldron when refilling to prevent
+								// unlimited source of potions
+							} else if (materialInHand == Material.WATER_BUCKET) {
+								if (clickedBlock.getData() != 0) {
+									if (clickedBlock.getData() < 3) {
+										// will only remove when existing
+										BCauldron.remove(clickedBlock);
+									}
+								}
+
+								// add ingredient to cauldron that meet the previous
+								// contitions
+							} else if (BIngredients.possibleIngredients.contains(materialInHand)) {
+								if (BCauldron.ingredientAdd(clickedBlock, materialInHand)) {
 									if (item.getAmount() > 1) {
 										item.setAmount(item.getAmount() - 1);
 									} else {
 										player.setItemInHand(new ItemStack(0));
 									}
 								}
-							} else {
-								event.setCancelled(true);
-							}
-
-							// reset cauldron when refilling to prevent
-							// unlimited source of potions
-						} else if (materialInHand == Material.WATER_BUCKET) {
-							if (clickedBlock.getData() != 0) {
-								if (clickedBlock.getData() < 3) {
-									// will only remove when existing
-									BCauldron.remove(clickedBlock);
-								}
-							}
-
-							// add ingredient to cauldron that meet the previous
-							// contitions
-						} else if (BIngredients.possibleIngredients.contains(materialInHand)) {
-							if (BCauldron.ingredientAdd(clickedBlock, materialInHand)) {
-								if (item.getAmount() > 1) {
-									item.setAmount(item.getAmount() - 1);
-								} else {
-									player.setItemInHand(new ItemStack(0));
-								}
 							}
 						}
-					}
-					// access a barrel
-				} else if (clickedBlock.getType() == Material.FENCE || clickedBlock.getType() == Material.NETHER_FENCE || clickedBlock.getType() == Material.SIGN
-						|| clickedBlock.getType() == Material.WALL_SIGN) {
-					Barrel barrel = Barrel.get(clickedBlock);
-					if (barrel != null) {
-						event.setCancelled(true);
-						Block broken = Barrel.getBrokenBlock(clickedBlock);
-						// barrel is built correctly
-						if (broken == null) {
-							barrel.open(event.getPlayer());
-						} else {
-							barrel.remove(broken);
+						// access a barrel
+					} else if (clickedBlock.getType() == Material.FENCE || clickedBlock.getType() == Material.NETHER_FENCE || clickedBlock.getType() == Material.SIGN
+							|| clickedBlock.getType() == Material.WALL_SIGN) {
+						Barrel barrel = Barrel.get(clickedBlock);
+						if (barrel != null) {
+							event.setCancelled(true);
+							Block broken = Barrel.getBrokenBlock(clickedBlock);
+							// barrel is built correctly
+							if (broken == null) {
+								barrel.open(player);
+							} else {
+								barrel.remove(broken);
+							}
 						}
 					}
 				}

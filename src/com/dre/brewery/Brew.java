@@ -468,9 +468,10 @@ public class Brew {
 
 	// Saves all data
 	public static void save(ConfigurationSection config) {
-		for (int uid : potions.keySet()) {
+		for (Map.Entry<Integer, Brew> entry : potions.entrySet()) {
+			int uid = entry.getKey();
+			Brew brew = entry.getValue();
 			ConfigurationSection idConfig = config.createSection("" + uid);
-			Brew brew = potions.get(uid);
 			// not saving unneccessary data
 			if (brew.quality != 0) {
 				idConfig.set("quality", brew.quality);
@@ -488,7 +489,7 @@ public class Brew {
 				idConfig.set("unlabeled", true);
 			}
 			// save the ingredients
-			brew.ingredients.save(idConfig.createSection("ingredients"));
+			idConfig.set("ingId", brew.ingredients.save(config.getParent()));
 		}
 	}
 

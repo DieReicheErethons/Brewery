@@ -17,19 +17,25 @@ public class BIngredients {
 	public static ArrayList<Material> possibleIngredients = new ArrayList<Material>();
 	public static ArrayList<BRecipe> recipes = new ArrayList<BRecipe>();
 	public static Map<Material, String> cookedNames = new HashMap<Material, String>();
+	private static int lastId = 0;
 
+	private int id;
 	private Map<Material, Integer> ingredients = new HashMap<Material, Integer>();
 	private int cookedTime;
 
 	// Represents ingredients in Cauldron, Brew
 	// Init a new BIngredients
 	public BIngredients() {
+		this.id = lastId;
+		lastId++;
 	}
 
 	// Load from File
 	public BIngredients(Map<Material, Integer> ingredients, int cookedTime) {
 		this.ingredients = ingredients;
 		this.cookedTime = cookedTime;
+		this.id = lastId;
+		lastId++;
 	}
 
 	//returns the recipe with the given name
@@ -69,7 +75,7 @@ public class BIngredients {
 			// Potion is best with cooking only
 			int quality = (int) Math.round((getIngredientQuality(cookRecipe) + getCookingQuality(cookRecipe, false)) / 2.0);
 			P.p.log("cooked potion has Quality: " + quality);
-			Brew brew = new Brew(uid, quality, cookRecipe, clone());
+			Brew brew = new Brew(uid, quality, cookRecipe, this);
 			Brew.addOrReplaceEffects(potionMeta, brew.getEffects());
 
 			cookedName = cookRecipe.getName(quality);
@@ -77,7 +83,7 @@ public class BIngredients {
 
 		} else {
 			// new base potion
-			new Brew(uid, clone());
+			new Brew(uid, this);
 
 			if (state <= 1) {
 				cookedName = "Schlammiger Sud";
@@ -298,22 +304,23 @@ public class BIngredients {
 		return copy;
 	}
 
-	// saves data into ingredient section of Brew/BCauldron
-	public void save(ConfigurationSection config) {
+	// saves data into main Ingredient section. Returns the save id
+	public int save(ConfigurationSection config) {
+		String path = "Ingredients." + id;
 		if (cookedTime != 0) {
-			config.set("cookedTime", cookedTime);
+			config.set(path + ".cookedTime", cookedTime);
 		}
+		config.set(path + ".mats", serializeIngredients());
+		return id;
+	}
 
-		// convert the ingredient Material to id
+	// convert the ingredient Material to id
+	public Map<Integer, Integer> serializeIngredients() {
 		Map<Integer, Integer> mats = new HashMap<Integer, Integer>();
 		for (Material mat : ingredients.keySet()) {
 			mats.put(mat.getId(), ingredients.get(mat));
 		}
-		// list all Material ids with their amount
-		ConfigurationSection matSection = config.createSection("mats");
-		for (int id : mats.keySet()) {
-			matSection.set("" + id, mats.get(id));
-		}
+		return mats;
 	}
 
 }

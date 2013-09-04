@@ -191,12 +191,32 @@ public class P extends JavaPlugin {
 
 			FileConfiguration data = YamlConfiguration.loadConfiguration(file);
 
+			// loading Ingredients into ingMap
+			Map<String, BIngredients> ingMap = new HashMap<String, BIngredients>();
+			ConfigurationSection section = data.getConfigurationSection("Ingredients");
+			if (section != null) {
+				for (String id : section.getKeys(false)) {
+					ConfigurationSection matSection = section.getConfigurationSection(id + ".mats");
+					if (matSection != null) {
+						// matSection has all the materials + amount as Integers
+						Map<Material, Integer> ingredients = new HashMap<Material, Integer>();
+						for (String ingredient : matSection.getKeys(false)) {
+							// convert to Material
+							ingredients.put(Material.getMaterial(parseInt(ingredient)), matSection.getInt(ingredient));
+						}
+						ingMap.put(id, new BIngredients(ingredients, section.getInt(id + ".cookedTime", 0)));
+					} else {
+						errorLog("Ingredient id: '" + id + "' incomplete in data.yml");
+					}
+				}
+			}
+
 			// loading Brew
-			ConfigurationSection section = data.getConfigurationSection("Brew");
+			section = data.getConfigurationSection("Brew");
 			if (section != null) {
 				// All sections have the UID as name
 				for (String uid : section.getKeys(false)) {
-					BIngredients ingredients = loadIngredients(section.getConfigurationSection(uid + ".ingredients"));
+					BIngredients ingredients = getIngredients(ingMap, section.getString(uid + ".ingId"));
 					int quality = section.getInt(uid + ".quality", 0);
 					int distillRuns = section.getInt(uid + ".distillRuns", 0);
 					float ageTime = (float) section.getDouble(uid + ".ageTime", 0.0);
@@ -234,21 +254,30 @@ public class P extends JavaPlugin {
 		}
 	}
 
-	// loads BIngredients from ingredient section
-	public BIngredients loadIngredients(ConfigurationSection config) {
-		if (config != null) {
-			ConfigurationSection matSection = config.getConfigurationSection("mats");
-			if (matSection != null) {
-				// matSection has all the materials + amount in Integer form
-				Map<Material, Integer> ingredients = new HashMap<Material, Integer>();
-				for (String ingredient : matSection.getKeys(false)) {
-					// convert to Material
-					ingredients.put(Material.getMaterial(parseInt(ingredient)), matSection.getInt(ingredient));
-				}
-				return new BIngredients(ingredients, config.getInt("cookedTime", 0));
+	// returns Ingredients by id from the specified ingMap
+	public BIngredients getIngredients(Map<String, BIngredients> ingMap, String id) {
+		if (!ingMap.isEmpty()) {
+			if (ingMap.containsKey(id)) {
+				return ingMap.get(id);
 			}
 		}
-		errorLog("Ingredient section not found or incomplete in data.yml");
+		errorLog("Ingredient id: '" + id + "' not found in data.yml");
+		return new BIngredients();
+	}
+
+	// loads BIngredients from an ingredient section
+	public BIngredients loadIngredients(ConfigurationSection section) {
+		if (section != null) {
+			// has all the materials + amount as Integers
+			Map<Material, Integer> ingredients = new HashMap<Material, Integer>();
+			for (String ingredient : section.getKeys(false)) {
+				// convert to Material
+				ingredients.put(Material.getMaterial(parseInt(ingredient)), section.getInt(ingredient));
+			}
+			return new BIngredients(ingredients, 0);
+		} else {
+			errorLog("Cauldron is missing Ingredient Section");
+		}
 		return new BIngredients();
 	}
 

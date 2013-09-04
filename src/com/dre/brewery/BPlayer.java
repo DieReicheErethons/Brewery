@@ -156,6 +156,9 @@ public class BPlayer {
 				}
 			}
 		} else {
+			if (offlineDrunk == 0) {
+				return true;
+			}
 			quality = getQuality();
 			if (drunkeness <= -offlineDrunk) {
 				if (drunkeness <= -hangoverTime) {
@@ -438,8 +441,9 @@ public class BPlayer {
 	// #### Sheduled ####
 
 	public static void drunkeness() {
-		for (String name : players.keySet()) {
-			BPlayer bplayer = players.get(name);
+		for (Map.Entry<String, BPlayer> entry : players.entrySet()) {
+			String name = entry.getKey();
+			BPlayer bplayer = entry.getValue();
 
 			if (bplayer.drunkeness > 30) {
 				if (bplayer.offlineDrunk == 0) {
@@ -462,7 +466,8 @@ public class BPlayer {
 	public static void onUpdate() {
 		if (!players.isEmpty()) {
 			int soberPerMin = 2;
-			for (Iterator<Map.Entry<String, BPlayer>> iter = players.entrySet().iterator(); iter.hasNext();) {
+			Iterator<Map.Entry<String, BPlayer>> iter = players.entrySet().iterator();
+			while (iter.hasNext()) {
 				Map.Entry<String, BPlayer> entry = iter.next();
 				String name = entry.getKey();
 				BPlayer bplayer = entry.getValue();

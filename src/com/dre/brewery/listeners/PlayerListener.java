@@ -3,6 +3,7 @@ package com.dre.brewery.listeners;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
@@ -132,6 +133,12 @@ public class PlayerListener implements Listener {
 				}
 			}
 		}
+	}
+
+	// Player has died! He should no longer be drunk
+	@EventHandler
+	public void onPlayerRespawn(PlayerRespawnEvent event) {
+		BPlayer.players.remove(event.getPlayer().getName());
 	}
 
 	// player walks while drunk, push him around!

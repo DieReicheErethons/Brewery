@@ -165,7 +165,7 @@ public class P extends JavaPlugin {
 				if (recipe.isValid()) {
 					BIngredients.recipes.add(recipe);
 				} else {
-					errorLog("Recipe with id: '" + recipeId + "' failed to load!");
+					errorLog("Laden des Rezeptes mit id: '" + recipeId + "' fehlgeschlagen!");
 				}
 			}
 		}
@@ -175,8 +175,12 @@ public class P extends JavaPlugin {
 		if (configSection != null) {
 			for (String ingredient : configSection.getKeys(false)) {
 				Material mat = Material.matchMaterial(ingredient);
-				BIngredients.cookedNames.put(mat, (configSection.getString(ingredient, null)));
-				BIngredients.possibleIngredients.add(mat);
+				if (mat != null) {
+					BIngredients.cookedNames.put(mat, (configSection.getString(ingredient, null)));
+					BIngredients.possibleIngredients.add(mat);
+				} else {
+					errorLog("Unbekanntes Material: " + ingredient);
+				}
 			}
 		}
 

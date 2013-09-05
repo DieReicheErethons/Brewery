@@ -21,18 +21,34 @@ public class BRecipe {
 	private Map<String, Integer> effects = new HashMap<String, Integer>(); // Special Effect, Duration
 
 	public BRecipe(ConfigurationSection configSectionRecipes, String recipeId) {
-		String[] name = configSectionRecipes.getString(recipeId + ".name").split("/");
-		if (name.length > 2) {
-			this.name = name;
+		String nameList = configSectionRecipes.getString(recipeId + ".name");
+		if (nameList != null) {
+			String[] name = nameList.split("/");
+			if (name.length > 2) {
+				this.name = name;
+			} else {
+				this.name = new String[1];
+				this.name[0] = name[0];
+			}
 		} else {
-			this.name = new String[1];
-			this.name[0] = name[0];
+			return;
 		}
 		List<String> ingredientsList = configSectionRecipes.getStringList(recipeId + ".ingredients");
-		for (String item : ingredientsList) {
-			String[] ingredParts = item.split("/");
-			ingredParts[0] = ingredParts[0].toUpperCase();
-			this.ingredients.put(Material.getMaterial(ingredParts[0]), P.p.parseInt(ingredParts[1]));
+		if (ingredientsList != null) {
+			for (String item : ingredientsList) {
+				String[] ingredParts = item.split("/");
+				if (ingredParts.length == 2) {
+					Material mat = Material.matchMaterial(ingredParts[0]);
+					if (mat != null) {
+						this.ingredients.put(Material.matchMaterial(ingredParts[0]), P.p.parseInt(ingredParts[1]));
+					} else {
+						P.p.errorLog("Unknown Material: " + ingredParts[0]);
+						return;
+					}
+				} else {
+					return;
+				}
+			}
 		}
 		this.cookingTime = configSectionRecipes.getInt(recipeId + ".cookingtime");
 		this.distillruns = configSectionRecipes.getInt(recipeId + ".distillruns");
@@ -129,6 +145,11 @@ public class BRecipe {
 		return false;
 	}
 
+	// true if name and ingredients are correct
+	public boolean isValid() {
+		return (name != null && ingredients != null && !ingredients.isEmpty());
+	}
+
 
 	// Getter
 
@@ -164,7 +185,10 @@ public class BRecipe {
 	}
 
 	public String getColor() {
-		return color.toUpperCase();
+		if (color != null) {
+			return color.toUpperCase();
+		}
+		return "BLUE";
 	}
 
 	// get the woodtype

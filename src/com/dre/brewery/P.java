@@ -161,7 +161,12 @@ public class P extends JavaPlugin {
 		ConfigurationSection configSection = config.getConfigurationSection("recipes");
 		if (configSection != null) {
 			for (String recipeId : configSection.getKeys(false)) {
-				BIngredients.recipes.add(new BRecipe(configSection, recipeId));
+				BRecipe recipe = new BRecipe(configSection, recipeId);
+				if (recipe.isValid()) {
+					BIngredients.recipes.add(recipe);
+				} else {
+					errorLog("Recipe with id: '" + recipeId + "' failed to load!");
+				}
 			}
 		}
 

@@ -124,7 +124,7 @@ recipes:
       distillruns: 0
       wood: 2
       age: 4
-      COLOR: ORANGE
+      color: ORANGE
       difficulty: 4
       alcohol: 12
       effects:

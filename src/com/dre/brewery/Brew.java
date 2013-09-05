@@ -47,14 +47,33 @@ public class Brew {
 
 	// loading from file
 	public Brew(int uid, BIngredients ingredients, int quality, int distillRuns, float ageTime, float wood, String recipe, Boolean unlabeled) {
+		potions.put(uid, this);
 		this.ingredients = ingredients;
 		this.quality = quality;
 		this.distillRuns = distillRuns;
 		this.ageTime = ageTime;
 		this.wood = wood;
-		this.currentRecipe = BIngredients.getRecipeByName(recipe);
 		this.unlabeled = unlabeled;
-		potions.put(uid, this);
+		if (recipe != null && !recipe.equals("")) {
+			currentRecipe = BIngredients.getRecipeByName(recipe);
+			if (currentRecipe == null) {
+				if (quality > 0) {
+					if (ageTime > 0.5) {
+						currentRecipe = ingredients.getAgeRecipe(wood, ageTime, distillRuns > 0);
+					} else if (distillRuns > 0) {
+						currentRecipe = ingredients.getdistillRecipe(wood, ageTime);
+					} else {
+						currentRecipe = ingredients.getBestRecipe(wood, ageTime, distillRuns > 0);
+					}
+					if (currentRecipe != null) {
+						this.quality = calcQuality();
+						P.p.log("Brew was made from Recipe: '" + recipe + "' which could not be found. '" + currentRecipe.getName(5) + "' used instead!");
+					} else {
+						P.p.errorLog("Brew was made from Recipe: '" + recipe + "' which could not be found!");
+					}
+				}
+			}
+		}
 	}
 
 	// returns a Brew by its UID

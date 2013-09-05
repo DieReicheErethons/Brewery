@@ -41,7 +41,7 @@ Hier werden die Rezepte für die verschiedenen Tränke eingetragen. Es können b
 
 Die Rezepte bestimmen alle Eigenschaften der entstehenden Tränke. Ob und wie lange sie reifen müssen, ihre Farbe, Effekte die beim Trinken wirken, den Alkoholgehalt, usw. Optionen die weggelassen werden, werden nicht verwendet, oder verwenden die Standardwerte. Wenn z.B. die Anzahl der Destilliervorgänge weggelassen wird, muss der Trank nicht destilliert werden.
 
-Wichtig: Werdem die Namen der Rezepte verändert werden vorhandene Tränke der geänderten Rezepte nutzlos!
+Werden im Nachhinein Rezepte umbenannt, so kann es sein, dass vorhandene Tränke den neuen Namen erst nach erneutem Reifen/Brauen erhalten.
 
 **Wörter**
 

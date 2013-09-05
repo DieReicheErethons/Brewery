@@ -58,13 +58,7 @@ public class Brew {
 			currentRecipe = BIngredients.getRecipeByName(recipe);
 			if (currentRecipe == null) {
 				if (quality > 0) {
-					if (ageTime > 0.5) {
-						currentRecipe = ingredients.getAgeRecipe(wood, ageTime, distillRuns > 0);
-					} else if (distillRuns > 0) {
-						currentRecipe = ingredients.getdistillRecipe(wood, ageTime);
-					} else {
-						currentRecipe = ingredients.getBestRecipe(wood, ageTime, distillRuns > 0);
-					}
+					currentRecipe = ingredients.getBestRecipe(wood, ageTime, distillRuns > 0);
 					if (currentRecipe != null) {
 						this.quality = calcQuality();
 						P.p.log("Brew was made from Recipe: '" + recipe + "' which could not be found. '" + currentRecipe.getName(5) + "' used instead!");

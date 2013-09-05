@@ -452,6 +452,8 @@ public class P extends JavaPlugin {
 		p.log("Saving Wakeups (" + ftime + "ms)");
 		time = System.nanoTime();
 
+		saveWorldNames(configFile, oldData.getConfigurationSection("Worlds"));
+
 		try {
 			configFile.save(datafile);
 		} catch (IOException e) {
@@ -463,6 +465,22 @@ public class P extends JavaPlugin {
 		time = System.nanoTime() - time;
 		ftime = (float) (time / 1000000.0);
 		p.log("Writing Data to File (" + ftime + "ms)");
+	}
+
+	public void saveWorldNames(FileConfiguration root, ConfigurationSection old) {
+		if (old != null) {
+			root.set("Worlds", old);
+		}
+		for (World world : p.getServer().getWorlds()) {
+			String worldName = world.getName();
+			if (worldName.startsWith("DXL_")) {
+				worldName = getDxlName(worldName);
+				root.set("Worlds." + worldName, 0);
+			} else {
+				worldName = world.getUID().toString();
+				root.set("Worlds." + worldName, world.getName());
+			}
+		}
 	}
 
 
@@ -481,7 +499,7 @@ public class P extends JavaPlugin {
 			for (File file : dungeonFolder.listFiles()) {
 				if (!file.isDirectory()) {
 					if (file.getName().startsWith(".id_")) {
-						return file.getName().substring(1);
+						return file.getName().substring(1).toLowerCase();
 					}
 				}
 			}

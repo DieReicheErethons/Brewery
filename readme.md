@@ -29,7 +29,7 @@ Die Config.yml enthält:
 * Rezepte
 * Wörter
 
-Sie kann frei editiert werden und nach Belieben angepasst werden. Die meisten Optionen werden allerdings erst bei einem Neustart des Servers übernommen.
+Sie kann frei editiert werden und nach Belieben angepasst werden. Die Änderungen werden nach ausführen des Commands Reload oder nach einem Serverrestart übernommen
 
 Alle Teile der Config sind kommentiert. Die Kommentare enthalten Erklärungen und Beispiele.
 

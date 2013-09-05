@@ -396,18 +396,25 @@ public class BPlayer {
 		} else if (quality <= 5) {
 			duration *= 250;
 		} else {
-			duration = 200;
+			duration = 100;
+			if (brewAlc <= 10) {
+				duration = 0;
+			}
 		}
-		PotionEffectType.POISON.createEffect(duration, 0).apply(player);
+		if (duration > 0) {
+			PotionEffectType.POISON.createEffect(duration, 0).apply(player);
+		}
 
-		if (brewAlc > 10 && quality <= 5) {
-			duration = 10 - quality;
-			duration += brewAlc;
-			duration *= 60;
-		} else {
-			duration = 240;
+		if (brewAlc > 10) {
+			if (quality <= 5) {
+				duration = 10 - quality;
+				duration += brewAlc;
+				duration *= 60;
+			} else {
+				duration = 120;
+			}
+			PotionEffectType.BLINDNESS.createEffect(duration, 0).apply(player);
 		}
-		PotionEffectType.BLINDNESS.createEffect(duration, 0).apply(player);
 	}
 
 	public static void addBrewEffects(Brew brew, Player player) {

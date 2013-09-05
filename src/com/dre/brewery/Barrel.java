@@ -76,23 +76,25 @@ public class Barrel {
 				inventory = org.bukkit.Bukkit.createInventory(null, 9, "Fass");
 			}
 		} else {
-			// if nobody has the inventory opened
-			if (inventory.getViewers().isEmpty()) {
-				// if inventory contains potions
-				if (inventory.contains(373)) {
-					byte wood = getWood();
-					long loadTime = System.nanoTime();
-					for (ItemStack item : inventory.getContents()) {
-						if (item != null) {
-							Brew brew = Brew.get(item);
-							if (brew != null) {
-								brew.age(item, time, wood);
+			if (time > 0) {
+				// if nobody has the inventory opened
+				if (inventory.getViewers().isEmpty()) {
+					// if inventory contains potions
+					if (inventory.contains(373)) {
+						byte wood = getWood();
+						long loadTime = System.nanoTime();
+						for (ItemStack item : inventory.getContents()) {
+							if (item != null) {
+								Brew brew = Brew.get(item);
+								if (brew != null) {
+									brew.age(item, time, wood);
+								}
 							}
 						}
+						loadTime = System.nanoTime() - loadTime;
+						float ftime = (float) (loadTime / 1000000.0);
+						P.p.log("opening Barrel with potions (" + ftime + "ms)");
 					}
-					loadTime = System.nanoTime() - loadTime;
-					float ftime = (float) (loadTime / 1000000.0);
-					P.p.log("opening Barrel with potions (" + ftime + "ms)");
 				}
 			}
 		}
@@ -282,19 +284,28 @@ public class Barrel {
 			wood = this.spigot.getRelative(0, 0, -1);
 		}
 		if (wood.getTypeId() == 5) {
-			return wood.getData();
+			byte data = wood.getData();
+			if (data == 0x0) {
+				return 2;
+			} else if (data == 0x1) {
+				return 4;
+			} else if (data == 0x2) {
+				return 1;
+			} else {
+				return 3;
+			}
 		}
 		if (wood.getTypeId() == 53) {
-			return 0x0;
+			return 2;
 		}
 		if (wood.getTypeId() == 134) {
-			return 0x1;
+			return 4;
 		}
 		if (wood.getTypeId() == 135) {
-			return 0x2;
+			return 1;
 		}
 		if (wood.getTypeId() == 136) {
-			return 0x3;
+			return 3;
 		}
 		return 0;
 	}

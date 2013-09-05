@@ -28,6 +28,7 @@ public class Brew {
 	private int quality;
 	private int distillRuns;
 	private float ageTime;
+	private float wood;
 	private BRecipe currentRecipe;
 	private boolean unlabeled;
 
@@ -45,11 +46,12 @@ public class Brew {
 	}
 
 	// loading from file
-	public Brew(int uid, BIngredients ingredients, int quality, int distillRuns, float ageTime, String recipe, Boolean unlabeled) {
+	public Brew(int uid, BIngredients ingredients, int quality, int distillRuns, float ageTime, float wood, String recipe, Boolean unlabeled) {
 		this.ingredients = ingredients;
 		this.quality = quality;
 		this.distillRuns = distillRuns;
 		this.ageTime = ageTime;
+		this.wood = wood;
 		this.currentRecipe = BIngredients.getRecipeByName(recipe);
 		this.unlabeled = unlabeled;
 		potions.put(uid, this);
@@ -182,16 +184,15 @@ public class Brew {
 	}
 
 	// calculating quality
-	public int calcQuality(BRecipe recipe, byte wood, boolean distilled) {
+	public int calcQuality() {
 		// calculate quality from all of the factors
-		float quality = (
-
-		ingredients.getIngredientQuality(recipe) +
-		ingredients.getCookingQuality(recipe, distilled) +
-		ingredients.getWoodQuality(recipe, wood) +
-		ingredients.getAgeQuality(recipe, ageTime));
-
-		quality /= 4;
+		float quality = ingredients.getIngredientQuality(currentRecipe) + ingredients.getCookingQuality(currentRecipe, distillRuns > 0);
+		if (currentRecipe.needsToAge() || ageTime > 0.5) {
+			quality += ingredients.getWoodQuality(currentRecipe, wood) + ingredients.getAgeQuality(currentRecipe, ageTime);
+			quality /= 4;
+		} else {
+			quality /= 2;
+		}
 		return (int) Math.round(quality);
 	}
 
@@ -250,11 +251,11 @@ public class Brew {
 	// distill custom potion in given slot
 	public void distillSlot(ItemStack slotItem, PotionMeta potionMeta) {
 		distillRuns += 1;
-		BRecipe recipe = ingredients.getdistillRecipe();
+		BRecipe recipe = ingredients.getdistillRecipe(wood, ageTime);
 		if (recipe != null) {
 			// distillRuns will have an effect on the amount of alcohol, not the quality
-			quality = calcQuality(recipe, (byte) 0, true);
 			currentRecipe = recipe;
+			quality = calcQuality();
 			P.p.log("destilled " + recipe.getName(5) + " has Quality: " + quality + ", alc: " + calcAlcohol());
 
 			addOrReplaceEffects(potionMeta, getEffects());
@@ -283,16 +284,23 @@ public class Brew {
 
 	// Ageing Section ------------------
 
-	public void age(ItemStack item, float time, byte wood) {
+	public void age(ItemStack item, float time, byte woodType) {
 		PotionMeta potionMeta = (PotionMeta) item.getItemMeta();
 		ageTime += time;
 		
 		// if younger than half a day, it shouldnt get aged form
 		if (ageTime > 0.5) {
+			if (wood == 0) {
+				wood = woodType;
+			} else {
+				if (wood != woodType) {
+					woodShift(time, woodType);
+				}
+			}
 			BRecipe recipe = ingredients.getAgeRecipe(wood, ageTime, distillRuns > 0);
 			if (recipe != null) {
 				currentRecipe = recipe;
-				quality = calcQuality(recipe, wood, distillRuns > 0);
+				quality = calcQuality();
 				P.p.log("Final " + recipe.getName(5) + " has Quality: " + quality + ", alc: " + calcAlcohol());
 
 				addOrReplaceEffects(potionMeta, getEffects());
@@ -318,7 +326,34 @@ public class Brew {
 			}
 			updateAgeLore(prefix, potionMeta);
 		}
+		if (ageTime > 0.5) {
+			if (colorInBarrels && !unlabeled && currentRecipe != null) {
+				updateWoodLore(potionMeta);
+			}
+		}
 		item.setItemMeta(potionMeta);
+	}
+
+	// Slowly shift the wood of the Brew to the new Type
+	public void woodShift(float time, byte to) {
+		byte factor = 1;
+		if (ageTime > 5) {
+			factor = 2;
+		} else if (ageTime > 10) {
+			factor = 2;
+			factor += Math.round(ageTime / 10);
+		}
+		if (wood > to) {
+			wood -= time / factor;
+			if (wood < to) {
+				wood = to;
+			}
+		} else {
+			wood += time / factor;
+			if (wood > to) {
+				wood = to;
+			}
+		}
 	}
 
 	// Lore -----------
@@ -371,6 +406,13 @@ public class Brew {
 			}
 			updateAgeLore(prefix, meta);
 		}
+
+		// WoodType
+		if (toQuality && !unlabeled) {
+			if (ageTime > 0.5) {
+				updateWoodLore(meta);
+			}
+		}
 	}
 
 	// sets the DistillLore. Prefix is the color to be used
@@ -395,6 +437,23 @@ public class Brew {
 			}
 		}
 		addOrReplaceLore(meta, prefix, "Fassgereift");
+	}
+
+	// updates/sets the color on WoodLore
+	public void updateWoodLore(PotionMeta meta) {
+		if (currentRecipe.getWood() > 0) {
+			int quality = ingredients.getWoodQuality(currentRecipe, wood);
+			addOrReplaceLore(meta, getQualityColor(quality), "Holzart");
+		} else {
+			if (meta.hasLore()) {
+				List<String> existingLore = meta.getLore();
+				int index = indexOfSubstring(existingLore, "Holzart");
+				if (index > -1) {
+					existingLore.remove(index);
+					meta.setLore(existingLore);
+				}
+			}
+		}
 	}
 
 	// Adds or replaces a line of Lore. Searches for Substring lore and replaces it
@@ -481,6 +540,9 @@ public class Brew {
 			}
 			if (brew.ageTime != 0) {
 				idConfig.set("ageTime", brew.ageTime);
+			}
+			if (brew.wood != -1) {
+				idConfig.set("wood", brew.wood);
 			}
 			if (brew.currentRecipe != null) {
 				idConfig.set("recipe", brew.currentRecipe.getName(5));

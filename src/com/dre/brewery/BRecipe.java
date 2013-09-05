@@ -13,7 +13,7 @@ public class BRecipe {
 	private Map<Material, Integer> ingredients = new HashMap<Material, Integer>();// material and amount
 	private int cookingTime;// time to cook in cauldron
 	private int distillruns;// runs through the brewer
-	private int wood;// type of wood the barrel has to consist of
+	private byte wood;// type of wood the barrel has to consist of
 	private int age;// time in minecraft days for the potions to age in barrels
 	private String color;// color of the destilled/finished potion
 	private int difficulty;// difficulty to brew the potion, how exact the instruction has to be followed
@@ -36,7 +36,7 @@ public class BRecipe {
 		}
 		this.cookingTime = configSectionRecipes.getInt(recipeId + ".cookingtime");
 		this.distillruns = configSectionRecipes.getInt(recipeId + ".distillruns");
-		this.wood = configSectionRecipes.getInt(recipeId + ".wood");
+		this.wood = (byte) configSectionRecipes.getInt(recipeId + ".wood");
 		this.age = configSectionRecipes.getInt(recipeId + ".age");
 		this.color = configSectionRecipes.getString(recipeId + ".color");
 		this.difficulty = configSectionRecipes.getInt(recipeId + ".difficulty");
@@ -91,18 +91,8 @@ public class BRecipe {
 	}
 
 	// difference between given and recipe-wanted woodtype
-	public int getWoodDiff(byte wood) {
-		int woodType = 0;
-		if (wood == 0x0) {
-			woodType = 2;
-		} else if (wood == 0x1) {
-			woodType = 4;
-		} else if (wood == 0x2) {
-			woodType = 1;
-		} else if (wood == 0x3) {
-			woodType = 3;
-		}
-		return Math.abs(woodType - this.wood);
+	public float getWoodDiff(float wood) {
+		return Math.abs(wood - this.wood);
 	}
 
 	public boolean isCookingOnly() {
@@ -177,18 +167,9 @@ public class BRecipe {
 		return color.toUpperCase();
 	}
 
-	// get the woodtype in blockData-byte
+	// get the woodtype
 	public byte getWood() {
-		if (wood == 1) {
-			return 0x2;
-		} else if (wood == 2) {
-			return 0x0;
-		} else if (wood == 3) {
-			return 0x3;
-		} else if (wood == 4) {
-			return 0x1;
-		}
-		return 0x8;
+		return wood;
 	}
 
 	public float getAge() {

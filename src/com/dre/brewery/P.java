@@ -220,10 +220,11 @@ public class P extends JavaPlugin {
 					int quality = section.getInt(uid + ".quality", 0);
 					int distillRuns = section.getInt(uid + ".distillRuns", 0);
 					float ageTime = (float) section.getDouble(uid + ".ageTime", 0.0);
+					float wood = (float) section.getDouble(uid + ".wood", -1.0);
 					String recipe = section.getString(uid + ".recipe", null);
 					Boolean unlabeled = section.getBoolean(uid + ".unlabeled", false);
 
-					new Brew(parseInt(uid), ingredients, quality, distillRuns, ageTime, recipe, unlabeled);
+					new Brew(parseInt(uid), ingredients, quality, distillRuns, ageTime, wood, recipe, unlabeled);
 				}
 			}
 

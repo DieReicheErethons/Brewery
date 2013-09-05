@@ -22,8 +22,6 @@ public class Brew {
 	public static Boolean colorInBarrels; // color the Lore while in Barrels
 	public static Boolean colorInBrewer; // color the Lore while in Brewer
 
-	//public static Map<ItemStack, List<String>> oldLore = new HashMap<ItemStack, List<String>>();
-
 	private BIngredients ingredients;
 	private int quality;
 	private int distillRuns;
@@ -54,20 +52,7 @@ public class Brew {
 		this.ageTime = ageTime;
 		this.wood = wood;
 		this.unlabeled = unlabeled;
-		if (recipe != null && !recipe.equals("")) {
-			currentRecipe = BIngredients.getRecipeByName(recipe);
-			if (currentRecipe == null) {
-				if (quality > 0) {
-					currentRecipe = ingredients.getBestRecipe(wood, ageTime, distillRuns > 0);
-					if (currentRecipe != null) {
-						this.quality = calcQuality();
-						P.p.log("Brew was made from Recipe: '" + recipe + "' which could not be found. '" + currentRecipe.getName(5) + "' used instead!");
-					} else {
-						P.p.errorLog("Brew was made from Recipe: '" + recipe + "' which could not be found!");
-					}
-				}
-			}
-		}
+		setRecipeFromString(recipe);
 	}
 
 	// returns a Brew by its UID
@@ -133,6 +118,37 @@ public class Brew {
 		return uid;
 	}
 
+	//returns the recipe with the given name, recalculates if not found
+	public boolean setRecipeFromString(String name) {
+		currentRecipe = null;
+		if (name != null && !name.equals("")) {
+			for (BRecipe recipe : BIngredients.recipes) {
+				if (recipe.getName(5).equalsIgnoreCase(name)) {
+					currentRecipe = recipe;
+					return true;
+				}
+			}
+
+			if (quality > 0) {
+				currentRecipe = ingredients.getBestRecipe(wood, ageTime, distillRuns > 0);
+				if (currentRecipe != null) {
+					this.quality = calcQuality();
+					P.p.log("Brew was made from Recipe: '" + name + "' which could not be found. '" + currentRecipe.getName(5) + "' used instead!");
+					return true;
+				} else {
+					P.p.errorLog("Brew was made from Recipe: '" + name + "' which could not be found!");
+				}
+			}
+		}
+		return false;
+	}
+
+	public boolean reloadRecipe() {
+		if (currentRecipe != null) {
+			return setRecipeFromString(currentRecipe.getName(5));
+		}
+		return true;
+	}
 
 	// Copy a Brew with a new unique ID and return its item
 	public ItemStack copy(ItemStack item) {

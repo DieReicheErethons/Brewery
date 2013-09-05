@@ -32,7 +32,7 @@ public class CommandListener implements CommandExecutor {
 		} else if (cmd.equalsIgnoreCase("reload")) {
 
 			if (p.permission.has(sender, "brewery.cmd.reload")) {
-				p.reload();
+				p.reload(sender);
 				p.msg(sender, "&aConfig wurde neu eingelesen");
 			} else {
 				p.msg(sender, "&cDu hast keine Rechte dies zu tun!");

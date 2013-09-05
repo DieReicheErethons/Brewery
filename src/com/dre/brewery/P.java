@@ -97,7 +97,7 @@ public class P extends JavaPlugin {
 		this.log(this.getDescription().getName() + " disabled!");
 	}
 
-	public void reload() {
+	public void reload(CommandSender sender) {
 		BIngredients.possibleIngredients.clear();
 		BIngredients.recipes.clear();
 		BIngredients.cookedNames.clear();
@@ -105,6 +105,16 @@ public class P extends JavaPlugin {
 		BPlayer.drainItems.clear();
 
 		readConfig();
+
+		Boolean successful = true;
+		for (Brew brew : Brew.potions.values()) {
+			if (!brew.reloadRecipe()) {
+				successful = false;
+			}
+		}
+		if (!successful) {
+			msg(sender, "&cEs konnten nicht alle Rezepte wiederhergesellt werden: Siehe Serverlog!");
+		}
 	}
 
 	public void msg(CommandSender sender, String msg) {

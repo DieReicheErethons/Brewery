@@ -38,16 +38,6 @@ public class BIngredients {
 		lastId++;
 	}
 
-	//returns the recipe with the given name
-	public static BRecipe getRecipeByName(String name) {
-		for (BRecipe recipe : recipes) {
-			if (recipe.getName(5).equalsIgnoreCase(name)) {
-				return recipe;
-			}
-		}
-		return null;
-	}
-
 	// Add an ingredient to this
 	public void add(Material ingredient) {
 		if (ingredients.containsKey(ingredient)) {

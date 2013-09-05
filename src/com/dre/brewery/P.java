@@ -454,6 +454,8 @@ public class P extends JavaPlugin {
 
 		saveWorldNames(configFile, oldData.getConfigurationSection("Worlds"));
 
+		configFile.set("Version", "0.4");
+
 		try {
 			configFile.save(datafile);
 		} catch (IOException e) {

@@ -51,6 +51,9 @@ colorInBrewer: false
 # Autosave Intervall in Minuten [3]
 autosave: 3
 
+# Config Version
+version: '0.4'
+
 
 # Rezepte für Getränke
 

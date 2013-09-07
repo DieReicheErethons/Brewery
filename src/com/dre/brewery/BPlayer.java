@@ -427,7 +427,7 @@ public class BPlayer {
 					if (type.isInstant()) {
 						type.createEffect(0, duration - 1).apply(player);
 					} else {
-						int amplifier = brew.getQuality() / 3;
+						int amplifier = brew.getQuality() / 4;
 						duration /= type.getDurationModifier();
 						type.createEffect(duration * 20, amplifier).apply(player);
 					}

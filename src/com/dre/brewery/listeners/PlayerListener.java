@@ -135,10 +135,18 @@ public class PlayerListener implements Listener {
 		}
 	}
 
-	// Player has died! He should no longer be drunk
+	// Player has died! Decrease Drunkeness by 20
 	@EventHandler
 	public void onPlayerRespawn(PlayerRespawnEvent event) {
-		BPlayer.players.remove(event.getPlayer().getName());
+		String playerName = event.getPlayer().getName();
+		BPlayer bPlayer = BPlayer.get(playerName);
+		if (bPlayer != null) {
+			if (bPlayer.getDrunkeness() > 20) {
+				bPlayer.setData(bPlayer.getDrunkeness() - 20, 0);
+			} else {
+				BPlayer.players.remove(playerName);
+			}
+		}
 	}
 
 	// player walks while drunk, push him around!

@@ -29,6 +29,7 @@ import com.dre.brewery.listeners.*;
 
 public class P extends JavaPlugin {
 	public static P p;
+	public static boolean debug;
 	public static int lastBackup = 0;
 	public static int lastSave = 1;
 	public static int autosave = 3;
@@ -125,6 +126,12 @@ public class P extends JavaPlugin {
 		this.msg(Bukkit.getConsoleSender(), msg);
 	}
 
+	public void debugLog(String msg) {
+		if (debug) {
+			this.msg(Bukkit.getConsoleSender(), "&2[Debug] &f" + msg);
+		}
+	}
+
 	public void errorLog(String msg) {
 		Bukkit.getConsoleSender().sendMessage(ChatColor.DARK_GREEN + "[Brewery] " + ChatColor.DARK_RED + "ERROR: " + ChatColor.RED + msg);
 	}
@@ -146,6 +153,7 @@ public class P extends JavaPlugin {
 
 		// various Settings
 		autosave = config.getInt("autosave", 3);
+		debug = config.getBoolean("debug", false);
 		BPlayer.pukeItemId = Material.matchMaterial(config.getString("pukeItem", "SOUL_SAND")).getId();
 		BPlayer.hangoverTime = config.getInt("hangoverDays", 0) * 24 * 60;
 		BPlayer.overdrinkKick = config.getBoolean("enableKickOnOverdrink", false);
@@ -411,55 +419,25 @@ public class P extends JavaPlugin {
 
 		FileConfiguration configFile = new YamlConfiguration();
 
-		time = System.nanoTime() - time;
-		float ftime = (float) (time / 1000000.0);
-		p.log("Creating a savefile (" + ftime + "ms)");
-		time = System.nanoTime();
-
 		if (!Brew.potions.isEmpty()) {
 			Brew.save(configFile.createSection("Brew"));
 		}
-
-		time = System.nanoTime() - time;
-		ftime = (float) (time / 1000000.0);
-		p.log("Saving Brew (" + ftime + "ms)");
-		time = System.nanoTime();
 
 		if (!BCauldron.bcauldrons.isEmpty() || oldData.contains("BCauldron")) {
 			BCauldron.save(configFile.createSection("BCauldron"), oldData.getConfigurationSection("BCauldron"));
 		}
 
-		time = System.nanoTime() - time;
-		ftime = (float) (time / 1000000.0);
-		p.log("Saving BCauldrons (" + ftime + "ms)");
-		time = System.nanoTime();
-
 		if (!Barrel.barrels.isEmpty() || oldData.contains("Barrel")) {
 			Barrel.save(configFile.createSection("Barrel"), oldData.getConfigurationSection("Barrel"));
 		}
-
-		time = System.nanoTime() - time;
-		ftime = (float) (time / 1000000.0);
-		p.log("Saving Barrels (" + ftime + "ms)");
-		time = System.nanoTime();
 
 		if (!BPlayer.players.isEmpty()) {
 			BPlayer.save(configFile.createSection("Player"));
 		}
 
-		time = System.nanoTime() - time;
-		ftime = (float) (time / 1000000.0);
-		p.log("Saving players (" + ftime + "ms)");
-		time = System.nanoTime();
-
 		if (!Wakeup.wakeups.isEmpty() || oldData.contains("Wakeup")) {
 			Wakeup.save(configFile.createSection("Wakeup"), oldData.getConfigurationSection("Wakeup"));
 		}
-
-		time = System.nanoTime() - time;
-		ftime = (float) (time / 1000000.0);
-		p.log("Saving Wakeups (" + ftime + "ms)");
-		time = System.nanoTime();
 
 		saveWorldNames(configFile, oldData.getConfigurationSection("Worlds"));
 
@@ -474,8 +452,8 @@ public class P extends JavaPlugin {
 		lastSave = 1;
 
 		time = System.nanoTime() - time;
-		ftime = (float) (time / 1000000.0);
-		p.log("Writing Data to File (" + ftime + "ms)");
+		float ftime = (float) (time / 1000000.0);
+		p.debugLog("Writing Data to File (" + ftime + "ms)");
 	}
 
 	public void saveWorldNames(FileConfiguration root, ConfigurationSection old) {
@@ -604,26 +582,18 @@ public class P extends JavaPlugin {
 
 		@Override
 		public void run() {
-			long time = System.nanoTime();
-
 			for (BCauldron cauldron : BCauldron.bcauldrons) {
 				cauldron.onUpdate();// runs every min to update cooking time
 			}
 			Barrel.onUpdate();// runs every min to check and update ageing time
 			BPlayer.onUpdate();// updates players drunkeness
 
+			debugLog("Update");
+
 			if (lastSave >= autosave) {
 				saveData();// save all data
-
-				time = System.nanoTime() - time;
-				float ftime = (float) (time / 1000000.0);
-				p.log("Update and saving (" + ftime + "ms)");
 			} else {
 				lastSave++;
-
-				time = System.nanoTime() - time;
-				float ftime = (float) (time / 1000000.0);
-				p.log("Update (" + ftime + "ms)");
 			}
 		}
 

@@ -109,7 +109,6 @@ public class BPlayer {
 			} else {
 				bPlayer.drinkCap(player);
 			}
-			P.p.msg(player, "Du bist nun " + bPlayer.drunkeness + "% betrunken, mit einer Qualität von " + bPlayer.getQuality());
 			return true;
 		}
 		return false;

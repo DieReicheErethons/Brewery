@@ -93,7 +93,7 @@ public class Barrel {
 						}
 						loadTime = System.nanoTime() - loadTime;
 						float ftime = (float) (loadTime / 1000000.0);
-						P.p.log("opening Barrel with potions (" + ftime + "ms)");
+						P.p.debugLog("opening Barrel with potions (" + ftime + "ms)");
 					}
 				}
 			}
@@ -375,7 +375,6 @@ public class Barrel {
 		int x = startX;
 		int y = 0;
 		int z = startZ;
-		// P.p.log("startX="+startX+" startZ="+startZ+" endX="+endX+" endZ="+endZ+" direction="+direction);
 		while (y <= 1) {
 			while (x <= endX) {
 				while (z <= endZ) {
@@ -441,12 +440,10 @@ public class Barrel {
 		int x = startX;
 		int y = 0;
 		int z = startZ;
-		// P.p.log("startX="+startX+" startZ="+startZ+" endX="+endX+" endZ="+endZ+" direction="+direction);
 		while (y <= 2) {
 			while (x <= endX) {
 				while (z <= endZ) {
 					typeId = spigot.getRelative(x, y, z).getTypeId();
-					// spigot.getRelative(x,y,z).setTypeId(1);
 					if (direction == 1 || direction == 2) {
 						if (y == 1 && z == 0) {
 							if (x == -2 || x == -3 || x == 2 || x == 3) {

@@ -285,7 +285,6 @@ public class Brew {
 			// distillRuns will have an effect on the amount of alcohol, not the quality
 			currentRecipe = recipe;
 			quality = calcQuality();
-			P.p.log("destilled " + recipe.getName(5) + " has Quality: " + quality + ", alc: " + calcAlcohol());
 
 			addOrReplaceEffects(potionMeta, getEffects());
 			potionMeta.setDisplayName(P.p.color("&f" + recipe.getName(quality)));
@@ -330,7 +329,6 @@ public class Brew {
 			if (recipe != null) {
 				currentRecipe = recipe;
 				quality = calcQuality();
-				P.p.log("Final " + recipe.getName(5) + " has Quality: " + quality + ", alc: " + calcAlcohol());
 
 				addOrReplaceEffects(potionMeta, getEffects());
 				potionMeta.setDisplayName(P.p.color("&f" + recipe.getName(quality)));

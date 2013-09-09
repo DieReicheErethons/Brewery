@@ -64,7 +64,7 @@ public class BIngredients {
 		if (cookRecipe != null) {
 			// Potion is best with cooking only
 			int quality = (int) Math.round((getIngredientQuality(cookRecipe) + getCookingQuality(cookRecipe, false)) / 2.0);
-			P.p.log("cooked potion has Quality: " + quality);
+			P.p.debugLog("cooked potion has Quality: " + quality);
 			Brew brew = new Brew(uid, quality, cookRecipe, this);
 			Brew.addOrReplaceEffects(potionMeta, brew.getEffects());
 
@@ -135,8 +135,8 @@ public class BIngredients {
 					// needs riping in barrel
 					ageQuality = getAgeQuality(recipe, time);
 					woodQuality = getWoodQuality(recipe, wood);
-					P.p.log("Ingredient Quality: " + ingredientQuality + " Cooking Quality: " + cookingQuality + " Wood Quality: " + woodQuality + 
-						" age Quality: " + ageQuality + " for " + recipe.getName(5));
+					P.p.debugLog("Ingredient Quality: " + ingredientQuality + " Cooking Quality: " + cookingQuality +
+						" Wood Quality: " + woodQuality + " age Quality: " + ageQuality + " for " + recipe.getName(5));
 
 					// is this recipe better than the previous best?
 					if ((((float) ingredientQuality + cookingQuality + woodQuality + ageQuality) / 4) > quality) {
@@ -144,7 +144,7 @@ public class BIngredients {
 						bestRecipe = recipe;
 					}
 				} else {
-					P.p.log("Ingredient Quality: " + ingredientQuality + " Cooking Quality: " + cookingQuality + " for " + recipe.getName(5));
+					P.p.debugLog("Ingredient Quality: " + ingredientQuality + " Cooking Quality: " + cookingQuality + " for " + recipe.getName(5));
 					// calculate quality without age and barrel
 					if ((((float) ingredientQuality + cookingQuality) / 2) > quality) {
 						quality = ((float) ingredientQuality + cookingQuality) / 2;
@@ -154,7 +154,7 @@ public class BIngredients {
 			}
 		}
 		if (bestRecipe != null) {
-			P.p.log("best recipe: " + bestRecipe.getName(5) + " has Quality= " + quality);
+			P.p.debugLog("best recipe: " + bestRecipe.getName(5) + " has Quality= " + quality);
 		}
 		return bestRecipe;
 	}
@@ -269,7 +269,6 @@ public class BIngredients {
 			return 10;
 		}
 		int quality = 10 - Math.round(recipe.getWoodDiff(wood) * recipe.getDifficulty());
-		P.p.log("wood: " + wood + " needed: " + recipe.getWood() + " diff: " + recipe.getWoodDiff(wood));
 
 		if (quality > 0) {
 			return quality;

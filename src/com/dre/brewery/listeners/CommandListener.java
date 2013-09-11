@@ -83,7 +83,7 @@ public class CommandListener implements CommandExecutor {
 			if (p.permission.has(sender, "brewery.cmd.delete")) {
 				cmdDelete(sender);
 			} else {
-				p.msg(sender, p.languageReader.get("Error_NoPermissions");
+				p.msg(sender, p.languageReader.get("Error_NoPermissions"));
 			}
 
 		} else if (cmd.equalsIgnoreCase("unlabel")) {
@@ -152,7 +152,7 @@ public class CommandListener implements CommandExecutor {
 		}
 
 		if (p.permission.has(sender, "brewery.cmd.unlabel")) {
-			cmds.add (p.languageReader.get("Help_UnLabel");
+			cmds.add (p.languageReader.get("Help_UnLabel"));
 		}
 
 		if (p.permission.has(sender, "brewery.cmd.copy")) {
@@ -359,13 +359,13 @@ public class CommandListener implements CommandExecutor {
 				Brew brew = Brew.get(hand);
 				if (brew != null) {
 					brew.unLabel(hand);
-					p.msg(sender, p.languageReader.get("CMD_UnLabel");
+					p.msg(sender, p.languageReader.get("CMD_UnLabel"));
 					return;
 				}
 			}
-			p.msg(sender, p.languageReader.get("Error_ItemNotPotion");
+			p.msg(sender, p.languageReader.get("Error_ItemNotPotion"));
 		} else {
-			p.msg(sender, p.languageReader.get("Error_PlayerCommand");
+			p.msg(sender, p.languageReader.get("Error_PlayerCommand"));
 		}
 
 	}

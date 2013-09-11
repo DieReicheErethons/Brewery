@@ -3,7 +3,7 @@
 	
 	<groupId>com.dre</groupId>
 	<artifactId>brewery</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.5.1</version>
 	<name>Brewery</name>
 	
 	<build>
@@ -17,6 +17,9 @@
 				<includes>
 					<include>**/*.yml</include>
 				</includes>
+				<excludes>
+					<exclude>target/**</exclude>
+				</excludes>
 			</resource>
 		</resources>
 		
@@ -44,7 +47,7 @@
 		
 		<repository>
 			<id>milkbowl-repo</id>
-			<url>http://ci.herocraftonline.com/plugin/repository/everything</url>
+			<url>http://ci.herocraftonline.com/plugin/repository/everything/</url>
 		</repository>
 	</repositories>
    
@@ -60,7 +63,7 @@
 		<dependency>
 			<groupId>net.milkbowl.vault</groupId>
 			<artifactId>Vault</artifactId>
-			<version>1.2.16-SNAPSHOT</version>
+			<version>1.2.27</version>
 		</dependency>
 	</dependencies>
 </project>

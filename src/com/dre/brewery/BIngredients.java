@@ -17,29 +17,25 @@ public class BIngredients {
 	public static ArrayList<Material> possibleIngredients = new ArrayList<Material>();
 	public static ArrayList<BRecipe> recipes = new ArrayList<BRecipe>();
 	public static Map<Material, String> cookedNames = new HashMap<Material, String>();
+	private static int lastId = 0;
 
+	private int id;
 	private Map<Material, Integer> ingredients = new HashMap<Material, Integer>();
 	private int cookedTime;
 
 	// Represents ingredients in Cauldron, Brew
 	// Init a new BIngredients
 	public BIngredients() {
+		this.id = lastId;
+		lastId++;
 	}
 
 	// Load from File
 	public BIngredients(Map<Material, Integer> ingredients, int cookedTime) {
 		this.ingredients = ingredients;
 		this.cookedTime = cookedTime;
-	}
-
-	//returns the recipe with the given name
-	public static BRecipe getRecipeByName(String name) {
-		for (BRecipe recipe : recipes) {
-			if (recipe.getName(5).equalsIgnoreCase(name)) {
-				return recipe;
-			}
-		}
-		return null;
+		this.id = lastId;
+		lastId++;
 	}
 
 	// Add an ingredient to this
@@ -68,8 +64,8 @@ public class BIngredients {
 		if (cookRecipe != null) {
 			// Potion is best with cooking only
 			int quality = (int) Math.round((getIngredientQuality(cookRecipe) + getCookingQuality(cookRecipe, false)) / 2.0);
-			P.p.log("cooked potion has Quality: " + quality);
-			Brew brew = new Brew(uid, quality, cookRecipe, clone());
+			P.p.debugLog("cooked potion has Quality: " + quality);
+			Brew brew = new Brew(uid, quality, cookRecipe, this);
 			Brew.addOrReplaceEffects(potionMeta, brew.getEffects());
 
 			cookedName = cookRecipe.getName(quality);
@@ -77,7 +73,7 @@ public class BIngredients {
 
 		} else {
 			// new base potion
-			new Brew(uid, clone());
+			new Brew(uid, this);
 
 			if (state <= 1) {
 				cookedName = "Schlammiger Sud";
@@ -123,7 +119,7 @@ public class BIngredients {
 
 	// best recipe for current state of potion, STILL not always returns the
 	// correct one...
-	public BRecipe getBestRecipe(byte wood, float time, boolean distilled) {
+	public BRecipe getBestRecipe(float wood, float time, boolean distilled) {
 		float quality = 0;
 		int ingredientQuality = 0;
 		int cookingQuality = 0;
@@ -134,13 +130,13 @@ public class BIngredients {
 			ingredientQuality = getIngredientQuality(recipe);
 			cookingQuality = getCookingQuality(recipe, distilled);
 
-			if (ingredientQuality > -1) {
-				if (recipe.needsToAge()) {
+			if (ingredientQuality > -1 && cookingQuality > -1) {
+				if (recipe.needsToAge() || time > 0.5) {
 					// needs riping in barrel
 					ageQuality = getAgeQuality(recipe, time);
 					woodQuality = getWoodQuality(recipe, wood);
-					P.p.log("Ingredient Quality: " + ingredientQuality + " Cooking Quality: " + cookingQuality + " Wood Quality: " + getWoodQuality(recipe, wood) + 
-						" age Quality: " + getAgeQuality(recipe, time) + " for " + recipe.getName(5));
+					P.p.debugLog("Ingredient Quality: " + ingredientQuality + " Cooking Quality: " + cookingQuality +
+						" Wood Quality: " + woodQuality + " age Quality: " + ageQuality + " for " + recipe.getName(5));
 
 					// is this recipe better than the previous best?
 					if ((((float) ingredientQuality + cookingQuality + woodQuality + ageQuality) / 4) > quality) {
@@ -148,7 +144,7 @@ public class BIngredients {
 						bestRecipe = recipe;
 					}
 				} else {
-					P.p.log("Ingredient Quality: " + ingredientQuality + " Cooking Quality: " + cookingQuality + " for " + recipe.getName(5));
+					P.p.debugLog("Ingredient Quality: " + ingredientQuality + " Cooking Quality: " + cookingQuality + " for " + recipe.getName(5));
 					// calculate quality without age and barrel
 					if ((((float) ingredientQuality + cookingQuality) / 2) > quality) {
 						quality = ((float) ingredientQuality + cookingQuality) / 2;
@@ -158,7 +154,7 @@ public class BIngredients {
 			}
 		}
 		if (bestRecipe != null) {
-			P.p.log("best recipe: " + bestRecipe.getName(5) + " has Quality= " + quality);
+			P.p.debugLog("best recipe: " + bestRecipe.getName(5) + " has Quality= " + quality);
 		}
 		return bestRecipe;
 	}
@@ -166,7 +162,7 @@ public class BIngredients {
 	// returns recipe that is cooking only and matches the ingredients and
 	// cooking time
 	public BRecipe getCookRecipe() {
-		BRecipe bestRecipe = getBestRecipe((byte) 0, 0, false);
+		BRecipe bestRecipe = getBestRecipe(0, 0, false);
 
 		// Check if best recipe is cooking only
 		if (bestRecipe != null) {
@@ -179,8 +175,8 @@ public class BIngredients {
 
 	// returns the currently best matching recipe for distilling for the
 	// ingredients and cooking time
-	public BRecipe getdistillRecipe() {
-		BRecipe bestRecipe = getBestRecipe((byte) 0, 0, true);
+	public BRecipe getdistillRecipe(float wood, float time) {
+		BRecipe bestRecipe = getBestRecipe(wood, time, true);
 
 		// Check if best recipe needs to be destilled
 		if (bestRecipe != null) {
@@ -193,7 +189,7 @@ public class BIngredients {
 
 	// returns currently best matching recipe for ingredients, cooking- and
 	// ageingtime
-	public BRecipe getAgeRecipe(byte wood, float time, boolean distilled) {
+	public BRecipe getAgeRecipe(float wood, float time, boolean distilled) {
 		BRecipe bestRecipe = getBestRecipe(wood, time, distilled);
 
 		if (bestRecipe != null) {
@@ -226,7 +222,7 @@ public class BIngredients {
 				badStuff++;
 				if (badStuff < ingredients.size()) {
 					// when there are other ingredients
-					quality -= count * 2;
+					quality -= count * (recipe.getDifficulty() / 2);
 					continue;
 				} else {
 					// ingredients dont fit at all
@@ -234,7 +230,7 @@ public class BIngredients {
 				}
 			}
 			// calculate the quality
-			quality -= (((float) Math.abs(count - recipe.amountOf(ingredient)) / recipe.allowedCountDiff(recipe.amountOf(ingredient))) * 10.0);
+			quality -= ((float) Math.abs(count - recipe.amountOf(ingredient)) / recipe.allowedCountDiff(recipe.amountOf(ingredient))) * 10.0;
 		}
 		if (quality >= 0) {
 			return Math.round(quality);
@@ -245,14 +241,17 @@ public class BIngredients {
 	// returns the quality regarding the cooking-time conditioning given Recipe
 	public int getCookingQuality(BRecipe recipe, boolean distilled) {
 		if (!recipe.needsDistilling() == distilled) {
-			return 0;
+			return -1;
 		}
 		int quality = 10 - (int) Math.round(((float) Math.abs(cookedTime - recipe.getCookingTime()) / recipe.allowedTimeDiff(recipe.getCookingTime())) * 10.0);
 
-		if (quality > 0) {
+		if (quality >= 0) {
+			if (cookedTime <= 1) {
+				return 0;
+			}
 			return quality;
 		}
-		return 0;
+		return -1;
 	}
 
 	// returns pseudo quality of distilling. 0 if doesnt match the need of the recipes distilling
@@ -264,12 +263,12 @@ public class BIngredients {
 	}
 
 	// returns the quality regarding the barrel wood conditioning given Recipe
-	public int getWoodQuality(BRecipe recipe, byte wood) {
-		if (recipe.getWood() == 0x8) {
+	public int getWoodQuality(BRecipe recipe, float wood) {
+		if (recipe.getWood() == 0) {
 			// type of wood doesnt matter
 			return 10;
 		}
-		int quality = 10 - (int) Math.round(recipe.getWoodDiff(wood) * recipe.getDifficulty());
+		int quality = 10 - Math.round(recipe.getWoodDiff(wood) * recipe.getDifficulty());
 
 		if (quality > 0) {
 			return quality;
@@ -295,22 +294,23 @@ public class BIngredients {
 		return copy;
 	}
 
-	// saves data into ingredient section of Brew/BCauldron
-	public void save(ConfigurationSection config) {
+	// saves data into main Ingredient section. Returns the save id
+	public int save(ConfigurationSection config) {
+		String path = "Ingredients." + id;
 		if (cookedTime != 0) {
-			config.set("cookedTime", cookedTime);
+			config.set(path + ".cookedTime", cookedTime);
 		}
+		config.set(path + ".mats", serializeIngredients());
+		return id;
+	}
 
-		// convert the ingredient Material to id
+	// convert the ingredient Material to id
+	public Map<Integer, Integer> serializeIngredients() {
 		Map<Integer, Integer> mats = new HashMap<Integer, Integer>();
 		for (Material mat : ingredients.keySet()) {
 			mats.put(mat.getId(), ingredients.get(mat));
 		}
-		// list all Material ids with their amount
-		ConfigurationSection matSection = config.createSection("mats");
-		for (int id : mats.keySet()) {
-			matSection.set("" + id, mats.get(id));
-		}
+		return mats;
 	}
 
 }

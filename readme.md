@@ -29,7 +29,7 @@ Die Config.yml enthält:
 * Rezepte
 * Wörter
 
-Sie kann frei editiert werden und nach Belieben angepasst werden. Die meisten Optionen werden allerdings erst bei einem Neustart des Servers übernommen.
+Sie kann frei editiert werden und nach Belieben angepasst werden. Die Änderungen werden nach ausführen des Commands Reload oder nach einem Serverrestart übernommen
 
 Alle Teile der Config sind kommentiert. Die Kommentare enthalten Erklärungen und Beispiele.
 
@@ -41,7 +41,7 @@ Hier werden die Rezepte für die verschiedenen Tränke eingetragen. Es können b
 
 Die Rezepte bestimmen alle Eigenschaften der entstehenden Tränke. Ob und wie lange sie reifen müssen, ihre Farbe, Effekte die beim Trinken wirken, den Alkoholgehalt, usw. Optionen die weggelassen werden, werden nicht verwendet, oder verwenden die Standardwerte. Wenn z.B. die Anzahl der Destilliervorgänge weggelassen wird, muss der Trank nicht destilliert werden.
 
-Wichtig: Werdem die Namen der Rezepte verändert werden vorhandene Tränke der geänderten Rezepte nutzlos!
+Werden im Nachhinein Rezepte umbenannt, so kann es sein, dass vorhandene Tränke den neuen Namen erst nach erneutem Reifen/Brauen erhalten.
 
 **Wörter**
 
@@ -63,6 +63,9 @@ Auch hier können anhand der Erklärungen und Beispiele bestehende "Wörter" ver
   </tr>
   <tr>
     <td>/br [Spieler] [Trunkenheit] [Qualität]</td><td>Setzen der Spielerwerte. Trunkenheit in %, Qualität von 1-10.</td>
+  </tr>
+  <tr>
+    <td>/br UnLabel</td><td>Versteckt die genauen Zahlen in der Beschriftung des Trankes in der Hand unwiederbringlich</td>
   </tr>
   <tr>
     <td>/br Copy [Anzahl]</td><td>Kopiert den Trank in der Hand. Optional kann die Anzahl angegeben werden</td>
@@ -98,6 +101,9 @@ Auch hier können anhand der Erklärungen und Beispiele bestehende "Wörter" ver
 <table>
   <tr>
     <th>Permission</th><th>Ermöglichter Befehl</th><th>Beschreibung</th>
+  </tr>
+  <tr>
+    <td>brewery.cmd.unlabel</td><td>UnLabel</td><td>Teile der Trankbeschriftung verstecken</td>
   </tr>
   <tr>
     <td>brewery.cmd.info</td><td>Info</td><td>Informationen über die eigene Trunkenheit</td>

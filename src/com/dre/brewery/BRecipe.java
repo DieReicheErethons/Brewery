@@ -13,7 +13,7 @@ public class BRecipe {
 	private Map<Material, Integer> ingredients = new HashMap<Material, Integer>();// material and amount
 	private int cookingTime;// time to cook in cauldron
 	private int distillruns;// runs through the brewer
-	private int wood;// type of wood the barrel has to consist of
+	private byte wood;// type of wood the barrel has to consist of
 	private int age;// time in minecraft days for the potions to age in barrels
 	private String color;// color of the destilled/finished potion
 	private int difficulty;// difficulty to brew the potion, how exact the instruction has to be followed
@@ -21,22 +21,39 @@ public class BRecipe {
 	private Map<String, Integer> effects = new HashMap<String, Integer>(); // Special Effect, Duration
 
 	public BRecipe(ConfigurationSection configSectionRecipes, String recipeId) {
-		String[] name = configSectionRecipes.getString(recipeId + ".name").split("/");
-		if (name.length > 2) {
-			this.name = name;
+		String nameList = configSectionRecipes.getString(recipeId + ".name");
+		if (nameList != null) {
+			String[] name = nameList.split("/");
+			if (name.length > 2) {
+				this.name = name;
+			} else {
+				this.name = new String[1];
+				this.name[0] = name[0];
+			}
 		} else {
-			this.name = new String[1];
-			this.name[0] = name[0];
+			return;
 		}
 		List<String> ingredientsList = configSectionRecipes.getStringList(recipeId + ".ingredients");
-		for (String item : ingredientsList) {
-			String[] ingredParts = item.split("/");
-			ingredParts[0] = ingredParts[0].toUpperCase();
-			this.ingredients.put(Material.getMaterial(ingredParts[0]), P.p.parseInt(ingredParts[1]));
+		if (ingredientsList != null) {
+			for (String item : ingredientsList) {
+				String[] ingredParts = item.split("/");
+				if (ingredParts.length == 2) {
+					Material mat = Material.matchMaterial(ingredParts[0]);
+					if (mat != null) {
+						this.ingredients.put(Material.matchMaterial(ingredParts[0]), P.p.parseInt(ingredParts[1]));
+					} else {
+						P.p.errorLog("Unbekanntes Material: " + ingredParts[0]);
+						this.ingredients = null;
+						return;
+					}
+				} else {
+					return;
+				}
+			}
 		}
 		this.cookingTime = configSectionRecipes.getInt(recipeId + ".cookingtime");
 		this.distillruns = configSectionRecipes.getInt(recipeId + ".distillruns");
-		this.wood = configSectionRecipes.getInt(recipeId + ".wood");
+		this.wood = (byte) configSectionRecipes.getInt(recipeId + ".wood");
 		this.age = configSectionRecipes.getInt(recipeId + ".age");
 		this.color = configSectionRecipes.getString(recipeId + ".color");
 		this.difficulty = configSectionRecipes.getInt(recipeId + ".difficulty");
@@ -47,7 +64,11 @@ public class BRecipe {
 			for (String effectString : effectStringList) {
 				String[] effectSplit = effectString.split("/");
 				String effect = effectSplit[0];
-				if (effect.equalsIgnoreCase("WEAKNESS") || effect.equalsIgnoreCase("INCREASE_DAMAGE") || effect.equalsIgnoreCase("SLOW") || effect.equalsIgnoreCase("SPEED") || effect.equalsIgnoreCase("REGERATION")) {
+				if (effect.equalsIgnoreCase("WEAKNESS") ||
+					effect.equalsIgnoreCase("INCREASE_DAMAGE") ||
+					effect.equalsIgnoreCase("SLOW") ||
+					effect.equalsIgnoreCase("SPEED") ||
+					effect.equalsIgnoreCase("REGENERATION")) {
 					// hide these effects as they put crap into lore
 					effect = effect + "X";
 				}
@@ -62,6 +83,9 @@ public class BRecipe {
 
 	// allowed deviation to the recipes count of ingredients at the given difficulty
 	public int allowedCountDiff(int count) {
+		if (count < 8) {
+			count = 8;
+		}
 		int allowedCountDiff = Math.round((float) ((11.0 - difficulty) * (count / 10.0)));
 
 		if (allowedCountDiff == 0) {
@@ -72,11 +96,11 @@ public class BRecipe {
 
 	// allowed deviation to the recipes cooking-time at the given difficulty
 	public int allowedTimeDiff(int time) {
+		if (time < 8) {
+			time = 8;
+		}
 		int allowedTimeDiff = Math.round((float) ((11.0 - difficulty) * (time / 10.0)));
 
-		while (allowedTimeDiff >= time) {
-			allowedTimeDiff -= 1;
-		}
 		if (allowedTimeDiff == 0) {
 			return 1;
 		}
@@ -84,18 +108,8 @@ public class BRecipe {
 	}
 
 	// difference between given and recipe-wanted woodtype
-	public float getWoodDiff(byte wood) {
-		int woodType = 0;
-		if (wood == 0x0) {
-			woodType = 2;
-		} else if (wood == 0x1) {
-			woodType = 4;
-		} else if (wood == 0x2) {
-			woodType = 1;
-		} else if (wood == 0x3) {
-			woodType = 3;
-		}
-		return Math.abs(woodType - wood);
+	public float getWoodDiff(float wood) {
+		return Math.abs(wood - this.wood);
 	}
 
 	public boolean isCookingOnly() {
@@ -130,6 +144,11 @@ public class BRecipe {
 			}
 		}
 		return false;
+	}
+
+	// true if name and ingredients are correct
+	public boolean isValid() {
+		return (name != null && ingredients != null && !ingredients.isEmpty());
 	}
 
 
@@ -167,21 +186,15 @@ public class BRecipe {
 	}
 
 	public String getColor() {
-		return color.toUpperCase();
+		if (color != null) {
+			return color.toUpperCase();
+		}
+		return "BLUE";
 	}
 
-	// get the woodtype in blockData-byte
+	// get the woodtype
 	public byte getWood() {
-		if (wood == 1) {
-			return 0x2;
-		} else if (wood == 2) {
-			return 0x0;
-		} else if (wood == 3) {
-			return 0x3;
-		} else if (wood == 4) {
-			return 0x1;
-		}
-		return 0x8;
+		return wood;
 	}
 
 	public float getAge() {

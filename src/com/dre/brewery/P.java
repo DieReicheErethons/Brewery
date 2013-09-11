@@ -30,6 +30,7 @@ import com.dre.brewery.listeners.*;
 
 public class P extends JavaPlugin {
 	public static P p;
+	public static boolean debug;
 	public static int lastBackup = 0;
 	public static int lastSave = 1;
 	public static int autosave = 3;
@@ -105,7 +106,7 @@ public class P extends JavaPlugin {
 		this.log(this.getDescription().getName() + " disabled!");
 	}
 
-	public void reload() {
+	public void reload(CommandSender sender) {
 		BIngredients.possibleIngredients.clear();
 		BIngredients.recipes.clear();
 		BIngredients.cookedNames.clear();
@@ -113,6 +114,16 @@ public class P extends JavaPlugin {
 		BPlayer.drainItems.clear();
 
 		readConfig();
+
+		Boolean successful = true;
+		for (Brew brew : Brew.potions.values()) {
+			if (!brew.reloadRecipe()) {
+				successful = false;
+			}
+		}
+		if (!successful) {
+			msg(sender, "&cEs konnten nicht alle Rezepte wiederhergesellt werden: Siehe Serverlog!");
+		}
 	}
 
 	public void msg(CommandSender sender, String msg) {
@@ -121,6 +132,12 @@ public class P extends JavaPlugin {
 
 	public void log(String msg) {
 		this.msg(Bukkit.getConsoleSender(), msg);
+	}
+
+	public void debugLog(String msg) {
+		if (debug) {
+			this.msg(Bukkit.getConsoleSender(), "&2[Debug] &f" + msg);
+		}
 	}
 
 	public void errorLog(String msg) {
@@ -144,7 +161,9 @@ public class P extends JavaPlugin {
 
 		// various Settings
 		autosave = config.getInt("autosave", 3);
+		debug = config.getBoolean("debug", false);
 		BPlayer.pukeItemId = Material.matchMaterial(config.getString("pukeItem", "SOUL_SAND")).getId();
+		BPlayer.hangoverTime = config.getInt("hangoverDays", 0) * 24 * 60;
 		BPlayer.overdrinkKick = config.getBoolean("enableKickOnOverdrink", false);
 		BPlayer.enableHome = config.getBoolean("enableHome", false);
 		BPlayer.enableLoginDisallow = config.getBoolean("enableLoginDisallow", false);
@@ -157,7 +176,12 @@ public class P extends JavaPlugin {
 		ConfigurationSection configSection = config.getConfigurationSection("recipes");
 		if (configSection != null) {
 			for (String recipeId : configSection.getKeys(false)) {
-				BIngredients.recipes.add(new BRecipe(configSection, recipeId));
+				BRecipe recipe = new BRecipe(configSection, recipeId);
+				if (recipe.isValid()) {
+					BIngredients.recipes.add(recipe);
+				} else {
+					errorLog("Laden des Rezeptes mit id: '" + recipeId + "' fehlgeschlagen!");
+				}
 			}
 		}
 
@@ -166,8 +190,12 @@ public class P extends JavaPlugin {
 		if (configSection != null) {
 			for (String ingredient : configSection.getKeys(false)) {
 				Material mat = Material.matchMaterial(ingredient);
-				BIngredients.cookedNames.put(mat, (configSection.getString(ingredient, null)));
-				BIngredients.possibleIngredients.add(mat);
+				if (mat != null) {
+					BIngredients.cookedNames.put(mat, (configSection.getString(ingredient, null)));
+					BIngredients.possibleIngredients.add(mat);
+				} else {
+					errorLog("Unbekanntes Material: " + ingredient);
+				}
 			}
 		}
 
@@ -197,18 +225,40 @@ public class P extends JavaPlugin {
 
 			FileConfiguration data = YamlConfiguration.loadConfiguration(file);
 
+			// loading Ingredients into ingMap
+			Map<String, BIngredients> ingMap = new HashMap<String, BIngredients>();
+			ConfigurationSection section = data.getConfigurationSection("Ingredients");
+			if (section != null) {
+				for (String id : section.getKeys(false)) {
+					ConfigurationSection matSection = section.getConfigurationSection(id + ".mats");
+					if (matSection != null) {
+						// matSection has all the materials + amount as Integers
+						Map<Material, Integer> ingredients = new HashMap<Material, Integer>();
+						for (String ingredient : matSection.getKeys(false)) {
+							// convert to Material
+							ingredients.put(Material.getMaterial(parseInt(ingredient)), matSection.getInt(ingredient));
+						}
+						ingMap.put(id, new BIngredients(ingredients, section.getInt(id + ".cookedTime", 0)));
+					} else {
+						errorLog("Ingredient id: '" + id + "' incomplete in data.yml");
+					}
+				}
+			}
+
 			// loading Brew
-			ConfigurationSection section = data.getConfigurationSection("Brew");
+			section = data.getConfigurationSection("Brew");
 			if (section != null) {
 				// All sections have the UID as name
 				for (String uid : section.getKeys(false)) {
-					BIngredients ingredients = loadIngredients(section.getConfigurationSection(uid + ".ingredients"));
+					BIngredients ingredients = getIngredients(ingMap, section.getString(uid + ".ingId"));
 					int quality = section.getInt(uid + ".quality", 0);
 					int distillRuns = section.getInt(uid + ".distillRuns", 0);
 					float ageTime = (float) section.getDouble(uid + ".ageTime", 0.0);
+					float wood = (float) section.getDouble(uid + ".wood", -1.0);
 					String recipe = section.getString(uid + ".recipe", null);
+					Boolean unlabeled = section.getBoolean(uid + ".unlabeled", false);
 
-					new Brew(parseInt(uid), ingredients, quality, distillRuns, ageTime, recipe);
+					new Brew(parseInt(uid), ingredients, quality, distillRuns, ageTime, wood, recipe, unlabeled);
 				}
 			}
 
@@ -239,21 +289,30 @@ public class P extends JavaPlugin {
 		}
 	}
 
-	// loads BIngredients from ingredient section
-	public BIngredients loadIngredients(ConfigurationSection config) {
-		if (config != null) {
-			ConfigurationSection matSection = config.getConfigurationSection("mats");
-			if (matSection != null) {
-				// matSection has all the materials + amount in Integer form
-				Map<Material, Integer> ingredients = new HashMap<Material, Integer>();
-				for (String ingredient : matSection.getKeys(false)) {
-					// convert to Material
-					ingredients.put(Material.getMaterial(parseInt(ingredient)), matSection.getInt(ingredient));
-				}
-				return new BIngredients(ingredients, config.getInt("cookedTime", 0));
+	// returns Ingredients by id from the specified ingMap
+	public BIngredients getIngredients(Map<String, BIngredients> ingMap, String id) {
+		if (!ingMap.isEmpty()) {
+			if (ingMap.containsKey(id)) {
+				return ingMap.get(id);
 			}
 		}
-		errorLog("Ingredient section not found or incomplete in data.yml");
+		errorLog("Ingredient id: '" + id + "' not found in data.yml");
+		return new BIngredients();
+	}
+
+	// loads BIngredients from an ingredient section
+	public BIngredients loadIngredients(ConfigurationSection section) {
+		if (section != null) {
+			// has all the materials + amount as Integers
+			Map<Material, Integer> ingredients = new HashMap<Material, Integer>();
+			for (String ingredient : section.getKeys(false)) {
+				// convert to Material
+				ingredients.put(Material.getMaterial(parseInt(ingredient)), section.getInt(ingredient));
+			}
+			return new BIngredients(ingredients, 0);
+		} else {
+			errorLog("Cauldron is missing Ingredient Section");
+		}
 		return new BIngredients();
 	}
 
@@ -367,55 +426,29 @@ public class P extends JavaPlugin {
 
 		FileConfiguration configFile = new YamlConfiguration();
 
-		time = System.nanoTime() - time;
-		float ftime = (float) (time / 1000000.0);
-		p.log("Creating a savefile (" + ftime + "ms)");
-		time = System.nanoTime();
-
 		if (!Brew.potions.isEmpty()) {
 			Brew.save(configFile.createSection("Brew"));
 		}
-
-		time = System.nanoTime() - time;
-		ftime = (float) (time / 1000000.0);
-		p.log("Saving Brew (" + ftime + "ms)");
-		time = System.nanoTime();
 
 		if (!BCauldron.bcauldrons.isEmpty() || oldData.contains("BCauldron")) {
 			BCauldron.save(configFile.createSection("BCauldron"), oldData.getConfigurationSection("BCauldron"));
 		}
 
-		time = System.nanoTime() - time;
-		ftime = (float) (time / 1000000.0);
-		p.log("Saving BCauldrons (" + ftime + "ms)");
-		time = System.nanoTime();
-
 		if (!Barrel.barrels.isEmpty() || oldData.contains("Barrel")) {
 			Barrel.save(configFile.createSection("Barrel"), oldData.getConfigurationSection("Barrel"));
 		}
-
-		time = System.nanoTime() - time;
-		ftime = (float) (time / 1000000.0);
-		p.log("Saving Barrels (" + ftime + "ms)");
-		time = System.nanoTime();
 
 		if (!BPlayer.players.isEmpty()) {
 			BPlayer.save(configFile.createSection("Player"));
 		}
 
-		time = System.nanoTime() - time;
-		ftime = (float) (time / 1000000.0);
-		p.log("Saving players (" + ftime + "ms)");
-		time = System.nanoTime();
-
 		if (!Wakeup.wakeups.isEmpty() || oldData.contains("Wakeup")) {
 			Wakeup.save(configFile.createSection("Wakeup"), oldData.getConfigurationSection("Wakeup"));
 		}
 
-		time = System.nanoTime() - time;
-		ftime = (float) (time / 1000000.0);
-		p.log("Saving Wakeups (" + ftime + "ms)");
-		time = System.nanoTime();
+		saveWorldNames(configFile, oldData.getConfigurationSection("Worlds"));
+
+		configFile.set("Version", "0.5");
 
 		try {
 			configFile.save(datafile);
@@ -426,8 +459,24 @@ public class P extends JavaPlugin {
 		lastSave = 1;
 
 		time = System.nanoTime() - time;
-		ftime = (float) (time / 1000000.0);
-		p.log("Writing Data to File (" + ftime + "ms)");
+		float ftime = (float) (time / 1000000.0);
+		p.debugLog("Writing Data to File (" + ftime + "ms)");
+	}
+
+	public void saveWorldNames(FileConfiguration root, ConfigurationSection old) {
+		if (old != null) {
+			root.set("Worlds", old);
+		}
+		for (World world : p.getServer().getWorlds()) {
+			String worldName = world.getName();
+			if (worldName.startsWith("DXL_")) {
+				worldName = getDxlName(worldName);
+				root.set("Worlds." + worldName, 0);
+			} else {
+				worldName = world.getUID().toString();
+				root.set("Worlds." + worldName, world.getName());
+			}
+		}
 	}
 
 	// Utility
@@ -443,7 +492,7 @@ public class P extends JavaPlugin {
 			for (File file : dungeonFolder.listFiles()) {
 				if (!file.isDirectory()) {
 					if (file.getName().startsWith(".id_")) {
-						return file.getName().substring(1);
+						return file.getName().substring(1).toLowerCase();
 					}
 				}
 			}
@@ -535,26 +584,18 @@ public class P extends JavaPlugin {
 
 		@Override
 		public void run() {
-			long time = System.nanoTime();
-
 			for (BCauldron cauldron : BCauldron.bcauldrons) {
 				cauldron.onUpdate();// runs every min to update cooking time
 			}
 			Barrel.onUpdate();// runs every min to check and update ageing time
 			BPlayer.onUpdate();// updates players drunkeness
 
+			debugLog("Update");
+
 			if (lastSave >= autosave) {
 				saveData();// save all data
-
-				time = System.nanoTime() - time;
-				float ftime = (float) (time / 1000000.0);
-				p.log("Update and saving (" + ftime + "ms)");
 			} else {
 				lastSave++;
-
-				time = System.nanoTime() - time;
-				float ftime = (float) (time / 1000000.0);
-				p.log("Update (" + ftime + "ms)");
 			}
 		}
 

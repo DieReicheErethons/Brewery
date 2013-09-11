@@ -61,6 +61,7 @@ public class LanguageReader {
 		defaults.put("CMD_Player_Error", "&cDie Qualität muss zwischen 1 und 10 liegen!");
 		defaults.put("CMD_Info_NotDrunk", "&v1 ist nicht betrunken");
 		defaults.put("CMD_Info_Drunk", "&v1 ist &6&v2% &fbetrunken, mit einer Qualität von &6&v1");
+		defaults.put("CMD_UnLabel", "&aDas Label wurde entfernt");
 		defaults.put("CMD_Copy_Error", "&6&v1 &cTränke haben nicht mehr in das Inventar gepasst");
 		
 		/* Error */
@@ -74,6 +75,7 @@ public class LanguageReader {
 		defaults.put("Help_Help", "&6/br help <Seite> &9Zeigt eine bestimmte Hilfeseite an");
 		defaults.put("Help_Player", "&6/br <Spieler> <%Trunkenheit> <Qualität>&9 Setzt Trunkenheit (und Qualität) eines Spielers");
 		defaults.put("Help_Info", "&6/br Info&9 Zeigt deine aktuelle Trunkenheit und Qualität an");
+		defaults.put("Help_UnLabel", "&6/br UnLabel &9Entfernt die genaue Beschriftung des Trankes");
 		defaults.put("Help_Copy", "&6/br Copy <Anzahl>&9 Kopiert den Trank in deiner Hand");
 		defaults.put("Help_Delete", "&6/br Delete &9Entfernt den Trank in deiner Hand");
 		defaults.put("Help_InfoOther", "&6/br Info <Spieler>&9 Zeigt die aktuelle Trunkenheit und Qualität von <Spieler> an");

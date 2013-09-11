@@ -15,14 +15,13 @@ import com.dre.brewery.BIngredients;
 public class BCauldron {
 	public static CopyOnWriteArrayList<BCauldron> bcauldrons = new CopyOnWriteArrayList<BCauldron>();
 
-	private BIngredients ingredients;
+	private BIngredients ingredients = new BIngredients();
 	private Block block;
-	private int state;
+	private int state = 1;
+	private boolean someRemoved = false;
 
 	public BCauldron(Block block, Material ingredient) {
 		this.block = block;
-		this.state = 1;
-		this.ingredients = new BIngredients();
 		add(ingredient);
 		bcauldrons.add(this);
 	}
@@ -41,11 +40,19 @@ public class BCauldron {
 				|| block.getRelative(BlockFace.DOWN).getType() == Material.LAVA) {
 			// add a minute to cooking time
 			state++;
+			if (someRemoved) {
+				ingredients = ingredients.clone();
+				someRemoved = false;
+			}
 		}
 	}
 
 	// add an ingredient to the cauldron
 	public void add(Material ingredient) {
+		if (someRemoved) {
+			ingredients = ingredients.clone();
+			someRemoved = false;
+		}
 		ingredients.add(ingredient);
 		block.getWorld().playEffect(block.getLocation(), Effect.EXTINGUISH, 0);
 		if (state > 1) {
@@ -98,6 +105,8 @@ public class BCauldron {
 
 				if (block.getData() == 0) {
 					bcauldrons.remove(bcauldron);
+				} else {
+					bcauldron.someRemoved = true;
 				}
 				return true;
 			}
@@ -154,7 +163,7 @@ public class BCauldron {
 				if (cauldron.state != 1) {
 					config.set(prefix + ".state", cauldron.state);
 				}
-				cauldron.ingredients.save(config.createSection(prefix + ".ingredients"));
+				config.set(prefix + ".ingredients", cauldron.ingredients.serializeIngredients());
 				id++;
 			}
 		}

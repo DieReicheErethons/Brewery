@@ -32,7 +32,7 @@ public class CommandListener implements CommandExecutor {
 		} else if (cmd.equalsIgnoreCase("reload")) {
 
 			if (p.permission.has(sender, "brewery.cmd.reload")) {
-				p.reload();
+				p.reload(sender);
 				p.msg(sender, p.languageReader.get("CMD_Reload"));
 			} else {
 				p.msg(sender, p.languageReader.get("Error_NoPermissions"));
@@ -82,6 +82,14 @@ public class CommandListener implements CommandExecutor {
 
 			if (p.permission.has(sender, "brewery.cmd.delete")) {
 				cmdDelete(sender);
+			} else {
+				p.msg(sender, p.languageReader.get("Error_NoPermissions");
+			}
+
+		} else if (cmd.equalsIgnoreCase("unlabel")) {
+
+			if (p.permission.has(sender, "brewery.cmd.unlabel")) {
+				cmdUnlabel(sender);
 			} else {
 				p.msg(sender, p.languageReader.get("Error_NoPermissions"));
 			}
@@ -141,6 +149,10 @@ public class CommandListener implements CommandExecutor {
 
 		if (p.permission.has(sender, "brewery.cmd.info")) {
 			cmds.add (p.languageReader.get("Help_Info"));
+		}
+
+		if (p.permission.has(sender, "brewery.cmd.unlabel")) {
+			cmds.add (p.languageReader.get("Help_UnLabel");
 		}
 
 		if (p.permission.has(sender, "brewery.cmd.copy")) {
@@ -230,6 +242,9 @@ public class CommandListener implements CommandExecutor {
 	public void cmdPlayer(CommandSender sender, String[] args) {
 
 		int drunkeness = p.parseInt(args[1]);
+		if (drunkeness < 0) {
+			return;
+		}
 		int quality = -1;
 		if (args.length > 2) {
 			quality = p.parseInt(args[2]);
@@ -331,6 +346,26 @@ public class CommandListener implements CommandExecutor {
 			p.msg(sender, p.languageReader.get("Error_ItemNotPotion"));
 		} else {
 			p.msg(sender, p.languageReader.get("Error_PlayerCommand"));
+		}
+
+	}
+
+	public void cmdUnlabel(CommandSender sender) {
+
+		if (sender instanceof Player) {
+			Player player = (Player) sender;
+			ItemStack hand = player.getItemInHand();
+			if (hand != null) {
+				Brew brew = Brew.get(hand);
+				if (brew != null) {
+					brew.unLabel(hand);
+					p.msg(sender, p.languageReader.get("CMD_UnLabel");
+					return;
+				}
+			}
+			p.msg(sender, p.languageReader.get("Error_ItemNotPotion");
+		} else {
+			p.msg(sender, p.languageReader.get("Error_PlayerCommand");
 		}
 
 	}

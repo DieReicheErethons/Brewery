@@ -89,16 +89,16 @@ public class Wakeup {
 
 			Player player = (Player) sender;
 			wakeups.add(new Wakeup(player.getLocation()));
-			p.msg(sender, "&aAufwachpunkt mit id: &6" + (wakeups.size() - 1) + " &awurde erfolgreich erstellt!");
+			p.msg(sender, p.languageReader.get("Player_WakeCreated", "" + (wakeups.size() - 1)));
 
 		} else {
-			p.msg(sender, "&cDieser Befehl kann nur als Spieler ausgeführt werden");
+			p.msg(sender, p.languageReader.get("Error_PlayerCommand"));
 		}
 	}
 
 	public static void remove(CommandSender sender, int id) {
 		if (wakeups.isEmpty() || id < 0 || id >= wakeups.size()) {
-			p.msg(sender, "&cDer Aufwachpunkt mit der id: &6" + id + " &cexistiert nicht!");
+			p.msg(sender, p.languageReader.get("Player_WakeNotExist", "" + id));//"&cDer Aufwachpunkt mit der id: &6" + id + " &cexistiert nicht!");
 			return;
 		}
 
@@ -106,16 +106,16 @@ public class Wakeup {
 
 		if (wakeup.active) {
 			wakeup.active = false;
-			p.msg(sender, "&aDer Aufwachpunkt mit der id: &6" + id + " &awurde erfolgreich gelöscht!");
+			p.msg(sender, p.languageReader.get("Player_WakeDeleted", "" + id));
 
 		} else {
-			p.msg(sender, "&cDer Aufwachpunkt mit der id: &6" + id + " &cwurde bereits gelöscht!");
+			p.msg(sender, p.languageReader.get("Player_WakeAlreadyDeleted", "" + id));
 		}
 	}
 
 	public static void list(CommandSender sender, int page, String worldOnly) {
 		if (wakeups.isEmpty()) {
-			p.msg(sender, "&cEs wurden noch keine Aufwachpunkte erstellt!");
+			p.msg(sender, p.languageReader.get("Player_WakeNoPoints"));
 			return;
 		}
 
@@ -148,7 +148,7 @@ public class Wakeup {
 
 			if (!all) {
 				if (wakeups.isEmpty() || id >= wakeups.size()) {
-					p.msg(sender, "&cDer Aufwachpunkt mit der id: &6" + id + "&c existiert nicht!");
+					p.msg(sender, p.languageReader.get("Player_WakeNotExist", "" + id));
 					return;
 				}
 
@@ -160,12 +160,12 @@ public class Wakeup {
 					int x = (int) wakeup.loc.getX();
 					int y = (int) wakeup.loc.getY();
 					int z = (int) wakeup.loc.getZ();
-					p.msg(sender, "&cDer Aufwachpunkt mit der id: &6" + id + "&c An Position &6" + world + " " + x + "," + y + "," + z + "&c ist mit Blöcken gefüllt!");
+					p.msg(sender, p.languageReader.get("Player_WakeFilled", "" + id, world, "" + x , "" + y, "" + z));
 				}
 
 			} else {
 				if (wakeups.isEmpty()) {
-					p.msg(sender, "&cEs wurden noch keine Aufwachpunkte erstellt!");
+					p.msg(sender, p.languageReader.get("Player_WakeNoPoints"));
 					return;
 				}
 				if (checkPlayer != null && checkPlayer != player) {
@@ -177,7 +177,7 @@ public class Wakeup {
 
 
 		} else {
-			p.msg(sender, "&cDieser Befehl kann nur als Spieler ausgeführt werden");
+			p.msg(sender, p.languageReader.get("Error_PlayerCommand"));
 		}
 	}
 
@@ -188,7 +188,7 @@ public class Wakeup {
 	public static void tpNext() {
 		checkId++;
 		if (checkId >= wakeups.size()) {
-			p.msg(checkPlayer, "&aDies war der letzte Aufwachpunkt");
+			p.msg(checkPlayer, p.languageReader.get("Player_WakeLast"));
 			checkId = -1;
 			checkPlayer = null;
 			return;
@@ -206,23 +206,23 @@ public class Wakeup {
 		int z = (int) wakeup.loc.getZ();
 
 		if (wakeup.check()) {
-			p.msg(checkPlayer, "Teleport zu Aufwachpunkt mit der id: &6" + checkId + "&f An Position: &6" + world + " " + x + "," + y + "," + z);
+			p.msg(checkPlayer, p.languageReader.get("Player_WakeTeleport", "" + checkId, world, "" + x , "" + y, "" + z));
 			checkPlayer.teleport(wakeup.loc);
 		} else {
-			p.msg(checkPlayer, "&cDer Aufwachpunkt mit der id: &6" + checkId + "&c An Position &6" + world + " " + x + "," + y + "," + z + "&c ist mit Blöcken gefüllt!");
+			p.msg(checkPlayer, p.languageReader.get("Player_WakeFilled", "" + checkId, world, "" + x , "" + y, "" + z));
 		}			
-		p.msg(checkPlayer, "Zum nächsten Aufwachpunkt: Mit Faust in die Luft schlagen");
-		p.msg(checkPlayer, "Zum Abbrechen: &9/br Wakeup Cancel");
+		p.msg(checkPlayer, p.languageReader.get("Player_WakeHint1"));
+		p.msg(checkPlayer, p.languageReader.get("Player_WakeHint2"));
 	}
 
 	public static void cancel(CommandSender sender) {
 		if (checkPlayer != null) {
 			checkPlayer = null;
 			checkId = -1;
-			p.msg(sender, "&6Aufwachpunkte-Check wurde abgebrochen");
+			p.msg(sender, p.languageReader.get("Player_WakeCancel"));
 			return;
 		}
-		p.msg(sender, "&cEs läuft kein Aufwachpunkte-Check");
+		p.msg(sender, p.languageReader.get("Player_WakeNoCheck"));
 	}
 
 

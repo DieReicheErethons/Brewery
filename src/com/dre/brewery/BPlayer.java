@@ -104,7 +104,7 @@ public class BPlayer {
 			} else {
 				bPlayer.drinkCap(player);
 			}
-			P.p.msg(player, "Du bist nun " + bPlayer.drunkeness + "% betrunken, mit einer Qualität von " + bPlayer.getQuality());
+			P.p.msg(player, P.p.languageReader.get("Player_DrunkInfo", "" + bPlayer.getDrunkeness(), "" + bPlayer.getQuality()));
 			return true;
 		}
 		return false;
@@ -118,7 +118,7 @@ public class BPlayer {
 			quality = getQuality() * 100;
 			drunkeness = 100;
 			addPuke(player, 60 + (int) (Math.random() * 60.0));
-			P.p.msg(player, "Du kannst nicht mehr trinken");
+			P.p.msg(player, P.p.languageReader.get("Player_CantDrink"));
 		}
 	}
 
@@ -259,7 +259,7 @@ public class BPlayer {
 			Location randomLoc = Wakeup.getRandom(player.getLocation());
 			if (randomLoc != null) {
 				player.teleport(randomLoc);
-				P.p.msg(player, "");
+				P.p.msg(player, P.p.languageReader.get("Player_Wake"));
 			}
 		}
 

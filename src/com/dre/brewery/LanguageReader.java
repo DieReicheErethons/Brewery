@@ -46,7 +46,7 @@ public class LanguageReader {
 		defaults.put("Player_WakeNotExist", "&cDer Aufwachpunkt mit der id: &6&v1 &cexistiert nicht!");
 		defaults.put("Player_WakeDeleted", "&aDer Aufwachpunkt mit der id: &6&v1 &awurde erfolgreich gelöscht!");
 		defaults.put("Player_WakeAlreadyDeleted", "&cDer Aufwachpunkt mit der id: &6&v1 &cwurde bereits gelöscht!");
-		defaults.put("Player_WakeFilled", "&cDer Aufwachpunkt mit der id: &6&v1&c An Position &6&v2 &v3, &4, &v5&c ist mit Blöcken gefüllt!");
+		defaults.put("Player_WakeFilled", "&cDer Aufwachpunkt mit der id: &6&v1&c an Position &6&v2 &v3, &4, &v5&c ist mit Blöcken gefüllt!");
 		defaults.put("Player_WakeNoPoints", "&cEs wurden noch keine Aufwachpunkte erstellt!");
 		defaults.put("Player_WakeLast", "&aDies war der letzte Aufwachpunkt");
 		defaults.put("Player_WakeTeleport", "Teleport zu Aufwachpunkt mit der id: &6&v1&f An Position: &6&v2 &v3, &4, &v5");
@@ -60,12 +60,12 @@ public class LanguageReader {
 		defaults.put("CMD_Player", "&a&v1 ist nun &6&v2% &abetrunken, mit einer Qualität von &6&v3");
 		defaults.put("CMD_Player_Error", "&cDie Qualität muss zwischen 1 und 10 liegen!");
 		defaults.put("CMD_Info_NotDrunk", "&v1 ist nicht betrunken");
-		defaults.put("CMD_Info_Drunkk", "&v1 ist &6&v2% &fbetrunken, mit einer Qualität von &6&v1");
+		defaults.put("CMD_Info_Drunk", "&v1 ist &6&v2% &fbetrunken, mit einer Qualität von &6&v1");
 		defaults.put("CMD_Copy_Error", "&6&v1 &cTränke haben nicht mehr in das Inventar gepasst");
 		
 		/* Error */
 		defaults.put("Error_NoPermissions", "&cDu hast keine Rechte dies zu tun!");
-		defaults.put("Error_UnknownCommand", "Unbekannter Befehl.");
+		defaults.put("Error_UnknownCommand", "Unbekannter Befehl");
 		defaults.put("Error_ShowHelp", "benutze &6/br help &fum die Hilfe anzuzeigen");
 		defaults.put("Error_PlayerCommand", "&cDieser Befehl kann nur als Spieler ausgeführt werden");
 		defaults.put("Error_ItemNotPotion", "&cDas Item in deiner Hand konnte nicht als Trank identifiziert werden");

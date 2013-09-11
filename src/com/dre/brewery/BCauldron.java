@@ -110,9 +110,9 @@ public class BCauldron {
 		BCauldron bcauldron = get(block);
 		if (bcauldron != null) {
 			if (bcauldron.state > 1) {
-				P.p.msg(player, "Dieser Kessel siedet nun seit " + bcauldron.state + " Minuten");
+				P.p.msg(player, P.p.languageReader.get(""));//"Dieser Kessel siedet nun seit " + bcauldron.state + " Minuten");
 			} else {
-				P.p.msg(player, "Dieser Kessel siedet seit weniger als einer Minute");
+				P.p.msg(player, P.p.languageReader.get(""));//"Dieser Kessel siedet seit weniger als einer Minute");
 			}
 		}
 	}

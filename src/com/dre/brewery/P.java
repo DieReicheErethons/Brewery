@@ -27,7 +27,6 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 
 import com.dre.brewery.listeners.*;
-import com.dre.managerxl.LanguageReader;
 
 public class P extends JavaPlugin {
 	public static P p;

@@ -91,6 +91,9 @@ public class P extends JavaPlugin {
 
 		// save Data to Disk
 		saveData();
+		
+		// save LanguageReader
+		languageReader.save();
 
 		// delete Data from Ram
 		Barrel.barrels.clear();
@@ -162,6 +165,7 @@ public class P extends JavaPlugin {
 		// various Settings
 		autosave = config.getInt("autosave", 3);
 		debug = config.getBoolean("debug", false);
+		language = config.getString("language", "en");
 		BPlayer.pukeItemId = Material.matchMaterial(config.getString("pukeItem", "SOUL_SAND")).getId();
 		BPlayer.hangoverTime = config.getInt("hangoverDays", 0) * 24 * 60;
 		BPlayer.overdrinkKick = config.getBoolean("enableKickOnOverdrink", false);

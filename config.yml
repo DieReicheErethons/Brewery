@@ -5,6 +5,9 @@
 # Standardeinstellungen sind in [] angegeben
 # Löschen einzelner Einstellungen deaktiviert sie
 
+# Sprachedatei die genutzt werden sollte (befindet sich in plugins/Brewery/languages)
+language: de
+
 # Ob der Spieler beim nächsten Einloggen nach starker Trunkenheit am nächsten morgen Zuhause "aufwacht" (Ein home Plugin muss installiert sein!) [true]
 enableHome: true
 

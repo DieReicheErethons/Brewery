@@ -76,7 +76,7 @@ public class BIngredients {
 			new Brew(uid, this);
 
 			if (state <= 1) {
-				cookedName = "Schlammiger Sud";
+				cookedName = P.p.languageReader.get("Brew_ThickBrew");
 				potion.setDurability(Brew.PotionColor.BLUE.getColorId(false));
 			} else {
 				for (Material ingredient : ingredients.keySet()) {
@@ -92,7 +92,7 @@ public class BIngredients {
 		}
 		if (cookedName == null) {
 			// if no name could be found
-			cookedName = "Undefinierbarer Sud";
+			cookedName = P.p.languageReader.get("Brew_Undefined");
 			potion.setDurability(Brew.PotionColor.CYAN.getColorId(true));
 		}
 

@@ -74,6 +74,7 @@ public class P extends JavaPlugin {
 		p.getServer().getPluginManager().registerEvents(inventoryListener, p);
 		p.getServer().getPluginManager().registerEvents(worldListener, p);
 
+		// Heartbeat
 		p.getServer().getScheduler().runTaskTimer(p, new BreweryRunnable(), 650, 1200);
 		p.getServer().getScheduler().runTaskTimer(p, new DrunkRunnable(), 120, 120);
 
@@ -110,14 +111,21 @@ public class P extends JavaPlugin {
 	}
 
 	public void reload(CommandSender sender) {
+		// clear all existent config Data
 		BIngredients.possibleIngredients.clear();
 		BIngredients.recipes.clear();
 		BIngredients.cookedNames.clear();
 		Words.words.clear();
 		BPlayer.drainItems.clear();
 
+		// load the Config
 		readConfig();
 
+		// save and load LanguageReader
+		languageReader.save();
+		languageReader = new LanguageReader(new File(p.getDataFolder(), "languages/" + language + ".yml"));
+
+		// Reload Recipes
 		Boolean successful = true;
 		for (Brew brew : Brew.potions.values()) {
 			if (!brew.reloadRecipe()) {
@@ -125,7 +133,7 @@ public class P extends JavaPlugin {
 			}
 		}
 		if (!successful) {
-			msg(sender, "&cEs konnten nicht alle Rezepte wiederhergesellt werden: Siehe Serverlog!");
+			msg(sender, p.languageReader.get("Error_Recipeload"));
 		}
 	}
 
@@ -184,7 +192,7 @@ public class P extends JavaPlugin {
 				if (recipe.isValid()) {
 					BIngredients.recipes.add(recipe);
 				} else {
-					errorLog("Laden des Rezeptes mit id: '" + recipeId + "' fehlgeschlagen!");
+					errorLog("Loading the Recipe with id: '" + recipeId + "' failed!");
 				}
 			}
 		}
@@ -198,7 +206,7 @@ public class P extends JavaPlugin {
 					BIngredients.cookedNames.put(mat, (configSection.getString(ingredient, null)));
 					BIngredients.possibleIngredients.add(mat);
 				} else {
-					errorLog("Unbekanntes Material: " + ingredient);
+					errorLog("Unknown Material: " + ingredient);
 				}
 			}
 		}
@@ -524,7 +532,7 @@ public class P extends JavaPlugin {
 			page = 1;
 		}
 
-		sender.sendMessage(color("&7-------------- &fSeite &6" + page + "&f/&6" + pages + " &7--------------"));
+		sender.sendMessage(color("&7-------------- &f" + languageReader.get("Etc_Page") + " &6" + page + "&f/&6" + pages + " &7--------------"));
 
 		ListIterator<String> iter = strings.listIterator((page - 1) * 7);
 

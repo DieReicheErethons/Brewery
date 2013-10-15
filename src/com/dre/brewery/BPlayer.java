@@ -108,7 +108,6 @@ public class BPlayer {
 			} else {
 				bPlayer.drinkCap(player);
 			}
-			P.p.msg(player, "Du bist nun " + bPlayer.drunkeness + "% betrunken, mit einer Qualität von " + bPlayer.getQuality());
 			return true;
 		}
 		return false;
@@ -204,7 +203,7 @@ public class BPlayer {
 	}
 
 	public void passOut(Player player) {
-		player.kickPlayer("Du hast zu viel getrunken und bist in Ohnmacht gefallen!");
+		player.kickPlayer(P.p.languageReader.get("Player_DrunkPassOut"));
 		offlineDrunk = drunkeness;
 		passedOut = true;
 	}

@@ -42,7 +42,7 @@ public class BRecipe {
 					if (mat != null) {
 						this.ingredients.put(Material.matchMaterial(ingredParts[0]), P.p.parseInt(ingredParts[1]));
 					} else {
-						P.p.errorLog("Unbekanntes Material: " + ingredParts[0]);
+						P.p.errorLog("Unknown Material: " + ingredParts[0]);
 						this.ingredients = null;
 						return;
 					}

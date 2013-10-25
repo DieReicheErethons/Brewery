@@ -36,78 +36,78 @@ public class LanguageReader {
 	private void setDefaults() {
 		
 		/* Player */
-		defaults.put("Player_BarrelCreated", "Fass erfolgreich erstellt");
-		defaults.put("Player_CauldronInfo1", "Dieser Kessel siedet nun seit &v1 Minuten");
-		defaults.put("Player_CauldronInfo2", "Dieser Kessel siedet seit weniger als einer Minute");
-		defaults.put("Player_CantDrink", "Du kannst nicht mehr trinken");
-		defaults.put("Player_DrunkPassOut", "Du hast zu viel getrunken und bist in Ohnmacht gefallen!");
-		defaults.put("Player_Wake", "Ohh nein! Ich kann mich nicht erinnern, wie ich hierhergekommen bin...");
-		defaults.put("Player_WakeCreated", "&aAufwachpunkt mit id: &6&v1 &awurde erfolgreich erstellt!");
-		defaults.put("Player_WakeNotExist", "&cDer Aufwachpunkt mit der id: &6&v1 &cexistiert nicht!");
-		defaults.put("Player_WakeDeleted", "&aDer Aufwachpunkt mit der id: &6&v1 &awurde erfolgreich gelöscht!");
-		defaults.put("Player_WakeAlreadyDeleted", "&cDer Aufwachpunkt mit der id: &6&v1 &cwurde bereits gelöscht!");
-		defaults.put("Player_WakeFilled", "&cDer Aufwachpunkt mit der id: &6&v1&c an Position &6&v2 &v3, &v4, &v5&c ist mit Blöcken gefüllt!");
-		defaults.put("Player_WakeNoPoints", "&cEs wurden noch keine Aufwachpunkte erstellt!");
-		defaults.put("Player_WakeLast", "&aDies war der letzte Aufwachpunkt");
-		defaults.put("Player_WakeTeleport", "Teleport zu Aufwachpunkt mit der id: &6&v1&f An Position: &6&v2 &v3, &v4, &v5");
-		defaults.put("Player_WakeHint1", "Zum nächsten Aufwachpunkt: Mit Faust in die Luft schlagen");
-		defaults.put("Player_WakeHint2", "Zum Abbrechen: &9/br wakeup cancel");
-		defaults.put("Player_WakeCancel", "&6Aufwachpunkte-Check wurde abgebrochen");
-		defaults.put("Player_WakeNoCheck", "&cEs läuft kein Aufwachpunkte-Check");
+		defaults.put("Player_BarrelCreated", "Barrel created");
+		defaults.put("Player_CauldronInfo1", "This Cauldron seethes since &v1 minutes");
+		defaults.put("Player_CauldronInfo2", "This Cauldron seethes since less than one minute");
+		defaults.put("Player_CantDrink", "You can't drink any more");
+		defaults.put("Player_DrunkPassOut", "You have drunken too much and fainted!");
+		defaults.put("Player_Wake", "Ohh no! I cannot remember how I got here...");
+		defaults.put("Player_WakeCreated", "&aWakeup Point with id: &6&v1 &awas created successfully!");
+		defaults.put("Player_WakeNotExist", "&cThe Wakeup Point with the id: &6&v1 &cdoesn't exist!");
+		defaults.put("Player_WakeDeleted", "&aThe Wakeup Point with the id: &6&v1 &awas successfully deleted!");
+		defaults.put("Player_WakeAlreadyDeleted", "&cThe Wakeup Point with the id: &6&v1 &chas already been deleted!");
+		defaults.put("Player_WakeFilled", "&cThe Wakeup Point with the id: &6&v1&c at position &6&v2 &v3, &v4, &v5&c is filled with Blocks!");
+		defaults.put("Player_WakeNoPoints", "&cThere are no Wakeup Points!");
+		defaults.put("Player_WakeLast", "&aThis was the last Wakeup Point");
+		defaults.put("Player_WakeTeleport", "Teleport to Wakeup Point with the id: &6&v1&f At position: &6&v2 &v3, &v4, &v5");
+		defaults.put("Player_WakeHint1", "To Next Wakeup Point: Punch your fist in the air");
+		defaults.put("Player_WakeHint2", "To Cancel: &9/br wakeup cancel");
+		defaults.put("Player_WakeCancel", "&6Wakeup Point Check was cancelled");
+		defaults.put("Player_WakeNoCheck", "&cNo Wakeup Point Check is currently active");
 
 		/* Brew */
-		defaults.put("Brew_Distilled", "Destilliert");
-		defaults.put("Brew_BarrelRiped", "Fassgereift");
-		defaults.put("Brew_Undefined", "Undefinierbarer Sud");
-		defaults.put("Brew_DistillUndefined", "Undefinierbares Destillat");
-		defaults.put("Brew_BadPotion", "Verdorbenes Getränk");
-		defaults.put("Brew_Ingredients", "Zutaten");
+		defaults.put("Brew_Distilled", "Distilled");
+		defaults.put("Brew_BarrelRiped", "Barrelriped");
+		defaults.put("Brew_Undefined", "Indefinable Brew");
+		defaults.put("Brew_DistillUndefined", "Indefinable Distillate");
+		defaults.put("Brew_BadPotion", "Ruined Potion");
+		defaults.put("Brew_Ingredients", "Ingredients");
 		defaults.put("Brew_minute", "minute");
-		defaults.put("Brew_MinutePluralPostfix", "n");
-		defaults.put("Brew_fermented", "gegärt");
-		defaults.put("Brew_-times", "-fach");
-		defaults.put("Brew_OneYear", "Ein Jahr");
-		defaults.put("Brew_Years", "Jahre");
-		defaults.put("Brew_HundredsOfYears", "Hunderte Jahre");
-		defaults.put("Brew_Woodtype", "Holzart");
-		defaults.put("Brew_ThickBrew", "Schlammiger Sud");
+		defaults.put("Brew_MinutePluralPostfix", "s");
+		defaults.put("Brew_fermented", "fermented");
+		defaults.put("Brew_-times", "-times");
+		defaults.put("Brew_OneYear", "One Year");
+		defaults.put("Brew_Years", "Years");
+		defaults.put("Brew_HundredsOfYears", "Hundreds of Years");
+		defaults.put("Brew_Woodtype", "Woodtype");
+		defaults.put("Brew_ThickBrew", "Thick Brew");
 		
 		/* Commands */
-		defaults.put("CMD_Reload", "&aConfig wurde neu eingelesen");
-		defaults.put("CMD_Player", "&a&v1 ist nun &6&v2% &abetrunken, mit einer Qualität von &6&v3");
-		defaults.put("CMD_Player_Error", "&cDie Qualität muss zwischen 1 und 10 liegen!");
-		defaults.put("CMD_Info_NotDrunk", "&v1 ist nicht betrunken");
-		defaults.put("CMD_Info_Drunk", "&v1 ist &6&v2% &fbetrunken, mit einer Qualität von &6&v1");
-		defaults.put("CMD_UnLabel", "&aDas Label wurde entfernt");
-		defaults.put("CMD_Copy_Error", "&6&v1 &cTränke haben nicht mehr in das Inventar gepasst");
+		defaults.put("CMD_Reload", "&aConfig was successfully reloaded");
+		defaults.put("CMD_Player", "&a&v1 is now &6&v2% &adrunk, with a quality of &6&v3");
+		defaults.put("CMD_Player_Error", "&cThe Quality has to be between 1 and 10!");
+		defaults.put("CMD_Info_NotDrunk", "&v1 is not drunk");
+		defaults.put("CMD_Info_Drunk", "&v1 is &6&v2% &fdrunk, with a quality of &6&v1");
+		defaults.put("CMD_UnLabel", "&aThe Label was removed");
+		defaults.put("CMD_Copy_Error", "&6&v1 &cPotions did not fit into your inventory");
 		
 		/* Error */
-		defaults.put("Error_NoPermissions", "&cDu hast keine Rechte dies zu tun!");
-		defaults.put("Error_UnknownCommand", "Unbekannter Befehl");
-		defaults.put("Error_ShowHelp", "benutze &6/br help &fum die Hilfe anzuzeigen");
-		defaults.put("Error_PlayerCommand", "&cDieser Befehl kann nur als Spieler ausgeführt werden");
-		defaults.put("Error_ItemNotPotion", "&cDas Item in deiner Hand konnte nicht als Trank identifiziert werden");
-		defaults.put("Error_Recipeload", "&cEs konnten nicht alle Rezepte wiederhergesellt werden: Siehe Serverlog!");
+		defaults.put("Error_NoPermissions", "&cYou have no permission to do this!");
+		defaults.put("Error_UnknownCommand", "Unknown Command");
+		defaults.put("Error_ShowHelp", "use &6/br help &fto display the help");
+		defaults.put("Error_PlayerCommand", "&cThis command can only be executed as player");
+		defaults.put("Error_ItemNotPotion", "&cThe Item in your hand could not be identified as Potion");
+		defaults.put("Error_Recipeload", "&cNot all recipes could be restored: More information in the Serverlog!");
 		
 		/* Help */
-		defaults.put("Help_Help", "&6/br help <Seite> &9Zeigt eine bestimmte Hilfeseite an");
-		defaults.put("Help_Player", "&6/br <Spieler> <%Trunkenheit> <Qualität>&9 Setzt Trunkenheit (und Qualität) eines Spielers");
-		defaults.put("Help_Info", "&6/br Info&9 Zeigt deine aktuelle Trunkenheit und Qualität an");
-		defaults.put("Help_UnLabel", "&6/br UnLabel &9Entfernt die genaue Beschriftung des Trankes");
-		defaults.put("Help_Copy", "&6/br Copy <Anzahl>&9 Kopiert den Trank in deiner Hand");
-		defaults.put("Help_Delete", "&6/br Delete &9Entfernt den Trank in deiner Hand");
-		defaults.put("Help_InfoOther", "&6/br Info <Spieler>&9 Zeigt die aktuelle Trunkenheit und Qualität von <Spieler> an");
-		defaults.put("Help_Wakeup", "&6/br Wakeup List <Seite>&9 Listet alle Aufwachpunkte auf");
-		defaults.put("Help_WakeupList", "&6/br Wakeup List <Seite> <Welt>&9 Listet die Aufwachpunkte einer Welt auf");
-		defaults.put("Help_WakeupCheck", "&6/br Wakeup Check &9Teleportiert zu allen Aufwachpunkten");
-		defaults.put("Help_WakeupCheckSpecific", "&6/br Wakeup Check <id> &9Teleportiert zu einem Aufwachpunkt");
-		defaults.put("Help_WakeupAdd", "&6/br Wakeup Add &9Setzt einen Aufwachpunkt");
-		defaults.put("Help_WakeupRemove", "&6/br Wakeup Remove <id> &9Entfernt einen Aufwachpunkt");
-		defaults.put("Help_Reload", "&6/br reload &9Config neuladen");
+		defaults.put("Help_Help", "&6/br help <Page> &9Shows a specific help-page");
+		defaults.put("Help_Player", "&6/br <Player> <%Drunkeness> <Quality>&9 Sets Drunkeness (and Quality) of a Player");
+		defaults.put("Help_Info", "&6/br Info&9 Displays your current Drunkeness and Quality");
+		defaults.put("Help_UnLabel", "&6/br UnLabel &9Removes the detailled label of a Potion");
+		defaults.put("Help_Copy", "&6/br Copy <Quanitiy>&9 Copies the Potion in your Hand");
+		defaults.put("Help_Delete", "&6/br Delete &9Deletes the Potion in your Hand");
+		defaults.put("Help_InfoOther", "&6/br Info <Player>&9 Displays the current Drunkeness and Quality of <Player>");
+		defaults.put("Help_Wakeup", "&6/br Wakeup List <Page>&9 Lists all Wakeup Points");
+		defaults.put("Help_WakeupList", "&6/br Wakeup List <Page> <World>&9 Lists all Wakeup Points of a World");
+		defaults.put("Help_WakeupCheck", "&6/br Wakeup Check &9Teleports to all Wakeup Points");
+		defaults.put("Help_WakeupCheckSpecific", "&6/br Wakeup Check <id> &9Teleports to the Wakeup Point with <id>");
+		defaults.put("Help_WakeupAdd", "&6/br Wakeup Add &9Adds a Wakeup Point at your current Position");
+		defaults.put("Help_WakeupRemove", "&6/br Wakeup Remove <id> &9Removes the Wakeup Point with <id>");
+		defaults.put("Help_Reload", "&6/br reload &9Reload config");
 		
 		/* Etc. */
-		defaults.put("Etc_Usage", "Benutzung:");
-		defaults.put("Etc_Page", "Seite");
+		defaults.put("Etc_Usage", "Usage:");
+		defaults.put("Etc_Page", "Page");
 	}
 
 	private void check() {

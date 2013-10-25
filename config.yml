@@ -48,6 +48,9 @@ hangoverDays: 7
 colorInBarrels: true
 colorInBrewer: false
 
+# In den Serverlog loggen was der Spieler tatsächlich geschrieben hat, bevor seine Worte verändert wurden [false]
+logRealChat: false
+
 # Autosave Intervall in Minuten [3]
 autosave: 3
 

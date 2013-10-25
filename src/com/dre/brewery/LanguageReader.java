@@ -54,10 +54,11 @@ public class LanguageReader {
 		defaults.put("Player_WakeHint2", "To Cancel: &9/br wakeup cancel");
 		defaults.put("Player_WakeCancel", "&6Wakeup Point Check was cancelled");
 		defaults.put("Player_WakeNoCheck", "&cNo Wakeup Point Check is currently active");
+		defaults.put("Player_TriedToSay", "&v1 tried to say: &0&v2");
 
 		/* Brew */
 		defaults.put("Brew_Distilled", "Distilled");
-		defaults.put("Brew_BarrelRiped", "Barrelriped");
+		defaults.put("Brew_BarrelRiped", "Barrel aged");
 		defaults.put("Brew_Undefined", "Indefinable Brew");
 		defaults.put("Brew_DistillUndefined", "Indefinable Distillate");
 		defaults.put("Brew_BadPotion", "Ruined Potion");
@@ -108,6 +109,7 @@ public class LanguageReader {
 		/* Etc. */
 		defaults.put("Etc_Usage", "Usage:");
 		defaults.put("Etc_Page", "Page");
+		defaults.put("Etc_Barrel", "Barrel");
 	}
 
 	private void check() {

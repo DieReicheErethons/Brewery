@@ -14,6 +14,7 @@ public class Words {
 
 	public static ArrayList<Words> words = new ArrayList<Words>();
 	public static FileConfiguration config;
+	public static Boolean log;
 
 	private String from;
 	private String to;
@@ -68,6 +69,9 @@ public class Words {
 			}
 			if (!words.isEmpty()) {
 				String message = event.getMessage();
+				if (log) {
+					P.p.log(P.p.languageReader.get("Player_TriedToSay", event.getPlayer().getName(), message));
+				}
 				for (Words word : words) {
 					if (word.alcohol <= bPlayer.getDrunkeness()) {
 						message = word.distort(message);

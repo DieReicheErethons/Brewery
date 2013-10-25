@@ -18,7 +18,7 @@ public class BlockListener implements Listener {
 	public void onSignChange(SignChangeEvent event) {
 		String[] lines = event.getLines();
 
-		if (lines[0].equalsIgnoreCase("Fass")) {
+		if (lines[0].equalsIgnoreCase(P.p.languageReader.get("Etc_Barrel"))) {
 			if (Barrel.create(event.getBlock())) {
 				P.p.msg(event.getPlayer(), P.p.languageReader.get("Player_BarrelCreated"));
 			}

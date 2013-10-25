@@ -183,6 +183,7 @@ public class P extends JavaPlugin {
 		BPlayer.homeType = config.getString("homeType", null);
 		Brew.colorInBarrels = config.getBoolean("colorInBarrels", false);
 		Brew.colorInBrewer = config.getBoolean("colorInBrewer", false);
+		Words.log = config.getBoolean("logRealChat", false);
 
 		// loading recipes
 		ConfigurationSection configSection = config.getConfigurationSection("recipes");

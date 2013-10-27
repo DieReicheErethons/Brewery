@@ -1,81 +1,81 @@
-# config für Brewery.jar
+# config for Brewery.jar
 
 
-# Verschiedene Einstellungen
-# Standardeinstellungen sind in [] angegeben
-# Löschen einzelner Einstellungen deaktiviert sie
+# Settings
+# Defaults are written in []
+# Deleting of single settings disables them
 
-# Sprachedatei die genutzt werden sollte (befindet sich in plugins/Brewery/languages)
+# Languagefile to be used (found in plugins/Brewery/languages)
 language: en
 
-# Ob der Spieler beim nächsten Einloggen nach starker Trunkenheit am nächsten morgen Zuhause "aufwacht" (Ein home Plugin muss installiert sein!) [true]
+# If the player wakes up at /home when logging in after excessive drinking (/home plugin must be installed!) [true]
 enableHome: true
 
-# Art des Nachhause-teleports: ['cmd: home']
-# bed = Spieler wird zu seinem Spawn Bett teleportiert
-# SamplePlugin = installiertes home plugin. Unterstützt: ManagerXL. Wenn dies nicht geht:
-# 'cmd: home' = /home wird vom Spieler ausgelöst. Es sollte kein Verzögerungs, etc. plugin installiert sein!
-# 'cmd: spawn' = /spawn wird vom Spieler ausgelöst
-# 'cmd: whatever' = /whatever wird vom Spieler ausgelöst
+# Type of the home-teleport: ['cmd: home']
+# bed = Player will be teleported to his spawn bed
+# SamplePlugin = installed home plugin. Supports: ManagerXL. If not available:
+# 'cmd: home' = /home will be executed by the player. He has to have permissions for it without any delay!
+# 'cmd: spawn' = /spawn will be executed by the player.
+# 'cmd: whatever' = /whatever will be executed by the player.
 homeType: 'cmd: home'
 
-# Ob der Spieler nach etwas kürzerem Ausloggen an einem zufälligen Ort "aufwacht" (diese müssen durch '/br Wakeup add' von einem Admin festgelegt werden)
-# Der Spieler wacht an dem nähesten zweier zufälliger Orte aus seiner Welt auf. [true]
+# If the player "wakes up" at a random place when offline for some time while drinking (the places have to be defined with '/br Wakeup add' through an admin)
+# The Player wakes at the nearest of two random places of his world [true]
 enableWake: true
 
-# Ob der Spieler sich bei großer Trunkenheit teilweise nicht einloggen kann und kurz warten muss, da sein Charakter nicht reagiert [true]
+# If the Player may get some logins denied, when his character is drunk [true]
 enableLoginDisallow: true
 
-# Ob der Spieler sich übertrinken kann und dann in Ohnmacht fällt (gekickt wird) und sich für einige Minuten nicht einloggen kann [true]
+# If the Player faints (gets kicked) for some minutes if he overdrinks [true]
 enableKickOnOverdrink: true
 
-# Ob der Spieler sich bei großer Trunkenheit übergibt (unten definiertes Item aus dem Mund fallen lässt) [true]
-# Das Item kann nicht aufgesammelt werden und bleibt bis zum Despawnen liegen. (Achtung: Kann nach Serverrestart, oder durch Hopper aufgesammelt werden.)
+# If the Player vomits on high drunkeness (drops item defined below) [true]
+# The item can not be collected and stays on the ground until it despawns. (Warning: May be collected after Server restart, or through a hopper)
 enablePuke: true
 
-# Item das beim Erbrechen mehrfach unaufsammelbar fallen gelassen wird [SOUL_SAND]
+# Item that is dropped multiple times uncollectable when puking [SOUL_SAND]
 pukeItem: SOUL_SAND
 
-# Konsumierbares Item/Stärke. Senkt den Alkoholpegel um <Stärke> wenn konsumiert.
+# Consumable Item/strength. Decreases the alcohol level by <strength> when consumed.
 drainItems:
 - BREAD/4
 - MILK_BUCKET/2
 
-# Zeit (in Tagen) die Trunkenheitsdaten nach offlinegehen eines Spielers im Speicher verbleiben, um z.B. Kater-Effekte anzuwenden. [7]
+# Time (in days) that drunkeness-data stays in memory after a player goes offline, to apply hangover etc. [7]
 hangoverDays: 7
 
-# Färben der Iteminformationen je nach Qualität während sie sich 1. im Fass und/oder 2. im Braustand befinden [true, false]
+# Color the Item information (lore) depending on quality while it is 1. in a barrel and/or 2. in a brewing stand [true, false]
 colorInBarrels: true
 colorInBrewer: false
 
-# In den Serverlog loggen was der Spieler tatsächlich geschrieben hat, bevor seine Worte verändert wurden [false]
+# Log to the Serverlog what the player actually wrote, before his words were altered [false]
 logRealChat: false
 
-# Autosave Intervall in Minuten [3]
+# Autosave interval in minutes [3]
 autosave: 3
 
 # Config Version
 version: '0.5'
 
 
-# Rezepte für Getränke
+# Recipes for Potions
 
-# name: Verschiedene Namen für schlecht/mittel/gut (Farbcodes möglich: z.b. &6)
-# ingredients: Auflistung von material/Anzahl
-# cookingtime: Zeit in Echtminuten die die Zutaten kochen müssen
-# distillruns: Wie oft destilliert werden muss für vollen Alkoholgehalt (0=ohne Destillieren)
-# wood: Holz des Fasses 0=alle Holzsorten 1=Birch 2=Oak 3=Jungle 4=Spruce
-# age: Zeit in Minecraft-Tagen, die das Getränk im Fass reifen muss 0= kein reifen
-# color: Farbe des Getränks nach destillieren/reifen. DARK_RED, RED, BRIGHT_RED, ORANGE, PINK, BLUE, CYAN, WATER, GREEN, BLACK, GREY, BRIGHT_GREY
-# difficulty: 1-10 Genauigkeit der Einhaltung der Vorgaben (1 = ungenau/einfach 10 = sehr genau/schwer)
-# alcohol: Alkoholgehalt 0-100 in absoluter Menge bei perfektem Getränk (wird dem Spieler hinzugefügt, bei 100 = tot)
-# effects: Auflistung Effekt/Dauer  Besonderere Trank-Effekte beim Trinken, Dauer in sek. Ein 'X' an den Namen anhängen, um ihn zu verbergen. Bsp: POISONX/10
-#   (WEAKNESS, INCREASE_DAMAGE, SLOW und SPEED sind immer verborgen.)  Mögliche Effekte: http://jd.bukkit.org/rb/apidocs/org/bukkit/potion/PotionEffectType.html
-#   Bei Effekten mit sofortiger Wirkung (z.B. HEAL) _muss_ anstatt der Dauer das Level angegeben werden.
+# name: Different names for bad/normal/good (Formatting codes possible: such as &6)
+# ingredients: List of material/amount
+# cookingtime: Time in real minutes ingredients have to boil
+# distillruns: How often it has to be distilled for full alcohol (0=without distilling)
+# wood: Wood of the barrel 0=any 1=Birch 2=Oak 3=Jungle 4=Spruce
+# age: Time in Minecraft-days, the potion has to age in a barrel 0=no aging
+# color: Color of the potion after distilling/aging. DARK_RED, RED, BRIGHT_RED, ORANGE, PINK, BLUE, CYAN, WATER, GREEN, BLACK, GREY, BRIGHT_GREY
+# difficulty: 1-10 accuracy needed to get good quality (1 = unaccurate/easy, 10 = very precise/hard)
+# alcohol: Absolute amount of alcohol 0-100 in a perfect potion (will be added directly to the player, where 100 means fainting)
+# effects: List of effect/duration  Special potion-effect when drinking, duration in sek. Suffix name with 'X' to hide effect from label. Sample: POISONX/10
+#   (WEAKNESS, INCREASE_DAMAGE, SLOW and SPEED are always hidden.)  Possible Effects: http://jd.bukkit.org/rb/apidocs/org/bukkit/potion/PotionEffectType.html
+#   instant effects (such as HEAL) _must!_ have defined the level instead of the duration!
 
 recipes:
    1:
-      name: Ranziges Weißbier/Weißbier/Feines Weißbier
+      name: Skunky Wheatbeer/Wheatbeer/Fine Wheatbeer
       ingredients: 
       - WHEAT/3
       cookingtime: 8
@@ -86,7 +86,7 @@ recipes:
       difficulty: 1
       alcohol: 5
    2:
-      name: Ranziges Bier/Bier/Feines Bier
+      name: Skunky Beer/Beer/Fine Beer
       ingredients: 
       - WHEAT/6
       cookingtime: 8
@@ -97,7 +97,7 @@ recipes:
       difficulty: 1
       alcohol: 6
    3:
-      name: Ranziges Dunkelbier/Dunkelbier/Feines Dunkelbier
+      name: Skunky Darkbeer/Darkbeer/Fine Darkbeer
       ingredients: 
       - WHEAT/6
       cookingtime: 8
@@ -108,7 +108,7 @@ recipes:
       difficulty: 2
       alcohol: 7
    4:
-      name: Scheußlicher Met/Met/&6Goldener Met
+      name: Awkward Mead/Mead/&6Golden Mead
       ingredients: 
       - SUGAR_CANE/6
       cookingtime: 3
@@ -119,7 +119,7 @@ recipes:
       difficulty: 2
       alcohol: 9
    5:
-      name: Apfelmet/Süßer Apfelmet/&6Goldensüßer Apfelmet
+      name: Apple Mead/Sweet Apple Mead/&6Sweet Golden Apple Mead
       ingredients: 
       - SUGAR_CANE/6
       - APPLE/2
@@ -133,7 +133,7 @@ recipes:
       effects:
       - WATER_BREATHINGX/150
    6:
-      name: Bitterer Rum/Würziger Rum/&6Goldener Rum
+      name: Bitter Rum/Spicy Rum/&6Golden Rum
       ingredients: 
       - SUGAR_CANE/14
       cookingtime: 5
@@ -146,7 +146,7 @@ recipes:
       effects:
       - FIRE_RESISTANCE/100
    7:
-      name: Abgeranzter Vodka/Vodka/Russischer Vodka
+      name: Lousy Vodka/Vodka/Russian Vodka
       ingredients: 
       - POTATO_ITEM/10
       cookingtime: 15
@@ -159,7 +159,7 @@ recipes:
       - WEAKNESS/15
       - POISON/10
    8:
-      name: minderwertiger Absinth/Absinth/Starker Absinth
+      name: Poor Absinth/Absinth/Strong Absinth
       ingredients:
       - LONG_GRASS/15
       cookingtime: 3
@@ -170,7 +170,7 @@ recipes:
       effects:
       - POISON/20
    9:
-      name: Kartoffelsuppe
+      name: Potato soup
       ingredients:
       - POTATO_ITEM/5
       - LONG_GRASS/3
@@ -182,31 +182,36 @@ recipes:
 
 
 
-# cooked: ALLE möglichen Zutaten und die nach dem Gähren daraus entstehenden Tranknamen:
+# cooked: EVERY possible ingredient and the names for the originating potions after fermenting:
 
 cooked:
-   WHEAT: Getreideferment
-   SUGAR_CANE: Zuckersud
-   APPLE: Apfelmost
-   POTATO_ITEM: Kartoffelmaische
-   LONG_GRASS: Kräuterbrühe
-   RED_MUSHROOM: Pilzsud
+   WHEAT: Fermented wheat
+   SUGAR_CANE: Sugar brew
+   APPLE: Apple cider
+   POTATO_ITEM: Potatomash
+   LONG_GRASS: Boiled herbs
+   RED_MUSHROOM: Mushroom brew
 
 
 
-# words: Wörter und Buchstaben die bei Chatten während Trunkenheit ersetzt werden sollen.
-# Diese werden von oben nach unten gelesen und in dieser Reihenfolge wird ein geschriebener Satz dann verändert.
+# words: Words and letters that will be altered when chatting while being drunk.
+# Will be processed from first to last and a written sentece is altered in that order.
 
-# replace: Zu ersetzendes Wort oder Buchstabe.   (Besondere: "-space": ersetzt Leerzeichen, "-random": Einfügen in zufällige Position, "-all": Alles, "-start": Ganz am Anfang, "-end": Ganz ans Ende.)
-# to: In welches Wort es ersetzt werden soll.
-# pre: Wörter und Buchstaben vor dem gesuchten Wort (durch "," getrennt)
-# match: true = eines der "pre"-Wörter muss vor dem gesuchten Wort stehen,  false = keines der "pre" Wörter darf vor dem gesuchten stehen
-# alcohol: 1-100 Trunkenheit ab der die Wörter ersetzt werden
-# percentage: Wahrscheinlichkeit des Ersetzen eines Wortes in Prozent
+# replace: Word or letter to be replaced. (Special: "-space": replaces space, "-random": insert into random position, "-all": everything, "-start": At Beginning, "-end": At the End.)
+# to: What to replace it with.
+# pre: Words and Letters before the wanted word (split with ",")
+# match: true = one of the "pre"-Words has to be before the wanted Word,  false = none of the "pre" Words is allowed before the wanted Word
+# alcohol: 1-100 minimum drunkeness after which this word ist replaced
+# percentage: Probability of replacing a Word in percent
 
 words:
+-  replace: s
+   to: sh
+   percentage: 90
+   alcohol: 30
+
 -  replace: ch
-   to: sch
+   to: sh
    pre: u,s,o,a
    match: false
    alcohol: 10
@@ -219,9 +224,33 @@ words:
    percentage: 60
    alcohol: 20
 
+-  replace: th
+   to: thl
+   percentage: 40
+   alcohol: 30
+
+-  replace: sch
+   to: shk
+   percentage: 60
+   alcohol: 40
+
 -  replace: u
    to: uuh
    percentage: 20
+
+-  replace: y
+   to: yy
+   percentage: 60
+   alcohol: 15
+
+-  replace: e
+   to: ee
+   percentage: 40
+   alcohol: 15
+
+-  replace: you
+   to: u
+   percentage: 40
 
 -  replace: u
    to: uo
@@ -229,8 +258,8 @@ words:
    match: false
    percentage: 60
 
--  replace: das
-   to: dass
+-  replace: that
+   to: taht
    percentage: 20
    alcohol: 40
 
@@ -246,6 +275,7 @@ words:
 -  replace: up
    to: ubb
    percentage: 80
+   alcohol: 25
 
 -  replace: o
    to: oh
@@ -253,7 +283,8 @@ words:
 
 -  replace: ei
    to: i
-   percentage: 15
+   percentage: 30
+   alcohol: 15
 
 -  replace: b
    to: bb
@@ -261,7 +292,7 @@ words:
    alcohol: 40
 
 -  replace: '!!!'
-   to: '!!!111!!!einself!1!'
+   to: '!!!111!!!eleven!1!'
    pre: '!'
    match: false
    percentage: 20
@@ -273,26 +304,19 @@ words:
    match: false
    percentage: 90
 
--  replace: betrunken
-   to: brhetriunkhn
-   pre: bist,seid
+-  replace: drunk
+   to: dhrkunn
+   pre: are
    match: false
    percentage: 70
    alcohol: 65
 
--  replace: laufen
-   to: lnhfeeehn
-   pre: kannst,kannst noch,kannst nicht
+-  replace: walk
+   to: whhealhk
+   pre: you can, you can still, you can not
    match: false
    percentage: 80
    alcohol: 30
-
--  replace: gehen
-   to: hgheehn
-   pre: kannst,kannst noch,kannst nicht
-   match: false
-   percentage: 80
-   alcohol: 40
 
 -  replace: wtf
    to: wft
@@ -305,19 +329,19 @@ words:
    alcohol: 10
 
 -  replace: afk
-   to: aafka
-   percentage: 20
+   to: aafkayyy
+   percentage: 30
    alcohol: 30
 
--  replace: schreiben
-   to: schribeen
-   pre: kannst,kannst noch,kannst nicht
+-  replace: write
+   to: wreitt
+   pre: you can,you can still,you can not
    match: false
    percentage: 80
    alcohol: 50
 
--  replace: trinken
-   to: saufen
+-  replace: drink
+   to: booze
    percentage: 80
    alcohol: 70
 
@@ -354,27 +378,27 @@ words:
    alcohol: 50
 
 -  replace: -random
-   to: lug
+   to: lu
    percentage: 10
 
 -  replace: -random
-   to: lu
-   percentage: 20
-   alcohol: 40
+   to: lug
+   percentage: 10
+   alcohol: 50
 
 -  replace: -random
    to: blub
    percentage: 20
-   alcohol: 70
+   alcohol: 80
 
 -  replace: -random
    to: lerg
    percentage: 40
-   alcohol: 75
+   alcohol: 85
 
 -  replace: -random
    to: gul
-   percentage: 50
+   percentage: 40
    alcohol: 80
 
 -  replace: -random
@@ -398,26 +422,31 @@ words:
    alcohol: 30
 
 -  replace: -random
-   to: ' *hicks* '
+   to: ' *hic* '
    percentage: 80
    alcohol: 70
 
 -  replace: -random
-   to: ' *hicks* '
+   to: ' *hic* '
    percentage: 15
    alcohol: 40
 
 -  replace: -space
-   to: ' *hicks* '
+   to: ' *hic* '
    percentage: 5
    alcohol: 20
 
 -  replace: -end
-   to: ' *hicks*'
+   to: ' *hic*'
    percentage: 70
    alcohol: 50
 
 -  replace: -all
-   to: '*rülps*'
+   to: '*burp*'
    percentage: 3
    alcohol: 60
+
+-  replace: -all
+   to: '*burp*'
+   percentage: 6
+   alcohol: 80

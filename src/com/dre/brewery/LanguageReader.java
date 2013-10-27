@@ -78,7 +78,7 @@ public class LanguageReader {
 		defaults.put("CMD_Player", "&a&v1 is now &6&v2% &adrunk, with a quality of &6&v3");
 		defaults.put("CMD_Player_Error", "&cThe Quality has to be between 1 and 10!");
 		defaults.put("CMD_Info_NotDrunk", "&v1 is not drunk");
-		defaults.put("CMD_Info_Drunk", "&v1 is &6&v2% &fdrunk, with a quality of &6&v1");
+		defaults.put("CMD_Info_Drunk", "&v1 is &6&v2% &fdrunk, with a quality of &6&v3");
 		defaults.put("CMD_UnLabel", "&aThe Label was removed");
 		defaults.put("CMD_Copy_Error", "&6&v1 &cPotions did not fit into your inventory");
 		

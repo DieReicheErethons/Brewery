@@ -24,6 +24,7 @@ import com.dre.brewery.Barrel;
 import com.dre.brewery.BPlayer;
 import com.dre.brewery.Words;
 import com.dre.brewery.Wakeup;
+import com.dre.brewery.P;
 
 public class PlayerListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGH)
@@ -176,10 +177,10 @@ public class PlayerListener implements Listener {
 				bplayer.join(player);
 				return;
 			case 2:
-				event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "Dein Charakter ist betrunken und reagiert nicht. Versuch es noch einmal!");
+				event.disallow(PlayerLoginEvent.Result.KICK_OTHER, P.p.languageReader.get("Player_LoginDeny"));
 				return;
 			case 3:
-				event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "Dein Charakter ist sturzbesoffen und ohne Besinnung. Versuch es in 10 Minuten noch einmal!");
+				event.disallow(PlayerLoginEvent.Result.KICK_OTHER, P.p.languageReader.get("Player_LoginDenyLong"));
 			}
 		}
 	}

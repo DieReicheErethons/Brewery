@@ -461,7 +461,7 @@ public class P extends JavaPlugin {
 
 		saveWorldNames(configFile, oldData.getConfigurationSection("Worlds"));
 
-		configFile.set("Version", "0.5");
+		configFile.set("Version", "1.0");
 
 		try {
 			configFile.save(datafile);

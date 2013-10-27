@@ -41,6 +41,8 @@ public class LanguageReader {
 		defaults.put("Player_CauldronInfo2", "This Cauldron seethes since less than one minute");
 		defaults.put("Player_CantDrink", "You can't drink any more");
 		defaults.put("Player_DrunkPassOut", "You have drunken too much and fainted!");
+		defaults.put("Player_LoginDeny", "Your character is drunk and does not react. Try again!");
+		defaults.put("Player_LoginDenyLong", "Your character is really drunk and unconscious. Try again in 10 minutes!");
 		defaults.put("Player_Wake", "Ohh no! I cannot remember how I got here...");
 		defaults.put("Player_WakeCreated", "&aWakeup Point with id: &6&v1 &awas created successfully!");
 		defaults.put("Player_WakeNotExist", "&cThe Wakeup Point with the id: &6&v1 &cdoesn't exist!");
@@ -71,7 +73,7 @@ public class LanguageReader {
 		defaults.put("Brew_Years", "Years");
 		defaults.put("Brew_HundredsOfYears", "Hundreds of Years");
 		defaults.put("Brew_Woodtype", "Woodtype");
-		defaults.put("Brew_ThickBrew", "Thick Brew");
+		defaults.put("Brew_ThickBrew", "Muddy Brew");
 		
 		/* Commands */
 		defaults.put("CMD_Reload", "&aConfig was successfully reloaded");
@@ -79,7 +81,7 @@ public class LanguageReader {
 		defaults.put("CMD_Player_Error", "&cThe Quality has to be between 1 and 10!");
 		defaults.put("CMD_Info_NotDrunk", "&v1 is not drunk");
 		defaults.put("CMD_Info_Drunk", "&v1 is &6&v2% &fdrunk, with a quality of &6&v3");
-		defaults.put("CMD_UnLabel", "&aThe Label was removed");
+		defaults.put("CMD_UnLabel", "&aLabel removed!");
 		defaults.put("CMD_Copy_Error", "&6&v1 &cPotions did not fit into your inventory");
 		
 		/* Error */

@@ -55,7 +55,7 @@ logRealChat: false
 autosave: 3
 
 # Config Version
-version: '0.5'
+version: '1.0'
 
 
 # Recipes for Potions
@@ -159,7 +159,7 @@ recipes:
       - WEAKNESS/15
       - POISON/10
    8:
-      name: Poor Absinth/Absinth/Strong Absinth
+      name: Poor Absinthe/Absinthe/Strong Absinthe
       ingredients:
       - LONG_GRASS/15
       cookingtime: 3

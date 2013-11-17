@@ -6,6 +6,7 @@ import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.EventHandler;
@@ -163,6 +164,14 @@ public class PlayerListener implements Listener {
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
 		if (BPlayer.players.containsKey(event.getPlayer().getName())) {
 			Words.playerChat(event);
+		}
+	}
+	
+	// player commands while drunk, distort chat commands
+	@EventHandler(priority = EventPriority.LOWEST)
+	public void onCommandPreProcess(PlayerCommandPreprocessEvent event) {
+		if (BPlayer.players.containsKey(event.getPlayer().getName())) {
+			Words.playerCommand(event);
 		}
 	}
 

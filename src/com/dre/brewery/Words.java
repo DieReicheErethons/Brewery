@@ -1,10 +1,14 @@
 package com.dre.brewery;
 
+import java.util.List;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
+import java.lang.Character;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
 import com.dre.brewery.BPlayer;
 
@@ -13,8 +17,10 @@ public class Words {
 	// represends Words and letters, that are replaced in drunk players messages
 
 	public static ArrayList<Words> words = new ArrayList<Words>();
+	public static List<String> commands;
 	public static FileConfiguration config;
 	public static Boolean log;
+	private static Map<String, Long> waitPlayers = new HashMap<String, Long>();
 
 	private String from;
 	private String to;
@@ -59,15 +65,52 @@ public class Words {
 		}
 	}
 
+	private static boolean loadWords() {
+		if (words.isEmpty()) {
+			// load when first drunk player talks
+			load();
+		}
+		return !words.isEmpty();
+	}
+
+	// Distort players words when he uses a command
+	public static void playerCommand(PlayerCommandPreprocessEvent event) {
+		String name = event.getPlayer().getName();
+		BPlayer bPlayer = BPlayer.get(name);
+		if (bPlayer != null) {
+			if (!commands.isEmpty() && loadWords()) {
+				if (!waitPlayers.containsKey(name) || waitPlayers.get(name) + 500 < System.currentTimeMillis()) {
+					String chat = event.getMessage();
+					for (String command : commands) {
+						if (command.length() + 1 < chat.length()) {
+							if (Character.isSpaceChar(chat.charAt(command.length()))) {
+								if (chat.toLowerCase().startsWith(command.toLowerCase())) {
+									if (log) {
+										P.p.log(P.p.languageReader.get("Player_TriedToSay", name, chat));
+									}
+									String message = chat.substring(command.length() + 1);
+									for (Words word : words) {
+										if (word.alcohol <= bPlayer.getDrunkeness()) {
+											message = word.distort(message);
+										}
+									}
+									event.setMessage(chat.substring(0, command.length() + 1) + message);
+									waitPlayers.put(name, System.currentTimeMillis());
+									return;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
 	// Distort players words when he talks
 	public static void playerChat(AsyncPlayerChatEvent event) {
 		BPlayer bPlayer = BPlayer.get(event.getPlayer().getName());
 		if (bPlayer != null) {
-			if (words.isEmpty()) {
-				// load when first drunk player talks
-				load();
-			}
-			if (!words.isEmpty()) {
+			if (loadWords()) {
 				String message = event.getMessage();
 				if (log) {
 					P.p.log(P.p.languageReader.get("Player_TriedToSay", event.getPlayer().getName(), message));

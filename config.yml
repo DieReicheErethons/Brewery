@@ -1,7 +1,7 @@
 # config for Brewery.jar
 
 
-# Settings
+# -- Settings --
 # Defaults are written in []
 # Deleting of single settings disables them
 
@@ -36,7 +36,7 @@ enablePuke: true
 # Item that is dropped multiple times uncollectable when puking [SOUL_SAND]
 pukeItem: SOUL_SAND
 
-# Consumable Item/strength. Decreases the alcohol level by <strength> when consumed.
+# Consumable Item/strength. Decreases the alcohol level by <strength> when consumed. (list)
 drainItems:
 - BREAD/4
 - MILK_BUCKET/2
@@ -48,17 +48,14 @@ hangoverDays: 7
 colorInBarrels: true
 colorInBrewer: false
 
-# Log to the Serverlog what the player actually wrote, before his words were altered [false]
-logRealChat: false
-
 # Autosave interval in minutes [3]
 autosave: 3
 
 # Config Version
-version: '1.0'
+version: '1.1'
 
 
-# Recipes for Potions
+# -- Recipes for Potions --
 
 # name: Different names for bad/normal/good (Formatting codes possible: such as &6)
 # ingredients: List of material/amount
@@ -193,6 +190,27 @@ cooked:
    RED_MUSHROOM: Mushroom brew
 
 
+
+# -- Chat Distortion Settings --
+
+# Log to the Serverlog what the player actually wrote, before his words were altered [false]
+logRealChat: false
+
+# Text after specified commands will be distorted when drunk (list) [- /gl]
+distortCommands:
+- /gl
+- /global
+- /fl
+- /s
+- /letter
+
+# Distort the Text written on a Sign while drunk [false]
+distortSignText: false
+
+# Enclose a text with these Letters to bypass Chat Distortion (Use "," as Seperator) (list) [- '[,]']
+distortBypass:
+- '*,*'
+- '[,]'
 
 # words: Words and letters that will be altered when chatting while being drunk.
 # Will be processed from first to last and a written sentece is altered in that order.

@@ -9,6 +9,7 @@ import java.lang.Character;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.block.SignChangeEvent;
 
 import com.dre.brewery.BPlayer;
 
@@ -19,6 +20,7 @@ public class Words {
 	public static ArrayList<Words> words = new ArrayList<Words>();
 	public static List<String> commands;
 	public static FileConfiguration config;
+	public static Boolean doSigns;
 	public static Boolean log;
 	private static Map<String, Long> waitPlayers = new HashMap<String, Long>();
 
@@ -101,6 +103,30 @@ public class Words {
 							}
 						}
 					}
+				}
+			}
+		}
+	}
+
+	// Distort players words when he uses a command
+	public static void signWrite(SignChangeEvent event) {
+		BPlayer bPlayer = BPlayer.get(event.getPlayer().getName());
+		if (bPlayer != null) {
+			if (loadWords()) {
+				int index = 0;
+				for (String message : event.getLines()) {
+					if (message.length() > 1) {
+						for (Words word : words) {
+							if (word.alcohol <= bPlayer.getDrunkeness()) {
+								message = word.distort(message);
+							}
+						}
+						if (message.length() > 15) {
+							message = message.substring(0, 14);
+						}
+						event.setLine(index, message);
+					}
+					index++;
 				}
 			}
 		}

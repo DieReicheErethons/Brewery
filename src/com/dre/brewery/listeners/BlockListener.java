@@ -10,6 +10,8 @@ import org.bukkit.block.Block;
 
 import com.dre.brewery.BCauldron;
 import com.dre.brewery.Barrel;
+import com.dre.brewery.BPlayer;
+import com.dre.brewery.Words;
 import com.dre.brewery.P;
 
 public class BlockListener implements Listener {
@@ -21,6 +23,15 @@ public class BlockListener implements Listener {
 		if (lines[0].equalsIgnoreCase(P.p.languageReader.get("Etc_Barrel"))) {
 			if (Barrel.create(event.getBlock())) {
 				P.p.msg(event.getPlayer(), P.p.languageReader.get("Player_BarrelCreated"));
+			}
+		}
+	}
+
+	@EventHandler(priority = EventPriority.LOWEST)
+	public void onSignChangeLow(SignChangeEvent event) {
+		if (Words.doSigns) {
+			if (BPlayer.players.containsKey(event.getPlayer().getName())) {
+				Words.signWrite(event);
 			}
 		}
 	}

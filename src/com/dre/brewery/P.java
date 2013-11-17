@@ -185,6 +185,7 @@ public class P extends JavaPlugin {
 		Brew.colorInBrewer = config.getBoolean("colorInBrewer", false);
 		Words.log = config.getBoolean("logRealChat", false);
 		Words.commands = config.getStringList("distortCommands");
+		Words.doSigns = config.getBoolean("distortSignText");
 
 		// loading recipes
 		ConfigurationSection configSection = config.getConfigurationSection("recipes");

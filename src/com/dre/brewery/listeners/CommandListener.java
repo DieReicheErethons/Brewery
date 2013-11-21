@@ -270,10 +270,17 @@ public class CommandListener implements CommandExecutor {
 			bPlayer.setData(drunkeness, quality);
 		}
 
-		p.msg(sender, p.languageReader.get("CMD_Player", playerName, "" + drunkeness, "" + bPlayer.getQuality()));
 		if (drunkeness > 100) {
-			bPlayer.drinkCap(p.getServer().getPlayer(playerName));
+			Player player = p.getServer().getPlayer(playerName);
+			if (player != null) {
+				bPlayer.drinkCap(player);
+			} else {
+				if (!BPlayer.overdrinkKick) {
+					bPlayer.setData(100, 0);
+				}
+			}
 		}
+		p.msg(sender, p.languageReader.get("CMD_Player", playerName, "" + drunkeness, "" + bPlayer.getQuality()));
 
 	}
 

@@ -181,6 +181,13 @@ public class PlayerListener implements Listener {
 		final Player player = event.getPlayer();
 		BPlayer bplayer = BPlayer.get(player.getName());
 		if (bplayer != null) {
+			if (player.hasPermission("brewery.bypass.logindeny")) {
+				if (bplayer.getDrunkeness() > 100) {
+					bplayer.setData(100, 0);
+				}
+				bplayer.join(player);
+				return;
+			}
 			switch (bplayer.canJoin()) {
 			case 0:
 				bplayer.join(player);

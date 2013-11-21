@@ -115,7 +115,7 @@ public class BPlayer {
 
 	// Player has drunken too much
 	public void drinkCap(Player player) {
-		if (overdrinkKick) {
+		if (overdrinkKick && !player.hasPermission("brewery.bypass.overdrink")) {
 			passOut(player);
 		} else {
 			quality = getQuality() * 100;
@@ -263,7 +263,7 @@ public class BPlayer {
 	public void login(final Player player) {
 		if (drunkeness < 10) {
 			if (offlineDrunk > 60) {
-				if (enableHome) {
+				if (enableHome && !player.hasPermission("brewery.bypass.teleport")) {
 					goHome(player);
 				}
 			}
@@ -274,8 +274,10 @@ public class BPlayer {
 		} else if (offlineDrunk - drunkeness >= 30) {
 			Location randomLoc = Wakeup.getRandom(player.getLocation());
 			if (randomLoc != null) {
-				player.teleport(randomLoc);
-				P.p.msg(player, P.p.languageReader.get("Player_Wake"));
+				if (!player.hasPermission("brewery.bypass.teleport")) {
+					player.teleport(randomLoc);
+					P.p.msg(player, P.p.languageReader.get("Player_Wake"));
+				}
 			}
 		}
 

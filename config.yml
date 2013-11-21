@@ -207,7 +207,7 @@ distortCommands:
 # Distort the Text written on a Sign while drunk [false]
 distortSignText: false
 
-# Enclose a text with these Letters to bypass Chat Distortion (Use "," as Seperator) (list) [- '[,]']
+# Enclose a text with these Letters to bypass Chat Distortion (Use "," as Separator) (list) [- '[,]']
 distortBypass:
 - '*,*'
 - '[,]'

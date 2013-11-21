@@ -19,6 +19,7 @@ public class Words {
 
 	public static ArrayList<Words> words = new ArrayList<Words>();
 	public static List<String> commands;
+	public static List<String[]> ignoreText = new ArrayList<String[]>();
 	public static FileConfiguration config;
 	public static Boolean doSigns;
 	public static Boolean log;
@@ -91,11 +92,8 @@ public class Words {
 										P.p.log(P.p.languageReader.get("Player_TriedToSay", name, chat));
 									}
 									String message = chat.substring(command.length() + 1);
-									for (Words word : words) {
-										if (word.alcohol <= bPlayer.getDrunkeness()) {
-											message = word.distort(message);
-										}
-									}
+									message = distortMessage(message, bPlayer.getDrunkeness());
+
 									event.setMessage(chat.substring(0, command.length() + 1) + message);
 									waitPlayers.put(name, System.currentTimeMillis());
 									return;
@@ -116,11 +114,8 @@ public class Words {
 				int index = 0;
 				for (String message : event.getLines()) {
 					if (message.length() > 1) {
-						for (Words word : words) {
-							if (word.alcohol <= bPlayer.getDrunkeness()) {
-								message = word.distort(message);
-							}
-						}
+						message = distortMessage(message, bPlayer.getDrunkeness());
+
 						if (message.length() > 15) {
 							message = message.substring(0, 14);
 						}
@@ -141,14 +136,54 @@ public class Words {
 				if (log) {
 					P.p.log(P.p.languageReader.get("Player_TriedToSay", event.getPlayer().getName(), message));
 				}
-				for (Words word : words) {
-					if (word.alcohol <= bPlayer.getDrunkeness()) {
-						message = word.distort(message);
-					}
-				}
-				event.setMessage(message);
+				event.setMessage(distortMessage(message, bPlayer.getDrunkeness()));
 			}
 		}
+	}
+
+	// distorts a message, ignoring text enclosed in ignoreText letters
+	public static String distortMessage(String message, int drunkeness) {
+		if (!ignoreText.isEmpty()) {
+			for (String[] bypass : ignoreText) {
+				int indexStart = 0;
+				if (!bypass[0].equals("")) {
+					indexStart = message.indexOf(bypass[0]);
+				}
+				int indexEnd = message.length() - 1;
+				if (!bypass[1].equals("")) {
+					indexEnd = message.indexOf(bypass[1], indexStart + 2);
+				}
+				if (indexStart != -1 && indexEnd != -1) {
+					if (indexEnd > indexStart + 1) {
+						String ignoredMessage = message.substring(indexStart, indexEnd);
+						String msg0 = message.substring(0, indexStart);
+						String msg1 = message.substring(indexEnd);
+
+						if (msg0.length() > 1) {
+							msg0 = distortMessage(msg0, drunkeness);
+						}
+						if (msg1.length() > 1) {
+							msg1 = distortMessage(msg1, drunkeness);
+						}
+
+						return msg0 + ignoredMessage + msg1;
+					}
+				}
+			}
+		}
+		return distortString(message, drunkeness);
+	}
+
+	// distorts a message without checking ignoreText letters
+	private static String distortString(String message, int drunkeness) {
+		if (message.length() > 1) {
+			for (Words word : words) {
+				if (word.alcohol <= drunkeness) {
+					message = word.distort(message);
+				}
+			}
+		}
+		return message;
 	}
 
 	// replace "percent"% of "from" -> "to" in "words", when the string before

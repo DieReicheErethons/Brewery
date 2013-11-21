@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.File;
 
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.ConfigurationSection;
@@ -157,10 +156,23 @@ public class P extends JavaPlugin {
 		}
 		FileConfiguration config = YamlConfiguration.loadConfiguration(file);
 
+		// Set the Language
+		language = config.getString("language", "en");
+
+		// Check if config is the newest version
+		String version = config.getString("version", null);
+		if (version != null) {
+			String currentVersion = getDescription().getVersion();
+			if (!version.equals(currentVersion)) {
+				new ConfigUpdater(file).update(version, language);
+				P.p.log("Config Updated to version: " + currentVersion);
+				config = YamlConfiguration.loadConfiguration(file);
+			}
+		}
+
 		// various Settings
 		autosave = config.getInt("autosave", 3);
 		debug = config.getBoolean("debug", false);
-		language = config.getString("language", "en");
 		BPlayer.pukeItemId = Material.matchMaterial(config.getString("pukeItem", "SOUL_SAND")).getId();
 		BPlayer.hangoverTime = config.getInt("hangoverDays", 0) * 24 * 60;
 		BPlayer.overdrinkKick = config.getBoolean("enableKickOnOverdrink", false);

@@ -1,8 +1,7 @@
 name: Brewery
-version: 1.0
+version: 1.1
 main: com.dre.brewery.P
 authors: [Milan Albrecht, Frank Baumann]
-softdepend: [Vault]
 commands:
   brewery:
     description: Command for Administration

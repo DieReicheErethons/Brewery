@@ -91,6 +91,7 @@ public class LanguageReader {
 		defaults.put("Error_PlayerCommand", "&cThis command can only be executed as player");
 		defaults.put("Error_ItemNotPotion", "&cThe Item in your hand could not be identified as Potion");
 		defaults.put("Error_Recipeload", "&cNot all recipes could be restored: More information in the Serverlog!");
+		defaults.put("Error_ConfigUpdate", "Unknown Brewery Config version: v&v1, Config was not Updated!");
 		
 		/* Help */
 		defaults.put("Help_Help", "&6/br help <Page> &9Shows a specific help-page");

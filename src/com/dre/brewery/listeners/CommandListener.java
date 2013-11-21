@@ -31,7 +31,7 @@ public class CommandListener implements CommandExecutor {
 
 		} else if (cmd.equalsIgnoreCase("reload")) {
 
-			if (p.permission.has(sender, "brewery.cmd.reload")) {
+			if (sender.hasPermission("brewery.cmd.reload")) {
 				p.reload(sender);
 				p.msg(sender, p.languageReader.get("CMD_Reload"));
 			} else {
@@ -40,7 +40,7 @@ public class CommandListener implements CommandExecutor {
 
 		} else if (cmd.equalsIgnoreCase("wakeup")) {
 
-			if (p.permission.has(sender, "brewery.cmd.wakeup")) {
+			if (sender.hasPermission("brewery.cmd.wakeup")) {
 				cmdWakeup(sender, args);
 			} else {
 				p.msg(sender, p.languageReader.get("Error_NoPermissions"));
@@ -53,13 +53,13 @@ public class CommandListener implements CommandExecutor {
 		} else if (cmd.equalsIgnoreCase("info")) {
 
 			if (args.length > 1) {
-				if (p.permission.has(sender, "brewery.cmd.infoOther")) {
+				if (sender.hasPermission("brewery.cmd.infoOther")) {
 					cmdInfo(sender, args[1]);
 				} else {
 					p.msg(sender, p.languageReader.get("Error_NoPermissions"));
 				}
 			} else {
-				if (p.permission.has(sender, "brewery.cmd.info")) {
+				if (sender.hasPermission("brewery.cmd.info")) {
 					cmdInfo(sender, null);
 				} else {
 					p.msg(sender, p.languageReader.get("Error_NoPermissions"));
@@ -68,7 +68,7 @@ public class CommandListener implements CommandExecutor {
 
 		} else if (cmd.equalsIgnoreCase("copy") || cmd.equalsIgnoreCase("cp")) {
 
-			if (p.permission.has(sender, "brewery.cmd.copy")) {
+			if (sender.hasPermission("brewery.cmd.copy")) {
 				if (args.length > 1) {
 					cmdCopy(sender, p.parseInt(args[1]));
 				} else {
@@ -80,7 +80,7 @@ public class CommandListener implements CommandExecutor {
 
 		} else if (cmd.equalsIgnoreCase("delete") || cmd.equalsIgnoreCase("rm")) {
 
-			if (p.permission.has(sender, "brewery.cmd.delete")) {
+			if (sender.hasPermission("brewery.cmd.delete")) {
 				cmdDelete(sender);
 			} else {
 				p.msg(sender, p.languageReader.get("Error_NoPermissions"));
@@ -88,7 +88,7 @@ public class CommandListener implements CommandExecutor {
 
 		} else if (cmd.equalsIgnoreCase("unlabel")) {
 
-			if (p.permission.has(sender, "brewery.cmd.unlabel")) {
+			if (sender.hasPermission("brewery.cmd.unlabel")) {
 				cmdUnlabel(sender);
 			} else {
 				p.msg(sender, p.languageReader.get("Error_NoPermissions"));
@@ -99,11 +99,11 @@ public class CommandListener implements CommandExecutor {
 			if (p.getServer().getPlayerExact(cmd) != null || BPlayer.players.containsKey(cmd)) {
 
 				if (args.length == 1) {
-					if (p.permission.has(sender, "brewery.cmd.infoOther")) {
+					if (sender.hasPermission("brewery.cmd.infoOther")) {
 						cmdInfo(sender, cmd);
 					}
 				} else {
-					if (p.permission.has(sender, "brewery.cmd.player")) {
+					if (sender.hasPermission("brewery.cmd.player")) {
 						cmdPlayer(sender, args);
 					} else {
 						p.msg(sender, p.languageReader.get("Error_NoPermissions"));
@@ -143,31 +143,31 @@ public class CommandListener implements CommandExecutor {
 		ArrayList<String> cmds = new ArrayList<String>();
 		cmds.add(p.languageReader.get("Help_Help"));
 
-		if (p.permission.has(sender, "brewery.cmd.player")) {
+		if (sender.hasPermission("brewery.cmd.player")) {
 			cmds.add (p.languageReader.get("Help_Player"));
 		}
 
-		if (p.permission.has(sender, "brewery.cmd.info")) {
+		if (sender.hasPermission("brewery.cmd.info")) {
 			cmds.add (p.languageReader.get("Help_Info"));
 		}
 
-		if (p.permission.has(sender, "brewery.cmd.unlabel")) {
+		if (sender.hasPermission("brewery.cmd.unlabel")) {
 			cmds.add (p.languageReader.get("Help_UnLabel"));
 		}
 
-		if (p.permission.has(sender, "brewery.cmd.copy")) {
+		if (sender.hasPermission("brewery.cmd.copy")) {
 			cmds.add (p.languageReader.get("Help_Copy"));
 		}
 
-		if (p.permission.has(sender, "brewery.cmd.delete")) {
+		if (sender.hasPermission("brewery.cmd.delete")) {
 			cmds.add (p.languageReader.get("Help_Delete"));
 		}
 
-		if (p.permission.has(sender, "brewery.cmd.infoOther")) {
+		if (sender.hasPermission("brewery.cmd.infoOther")) {
 			cmds.add (p.languageReader.get("Help_InfoOther"));
 		}
 
-		if (p.permission.has(sender, "brewery.cmd.wakeup")) {
+		if (sender.hasPermission("brewery.cmd.wakeup")) {
 			cmds.add(p.languageReader.get("Help_Wakeup"));
 			cmds.add(p.languageReader.get("Help_WakeupList"));
 			cmds.add(p.languageReader.get("Help_WakeupCheck"));
@@ -176,7 +176,7 @@ public class CommandListener implements CommandExecutor {
 			cmds.add(p.languageReader.get("Help_WakeupRemove"));
 		}
 
-		if (p.permission.has(sender, "brewery.cmd.reload")) {
+		if (sender.hasPermission("brewery.cmd.reload")) {
 			cmds.add(p.languageReader.get("Help_Reload"));
 		}
 

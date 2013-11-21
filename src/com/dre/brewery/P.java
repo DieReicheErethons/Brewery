@@ -15,8 +15,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.apache.commons.lang.math.NumberUtils;
 
-import net.milkbowl.vault.permission.Permission;
-
 import org.bukkit.event.HandlerList;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -46,8 +44,6 @@ public class P extends JavaPlugin {
 	public String language;
 	public LanguageReader languageReader;
 
-	public Permission permission = null;
-
 	@Override
 	public void onEnable() {
 		p = this;
@@ -57,8 +53,6 @@ public class P extends JavaPlugin {
 
 		// Load LanguageReader
 		languageReader = new LanguageReader(new File(p.getDataFolder(), "languages/" + language + ".yml"));
-
-		initPermissions();
 
 		// Listeners
 		blockListener = new BlockListener();
@@ -153,13 +147,6 @@ public class P extends JavaPlugin {
 
 	public void errorLog(String msg) {
 		Bukkit.getConsoleSender().sendMessage(ChatColor.DARK_GREEN + "[Brewery] " + ChatColor.DARK_RED + "ERROR: " + ChatColor.RED + msg);
-	}
-
-	public void initPermissions() {
-		RegisteredServiceProvider<Permission> permissionProvider = getServer().getServicesManager().getRegistration(Permission.class);
-		if (permissionProvider != null) {
-			permission = permissionProvider.getProvider();
-		}
 	}
 
 	public void readConfig() {

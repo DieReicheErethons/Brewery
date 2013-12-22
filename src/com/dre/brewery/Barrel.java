@@ -3,6 +3,7 @@ package com.dre.brewery;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.Map;
 
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.block.Block;
 import org.bukkit.inventory.Inventory;
@@ -129,6 +130,9 @@ public class Barrel {
 	// removes a barrel, throwing included potions to the ground
 	public void remove(Block broken) {
 		if (inventory != null) {
+			for (HumanEntity human : inventory.getViewers()) {
+				human.closeInventory();
+			}
 			ItemStack[] items = inventory.getContents();
 			for (ItemStack item : items) {
 				if (item != null) {

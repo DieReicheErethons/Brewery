@@ -294,10 +294,6 @@ public class BPlayer {
 			Location home = null;
 			if (homeType.equalsIgnoreCase("bed")) {
 				home = player.getBedSpawnLocation();
-			} else if (homeType.equalsIgnoreCase("ManagerXL")) {
-				if (com.dre.managerxl.MPlayer.get(player.getName()) != null) {
-					home = com.dre.managerxl.MPlayer.get(player.getName()).getHome();
-				}
 			} else if (homeType.startsWith("cmd: ")) {
 				player.performCommand(homeType.substring(5));
 			} else if (homeType.startsWith("cmd:")) {

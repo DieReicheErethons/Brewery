@@ -552,30 +552,8 @@ public class P extends JavaPlugin {
 
 	public String color(String msg) {
 		if (msg != null) {
-			msg = msg.replace("&0", ChatColor.getByChar("0").toString());
-			msg = msg.replace("&1", ChatColor.getByChar("1").toString());
-			msg = msg.replace("&2", ChatColor.getByChar("2").toString());
-			msg = msg.replace("&3", ChatColor.getByChar("3").toString());
-			msg = msg.replace("&4", ChatColor.getByChar("4").toString());
-			msg = msg.replace("&5", ChatColor.getByChar("5").toString());
-			msg = msg.replace("&6", ChatColor.getByChar("6").toString());
-			msg = msg.replace("&7", ChatColor.getByChar("7").toString());
-			msg = msg.replace("&8", ChatColor.getByChar("8").toString());
-			msg = msg.replace("&9", ChatColor.getByChar("9").toString());
-			msg = msg.replace("&a", ChatColor.getByChar("a").toString());
-			msg = msg.replace("&b", ChatColor.getByChar("b").toString());
-			msg = msg.replace("&c", ChatColor.getByChar("c").toString());
-			msg = msg.replace("&d", ChatColor.getByChar("d").toString());
-			msg = msg.replace("&e", ChatColor.getByChar("e").toString());
-			msg = msg.replace("&f", ChatColor.getByChar("f").toString());
-			msg = msg.replace("&k", ChatColor.getByChar("k").toString());
-			msg = msg.replace("&l", ChatColor.getByChar("l").toString());
-			msg = msg.replace("&m", ChatColor.getByChar("m").toString());
-			msg = msg.replace("&n", ChatColor.getByChar("n").toString());
-			msg = msg.replace("&o", ChatColor.getByChar("o").toString());
-			msg = msg.replace("&r", ChatColor.getByChar("r").toString());
+			msg = ChatColor.translateAlternateColorCodes('&', msg);
 		}
-
 		return msg;
 	}
 

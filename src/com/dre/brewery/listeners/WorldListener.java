@@ -24,13 +24,11 @@ public class WorldListener implements Listener {
 		}
 	}
 
-	@EventHandler(priority = EventPriority.MONITOR)
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onWorldUnload(WorldUnloadEvent event) {
-		if (!event.isCancelled()) {
-			P.p.saveData();
-			Barrel.onUnload(event.getWorld().getName());
-			BCauldron.onUnload(event.getWorld().getName());
-		}
+		P.p.saveData();
+		Barrel.onUnload(event.getWorld().getName());
+		BCauldron.onUnload(event.getWorld().getName());
 	}
 
 }

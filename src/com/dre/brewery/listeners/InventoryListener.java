@@ -17,7 +17,7 @@ import com.dre.brewery.Brew;
 
 public class InventoryListener implements Listener {
 
-	@EventHandler(priority = EventPriority.HIGH)
+	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onBrew(BrewEvent event) {
 		int slot = 0;
 		BrewerInventory inv = event.getContents();
@@ -52,7 +52,7 @@ public class InventoryListener implements Listener {
 	}
 
 	// convert to non colored Lore when taking out of Barrel/Brewer
-	@EventHandler(priority = EventPriority.HIGH)
+	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onInventoryClick(InventoryClickEvent event) {
 		if (event.getInventory().getType() == InventoryType.BREWING) {
 			if (event.getSlot() > 2) {
@@ -84,7 +84,7 @@ public class InventoryListener implements Listener {
 	}
 	
 	// block the pickup of items where getPickupDelay is > 1000 (puke)
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onInventoryPickupItem(InventoryPickupItemEvent event){
 		Item item = event.getItem();
 		

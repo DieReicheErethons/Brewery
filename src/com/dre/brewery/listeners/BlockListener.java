@@ -16,7 +16,7 @@ import com.dre.brewery.P;
 
 public class BlockListener implements Listener {
 
-	@EventHandler(priority = EventPriority.NORMAL)
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onSignChange(SignChangeEvent event) {
 		String[] lines = event.getLines();
 
@@ -36,7 +36,7 @@ public class BlockListener implements Listener {
 		}
 	}
 
-	@EventHandler(priority = EventPriority.HIGH)
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onBlockBreak(BlockBreakEvent event) {
 		Block block = event.getBlock();
 		// remove cauldron

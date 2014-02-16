@@ -28,7 +28,7 @@ import com.dre.brewery.Wakeup;
 import com.dre.brewery.P;
 
 public class PlayerListener implements Listener {
-	@EventHandler(priority = EventPriority.HIGH)
+	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		Block clickedBlock = event.getClickedBlock();
 
@@ -118,7 +118,7 @@ public class PlayerListener implements Listener {
 	}
 
 	// player drinks a custom potion
-	@EventHandler(priority = EventPriority.NORMAL)
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onPlayerItemConsume(PlayerItemConsumeEvent event) {
 		Player player = event.getPlayer();
 		ItemStack item = event.getItem();

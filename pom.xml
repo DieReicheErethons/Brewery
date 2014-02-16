@@ -37,8 +37,8 @@
   
   	<repositories>
 		<repository>
-			<id>spout-repo</id>
-			<url>http://nexus.spout.org/content/groups/public/</url>
+			<id>bukkit-repo</id>
+			<url>http://repo.bukkit.org/content/groups/public/</url>
 			<snapshots>
 				<enabled>true</enabled>
 				<updatePolicy>always</updatePolicy>
@@ -54,9 +54,9 @@
    <dependencies>
 		<!-- Provided by third-party -->
 		<dependency>
-			<groupId>org.spout</groupId>
+			<groupId>org.bukkit</groupId>
 			<artifactId>craftbukkit</artifactId>
-			<version>1.6.2-R0.2-SNAPSHOT</version>
+			<version>1.7.2-R0.3</version>
 			<scope>provided</scope>
 		</dependency>
 		

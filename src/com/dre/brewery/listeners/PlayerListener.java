@@ -81,6 +81,9 @@ public class PlayerListener implements Listener {
 										player.setItemInHand(new ItemStack(0));
 									}
 								}
+								event.setCancelled(true);
+							} else {
+								event.setCancelled(true);
 							}
 						}
 						// access a barrel

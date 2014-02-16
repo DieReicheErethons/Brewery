@@ -10,6 +10,9 @@
 # vim
 .*.sw[a-p]
 
+# IntelliJ
+/.idea
+
 # various other potential build files
 /build
 /bin

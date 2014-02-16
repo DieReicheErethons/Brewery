@@ -86,6 +86,7 @@ public class LanguageReader {
 		
 		/* Error */
 		defaults.put("Error_NoPermissions", "&cYou have no permission to do this!");
+		defaults.put("Error_NoBarrelAccess", "&cYou have no permission to access this barrel!");
 		defaults.put("Error_UnknownCommand", "Unknown Command");
 		defaults.put("Error_ShowHelp", "use &6/br help &fto display the help");
 		defaults.put("Error_PlayerCommand", "&cThis command can only be executed as player");

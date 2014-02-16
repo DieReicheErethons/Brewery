@@ -17,6 +17,7 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.plugin.Plugin;
 
 import com.dre.brewery.BCauldron;
 import com.dre.brewery.BIngredients;
@@ -26,6 +27,10 @@ import com.dre.brewery.BPlayer;
 import com.dre.brewery.Words;
 import com.dre.brewery.Wakeup;
 import com.dre.brewery.P;
+import com.sk89q.worldguard.LocalPlayer;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.sk89q.worldguard.protection.ApplicableRegionSet;
+import com.sk89q.worldguard.protection.flags.DefaultFlag;
 
 public class PlayerListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -92,6 +97,23 @@ public class PlayerListener implements Listener {
 						Barrel barrel = Barrel.get(clickedBlock);
 						if (barrel != null) {
 							event.setCancelled(true);
+
+							Plugin plugin = P.p.getServer().getPluginManager().getPlugin("WorldGuard");
+							if (plugin != null && plugin instanceof WorldGuardPlugin) {
+								WorldGuardPlugin wg = (WorldGuardPlugin) plugin;
+								if (!wg.getGlobalRegionManager().hasBypass(player, player.getWorld())) {
+									ApplicableRegionSet region = wg.getRegionManager(player.getWorld()).getApplicableRegions(clickedBlock.getLocation());
+									if (region != null) {
+										LocalPlayer localPlayer = wg.wrapPlayer(player);
+										if (!region.allows(DefaultFlag.CHEST_ACCESS, localPlayer)) {
+											if (!region.canBuild(localPlayer)) {
+												P.p.msg(player, P.p.languageReader.get("Error_NoBarrelAccess"));
+												return;
+											}
+										}
+									}
+								}
+							}
 							Block broken = Barrel.getBrokenBlock(clickedBlock);
 							// barrel is built correctly
 							if (broken == null) {

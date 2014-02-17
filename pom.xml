@@ -3,7 +3,7 @@
 	
 	<groupId>com.dre</groupId>
 	<artifactId>brewery</artifactId>
-	<version>1.1</version>
+	<version>1.1.1</version>
 	<name>Brewery</name>
 	
 	<build>
@@ -19,6 +19,7 @@
 				</includes>
 				<excludes>
 					<exclude>target/**</exclude>
+					<exclude>.travis.yml</exclude>
 				</excludes>
 			</resource>
 		</resources>
@@ -44,15 +45,49 @@
 				<updatePolicy>always</updatePolicy>
 			</snapshots>
 		</repository>
+		
+		<repository>
+			<id>sk89q-repo</id>
+			<url>http://maven.sk89q.com/artifactory/repo/</url>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+			</snapshots>
+		</repository>
+		
+		<repository>
+			<id>dre-repo</id>
+			<url>http://server.die-reiche-erethons.com/maven2</url>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+			</snapshots>
+		</repository>
 	</repositories>
    
    <dependencies>
 		<!-- Provided by third-party -->
 		<dependency>
 			<groupId>org.bukkit</groupId>
-			<artifactId>craftbukkit</artifactId>
+			<artifactId>bukkit</artifactId>
 			<version>1.7.2-R0.3</version>
 			<scope>provided</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.sk89q</groupId>
+			<artifactId>worldguard</artifactId>
+			<version>LATEST</version>
+			<scope>compile</scope>
+			<type>jar</type>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.dre</groupId>
+			<artifactId>managerxl</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<scope>compile</scope>
+			<type>jar</type>
 		</dependency>
 	</dependencies>
 </project>

@@ -14,6 +14,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.Material;
 
 import com.dre.brewery.Brew;
+import com.dre.brewery.P;
 
 public class InventoryListener implements Listener {
 
@@ -59,7 +60,7 @@ public class InventoryListener implements Listener {
 				return;
 			}
 		} else if (event.getInventory().getType() == InventoryType.CHEST) {
-			if (!event.getInventory().getTitle().equals("Fass")) {
+			if (!event.getInventory().getTitle().equals(P.p.languageReader.get("Etc_Barrel"))) {
 				return;
 			}
 		} else {

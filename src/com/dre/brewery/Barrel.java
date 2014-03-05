@@ -29,9 +29,9 @@ public class Barrel {
 	public Barrel(Block spigot, Map<String, Object> items, float time) {
 		this.spigot = spigot;
 		if (isLarge()) {
-			this.inventory = org.bukkit.Bukkit.createInventory(null, 27, "Fass");
+			this.inventory = org.bukkit.Bukkit.createInventory(null, 27, P.p.languageReader.get("Etc_Barrel"));
 		} else {
-			this.inventory = org.bukkit.Bukkit.createInventory(null, 9, "Fass");
+			this.inventory = org.bukkit.Bukkit.createInventory(null, 9, P.p.languageReader.get("Etc_Barrel"));
 		}
 		for (String slot : items.keySet()) {
 			if (items.get(slot) instanceof ItemStack) {
@@ -46,9 +46,9 @@ public class Barrel {
 	public Barrel(Block spigot, float time) {
 		this.spigot = spigot;
 		if (isLarge()) {
-			this.inventory = org.bukkit.Bukkit.createInventory(null, 27, "Fass");
+			this.inventory = org.bukkit.Bukkit.createInventory(null, 27, P.p.languageReader.get("Etc_Barrel"));
 		} else {
-			this.inventory = org.bukkit.Bukkit.createInventory(null, 9, "Fass");
+			this.inventory = org.bukkit.Bukkit.createInventory(null, 9, P.p.languageReader.get("Etc_Barrel"));
 		}
 		this.time = time;
 		barrels.add(this);
@@ -72,9 +72,9 @@ public class Barrel {
 	public void open(Player player) {
 		if (inventory == null) {
 			if (isLarge()) {
-				inventory = org.bukkit.Bukkit.createInventory(null, 27, "Fass");
+				inventory = org.bukkit.Bukkit.createInventory(null, 27, P.p.languageReader.get("Etc_Barrel"));
 			} else {
-				inventory = org.bukkit.Bukkit.createInventory(null, 9, "Fass");
+				inventory = org.bukkit.Bukkit.createInventory(null, 9, P.p.languageReader.get("Etc_Barrel"));
 			}
 		} else {
 			if (time > 0) {

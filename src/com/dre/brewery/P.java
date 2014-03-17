@@ -13,7 +13,6 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.apache.commons.lang.math.NumberUtils;
-
 import org.bukkit.event.HandlerList;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -22,6 +21,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.mcstats.Metrics;
 
 import com.dre.brewery.listeners.*;
 
@@ -49,7 +49,10 @@ public class P extends JavaPlugin {
 
 		readConfig();
 		readData();
-
+		
+		// Setup Metrics
+		setupMetrics();
+		
 		// Load LanguageReader
 		languageReader = new LanguageReader(new File(p.getDataFolder(), "languages/" + language + ".yml"));
 
@@ -102,7 +105,15 @@ public class P extends JavaPlugin {
 
 		this.log(this.getDescription().getName() + " disabled!");
 	}
-
+	
+	public void setupMetrics() {
+		try {
+		    Metrics metrics = new Metrics(this);
+		    metrics.start();
+		} catch (IOException e) {
+		}
+	}
+	
 	public void reload(CommandSender sender) {
 		// clear all existent config Data
 		BIngredients.possibleIngredients.clear();

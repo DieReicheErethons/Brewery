@@ -1,14 +1,15 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	
+
 	<groupId>com.dre</groupId>
 	<artifactId>brewery</artifactId>
 	<version>1.1.1</version>
 	<name>Brewery</name>
-	
+
 	<build>
 		<sourceDirectory>src</sourceDirectory>
-		 
+
 		<resources>
 			<!-- Static resources -->
 			<resource>
@@ -23,7 +24,7 @@
 				</excludes>
 			</resource>
 		</resources>
-		
+
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -33,10 +34,30 @@
 					<target>1.7</target>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>1.5</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+                            <artifactSet>
+                                <includes>
+                                    <include>org.mcstats</include>
+                                </includes>
+                            </artifactSet>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
-  
-  	<repositories>
+
+	<repositories>
 		<repository>
 			<id>bukkit-repo</id>
 			<url>http://repo.bukkit.org/content/groups/public/</url>
@@ -45,7 +66,7 @@
 				<updatePolicy>always</updatePolicy>
 			</snapshots>
 		</repository>
-		
+
 		<repository>
 			<id>sk89q-repo</id>
 			<url>http://maven.sk89q.com/artifactory/repo/</url>
@@ -54,7 +75,7 @@
 				<updatePolicy>always</updatePolicy>
 			</snapshots>
 		</repository>
-		
+
 		<repository>
 			<id>dre-repo</id>
 			<url>http://server.die-reiche-erethons.com/maven2</url>
@@ -63,9 +84,14 @@
 				<updatePolicy>always</updatePolicy>
 			</snapshots>
 		</repository>
+
+		<repository>
+			<id>Plugin Metrics</id>
+			<url>http://repo.mcstats.org/content/repositories/public</url>
+		</repository>
 	</repositories>
-   
-   <dependencies>
+
+	<dependencies>
 		<!-- Provided by third-party -->
 		<dependency>
 			<groupId>org.bukkit</groupId>
@@ -73,7 +99,7 @@
 			<version>1.7.2-R0.3</version>
 			<scope>provided</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>com.sk89q</groupId>
 			<artifactId>worldguard</artifactId>
@@ -81,13 +107,20 @@
 			<scope>compile</scope>
 			<type>jar</type>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>com.dre</groupId>
 			<artifactId>managerxl</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 			<scope>compile</scope>
 			<type>jar</type>
+		</dependency>
+
+		<dependency>
+			<groupId>org.mcstats</groupId>
+			<artifactId>metrics</artifactId>
+			<version>R6</version>
+			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 </project>

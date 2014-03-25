@@ -37,12 +37,12 @@ public class LanguageReader {
 		
 		/* Player */
 		defaults.put("Player_BarrelCreated", "Barrel created");
-		defaults.put("Player_CauldronInfo1", "This Cauldron seethes since &v1 minutes");
-		defaults.put("Player_CauldronInfo2", "This Cauldron seethes since less than one minute");
-		defaults.put("Player_CantDrink", "You can't drink any more");
-		defaults.put("Player_DrunkPassOut", "You have drunken too much and fainted!");
-		defaults.put("Player_LoginDeny", "Your character is drunk and does not react. Try again!");
-		defaults.put("Player_LoginDenyLong", "Your character is really drunk and unconscious. Try again in 10 minutes!");
+		defaults.put("Player_CauldronInfo1", "This cauldron has been boiling for &v1 minutes.");
+		defaults.put("Player_CauldronInfo2", "This cauldron has just started boiling.");
+		defaults.put("Player_CantDrink", "You can't drink any more.");
+		defaults.put("Player_DrunkPassOut", "You drank too much and passed out.");
+		defaults.put("Player_LoginDeny", "Your character tries to log in, but is too drunk to find the server. Try again!");
+		defaults.put("Player_LoginDenyLong", "Your character is really drunk and has passed out. Try again in 10 minutes!");
 		defaults.put("Player_Wake", "Ohh no! I cannot remember how I got here...");
 		defaults.put("Player_WakeCreated", "&aWakeup Point with id: &6&v1 &awas created successfully!");
 		defaults.put("Player_WakeNotExist", "&cThe Wakeup Point with the id: &6&v1 &cdoesn't exist!");
@@ -78,36 +78,36 @@ public class LanguageReader {
 		/* Commands */
 		defaults.put("CMD_Reload", "&aConfig was successfully reloaded");
 		defaults.put("CMD_Player", "&a&v1 is now &6&v2% &adrunk, with a quality of &6&v3");
-		defaults.put("CMD_Player_Error", "&cThe Quality has to be between 1 and 10!");
+		defaults.put("CMD_Player_Error", "&cThe quality has to be between 1 and 10!");
 		defaults.put("CMD_Info_NotDrunk", "&v1 is not drunk");
 		defaults.put("CMD_Info_Drunk", "&v1 is &6&v2% &fdrunk, with a quality of &6&v3");
 		defaults.put("CMD_UnLabel", "&aLabel removed!");
 		defaults.put("CMD_Copy_Error", "&6&v1 &cPotions did not fit into your inventory");
 		
 		/* Error */
-		defaults.put("Error_NoPermissions", "&cYou have no permission to do this!");
-		defaults.put("Error_NoBarrelAccess", "&cYou have no permission to access this barrel!");
+		defaults.put("Error_NoPermissions", "&cYou don't have permissions to do this!");
+		defaults.put("Error_NoBarrelAccess", "&cYou don't have permissions to access this barrel!");
 		defaults.put("Error_UnknownCommand", "Unknown Command");
-		defaults.put("Error_ShowHelp", "use &6/br help &fto display the help");
-		defaults.put("Error_PlayerCommand", "&cThis command can only be executed as player");
-		defaults.put("Error_ItemNotPotion", "&cThe Item in your hand could not be identified as Potion");
-		defaults.put("Error_Recipeload", "&cNot all recipes could be restored: More information in the Serverlog!");
-		defaults.put("Error_ConfigUpdate", "Unknown Brewery Config version: v&v1, Config was not Updated!");
+		defaults.put("Error_ShowHelp", "Use &6/br help &fto display the help");
+		defaults.put("Error_PlayerCommand", "&cThis command can only be executed as a player!");
+		defaults.put("Error_ItemNotPotion", "&cThe item in your hand could not be identified as a potion!");
+		defaults.put("Error_Recipeload", "&cNot all recipes could be restored: More information in the server log!");
+		defaults.put("Error_ConfigUpdate", "Unknown Brewery config version: v&v1, config was not updated!");
 		
 		/* Help */
 		defaults.put("Help_Help", "&6/br help <Page> &9Shows a specific help-page");
 		defaults.put("Help_Player", "&6/br <Player> <%Drunkeness> <Quality>&9 Sets Drunkeness (and Quality) of a Player");
-		defaults.put("Help_Info", "&6/br Info&9 Displays your current Drunkeness and Quality");
-		defaults.put("Help_UnLabel", "&6/br UnLabel &9Removes the detailled label of a Potion");
-		defaults.put("Help_Copy", "&6/br Copy <Quanitiy>&9 Copies the Potion in your Hand");
-		defaults.put("Help_Delete", "&6/br Delete &9Deletes the Potion in your Hand");
-		defaults.put("Help_InfoOther", "&6/br Info <Player>&9 Displays the current Drunkeness and Quality of <Player>");
-		defaults.put("Help_Wakeup", "&6/br Wakeup List <Page>&9 Lists all Wakeup Points");
-		defaults.put("Help_WakeupList", "&6/br Wakeup List <Page> <World>&9 Lists all Wakeup Points of a World");
-		defaults.put("Help_WakeupCheck", "&6/br Wakeup Check &9Teleports to all Wakeup Points");
-		defaults.put("Help_WakeupCheckSpecific", "&6/br Wakeup Check <id> &9Teleports to the Wakeup Point with <id>");
-		defaults.put("Help_WakeupAdd", "&6/br Wakeup Add &9Adds a Wakeup Point at your current Position");
-		defaults.put("Help_WakeupRemove", "&6/br Wakeup Remove <id> &9Removes the Wakeup Point with <id>");
+		defaults.put("Help_Info", "&6/br info&9 Displays your current Drunkeness and Quality");
+		defaults.put("Help_UnLabel", "&6/br unlabel &9Removes the detailled label of a potion");
+		defaults.put("Help_Copy", "&6/br copy <Quanitiy>&9 Copies the potion in your hand");
+		defaults.put("Help_Delete", "&6/br delete &9Deletes the potion in your hand");
+		defaults.put("Help_InfoOther", "&6/br info <Player>&9 Displays the current Drunkeness and Quality of <Player>");
+		defaults.put("Help_Wakeup", "&6/br wakeup list <Page>&9 Lists all wakeup points");
+		defaults.put("Help_WakeupList", "&6/br wakeup list <Page> <World>&9 Lists all wakeup points of <world>");
+		defaults.put("Help_WakeupCheck", "&6/br wakeup check &9Teleports to all wakeup points");
+		defaults.put("Help_WakeupCheckSpecific", "&6/br wakeup check <id> &9Teleports to the wakeup point with <id>");
+		defaults.put("Help_WakeupAdd", "&6/br wakeup add &9Adds a wakeup point at your current position");
+		defaults.put("Help_WakeupRemove", "&6/br wakeup remove <id> &9Removes the wakeup point with <id>");
 		defaults.put("Help_Reload", "&6/br reload &9Reload config");
 		
 		/* Etc. */

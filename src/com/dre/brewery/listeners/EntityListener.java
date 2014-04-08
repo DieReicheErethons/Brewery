@@ -6,6 +6,7 @@ import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.ItemDespawnEvent;
 import org.bukkit.event.entity.EntityCombustEvent;
@@ -48,18 +49,31 @@ public class EntityListener implements Listener {
 	public void onExplode(EntityExplodeEvent event) {
 		ListIterator<Block> iter = event.blockList().listIterator();
 		Barrel barrel = null;
+		boolean removedBarrel = false;
 		while (iter.hasNext()) {
 			Block block = iter.next();
 			if (barrel == null || !barrel.hasBlock(block)) {
 				barrel = Barrel.get(block);
+				removedBarrel = false;
 			}
-			if (barrel != null) {
-				if (P.p.hasLWC) {
-					if (LWCBarrel.blockExplosion(barrel, block)) {
-						iter.remove();
+			if (!removedBarrel) {
+				if (barrel != null) {
+					if (P.p.hasLWC) {
+						if (LWCBarrel.blockExplosion(barrel, block)) {
+							iter.remove();
+						} else {
+							removedBarrel = true;
+						}
 					}
 				}
 			}
+		}
+	}
+
+	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+	public void onBlockChange(EntityChangeBlockEvent event) {
+		if (Barrel.get(event.getBlock()) != null) {
+			event.setCancelled(true);
 		}
 	}
 

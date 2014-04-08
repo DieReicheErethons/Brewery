@@ -13,6 +13,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.ConfigurationSection;
+
+import com.dre.brewery.integration.LogBlockBarrel;
 import org.apache.commons.lang.math.NumberUtils;
 import org.bukkit.event.HandlerList;
 import org.bukkit.Bukkit;
@@ -35,6 +37,7 @@ public class P extends JavaPlugin {
 
 	// Third Party Enabled
 	public boolean hasLWC;
+	public boolean hasLB;
 
 	// Listeners
 	public BlockListener blockListener;
@@ -50,9 +53,6 @@ public class P extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		p = this;
-
-		// Check Third Party
-		hasLWC = getServer().getPluginManager().isPluginEnabled("LWC");
 
 		readConfig();
 		readData();
@@ -125,6 +125,9 @@ public class P extends JavaPlugin {
 		BIngredients.cookedNames.clear();
 		Words.words.clear();
 		BPlayer.drainItems.clear();
+		if (hasLB) {
+			LogBlockBarrel.clear();
+		}
 
 		// load the Config
 		readConfig();
@@ -164,6 +167,9 @@ public class P extends JavaPlugin {
 	}
 
 	public void readConfig() {
+		// Check Third Party
+		hasLWC = getServer().getPluginManager().isPluginEnabled("LWC");
+		hasLB = getServer().getPluginManager().isPluginEnabled("LogBlock");
 
 		File file = new File(p.getDataFolder(), "config.yml");
 		if (!file.exists()) {
@@ -572,7 +578,7 @@ public class P extends JavaPlugin {
 		}
 	}
 
-	// Returns true if the Block can be destroyed by the Player
+	// Returns true if the Block can be destroyed by the Player or something else (null)
 	public boolean blockDestroy(Block block, Player player) {
 		switch (block.getType()) {
 			case CAULDRON:
@@ -585,7 +591,7 @@ public class P extends JavaPlugin {
 				Barrel barrel = Barrel.getBySpigot(block);
 				if (barrel != null) {
 					if (barrel.hasPermsDestroy(player)) {
-						barrel.remove(null);
+						barrel.remove(null, player);
 						return true;
 					} else {
 						return false;
@@ -599,7 +605,7 @@ public class P extends JavaPlugin {
 				if (barrel2 != null) {
 					if (!barrel2.isLarge()) {
 						if (barrel2.hasPermsDestroy(player)) {
-							barrel2.remove(null);
+							barrel2.remove(null, player);
 							return true;
 						} else {
 							return false;
@@ -619,7 +625,7 @@ public class P extends JavaPlugin {
 				Barrel barrel3 = Barrel.getByWood(block);
 				if (barrel3 != null) {
 					if (barrel3.hasPermsDestroy(player)) {
-						barrel3.remove(block);
+						barrel3.remove(block, player);
 					} else {
 						return false;
 					}

@@ -77,18 +77,26 @@ public class LWCBarrel {
 		return true;
 	}
 
+	// If a Barrel is destroyed without player
+	public static void remove(Barrel barrel) {
+		Protection protection = LWC.getInstance().findProtection(barrel.getSignOfSpigot());
+		if (protection != null) {
+			protection.remove();
+		}
+	}
+
 	// Returns true if the block that exploded should not be removed
 	public static boolean blockExplosion(Barrel barrel, Block block) {
 		Protection protection = LWC.getInstance().findProtection(barrel.getSignOfSpigot());
 
 		if (protection == null) {
-			barrel.remove(block);
+			barrel.remove(block, null);
 			return false;
 		}
 
 		if (protection.hasFlag(Flag.Type.ALLOWEXPLOSIONS)) {
 			protection.remove();
-			barrel.remove(block);
+			barrel.remove(block, null);
 			return false;
 		}
 		return true;

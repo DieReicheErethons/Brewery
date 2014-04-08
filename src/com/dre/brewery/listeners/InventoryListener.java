@@ -5,6 +5,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.BrewEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.BrewerInventory;
@@ -14,6 +15,7 @@ import org.bukkit.Material;
 
 import com.dre.brewery.Brew;
 import com.dre.brewery.P;
+import com.dre.brewery.integration.LogBlockBarrel;
 
 public class InventoryListener implements Listener {
 
@@ -52,7 +54,7 @@ public class InventoryListener implements Listener {
 	}
 
 	// convert to non colored Lore when taking out of Barrel/Brewer
-	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onInventoryClick(InventoryClickEvent event) {
 		if (event.getInventory().getType() == InventoryType.BREWING) {
 			if (event.getSlot() > 2) {
@@ -88,6 +90,17 @@ public class InventoryListener implements Listener {
 	public void onInventoryPickupItem(InventoryPickupItemEvent event){
 		if (event.getItem().getPickupDelay() > 1000) {
 			event.setCancelled(true);
+		}
+	}
+
+	@EventHandler
+	public void onInventoryClose(InventoryCloseEvent event) {
+		if (P.p.hasLB) {
+			if (event.getInventory().getType() == InventoryType.CHEST) {
+				if (event.getInventory().getTitle().equals(P.p.languageReader.get("Etc_Barrel"))) {
+					LogBlockBarrel.closeBarrel(event.getPlayer(), event.getInventory());
+				}
+			}
 		}
 	}
 }

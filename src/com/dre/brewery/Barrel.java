@@ -16,6 +16,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
 
 import com.dre.brewery.integration.LWCBarrel;
+import com.dre.brewery.integration.LogBlockBarrel;
 import com.dre.brewery.integration.WGBarrel;
 import org.apache.commons.lang.ArrayUtils;
 
@@ -74,7 +75,7 @@ public class Barrel {
 		if (woodsloc == null && stairsloc == null) {
 			Block broken = getBrokenBlock(true);
 			if (broken != null) {
-				remove(broken);
+				remove(broken, null);
 				return;
 			}
 		}
@@ -89,7 +90,8 @@ public class Barrel {
 				broken = barrel.getBrokenBlock(false);
 				if (broken != null) {
 					// remove the barrel if it was destroyed
-					barrel.remove(broken);
+					barrel.willDestroy();
+					barrel.remove(broken, null);
 					continue;
 				} else {
 					// Dont check this barrel again, its enough to check it once after every restart
@@ -131,12 +133,24 @@ public class Barrel {
 		return true;
 	}
 
+	// Ask for permission to destroy barrel, remove protection if has
 	public boolean hasPermsDestroy(Player player) {
+		if (player == null) {
+			willDestroy();
+			return true;
+		}
 		if (P.p.hasLWC) {
 			return LWCBarrel.checkDestroy(player, this);
 		}
 
 		return true;
+	}
+
+	// If something other than the Player is destroying the barrel, inform protection plugins
+	public void willDestroy() {
+		if (P.p.hasLWC) {
+			LWCBarrel.remove(this);
+		}
 	}
 
 	// player opens the barrel
@@ -173,6 +187,10 @@ public class Barrel {
 		}
 		// reset barreltime, potions have new age
 		time = 0;
+
+		if (P.p.hasLB) {
+			LogBlockBarrel.openBarrel(player, inventory, spigot.getLocation());
+		}
 		player.openInventory(inventory);
 	}
 
@@ -339,12 +357,15 @@ public class Barrel {
 	}
 
 	// removes a barrel, throwing included potions to the ground
-	public void remove(Block broken) {
+	public void remove(Block broken, Player breaker) {
 		if (inventory != null) {
 			for (HumanEntity human : inventory.getViewers()) {
 				human.closeInventory();
 			}
 			ItemStack[] items = inventory.getContents();
+			if (P.p.hasLB && breaker != null) {
+				LogBlockBarrel.breakBarrel(breaker.getName(), items, spigot.getLocation());
+			}
 			for (ItemStack item : items) {
 				if (item != null) {
 					Brew brew = Brew.get(item);

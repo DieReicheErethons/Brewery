@@ -94,6 +94,15 @@
             </snapshots>
         </repository>
 
+        <repository>
+            <id>lb-repo</id>
+            <url>http://junction.at/repo/</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
+
 		<repository>
 			<id>Plugin Metrics</id>
 			<url>http://repo.mcstats.org/content/repositories/public</url>
@@ -129,6 +138,14 @@
             <groupId>com.griefcraft</groupId>
             <artifactId>LWC</artifactId>
             <version>4.3.1</version>
+            <scope>compile</scope>
+            <type>jar</type>
+        </dependency>
+
+        <dependency>
+            <groupId>de.diddiz</groupId>
+            <artifactId>logblock</artifactId>
+            <version>LATEST</version>
             <scope>compile</scope>
             <type>jar</type>
         </dependency>

@@ -4,7 +4,7 @@
 
 	<groupId>com.dre</groupId>
 	<artifactId>brewery</artifactId>
-	<version>1.1.1</version>
+	<version>1.2</version>
 	<name>Brewery</name>
 
 	<build>
@@ -85,6 +85,15 @@
 			</snapshots>
 		</repository>
 
+        <repository>
+            <id>lwc-repo</id>
+            <url>http://repo.sacredlabyrinth.net:8081/artifactory/repo/</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
+
 		<repository>
 			<id>Plugin Metrics</id>
 			<url>http://repo.mcstats.org/content/repositories/public</url>
@@ -115,6 +124,14 @@
 			<scope>compile</scope>
 			<type>jar</type>
 		</dependency>
+
+        <dependency>
+            <groupId>com.griefcraft</groupId>
+            <artifactId>LWC</artifactId>
+            <version>4.3.1</version>
+            <scope>compile</scope>
+            <type>jar</type>
+        </dependency>
 
 		<dependency>
 			<groupId>org.mcstats</groupId>

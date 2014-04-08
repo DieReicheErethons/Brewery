@@ -10,8 +10,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.Effect;
 import org.bukkit.configuration.ConfigurationSection;
 
-import com.dre.brewery.BIngredients;
-
 public class BCauldron {
 	public static CopyOnWriteArrayList<BCauldron> bcauldrons = new CopyOnWriteArrayList<BCauldron>();
 
@@ -87,6 +85,7 @@ public class BCauldron {
 	}
 
 	// fills players bottle with cooked brew
+	@SuppressWarnings("deprecation")
 	public static boolean fill(Player player, Block block) {
 		BCauldron bcauldron = get(block);
 		if (bcauldron != null) {
@@ -128,9 +127,11 @@ public class BCauldron {
 
 	// reset to normal cauldron
 	public static void remove(Block block) {
-		BCauldron bcauldron = get(block);
-		if (bcauldron != null) {
-			bcauldrons.remove(bcauldron);
+		if (block.getData() != 0) {
+			BCauldron bcauldron = get(block);
+			if (bcauldron != null) {
+				bcauldrons.remove(bcauldron);
+			}
 		}
 	}
 
@@ -151,7 +152,7 @@ public class BCauldron {
 			int id = 0;
 			for (BCauldron cauldron : bcauldrons) {
 				String worldName = cauldron.block.getWorld().getName();
-				String prefix = null;
+				String prefix;
 
 				if (worldName.startsWith("DXL_")) {
 					prefix = P.p.getDxlName(worldName) + "." + id;

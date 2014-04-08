@@ -47,7 +47,7 @@ public class ConfigUpdater {
 	public void saveConfig() {
 		StringBuilder stringBuilder = new StringBuilder("");
 		for (String line : config) {
-			stringBuilder.append(line + "\n");
+			stringBuilder.append(line).append("\n");
 		}
 		String configString = stringBuilder.toString().trim();
 
@@ -87,24 +87,35 @@ public class ConfigUpdater {
 				lang = "de";
 			}
 		}
+
 		if (fromVersion.equals("0.5") || fromVersion.equals("1.0")) {
 			if (lang.equals("de")) {
 				update05de();
 			} else {
 				update10en();
 			}
-		} else {
+			fromVersion = "1.1";
+		}
+		if (fromVersion.equals("1.1") || fromVersion.equals("1.1.1")) {
+			if (lang.equals("de")) {
+				update11de();
+			} else {
+				update11en();
+			}
+			fromVersion = "1.2";
+		}
+
+		if (!fromVersion.equals("1.2")) {
 			P.p.log(P.p.languageReader.get("Error_ConfigUpdate", fromVersion));
 			return;
 		}
 		saveConfig();
 	}
 
-	// Updates de from 0.5 to 1.1
-	private void update05de() {
-		// Update version String
+	// Update the Version String
+	private void updateVersion(String to) {
 		int index = indexOfStart("version");
-		String line = "version: '1.1'";
+		String line = "version: '" + to + "'";
 		if (index != -1) {
 			setLine(index, line);
 		} else {
@@ -118,9 +129,14 @@ public class ConfigUpdater {
 				addLines(index, line);
 			}
 		}
+	}
+
+	// Updates de from 0.5 to 1.1
+	private void update05de() {
+		updateVersion("1.1");
 
 		// Default language to de
-		index = indexOfStart("language: en");
+		int index = indexOfStart("language: en");
 		if (index != -1) {
 			setLine(index, "language: de");
 			P.p.language = "de";
@@ -164,7 +180,7 @@ public class ConfigUpdater {
 		}
 
 		// Add some new separators for overview
-		line = "# -- Verschiedene Einstellungen --";
+		String line = "# -- Verschiedene Einstellungen --";
 		index = indexOfStart("# Verschiedene Einstellungen");
 		if (index != -1) {
 			setLine(index, line);
@@ -180,21 +196,7 @@ public class ConfigUpdater {
 	// Updates en from 1.0 to 1.1
 	private void update10en() {
 		// Update version String
-		int index = indexOfStart("version");
-		String line = "version: '1.1'";
-		if (index != -1) {
-			setLine(index, line);
-		} else {
-			index = indexOfStart("# Config Version");
-			if (index == -1) {
-				index = indexOfStart("autosave");
-			}
-			if (index == -1) {
-				appendLines(line);
-			} else {
-				addLines(index, line);
-			}
-		}
+		updateVersion("1.1");
 
 		// Add the new entries for the Word Distortion above the words section
 		String[] entries = {
@@ -217,7 +219,7 @@ public class ConfigUpdater {
 			"- '[,]'",
 			""
 			};
-		index = indexOfStart("# words");
+		int index = indexOfStart("# words");
 		if (index == -1) {
 			index = indexOfStart("# Will be processed");
 		}
@@ -234,7 +236,7 @@ public class ConfigUpdater {
 		}
 
 		// Add some new separators for overview
-		line = "# -- Settings --";
+		String line = "# -- Settings --";
 		index = indexOfStart("# Settings");
 		if (index != -1) {
 			setLine(index, line);
@@ -244,6 +246,70 @@ public class ConfigUpdater {
 		index = indexOfStart("# Recipes for Potions");
 		if (index != -1) {
 			setLine(index, line);
+		}
+	}
+
+	// Updates de from 1.1 to 1.2
+	private void update11de() {
+		updateVersion("1.2");
+
+		int index = indexOfStart("# Das Item kann nicht aufgesammelt werden");
+		if (index != -1) {
+			setLine(index, "# Das Item kann nicht aufgesammelt werden und bleibt bis zum Despawnen liegen. (Achtung: Kann nach Serverrestart aufgesammelt werden!)");
+		}
+
+		// Add the BarrelAccess Setting
+		String[] lines = {
+				"# Ob große Fässer an jedem Block geöffnet werden können, nicht nur an Zapfhahn und Schild. Bei kleinen Fässern geht dies immer. [true]",
+				"openLargeBarrelEverywhere: true",
+				""
+		};
+		index = indexOfStart("colorInBrewer") + 2;
+		if (index == 1) {
+			index = indexOfStart("colorInBarrels") + 2;
+		}
+		if (index == 1) {
+			index = indexOfStart("# Autosave");
+		}
+		if (index == -1) {
+			index = indexOfStart("language") + 2;
+		}
+		if (index == 1) {
+			addLines(3, lines);
+		} else {
+			addLines(index, lines);
+		}
+	}
+
+	// Updates en from 1.1 to 1.2
+	private void update11en() {
+		updateVersion("1.2");
+
+		int index = indexOfStart("# The item can not be collected");
+		if (index != -1) {
+			setLine(index, "# The item can not be collected and stays on the ground until it despawns. (Warning: Can be collected after Server restart!)");
+		}
+
+		// Add the BarrelAccess Setting
+		String[] lines = {
+				"# If a Large Barrel can be opened by clicking on any of its blocks, not just Spigot or Sign. This is always true for Small Barrels. [true]",
+				"openLargeBarrelEverywhere: true",
+				""
+		};
+		index = indexOfStart("colorInBrewer") + 2;
+		if (index == 1) {
+			index = indexOfStart("colorInBarrels") + 2;
+		}
+		if (index == 1) {
+			index = indexOfStart("# Autosave");
+		}
+		if (index == -1) {
+			index = indexOfStart("language") + 2;
+		}
+		if (index == 1) {
+			addLines(3, lines);
+		} else {
+			addLines(index, lines);
 		}
 	}
 

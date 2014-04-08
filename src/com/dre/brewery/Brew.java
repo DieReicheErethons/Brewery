@@ -12,8 +12,6 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.inventory.BrewerInventory;
 
-import com.dre.brewery.BIngredients;
-
 public class Brew {
 
 	// represents the liquid in the brewed Potions
@@ -222,7 +220,7 @@ public class Brew {
 		} else {
 			quality /= 2;
 		}
-		return (int) Math.round(quality);
+		return Math.round(quality);
 	}
 
 	public int getQuality() {
@@ -529,10 +527,7 @@ public class Brew {
 
 	// True if the PotionMeta has colored Lore
 	public  static Boolean hasColorLore(PotionMeta meta) {
-		if (meta.hasLore()) {
-			return !meta.getLore().get(1).startsWith(P.p.color("&7"));
-		}
-		return false;
+		return meta.hasLore() && !meta.getLore().get(1).startsWith(P.p.color("&7"));
 	}
 
 	// gets the Color that represents a quality in Lore

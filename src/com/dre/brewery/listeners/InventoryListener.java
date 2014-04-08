@@ -1,6 +1,5 @@
 package com.dre.brewery.listeners;
 
-import org.bukkit.entity.Item;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -87,9 +86,7 @@ public class InventoryListener implements Listener {
 	// block the pickup of items where getPickupDelay is > 1000 (puke)
 	@EventHandler(ignoreCancelled = true)
 	public void onInventoryPickupItem(InventoryPickupItemEvent event){
-		Item item = event.getItem();
-		
-		if (item.getPickupDelay() > 1000) {
+		if (event.getItem().getPickupDelay() > 1000) {
 			event.setCancelled(true);
 		}
 	}

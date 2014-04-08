@@ -241,7 +241,7 @@ public class Wakeup {
 				}
 
 				String worldName = wakeup.loc.getWorld().getName();
-				String prefix = null;
+				String prefix;
 
 				if (worldName.startsWith("DXL_")) {
 					prefix = p.getDxlName(worldName) + "." + id;

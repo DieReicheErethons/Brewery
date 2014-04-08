@@ -1,14 +1,14 @@
 package com.dre.brewery.listeners;
 
+import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockPistonExtendEvent;
+import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.Material;
-import org.bukkit.block.Block;
 
-import com.dre.brewery.BCauldron;
 import com.dre.brewery.Barrel;
 import com.dre.brewery.BPlayer;
 import com.dre.brewery.Words;
@@ -27,7 +27,7 @@ public class BlockListener implements Listener {
 		}
 	}
 
-	@EventHandler(priority = EventPriority.LOWEST)
+	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onSignChangeLow(SignChangeEvent event) {
 		if (Words.doSigns) {
 			if (BPlayer.players.containsKey(event.getPlayer().getName())) {
@@ -36,28 +36,30 @@ public class BlockListener implements Listener {
 		}
 	}
 
-	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onBlockBreak(BlockBreakEvent event) {
-		Block block = event.getBlock();
-		// remove cauldron
-		if (block.getType() == Material.CAULDRON) {
-			if (block.getData() != 0) {
-				// will only remove when existing
-				BCauldron.remove(block);
+		if (!P.p.blockDestroy(event.getBlock(), event.getPlayer())) {
+			event.setCancelled(true);
+		}
+	}
+
+	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+	public void onPistonRetract(BlockPistonRetractEvent event) {
+		if (event.isSticky()) {
+			Block block = event.getRetractLocation().getBlock();
+
+			if (Barrel.get(block) != null) {
+				event.setCancelled(true);
 			}
-			// remove barrel and throw potions on the ground
-		} else if (block.getType() == Material.FENCE || block.getType() == Material.NETHER_FENCE) {
-			Barrel barrel = Barrel.get(block);
-			if (barrel != null) {
-				barrel.remove(null);
-			}
-			// remove small Barrels
-		} else if (block.getType() == Material.SIGN || block.getType() == Material.WALL_SIGN) {
-			Barrel barrel = Barrel.get(block);
-			if (barrel != null) {
-				if (!barrel.isLarge()) {
-					barrel.remove(null);
-				}
+		}
+	}
+
+	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+	public void onPistonExtend(BlockPistonExtendEvent event) {
+		for (Block block : event.getBlocks()) {
+			if (Barrel.get(block) != null) {
+				event.setCancelled(true);
+				return;
 			}
 		}
 	}

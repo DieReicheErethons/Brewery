@@ -113,24 +113,15 @@ public class BRecipe {
 	}
 
 	public boolean isCookingOnly() {
-		if (age == 0 && distillruns == 0) {
-			return true;
-		}
-		return false;
+		return age == 0 && distillruns == 0;
 	}
 
 	public boolean needsDistilling() {
-		if (distillruns == 0) {
-			return false;
-		}
-		return true;
+		return distillruns != 0;
 	}
 
 	public boolean needsToAge() {
-		if (age == 0) {
-			return false;
-		}
-		return true;
+		return age != 0;
 	}
 
 	// true if given map misses an ingredient

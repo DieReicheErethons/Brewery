@@ -10,9 +10,6 @@ import org.bukkit.Material;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.inventory.meta.PotionMeta;
 
-import com.dre.brewery.BRecipe;
-import com.dre.brewery.Brew;
-
 public class BIngredients {
 	public static ArrayList<Material> possibleIngredients = new ArrayList<Material>();
 	public static ArrayList<BRecipe> recipes = new ArrayList<BRecipe>();
@@ -121,10 +118,10 @@ public class BIngredients {
 	// correct one...
 	public BRecipe getBestRecipe(float wood, float time, boolean distilled) {
 		float quality = 0;
-		int ingredientQuality = 0;
-		int cookingQuality = 0;
-		int woodQuality = 0;
-		int ageQuality = 0;
+		int ingredientQuality;
+		int cookingQuality;
+		int woodQuality;
+		int ageQuality;
 		BRecipe bestRecipe = null;
 		for (BRecipe recipe : recipes) {
 			ingredientQuality = getIngredientQuality(recipe);
@@ -204,7 +201,7 @@ public class BIngredients {
 	// no recipe is near them
 	public int getIngredientQuality(BRecipe recipe) {
 		float quality = 10;
-		int count = 0;
+		int count;
 		int badStuff = 0;
 		if (recipe.isMissingIngredients(ingredients)) {
 			// when ingredients are not complete
@@ -278,7 +275,7 @@ public class BIngredients {
 
 	// returns the quality regarding the ageing time conditioning given Recipe
 	public int getAgeQuality(BRecipe recipe, float time) {
-		int quality = 10 - (int) Math.round(Math.abs(time - recipe.getAge()) * ((float) recipe.getDifficulty() / 2));
+		int quality = 10 - Math.round(Math.abs(time - recipe.getAge()) * ((float) recipe.getDifficulty() / 2));
 
 		if (quality > 0) {
 			return quality;

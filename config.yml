@@ -30,7 +30,7 @@ enableLoginDisallow: true
 enableKickOnOverdrink: true
 
 # If the Player vomits on high drunkeness (drops item defined below) [true]
-# The item can not be collected and stays on the ground until it despawns. (Warning: May be collected after Server restart, or through a hopper)
+# The item can not be collected and stays on the ground until it despawns. (Warning: May be collected after Server restart!)
 enablePuke: true
 
 # Item that is dropped multiple times uncollectable when puking [SOUL_SAND]
@@ -48,11 +48,14 @@ hangoverDays: 7
 colorInBarrels: true
 colorInBrewer: false
 
+# If a Large Barrel can be opened by clicking on any of its blocks, not just Spigot or Sign. This is always true for Small Barrels. [true]
+openLargeBarrelEverywhere: true
+
 # Autosave interval in minutes [3]
 autosave: 3
 
 # Config Version
-version: '1.1'
+version: '1.2'
 
 
 # -- Recipes for Potions --

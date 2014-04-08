@@ -11,8 +11,6 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.block.SignChangeEvent;
 
-import com.dre.brewery.BPlayer;
-
 public class Words {
 
 	// represends Words and letters, that are replaced in drunk players messages
@@ -231,7 +229,7 @@ public class Words {
 				// remove all "from" and split "words" there
 				String[] splitted = words.split(from);
 				int index = 0;
-				String part = null;
+				String part;
 
 				// if there are occurences of "from"
 				if (splitted.length > 1) {
@@ -272,7 +270,7 @@ public class Words {
 		boolean isBefore = !match;
 		if (pre != null) {
 			for (String pr : pre) {
-				if (match == true) {
+				if (match) {
 					// if one is correct, it is enough
 					if (part.endsWith(pr) == match) {
 						isBefore = true;

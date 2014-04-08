@@ -15,8 +15,6 @@ import org.bukkit.Location;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.configuration.ConfigurationSection;
 
-import com.dre.brewery.Brew;
-
 public class BPlayer {
 	public static Map<String, BPlayer> players = new HashMap<String, BPlayer>();// Players name and BPlayer
 	private static Map<Player, Integer> pTasks = new HashMap<Player, Integer>();// Player and count

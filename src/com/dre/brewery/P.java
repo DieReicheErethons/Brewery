@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.io.IOException;
 import java.io.File;
 
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -32,6 +33,9 @@ public class P extends JavaPlugin {
 	public static int lastSave = 1;
 	public static int autosave = 3;
 
+	// Third Party Enabled
+	public boolean hasLWC;
+
 	// Listeners
 	public BlockListener blockListener;
 	public PlayerListener playerListener;
@@ -47,14 +51,14 @@ public class P extends JavaPlugin {
 	public void onEnable() {
 		p = this;
 
+		// Check Third Party
+		hasLWC = getServer().getPluginManager().isPluginEnabled("LWC");
+
 		readConfig();
 		readData();
 		
 		// Setup Metrics
 		setupMetrics();
-		
-		// Load LanguageReader
-		languageReader = new LanguageReader(new File(p.getDataFolder(), "languages/" + language + ".yml"));
 
 		// Listeners
 		blockListener = new BlockListener();
@@ -170,6 +174,9 @@ public class P extends JavaPlugin {
 		// Set the Language
 		language = config.getString("language", "en");
 
+		// Load LanguageReader
+		languageReader = new LanguageReader(new File(p.getDataFolder(), "languages/" + language + ".yml"));
+
 		// Check if config is the newest version
 		String version = config.getString("version", null);
 		if (version != null) {
@@ -193,6 +200,7 @@ public class P extends JavaPlugin {
 		BPlayer.homeType = config.getString("homeType", null);
 		Brew.colorInBarrels = config.getBoolean("colorInBarrels", false);
 		Brew.colorInBrewer = config.getBoolean("colorInBrewer", false);
+		PlayerListener.openEverywhere = config.getBoolean("openLargeBarrelEverywhere", false);
 		Words.log = config.getBoolean("logRealChat", false);
 		Words.commands = config.getStringList("distortCommands");
 		Words.doSigns = config.getBoolean("distortSignText", false);
@@ -390,12 +398,15 @@ public class P extends JavaPlugin {
 							ConfigurationSection invSection = section.getConfigurationSection(barrel + ".inv");
 							Block block = world.getBlockAt(parseInt(splitted[0]), parseInt(splitted[1]), parseInt(splitted[2]));
 							float time = (float) section.getDouble(barrel + ".time", 0.0);
+							byte sign = (byte) section.getInt(barrel + ".sign", 0);
+							String[] st = section.getString(barrel + ".st", "").split(",");
+							String[] wo = section.getString(barrel + ".wo", "").split(",");
 
 							if (invSection != null) {
-								new Barrel(block, invSection.getValues(true), time);
+								new Barrel(block, sign, st, wo, invSection.getValues(true), time);
 							} else {
 								// Barrel has no inventory
-								new Barrel(block, time);
+								new Barrel(block, sign, st, wo, null, time);
 							}
 
 						} else {
@@ -559,6 +570,62 @@ public class P extends JavaPlugin {
 				break;
 			}
 		}
+	}
+
+	// Returns true if the Block can be destroyed by the Player
+	public boolean blockDestroy(Block block, Player player) {
+		switch (block.getType()) {
+			case CAULDRON:
+				// will only remove when existing
+				BCauldron.remove(block);
+				return true;
+			case FENCE:
+			case NETHER_FENCE:
+				// remove barrel and throw potions on the ground
+				Barrel barrel = Barrel.getBySpigot(block);
+				if (barrel != null) {
+					if (barrel.hasPermsDestroy(player)) {
+						barrel.remove(null);
+						return true;
+					} else {
+						return false;
+					}
+				}
+				return true;
+			case SIGN:
+			case WALL_SIGN:
+				// remove small Barrels
+				Barrel barrel2 = Barrel.getBySpigot(block);
+				if (barrel2 != null) {
+					if (!barrel2.isLarge()) {
+						if (barrel2.hasPermsDestroy(player)) {
+							barrel2.remove(null);
+							return true;
+						} else {
+							return false;
+						}
+					} else {
+						barrel2.destroySign();
+					}
+				}
+				return true;
+			case WOOD:
+			case WOOD_STAIRS:
+			case ACACIA_STAIRS:
+			case BIRCH_WOOD_STAIRS:
+			case DARK_OAK_STAIRS:
+			case JUNGLE_WOOD_STAIRS:
+			case SPRUCE_WOOD_STAIRS:
+				Barrel barrel3 = Barrel.getByWood(block);
+				if (barrel3 != null) {
+					if (barrel3.hasPermsDestroy(player)) {
+						barrel3.remove(block);
+					} else {
+						return false;
+					}
+				}
+		}
+		return true;
 	}
 
 	public String color(String msg) {

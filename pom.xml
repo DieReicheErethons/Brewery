@@ -45,11 +45,11 @@
 							<goal>shade</goal>
 						</goals>
 						<configuration>
-                            <artifactSet>
-                                <includes>
-                                    <include>org.mcstats</include>
-                                </includes>
-                            </artifactSet>
+							<artifactSet>
+								<includes>
+									<include>org.mcstats</include>
+								</includes>
+							</artifactSet>
 						</configuration>
 					</execution>
 				</executions>
@@ -85,26 +85,26 @@
 			</snapshots>
 		</repository>
 
-        <repository>
-            <id>lwc-repo</id>
-            <url>http://repo.sacredlabyrinth.net:8081/artifactory/repo/</url>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
-            </snapshots>
-        </repository>
-
-        <repository>
-            <id>lb-repo</id>
-            <url>http://junction.at/repo/</url>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
-            </snapshots>
-        </repository>
+		<repository>
+			<id>sacredlabyrinth-repo</id>
+			<url>http://repo.sacredlabyrinth.net:8081/artifactory/repo/</url>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+			</snapshots>
+		</repository>
 
 		<repository>
-			<id>Plugin Metrics</id>
+			<id>junction-repo</id>
+			<url>http://junction.at/repo/</url>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+			</snapshots>
+		</repository>
+
+		<repository>
+			<id>mcstats-repo</id>
 			<url>http://repo.mcstats.org/content/repositories/public</url>
 		</repository>
 	</repositories>
@@ -134,21 +134,21 @@
 			<type>jar</type>
 		</dependency>
 
-        <dependency>
-            <groupId>com.griefcraft</groupId>
-            <artifactId>LWC</artifactId>
-            <version>4.3.1</version>
-            <scope>compile</scope>
-            <type>jar</type>
-        </dependency>
+		<dependency>
+			<groupId>com.griefcraft</groupId>
+			<artifactId>LWC</artifactId>
+			<version>4.3.1</version>
+			<scope>compile</scope>
+			<type>jar</type>
+		</dependency>
 
-        <dependency>
-            <groupId>de.diddiz</groupId>
-            <artifactId>logblock</artifactId>
-            <version>LATEST</version>
-            <scope>compile</scope>
-            <type>jar</type>
-        </dependency>
+		<dependency>
+			<groupId>de.diddiz</groupId>
+			<artifactId>logblock</artifactId>
+			<version>dev-SNAPSHOT</version>
+			<scope>compile</scope>
+			<type>jar</type>
+		</dependency>
 
 		<dependency>
 			<groupId>org.mcstats</groupId>

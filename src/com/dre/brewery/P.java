@@ -7,6 +7,7 @@ import java.util.ListIterator;
 import java.util.HashMap;
 import java.io.IOException;
 import java.io.File;
+import java.util.logging.Level;
 
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -36,8 +37,10 @@ public class P extends JavaPlugin {
 	public static int autosave = 3;
 
 	// Third Party Enabled
-	public boolean hasLWC;
-	public boolean hasLB;
+	public boolean useWG; //WorldGuard
+	public boolean useLWC; //LWC
+	public boolean useLB; //LogBlock
+	public boolean useGP; //GriefPrevention
 
 	// Listeners
 	public BlockListener blockListener;
@@ -125,8 +128,12 @@ public class P extends JavaPlugin {
 		BIngredients.cookedNames.clear();
 		Words.words.clear();
 		BPlayer.drainItems.clear();
-		if (hasLB) {
-			LogBlockBarrel.clear();
+		if (useLB) {
+			try {
+				LogBlockBarrel.clear();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 
 		// load the Config
@@ -163,14 +170,10 @@ public class P extends JavaPlugin {
 	}
 
 	public void errorLog(String msg) {
-		Bukkit.getConsoleSender().sendMessage(ChatColor.DARK_GREEN + "[Brewery] " + ChatColor.DARK_RED + "ERROR: " + ChatColor.RED + msg);
+		Bukkit.getLogger().log(Level.SEVERE, ChatColor.DARK_GREEN + "[Brewery] " + ChatColor.DARK_RED + "ERROR: " + ChatColor.RED + msg);
 	}
 
 	public void readConfig() {
-		// Check Third Party
-		hasLWC = getServer().getPluginManager().isPluginEnabled("LWC");
-		hasLB = getServer().getPluginManager().isPluginEnabled("LogBlock");
-
 		File file = new File(p.getDataFolder(), "config.yml");
 		if (!file.exists()) {
 			saveDefaultConfig();
@@ -193,6 +196,12 @@ public class P extends JavaPlugin {
 				config = YamlConfiguration.loadConfiguration(file);
 			}
 		}
+
+		// Third-Party
+		useWG = config.getBoolean("useWorldGuard", true) && getServer().getPluginManager().isPluginEnabled("WorldGuard");
+		useLWC = config.getBoolean("useLWC", true) && getServer().getPluginManager().isPluginEnabled("LWC");
+		useGP = config.getBoolean("useGriefPrevention", true) && getServer().getPluginManager().isPluginEnabled("GriefPrevention");
+		useLB = config.getBoolean("useLogBlock", false) && getServer().getPluginManager().isPluginEnabled("LogBlock");
 
 		// various Settings
 		autosave = config.getInt("autosave", 3);

@@ -194,6 +194,19 @@ cooked:
 
 
 
+
+# -- Plugin Compatibility --
+
+# Enable checking of other Plugins (if installed) for Barrel Permissions [true]
+useWorldGuard: true
+useLWC: true
+useGriefPrevention: true
+
+# Enable the Logging of Barrel Inventories to LogBlock
+useLogBlock: true
+
+
+
 # -- Chat Distortion Settings --
 
 # Log to the Serverlog what the player actually wrote, before his words were altered [false]

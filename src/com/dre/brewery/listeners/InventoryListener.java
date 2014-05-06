@@ -95,10 +95,16 @@ public class InventoryListener implements Listener {
 
 	@EventHandler
 	public void onInventoryClose(InventoryCloseEvent event) {
-		if (P.p.hasLB) {
+		if (P.p.useLB) {
 			if (event.getInventory().getType() == InventoryType.CHEST) {
 				if (event.getInventory().getTitle().equals(P.p.languageReader.get("Etc_Barrel"))) {
-					LogBlockBarrel.closeBarrel(event.getPlayer(), event.getInventory());
+					try {
+						LogBlockBarrel.closeBarrel(event.getPlayer(), event.getInventory());
+					} catch (Exception e) {
+						P.p.errorLog("Failed to Log Barrel to LogBlock!");
+						P.p.errorLog("Brewery was tested with version 1.80 of LogBlock!");
+						e.printStackTrace();
+					}
 				}
 			}
 		}

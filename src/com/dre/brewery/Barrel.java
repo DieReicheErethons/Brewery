@@ -108,21 +108,41 @@ public class Barrel {
 	}
 
 	public boolean hasPermsOpen(Player player, PlayerInteractEvent event) {
-		Plugin plugin = P.p.getServer().getPluginManager().getPlugin("WorldGuard");
-		if (plugin != null) {
-			if (!WGBarrel.checkAccess(player, spigot, plugin)) {
-				return false;
+		if (P.p.useWG) {
+			Plugin plugin = P.p.getServer().getPluginManager().getPlugin("WorldGuard");
+			if (plugin != null) {
+				try {
+					if (!WGBarrel.checkAccess(player, spigot, plugin)) {
+						return false;
+					}
+				} catch (Exception e) {
+					P.p.errorLog("Failed to Check WorldGuard for Barrel Open Permissions!");
+					P.p.errorLog("Brewery was tested with version 5.8 of WorldGuard!");
+					e.printStackTrace();
+					P.p.msg(player, "&cError opening Barrel, please report to an Admin!");
+					return false;
+				}
 			}
 		}
 
-		if (P.p.getServer().getPluginManager().isPluginEnabled("GriefPrevention")) {
-			if (!GriefPreventionBarrel.checkAccess(player, spigot)) {
-				return false;
+		if (P.p.useGP) {
+			if (P.p.getServer().getPluginManager().isPluginEnabled("GriefPrevention")) {
+				try {
+					if (!GriefPreventionBarrel.checkAccess(player, spigot)) {
+						return false;
+					}
+				} catch (Exception e) {
+					P.p.errorLog("Failed to Check GriefPrevention for Barrel Open Permissions!");
+					P.p.errorLog("Brewery only works with the latest release of GriefPrevention (7.8)");
+					e.printStackTrace();
+					P.p.msg(player, "&cError opening Barrel, please report to an Admin!");
+					return false;
+				}
 			}
 		}
 
-		if (event != null) {
-			plugin = P.p.getServer().getPluginManager().getPlugin("LWC");
+		if (event != null && P.p.useLWC) {
+			Plugin plugin = P.p.getServer().getPluginManager().getPlugin("LWC");
 			if (plugin != null) {
 
 				// If the Clicked Block was the Sign, LWC already knows and we dont need to do anything here
@@ -130,7 +150,15 @@ public class Barrel {
 					Block sign = getSignOfSpigot();
 					// If the Barrel does not have a Sign, it cannot be locked
 					if (!sign.equals(event.getClickedBlock())) {
-						return LWCBarrel.checkAccess(player, sign, event, plugin);
+						try {
+							return LWCBarrel.checkAccess(player, sign, event, plugin);
+						} catch (Exception e) {
+							P.p.errorLog("Failed to Check LWC for Barrel Open Permissions!");
+							P.p.errorLog("Brewery was tested with version 4.3.1 of LWC!");
+							e.printStackTrace();
+							P.p.msg(player, "&cError opening Barrel, please report to an Admin!");
+							return false;
+						}
 					}
 				}
 			}
@@ -145,8 +173,15 @@ public class Barrel {
 			willDestroy();
 			return true;
 		}
-		if (P.p.hasLWC) {
-			return LWCBarrel.checkDestroy(player, this);
+		if (P.p.useLWC) {
+			try {
+				return LWCBarrel.checkDestroy(player, this);
+			} catch (Exception e) {
+				P.p.errorLog("Failed to Check LWC for Barrel Break Permissions!");
+				e.printStackTrace();
+				P.p.msg(player, "&cError breaking Barrel, please report to an Admin!");
+				return false;
+			}
 		}
 
 		return true;
@@ -154,8 +189,13 @@ public class Barrel {
 
 	// If something other than the Player is destroying the barrel, inform protection plugins
 	public void willDestroy() {
-		if (P.p.hasLWC) {
-			LWCBarrel.remove(this);
+		if (P.p.useLWC) {
+			try {
+				LWCBarrel.remove(this);
+			} catch (Exception e) {
+				P.p.errorLog("Failed to Remove LWC Lock from Barrel!");
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -194,8 +234,14 @@ public class Barrel {
 		// reset barreltime, potions have new age
 		time = 0;
 
-		if (P.p.hasLB) {
-			LogBlockBarrel.openBarrel(player, inventory, spigot.getLocation());
+		if (P.p.useLB) {
+			try {
+				LogBlockBarrel.openBarrel(player, inventory, spigot.getLocation());
+			} catch (Exception e) {
+				P.p.errorLog("Failed to Log Barrel to LogBlock!");
+				P.p.errorLog("Brewery was tested with version 1.80 of LogBlock!");
+				e.printStackTrace();
+			}
 		}
 		player.openInventory(inventory);
 	}
@@ -369,8 +415,14 @@ public class Barrel {
 				human.closeInventory();
 			}
 			ItemStack[] items = inventory.getContents();
-			if (P.p.hasLB && breaker != null) {
-				LogBlockBarrel.breakBarrel(breaker.getName(), items, spigot.getLocation());
+			if (P.p.useLB && breaker != null) {
+				try {
+					LogBlockBarrel.breakBarrel(breaker.getName(), items, spigot.getLocation());
+				} catch (Exception e) {
+					P.p.errorLog("Failed to Log Barrel-break to LogBlock!");
+					P.p.errorLog("Brewery was tested with version 1.80 of LogBlock!");
+					e.printStackTrace();
+				}
 			}
 			for (ItemStack item : items) {
 				if (item != null) {

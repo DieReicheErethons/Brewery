@@ -279,6 +279,39 @@ public class ConfigUpdater {
 		} else {
 			addLines(index, lines);
 		}
+
+		// Add Plugin Support Settings
+		lines = new String[] {
+				"",
+				"",
+				"# -- Plugin Kompatiblität --",
+				"",
+				"# Andere Plugins (wenn installiert) nach Rechten zum öffnen von Fässern checken [true]",
+				"useWorldGuard: true",
+				"useLWC: true",
+				"useGriefPrevention: true",
+				"",
+				"# Änderungen an Fassinventaren mit LogBlock aufzeichen",
+				"useLogBlock: true",
+				"",
+				"",
+				""
+		};
+		index = indexOfStart("# -- Chat Veränderungs Einstellungen");
+		if (index == -1) {
+			index = indexOfStart("# words");
+		}
+		if (index == -1) {
+			index = indexOfStart("distortCommands");
+			if (index > 4) {
+				index -= 4;
+			}
+		}
+		if (index != -1) {
+			addLines(index, lines);
+		} else {
+			appendLines(lines);
+		}
 	}
 
 	// Updates en from 1.1 to 1.2
@@ -310,6 +343,39 @@ public class ConfigUpdater {
 			addLines(3, lines);
 		} else {
 			addLines(index, lines);
+		}
+
+		// Add Plugin Support Settings
+		lines = new String[] {
+				"",
+				"",
+				"# -- Plugin Compatibility --",
+				"",
+				"# Enable checking of other Plugins (if installed) for Barrel Permissions [true]",
+				"useWorldGuard: true",
+				"useLWC: true",
+				"useGriefPrevention: true",
+				"",
+				"# Enable the Logging of Barrel Inventories to LogBlock",
+				"useLogBlock: true",
+				"",
+				"",
+				""
+		};
+		index = indexOfStart("# -- Chat Distortion Settings");
+		if (index == -1) {
+			index = indexOfStart("# words");
+		}
+		if (index == -1) {
+			index = indexOfStart("distortCommands");
+			if (index > 4) {
+				index -= 4;
+			}
+		}
+		if (index != -1) {
+			addLines(index, lines);
+		} else {
+			appendLines(lines);
 		}
 	}
 

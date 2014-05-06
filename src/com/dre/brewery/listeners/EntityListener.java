@@ -58,10 +58,16 @@ public class EntityListener implements Listener {
 			}
 			if (!removedBarrel) {
 				if (barrel != null) {
-					if (P.p.hasLWC) {
-						if (LWCBarrel.blockExplosion(barrel, block)) {
-							iter.remove();
-						} else {
+					if (P.p.useLWC) {
+						try {
+							if (LWCBarrel.blockExplosion(barrel, block)) {
+								iter.remove();
+							} else {
+								removedBarrel = true;
+							}
+						} catch (Exception e) {
+							P.p.errorLog("Failed to Check LWC on Barrel Explosion!");
+							e.printStackTrace();
 							removedBarrel = true;
 						}
 					}

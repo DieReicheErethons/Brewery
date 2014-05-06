@@ -73,10 +73,21 @@ public class PlayerListener implements Listener {
 								// contitions
 							} else if (BIngredients.possibleIngredients.contains(materialInHand)) {
 								if (BCauldron.ingredientAdd(clickedBlock, materialInHand)) {
+									boolean isBucket = item.getType().equals(Material.WATER_BUCKET)
+													|| item.getType().equals(Material.LAVA_BUCKET)
+													|| item.getType().equals(Material.MILK_BUCKET);
 									if (item.getAmount() > 1) {
 										item.setAmount(item.getAmount() - 1);
+
+										if (isBucket) {
+											BCauldron.giveItem(player, new ItemStack(Material.BUCKET));
+										}
 									} else {
-										player.setItemInHand(new ItemStack(0));
+										if (isBucket) {
+											player.setItemInHand(new ItemStack(Material.BUCKET));
+										} else {
+											player.setItemInHand(new ItemStack(0));
+										}
 									}
 								}
 								event.setCancelled(true);

@@ -1,14 +1,7 @@
 package com.dre.brewery.listeners;
 
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerItemConsumeEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.player.PlayerLoginEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -200,33 +193,43 @@ public class PlayerListener implements Listener {
 	}
 
 	// player joins while passed out
-	@EventHandler(priority = EventPriority.LOW)
+	@EventHandler()
 	public void onPlayerLogin(PlayerLoginEvent event) {
-		final Player player = event.getPlayer();
-		BPlayer bplayer = BPlayer.get(player.getName());
-		if (bplayer != null) {
-			if (player.hasPermission("brewery.bypass.logindeny")) {
-				if (bplayer.getDrunkeness() > 100) {
-					bplayer.setData(100, 0);
+		if (event.getResult() == PlayerLoginEvent.Result.ALLOWED) {
+			final Player player = event.getPlayer();
+			BPlayer bplayer = BPlayer.get(player.getName());
+			if (bplayer != null) {
+				if (player.hasPermission("brewery.bypass.logindeny")) {
+					if (bplayer.getDrunkeness() > 100) {
+						bplayer.setData(100, 0);
+					}
+					bplayer.join(player);
+					return;
 				}
-				bplayer.join(player);
-				return;
-			}
-			switch (bplayer.canJoin()) {
-			case 0:
-				bplayer.join(player);
-				return;
-			case 2:
-				event.disallow(PlayerLoginEvent.Result.KICK_OTHER, P.p.languageReader.get("Player_LoginDeny"));
-				return;
-			case 3:
-				event.disallow(PlayerLoginEvent.Result.KICK_OTHER, P.p.languageReader.get("Player_LoginDenyLong"));
+				switch (bplayer.canJoin()) {
+					case 0:
+						bplayer.join(player);
+						return;
+					case 2:
+						event.disallow(PlayerLoginEvent.Result.KICK_OTHER, P.p.languageReader.get("Player_LoginDeny"));
+						return;
+					case 3:
+						event.disallow(PlayerLoginEvent.Result.KICK_OTHER, P.p.languageReader.get("Player_LoginDenyLong"));
+				}
 			}
 		}
 	}
 
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent event) {
+		BPlayer bplayer = BPlayer.get(event.getPlayer().getName());
+		if (bplayer != null) {
+			bplayer.disconnecting();
+		}
+	}
+
+	@EventHandler
+	public void onPlayerKick(PlayerKickEvent event) {
 		BPlayer bplayer = BPlayer.get(event.getPlayer().getName());
 		if (bplayer != null) {
 			bplayer.disconnecting();

@@ -227,14 +227,15 @@ public class Words {
 					words = words + " ";
 				}
 				// remove all "from" and split "words" there
-				String[] splitted = words.split(from);
+				String[] splitted = words.split(java.util.regex.Pattern.quote(from));
+				int index = 0;
 				String part;
 
 				// if there are occurences of "from"
 				if (splitted.length > 1) {
 					// - 1 because dont add "to" to the end of last part
-					for (int i = 0; i < splitted.length - 1; i++) {
-						part = splitted[i];
+					while (index < splitted.length - 1) {
+						part = splitted[index];
 						// add current part of "words" to the output
 						newWords = newWords + part;
 						// check if the part ends with correct string
@@ -246,10 +247,10 @@ public class Words {
 							// add original
 							newWords = newWords + from;
 						}
+						index++;
 					}
-
 					// add the last part to finish the sentence
-					part = splitted[splitted.length - 1];
+					part = splitted[index];
 					if (part.equals(" ")) {
 						// dont add the space to the end
 						return newWords;
@@ -297,4 +298,5 @@ public class Words {
 			}
 		}
 	}
+
 }

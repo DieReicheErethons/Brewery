@@ -15,6 +15,7 @@ import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
 
+import com.dre.brewery.integration.GriefPreventionBarrel;
 import com.dre.brewery.integration.LWCBarrel;
 import com.dre.brewery.integration.LogBlockBarrel;
 import com.dre.brewery.integration.WGBarrel;
@@ -114,6 +115,11 @@ public class Barrel {
 			}
 		}
 
+		if (P.p.getServer().getPluginManager().isPluginEnabled("GriefPrevention")) {
+			if (!GriefPreventionBarrel.checkAccess(player, spigot)) {
+				return false;
+			}
+		}
 
 		if (event != null) {
 			plugin = P.p.getServer().getPluginManager().getPlugin("LWC");

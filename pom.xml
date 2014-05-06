@@ -94,6 +94,15 @@
 			</snapshots>
 		</repository>
 
+        <repository>
+            <id>addstar-repo</id>
+            <url>http://maven.addstar.com.au/artifactory/ext-release-local/</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
+
 		<repository>
 			<id>mcstats-repo</id>
 			<url>http://repo.mcstats.org/content/repositories/public</url>

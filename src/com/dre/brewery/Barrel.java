@@ -108,6 +108,18 @@ public class Barrel {
 	}
 
 	public boolean hasPermsOpen(Player player, PlayerInteractEvent event) {
+		if (isLarge()) {
+			if (!player.hasPermission("brewery.openbarrel.big")) {
+				P.p.msg(player, P.p.languageReader.get("Error_NoBarrelAccess"));
+				return false;
+			}
+		} else {
+			if (!player.hasPermission("brewery.openbarrel.small")) {
+				P.p.msg(player, P.p.languageReader.get("Error_NoBarrelAccess"));
+				return false;
+			}
+		}
+
 		if (P.p.useWG) {
 			Plugin plugin = P.p.getServer().getPluginManager().getPlugin("WorldGuard");
 			if (plugin != null) {
@@ -384,7 +396,7 @@ public class Barrel {
 	}
 
 	// creates a new Barrel out of a sign
-	public static boolean create(Block sign) {
+	public static boolean create(Block sign, Player player) {
 		Block spigot = getSpigotOfSign(sign);
 
 		byte signoffset = 0;
@@ -396,6 +408,17 @@ public class Barrel {
 		if (barrel == null) {
 			barrel = new Barrel(spigot, signoffset);
 			if (barrel.getBrokenBlock(true) == null) {
+				if (isSign(spigot)) {
+					if (!player.hasPermission("brewery.createbarrel.small")) {
+						P.p.msg(player, P.p.languageReader.get("Perms_NoSmallBarrelCreate"));
+						return false;
+					}
+				} else {
+					if (!player.hasPermission("brewery.createbarrel.big")) {
+						P.p.msg(player, P.p.languageReader.get("Perms_NoBigBarrelCreate"));
+						return false;
+					}
+				}
 				barrels.add(barrel);
 				return true;
 			}

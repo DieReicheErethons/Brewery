@@ -7,3 +7,100 @@ commands:
   brewery:
     description: Command for Administration
     aliases: [brew,br]
+permissions:
+# -- Groups --
+# User
+  brewery.user:
+    description: Access to everything needed for brewing
+    default: true
+    children:
+      brewery.cmd.unlabel: true
+      brewery.createbarrel: true
+      brewery.openbarrel: true
+      brewery.cauldron.time: true
+      brewery.cauldron.insert: true
+      brewery.cauldron.fill: true
+# Mod
+  brewery.mod:
+    description: Allow to maintain Wakeup Points and to login even if overdrunken
+    children:
+      brewery.user: true
+      brewery.cmd.wakeup: true
+      brewery.bypass.logindeny: true
+# Admin
+  brewery.admin:
+    description: Gives access to Every Command and most bypasses
+    default: op
+    children:
+      brewery.user: true
+      brewery.mod: true
+      brewery.cmd.info: true
+      brewery.cmd.infoOther: true
+      brewery.cmd.player: true
+      brewery.cmd.copy: true
+      brewery.cmd.delete: true
+      brewery.cmd.reload: true
+# *
+  brewery.*:
+    description: Gives Access to every Permission, including bypasses and overrides
+    children:
+      brewery.user: true
+      brewery.mod: true
+      brewery.admin: true
+      brewery.bypass.overdrink: true
+      brewery.bypass.teleport: true
+
+# -- Commands --
+  brewery.cmd.unlabel:
+    description: Remove Parts of the Potionlabel
+  brewery.cmd.info:
+    description: Information about your own drunkeness
+  brewery.cmd.infoOther:
+    description: Information about the drunkeness of another Player
+  brewery.cmd.player:
+    description: Set Player-values
+  brewery.cmd.wakeup:
+    description: Set, Check and Remove Wakeup Points
+  brewery.cmd.copy:
+    description: Copy Potions
+  brewery.cmd.delete:
+    description: Delete Potions
+  brewery.cmd.reload:
+    description: Reload config
+
+# -- Barrel --
+  brewery.createbarrel:
+    description: Allow to create all types of Barrels
+    children:
+      brewery.createbarrel.small: true
+      brewery.createbarrel.big: true
+  brewery.createbarrel.small:
+    description: Allow to create small Barrels
+  brewery.createbarrel.big:
+    description: Allow to create big Barrels
+
+  brewery.openbarrel:
+    description: Allow to open all types of Barrels
+    children:
+      brewery.openbarrel.small: true
+      brewery.openbarrel.big: true
+  brewery.openbarrel.small:
+    description: Allow to open small Barrels
+  brewery.openbarrel.big:
+    description: Allow to open big Barrels
+
+# -- Cauldron --
+  brewery.cauldron.time:
+    description: View the current Cooking time of a cauldron with a watch
+  brewery.cauldron.insert:
+    description: Add Ingredients to the Cauldron
+  brewery.cauldron.fill:
+    description: Fill a Bottle from a Cauldron with a brewery brew
+
+# -- Bypasses --
+  brewery.bypass.logindeny:
+    description: Can always login, even with extreme drunkeness
+  brewery.bypass.overdrink:
+    description: Will despite config-setting not be kicked on overdrink
+  brewery.bypass.teleport:
+    description: Will despite config-setting not be teleported on login

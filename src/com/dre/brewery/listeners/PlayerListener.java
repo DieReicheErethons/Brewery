@@ -49,10 +49,12 @@ public class PlayerListener implements Listener {
 								if (player.getInventory().firstEmpty() != -1 || item.getAmount() == 1) {
 									if (BCauldron.fill(player, clickedBlock)) {
 										event.setCancelled(true);
-										if (item.getAmount() > 1) {
-											item.setAmount(item.getAmount() - 1);
-										} else {
-											player.setItemInHand(new ItemStack(0));
+										if (player.hasPermission("brewery.cauldron.fill")) {
+											if (item.getAmount() > 1) {
+												item.setAmount(item.getAmount() - 1);
+											} else {
+												player.setItemInHand(new ItemStack(0));
+											}
 										}
 									}
 								} else {
@@ -72,23 +74,27 @@ public class PlayerListener implements Listener {
 								// add ingredient to cauldron that meet the previous
 								// contitions
 							} else if (BIngredients.possibleIngredients.contains(materialInHand)) {
-								if (BCauldron.ingredientAdd(clickedBlock, materialInHand)) {
-									boolean isBucket = item.getType().equals(Material.WATER_BUCKET)
-													|| item.getType().equals(Material.LAVA_BUCKET)
-													|| item.getType().equals(Material.MILK_BUCKET);
-									if (item.getAmount() > 1) {
-										item.setAmount(item.getAmount() - 1);
+								if (player.hasPermission("brewery.cauldron.insert")) {
+									if (BCauldron.ingredientAdd(clickedBlock, materialInHand)) {
+										boolean isBucket = item.getType().equals(Material.WATER_BUCKET)
+												|| item.getType().equals(Material.LAVA_BUCKET)
+												|| item.getType().equals(Material.MILK_BUCKET);
+										if (item.getAmount() > 1) {
+											item.setAmount(item.getAmount() - 1);
 
-										if (isBucket) {
-											BCauldron.giveItem(player, new ItemStack(Material.BUCKET));
-										}
-									} else {
-										if (isBucket) {
-											player.setItemInHand(new ItemStack(Material.BUCKET));
+											if (isBucket) {
+												BCauldron.giveItem(player, new ItemStack(Material.BUCKET));
+											}
 										} else {
-											player.setItemInHand(new ItemStack(0));
+											if (isBucket) {
+												player.setItemInHand(new ItemStack(Material.BUCKET));
+											} else {
+												player.setItemInHand(new ItemStack(0));
+											}
 										}
 									}
+								} else {
+									P.p.msg(player, P.p.languageReader.get("Perms_NoCauldronInsert"));
 								}
 								event.setCancelled(true);
 							} else {

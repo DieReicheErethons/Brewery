@@ -85,14 +85,21 @@ public class LanguageReader {
 		defaults.put("CMD_Copy_Error", "&6&v1 &cPotions did not fit into your inventory");
 		
 		/* Error */
-		defaults.put("Error_NoPermissions", "&cYou don't have permissions to do this!");
-		defaults.put("Error_NoBarrelAccess", "&cYou don't have permissions to access this barrel!");
 		defaults.put("Error_UnknownCommand", "Unknown Command");
 		defaults.put("Error_ShowHelp", "Use &6/br help &fto display the help");
 		defaults.put("Error_PlayerCommand", "&cThis command can only be executed as a player!");
 		defaults.put("Error_ItemNotPotion", "&cThe item in your hand could not be identified as a potion!");
 		defaults.put("Error_Recipeload", "&cNot all recipes could be restored: More information in the server log!");
 		defaults.put("Error_ConfigUpdate", "Unknown Brewery config version: v&v1, config was not updated!");
+
+		/* Permissions */
+		defaults.put("Error_NoPermissions", "&cYou don't have permissions to do this!");
+		defaults.put("Error_NoBarrelAccess", "&cYou don't have permissions to access this barrel!");
+		defaults.put("Perms_NoBarrelCreate", "&cYou don't have permissions to create barrels!");
+		defaults.put("Perms_NoSmallBarrelCreate", "&cYou don't have permissions to create small barrels!");
+		defaults.put("Perms_NoBigBarrelCreate", "&cYou don't have permissions to create big barrels!");
+		defaults.put("Perms_NoCauldronInsert", "&cYou don't have permissions to put ingredients into cauldrons!");
+		defaults.put("Perms_NoCauldronFill", "&cYou don't have permissions to fill bottles from this cauldron!");
 		
 		/* Help */
 		defaults.put("Help_Help", "&6/br help <Page> &9Shows a specific help-page");

@@ -1,6 +1,7 @@
 package com.dre.brewery.listeners;
 
 import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -22,8 +23,13 @@ public class BlockListener implements Listener {
 		String[] lines = event.getLines();
 
 		if (lines[0].equalsIgnoreCase(P.p.languageReader.get("Etc_Barrel"))) {
-			if (Barrel.create(event.getBlock())) {
-				P.p.msg(event.getPlayer(), P.p.languageReader.get("Player_BarrelCreated"));
+			Player player = event.getPlayer();
+			if (!player.hasPermission("brewery.createbarrel.small") && !player.hasPermission("brewery.createbarrel.big")) {
+				P.p.msg(player, P.p.languageReader.get("Perms_NoBarrelCreate"));
+				return;
+			}
+			if (Barrel.create(event.getBlock(), player)) {
+				P.p.msg(player, P.p.languageReader.get("Player_BarrelCreated"));
 			}
 		}
 	}

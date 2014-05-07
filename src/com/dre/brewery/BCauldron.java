@@ -89,6 +89,10 @@ public class BCauldron {
 	public static boolean fill(Player player, Block block) {
 		BCauldron bcauldron = get(block);
 		if (bcauldron != null) {
+			if (!player.hasPermission("brewery.cauldron.fill")) {
+				P.p.msg(player, P.p.languageReader.get("Perms_NoCauldronFill"));
+				return true;
+			}
 			ItemStack potion = bcauldron.ingredients.cook(bcauldron.state);
 			if (potion != null) {
 				// Bukkit Bug, inventory not updating while in event so this
@@ -115,6 +119,10 @@ public class BCauldron {
 
 	// prints the current cooking time to the player
 	public static void printTime(Player player, Block block) {
+		if (!player.hasPermission("brewery.cauldron.time")) {
+			P.p.msg(player, P.p.languageReader.get("Error_NoPermissions"));
+			return;
+		}
 		BCauldron bcauldron = get(block);
 		if (bcauldron != null) {
 			if (bcauldron.state > 1) {

@@ -194,7 +194,6 @@ cooked:
 
 
 
-
 # -- Plugin Compatibility --
 
 # Enable checking of other Plugins (if installed) for Barrel Permissions [true]
@@ -202,9 +201,8 @@ useWorldGuard: true
 useLWC: true
 useGriefPrevention: true
 
-# Enable the Logging of Barrel Inventories to LogBlock
+# Enable the Logging of Barrel Inventories to LogBlock [true]
 useLogBlock: true
-
 
 
 # -- Chat Distortion Settings --

@@ -283,7 +283,6 @@ public class ConfigUpdater {
 		// Add Plugin Support Settings
 		lines = new String[] {
 				"",
-				"",
 				"# -- Plugin Kompatiblität --",
 				"",
 				"# Andere Plugins (wenn installiert) nach Rechten zum öffnen von Fässern checken [true]",
@@ -291,9 +290,8 @@ public class ConfigUpdater {
 				"useLWC: true",
 				"useGriefPrevention: true",
 				"",
-				"# Änderungen an Fassinventaren mit LogBlock aufzeichen",
+				"# Änderungen an Fassinventaren mit LogBlock aufzeichen [true]",
 				"useLogBlock: true",
-				"",
 				"",
 				""
 		};
@@ -348,7 +346,6 @@ public class ConfigUpdater {
 		// Add Plugin Support Settings
 		lines = new String[] {
 				"",
-				"",
 				"# -- Plugin Compatibility --",
 				"",
 				"# Enable checking of other Plugins (if installed) for Barrel Permissions [true]",
@@ -356,9 +353,8 @@ public class ConfigUpdater {
 				"useLWC: true",
 				"useGriefPrevention: true",
 				"",
-				"# Enable the Logging of Barrel Inventories to LogBlock",
+				"# Enable the Logging of Barrel Inventories to LogBlock [true]",
 				"useLogBlock: true",
-				"",
 				"",
 				""
 		};

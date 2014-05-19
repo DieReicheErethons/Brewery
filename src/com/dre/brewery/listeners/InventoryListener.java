@@ -70,7 +70,7 @@ public class InventoryListener implements Listener {
 
 		ItemStack item = event.getCurrentItem();
 		if (item != null) {
-			if (item.getTypeId() == 373) {
+			if (item.getType() == Material.POTION) {
 				if (item.hasItemMeta()) {
 					PotionMeta meta = (PotionMeta) item.getItemMeta();
 					Brew brew = Brew.get(meta);

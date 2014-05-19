@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
@@ -73,7 +74,7 @@ public class Brew {
 
 	// returns a Brew by ItemStack
 	public static Brew get(ItemStack item) {
-		if (item.getTypeId() == 373) {
+		if (item.getType() == Material.POTION) {
 			if (item.hasItemMeta()) {
 				PotionMeta potionMeta = (PotionMeta) item.getItemMeta();
 				return get(potionMeta);

@@ -24,7 +24,6 @@ import com.dre.brewery.P;
 public class PlayerListener implements Listener {
 	public static boolean openEverywhere;
 
-	@SuppressWarnings("deprecation")
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		Block clickedBlock = event.getClickedBlock();
@@ -53,7 +52,7 @@ public class PlayerListener implements Listener {
 											if (item.getAmount() > 1) {
 												item.setAmount(item.getAmount() - 1);
 											} else {
-												player.setItemInHand(new ItemStack(0));
+												player.setItemInHand(new ItemStack(Material.AIR));
 											}
 										}
 									}
@@ -89,7 +88,7 @@ public class PlayerListener implements Listener {
 											if (isBucket) {
 												player.setItemInHand(new ItemStack(Material.BUCKET));
 											} else {
-												player.setItemInHand(new ItemStack(0));
+												player.setItemInHand(new ItemStack(Material.AIR));
 											}
 										}
 									}

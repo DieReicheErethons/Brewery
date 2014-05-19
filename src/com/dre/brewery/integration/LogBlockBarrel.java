@@ -31,7 +31,6 @@ public class LogBlockBarrel {
 		opened.add(this);
 	}
 
-	@SuppressWarnings("deprecation")
 	private void compareInv(final ItemStack[] after) {
 		final ItemStack[] diff = compareInventories(items, after);
 		for (final ItemStack item : diff) {
@@ -62,7 +61,6 @@ public class LogBlockBarrel {
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	public static void breakBarrel(String playerName, ItemStack[] contents, Location spigotLoc) {
 		if (!isLogging(spigotLoc.getWorld(), Logging.CHESTACCESS)) return;
 		final ItemStack[] items = compressInventory(contents);

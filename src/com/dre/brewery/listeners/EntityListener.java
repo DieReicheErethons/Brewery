@@ -2,6 +2,7 @@ package com.dre.brewery.listeners;
 
 import java.util.ListIterator;
 
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -11,6 +12,7 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.ItemDespawnEvent;
 import org.bukkit.event.entity.EntityCombustEvent;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
 
@@ -25,7 +27,7 @@ public class EntityListener implements Listener {
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onItemDespawn(ItemDespawnEvent event) {
 		ItemStack item = event.getEntity().getItemStack();
-		if (item.getTypeId() == 373) {
+		if (item.getType() == Material.POTION) {
 			Brew.remove(item);
 		}
 	}
@@ -33,10 +35,10 @@ public class EntityListener implements Listener {
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onEntityCombust(EntityCombustEvent event) {
 		Entity entity = event.getEntity();
-		if (entity.getType().getTypeId() == 1) {
+		if (entity.getType() == EntityType.DROPPED_ITEM) {
 			if (entity instanceof Item) {
 				ItemStack item = ((Item) entity).getItemStack();
-				if (item.getTypeId() == 373) {
+				if (item.getType() == Material.POTION) {
 					Brew.remove(item);
 				}
 			}

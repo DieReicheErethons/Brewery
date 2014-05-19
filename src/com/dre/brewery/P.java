@@ -590,55 +590,57 @@ public class P extends JavaPlugin {
 	// Returns true if the Block can be destroyed by the Player or something else (null)
 	public boolean blockDestroy(Block block, Player player) {
 		switch (block.getType()) {
-			case CAULDRON:
-				// will only remove when existing
-				BCauldron.remove(block);
-				return true;
-			case FENCE:
-			case NETHER_FENCE:
-				// remove barrel and throw potions on the ground
-				Barrel barrel = Barrel.getBySpigot(block);
-				if (barrel != null) {
-					if (barrel.hasPermsDestroy(player)) {
-						barrel.remove(null, player);
+		case CAULDRON:
+			// will only remove when existing
+			BCauldron.remove(block);
+			return true;
+		case FENCE:
+		case NETHER_FENCE:
+			// remove barrel and throw potions on the ground
+			Barrel barrel = Barrel.getBySpigot(block);
+			if (barrel != null) {
+				if (barrel.hasPermsDestroy(player)) {
+					barrel.remove(null, player);
+					return true;
+				} else {
+					return false;
+				}
+			}
+			return true;
+		case SIGN:
+		case WALL_SIGN:
+			// remove small Barrels
+			Barrel barrel2 = Barrel.getBySpigot(block);
+			if (barrel2 != null) {
+				if (!barrel2.isLarge()) {
+					if (barrel2.hasPermsDestroy(player)) {
+						barrel2.remove(null, player);
 						return true;
 					} else {
 						return false;
 					}
+				} else {
+					barrel2.destroySign();
 				}
-				return true;
-			case SIGN:
-			case WALL_SIGN:
-				// remove small Barrels
-				Barrel barrel2 = Barrel.getBySpigot(block);
-				if (barrel2 != null) {
-					if (!barrel2.isLarge()) {
-						if (barrel2.hasPermsDestroy(player)) {
-							barrel2.remove(null, player);
-							return true;
-						} else {
-							return false;
-						}
-					} else {
-						barrel2.destroySign();
-					}
+			}
+			return true;
+		case WOOD:
+		case WOOD_STAIRS:
+		case ACACIA_STAIRS:
+		case BIRCH_WOOD_STAIRS:
+		case DARK_OAK_STAIRS:
+		case JUNGLE_WOOD_STAIRS:
+		case SPRUCE_WOOD_STAIRS:
+			Barrel barrel3 = Barrel.getByWood(block);
+			if (barrel3 != null) {
+				if (barrel3.hasPermsDestroy(player)) {
+					barrel3.remove(block, player);
+				} else {
+					return false;
 				}
-				return true;
-			case WOOD:
-			case WOOD_STAIRS:
-			case ACACIA_STAIRS:
-			case BIRCH_WOOD_STAIRS:
-			case DARK_OAK_STAIRS:
-			case JUNGLE_WOOD_STAIRS:
-			case SPRUCE_WOOD_STAIRS:
-				Barrel barrel3 = Barrel.getByWood(block);
-				if (barrel3 != null) {
-					if (barrel3.hasPermsDestroy(player)) {
-						barrel3.remove(block, player);
-					} else {
-						return false;
-					}
-				}
+			}
+		default:
+			break;
 		}
 		return true;
 	}

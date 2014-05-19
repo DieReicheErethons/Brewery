@@ -85,7 +85,6 @@ public class BCauldron {
 	}
 
 	// fills players bottle with cooked brew
-	@SuppressWarnings("deprecation")
 	public static boolean fill(Player player, Block block) {
 		BCauldron bcauldron = get(block);
 		if (bcauldron != null) {
@@ -172,7 +171,7 @@ public class BCauldron {
 				if (cauldron.state != 1) {
 					config.set(prefix + ".state", cauldron.state);
 				}
-				config.set(prefix + ".ingredients", cauldron.ingredients.serializeIngredients());
+				config.set(prefix + ".ingredients", cauldron.ingredients);
 				id++;
 			}
 		}

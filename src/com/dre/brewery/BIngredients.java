@@ -297,17 +297,17 @@ public class BIngredients {
 		if (cookedTime != 0) {
 			config.set(path + ".cookedTime", cookedTime);
 		}
-		config.set(path + ".mats", serializeIngredients());
+		config.set(path + ".mats", ingredients);
 		return id;
 	}
 
 	// convert the ingredient Material to id
-	public Map<Integer, Integer> serializeIngredients() {
+	/*public Map<Integer, Integer> serializeIngredients() {
 		Map<Integer, Integer> mats = new HashMap<Integer, Integer>();
 		for (Material mat : ingredients.keySet()) {
 			mats.put(mat.getId(), ingredients.get(mat));
 		}
 		return mats;
-	}
+	}*/
 
 }

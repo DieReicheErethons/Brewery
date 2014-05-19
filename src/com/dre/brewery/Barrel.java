@@ -212,7 +212,6 @@ public class Barrel {
 	}
 
 	// player opens the barrel
-	@SuppressWarnings("deprecation")
 	public void open(Player player) {
 		if (inventory == null) {
 			if (isLarge()) {
@@ -225,7 +224,7 @@ public class Barrel {
 				// if nobody has the inventory opened
 				if (inventory.getViewers().isEmpty()) {
 					// if inventory contains potions
-					if (inventory.contains(373)) {
+					if (inventory.contains(Material.POTION)) {
 						byte wood = getWood();
 						long loadTime = System.nanoTime();
 						for (ItemStack item : inventory.getContents()) {
@@ -328,26 +327,28 @@ public class Barrel {
 	public static Barrel get(Block block) {
 		if (block != null) {
 			switch (block.getType()) {
-				case FENCE:
-				case NETHER_FENCE:
-				case SIGN:
-				case WALL_SIGN:
-					Barrel barrel = getBySpigot(block);
-					if (barrel != null) {
-						return barrel;
-					}
-					return null;
-				case WOOD:
-				case WOOD_STAIRS:
-				case ACACIA_STAIRS:
-				case BIRCH_WOOD_STAIRS:
-				case DARK_OAK_STAIRS:
-				case JUNGLE_WOOD_STAIRS:
-				case SPRUCE_WOOD_STAIRS:
-					Barrel barrel2 = getByWood(block);
-					if (barrel2 != null) {
-						return barrel2;
-					}
+			case FENCE:
+			case NETHER_FENCE:
+			case SIGN:
+			case WALL_SIGN:
+				Barrel barrel = getBySpigot(block);
+				if (barrel != null) {
+					return barrel;
+				}
+				return null;
+			case WOOD:
+			case WOOD_STAIRS:
+			case ACACIA_STAIRS:
+			case BIRCH_WOOD_STAIRS:
+			case DARK_OAK_STAIRS:
+			case JUNGLE_WOOD_STAIRS:
+			case SPRUCE_WOOD_STAIRS:
+				Barrel barrel2 = getByWood(block);
+				if (barrel2 != null) {
+					return barrel2;
+				}
+			default:
+				break;
 			}
 		}
 		return null;
@@ -560,31 +561,30 @@ public class Barrel {
 	}
 
 	// direction of the barrel from the spigot
-	@SuppressWarnings("deprecation")
 	public static int getDirection(Block spigot) {
 		int direction = 0;// 1=x+ 2=x- 3=z+ 4=z-
-		int typeId = spigot.getRelative(0, 0, 1).getTypeId();
-		if (typeId == 5 || isStairs(typeId)) {
+		Material type = spigot.getRelative(0, 0, 1).getType();
+		if (type == Material.WOOD || isStairs(type)) {
 			direction = 3;
 		}
-		typeId = spigot.getRelative(0, 0, -1).getTypeId();
-		if (typeId == 5 || isStairs(typeId)) {
+		type = spigot.getRelative(0, 0, -1).getType();
+		if (type == Material.WOOD || isStairs(type)) {
 			if (direction == 0) {
 				direction = 4;
 			} else {
 				return 0;
 			}
 		}
-		typeId = spigot.getRelative(1, 0, 0).getTypeId();
-		if (typeId == 5 || isStairs(typeId)) {
+		type = spigot.getRelative(1, 0, 0).getType();
+		if (type == Material.WOOD || isStairs(type)) {
 			if (direction == 0) {
 				direction = 1;
 			} else {
 				return 0;
 			}
 		}
-		typeId = spigot.getRelative(-1, 0, 0).getTypeId();
-		if (typeId == 5 || isStairs(typeId)) {
+		type = spigot.getRelative(-1, 0, 0).getType();
+		if (type == Material.WOOD || isStairs(type)) {
 			if (direction == 0) {
 				direction = 2;
 			} else {
@@ -600,13 +600,11 @@ public class Barrel {
 	}
 
 	// true for small barrels
-	@SuppressWarnings("deprecation")
 	public static boolean isSign(Block spigot) {
-		return spigot.getTypeId() == 63 || spigot.getTypeId() == 68;
+		return spigot.getType() == Material.SIGN || spigot.getType() == Material.SIGN_POST;
 	}
 
 	// woodtype of the block the spigot is attached to
-	@SuppressWarnings("deprecation")
 	public byte getWood() {
 		int direction = getDirection(this.spigot);// 1=x+ 2=x- 3=z+ 4=z-
 		Block wood;
@@ -621,7 +619,7 @@ public class Barrel {
 		} else {
 			wood = this.spigot.getRelative(0, 0, -1);
 		}
-		if (wood.getTypeId() == 5) {
+		if (wood.getType() == Material.WOOD) {
 			byte data = wood.getData();
 			if (data == 0x0) {
 				return 2;
@@ -633,16 +631,16 @@ public class Barrel {
 				return 3;
 			}
 		}
-		if (wood.getTypeId() == 53) {
+		if (wood.getType() == Material.WOOD_STAIRS) {
 			return 2;
 		}
-		if (wood.getTypeId() == 134) {
+		if (wood.getType() == Material.SPRUCE_WOOD_STAIRS) {
 			return 4;
 		}
-		if (wood.getTypeId() == 135) {
+		if (wood.getType() == Material.BIRCH_WOOD_STAIRS) {
 			return 1;
 		}
-		if (wood.getTypeId() == 136) {
+		if (wood.getType() == Material.JUNGLE_WOOD_STAIRS) {
 			return 3;
 		}
 		return 0;
@@ -665,14 +663,13 @@ public class Barrel {
 	}
 
 	// returns the fence above/below a block, itself if there is none
-	@SuppressWarnings("deprecation")
 	public static Block getSpigotOfSign(Block block) {
 
 		int y = -2;
 		while (y <= 1) {
 			// Fence and Netherfence
 			Block relative = block.getRelative(0, y, 0);
-			if (relative.getTypeId() == 85 || relative.getTypeId() == 113) {
+			if (relative.getType() == Material.FENCE || relative.getType() == Material.NETHER_FENCE) {
 				return (relative);
 			}
 			y++;
@@ -680,13 +677,8 @@ public class Barrel {
 		return block;
 	}
 
-	@SuppressWarnings("deprecation")
-	public static boolean isStairs(Material mat) {
-		return isStairs(mat.getId());
-	}
-
-	public static boolean isStairs(int id) {
-		return id == 53 || id == 134 || id == 135 || id == 136 || id == 163 || id == 164;
+	public static boolean isStairs(Material material) {
+		return material == Material.WOOD_STAIRS || material == Material.SPRUCE_WOOD_STAIRS || material == Material.BIRCH_WOOD_STAIRS || material == Material.JUNGLE_WOOD_STAIRS || material == Material.ACACIA_STAIRS || material == Material.DARK_OAK_STAIRS;
 	}
 
 	// returns null if Barrel is correctly placed; the block that is missing when not
@@ -704,7 +696,6 @@ public class Barrel {
 		return null;
 	}
 
-	@SuppressWarnings("deprecation")
 	public Block checkSBarrel() {
 		int direction = getDirection(spigot);// 1=x+ 2=x- 3=z+ 4=z-
 		if (direction == 0) {
@@ -739,7 +730,7 @@ public class Barrel {
 			endZ = startZ + 1;
 		}
 
-		int typeId;
+		Material type;
 		int x = startX;
 		int y = 0;
 		int z = startZ;
@@ -747,9 +738,9 @@ public class Barrel {
 			while (x <= endX) {
 				while (z <= endZ) {
 					Block block = spigot.getRelative(x, y, z);
-					typeId = block.getTypeId();
+					type = block.getType();
 
-					if (isStairs(typeId)) {
+					if (isStairs(type)) {
 						if (y == 0) {
 							// stairs have to be upside down
 							if (block.getData() < 4) {
@@ -775,7 +766,6 @@ public class Barrel {
 		return null;
 	}
 
-	@SuppressWarnings("deprecation")
 	public Block checkLBarrel() {
 		int direction = getDirection(spigot);// 1=x+ 2=x- 3=z+ 4=z-
 		if (direction == 0) {
@@ -811,7 +801,7 @@ public class Barrel {
 			endZ = startZ + 3;
 		}
 
-		int typeId;
+		Material type;
 		int x = startX;
 		int y = 0;
 		int z = startZ;
@@ -819,7 +809,7 @@ public class Barrel {
 			while (x <= endX) {
 				while (z <= endZ) {
 					Block block = spigot.getRelative(x, y, z);
-					typeId = block.getTypeId();
+					type = block.getType();
 					if (direction == 1 || direction == 2) {
 						if (y == 1 && z == 0) {
 							if (x == -1 || x == -4 || x == 1 || x == 4) {
@@ -841,8 +831,8 @@ public class Barrel {
 							continue;
 						}
 					}
-					if (typeId == 5 || isStairs(typeId)) {
-						if (typeId == 5) {
+					if (type == Material.WOOD || isStairs(type)) {
+						if (type == Material.WOOD) {
 							woods.add(block.getX());
 							woods.add(block.getY());
 							woods.add(block.getZ());

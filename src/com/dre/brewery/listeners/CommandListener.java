@@ -2,6 +2,7 @@ package com.dre.brewery.listeners;
 
 import java.util.ArrayList;
 
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -346,7 +347,7 @@ public class CommandListener implements CommandExecutor {
 			if (hand != null) {
 				if (Brew.get(hand) != null) {
 					Brew.remove(hand);
-					player.setItemInHand(new ItemStack(0));
+					player.setItemInHand(new ItemStack(Material.AIR));
 					return;
 				}
 			}

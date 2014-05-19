@@ -1,11 +1,9 @@
 package com.dre.brewery.integration;
 
-
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
 import com.dre.brewery.P;
-import me.ryanhamshire.GriefPrevention.Claim;
 import me.ryanhamshire.GriefPrevention.Configuration.WorldConfig;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
 import me.ryanhamshire.GriefPrevention.Messages;
@@ -13,7 +11,6 @@ import me.ryanhamshire.GriefPrevention.PlayerData;
 import me.ryanhamshire.GriefPrevention.TextMode;
 
 public class GriefPreventionBarrel {
-
 	public static boolean checkAccess(Player player, Block sign) {
 
 		WorldConfig wc = GriefPrevention.instance.getWorldCfg(player.getWorld());

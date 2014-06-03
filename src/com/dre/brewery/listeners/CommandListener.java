@@ -86,6 +86,14 @@ public class CommandListener implements CommandExecutor {
 				p.msg(sender, p.languageReader.get("Error_NoPermissions"));
 			}
 
+		} else if (cmd.equalsIgnoreCase("persist") || cmd.equalsIgnoreCase("persistent")) {
+
+			if (sender.hasPermission("brewery.cmd.persist")) {
+				cmdPersist(sender);
+			} else {
+				p.msg(sender, p.languageReader.get("Error_NoPermissions"));
+			}
+
 		} else if (cmd.equalsIgnoreCase("unlabel")) {
 
 			if (sender.hasPermission("brewery.cmd.unlabel")) {
@@ -178,6 +186,10 @@ public class CommandListener implements CommandExecutor {
 
 		if (sender.hasPermission("brewery.cmd.reload")) {
 			cmds.add(p.languageReader.get("Help_Reload"));
+		}
+
+		if (sender.hasPermission("brewery.cmd.persist")) {
+			cmds.add(p.languageReader.get("Help_Persist"));
 		}
 
 		return cmds;
@@ -326,6 +338,9 @@ public class CommandListener implements CommandExecutor {
 						}
 						count--;
 					}
+					if (brew.isPersistent()) {
+						p.msg(sender, p.languageReader.get("CMD_CopyNotPersistent"));
+					}
 					return;
 				}
 			}
@@ -344,9 +359,39 @@ public class CommandListener implements CommandExecutor {
 			Player player = (Player) sender;
 			ItemStack hand = player.getItemInHand();
 			if (hand != null) {
-				if (Brew.get(hand) != null) {
-					Brew.remove(hand);
-					player.setItemInHand(new ItemStack(0));
+				Brew brew = Brew.get(hand);
+				if (brew != null) {
+					if (brew.isPersistent()) {
+						p.msg(sender, p.languageReader.get("CMD_PersistRemove"));
+					} else {
+						brew.remove(hand);
+						player.setItemInHand(new ItemStack(0));
+					}
+					return;
+				}
+			}
+			p.msg(sender, p.languageReader.get("Error_ItemNotPotion"));
+		} else {
+			p.msg(sender, p.languageReader.get("Error_PlayerCommand"));
+		}
+
+	}
+
+	public void cmdPersist(CommandSender sender) {
+
+		if (sender instanceof Player) {
+			Player player = (Player) sender;
+			ItemStack hand = player.getItemInHand();
+			if (hand != null) {
+				Brew brew = Brew.get(hand);
+				if (brew != null) {
+					if (brew.isPersistent()) {
+						brew.removePersistence();
+						p.msg(sender, p.languageReader.get("CMD_UnPersist"));
+					} else {
+						brew.makePersistent();
+						p.msg(sender, p.languageReader.get("CMD_Persistent"));
+					}
 					return;
 				}
 			}

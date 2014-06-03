@@ -82,11 +82,15 @@ public class LanguageReader {
 		defaults.put("CMD_Info_NotDrunk", "&v1 is not drunk");
 		defaults.put("CMD_Info_Drunk", "&v1 is &6&v2% &fdrunk, with a quality of &6&v3");
 		defaults.put("CMD_UnLabel", "&aLabel removed!");
+		defaults.put("CMD_Persistent", "&aPotion is now Persistent and may be copied like any other item. You can remove the persistence with the same command.");
+		defaults.put("CMD_PersistRemove", "&cThis Brew is Persistent. Deleting it would render every copy of it not made with '/brew copy' useless. To proceed, remove the persistence before deleting.");
+		defaults.put("CMD_UnPersist", "&aPersistence Removed. &eEvery Potential copy not made with '/brew copy' could become useless now!");
 		defaults.put("CMD_Copy_Error", "&6&v1 &cPotions did not fit into your inventory");
+		defaults.put("CMD_CopyNotPersistent", "&eThese copies of this Brew will not be persistent!");
 		
 		/* Error */
 		defaults.put("Error_UnknownCommand", "Unknown Command");
-		defaults.put("Error_ShowHelp", "Use &6/br help &fto display the help");
+		defaults.put("Error_ShowHelp", "Use &6/brew help &fto display the help");
 		defaults.put("Error_PlayerCommand", "&cThis command can only be executed as a player!");
 		defaults.put("Error_ItemNotPotion", "&cThe item in your hand could not be identified as a potion!");
 		defaults.put("Error_Recipeload", "&cNot all recipes could be restored: More information in the server log!");
@@ -102,20 +106,21 @@ public class LanguageReader {
 		defaults.put("Perms_NoCauldronFill", "&cYou don't have permissions to fill bottles from this cauldron!");
 		
 		/* Help */
-		defaults.put("Help_Help", "&6/br help <Page> &9Shows a specific help-page");
-		defaults.put("Help_Player", "&6/br <Player> <%Drunkeness> <Quality>&9 Sets Drunkeness (and Quality) of a Player");
-		defaults.put("Help_Info", "&6/br info&9 Displays your current Drunkeness and Quality");
-		defaults.put("Help_UnLabel", "&6/br unlabel &9Removes the detailled label of a potion");
-		defaults.put("Help_Copy", "&6/br copy <Quanitiy>&9 Copies the potion in your hand");
-		defaults.put("Help_Delete", "&6/br delete &9Deletes the potion in your hand");
-		defaults.put("Help_InfoOther", "&6/br info <Player>&9 Displays the current Drunkeness and Quality of <Player>");
-		defaults.put("Help_Wakeup", "&6/br wakeup list <Page>&9 Lists all wakeup points");
-		defaults.put("Help_WakeupList", "&6/br wakeup list <Page> <World>&9 Lists all wakeup points of <world>");
-		defaults.put("Help_WakeupCheck", "&6/br wakeup check &9Teleports to all wakeup points");
-		defaults.put("Help_WakeupCheckSpecific", "&6/br wakeup check <id> &9Teleports to the wakeup point with <id>");
-		defaults.put("Help_WakeupAdd", "&6/br wakeup add &9Adds a wakeup point at your current position");
-		defaults.put("Help_WakeupRemove", "&6/br wakeup remove <id> &9Removes the wakeup point with <id>");
-		defaults.put("Help_Reload", "&6/br reload &9Reload config");
+		defaults.put("Help_Help", "&6/brew help <Page> &9Shows a specific help-page");
+		defaults.put("Help_Player", "&6/brew <Player> <%Drunkeness> <Quality>&9 Sets Drunkeness (and Quality) of a Player");
+		defaults.put("Help_Info", "&6/brew info&9 Displays your current Drunkeness and Quality");
+		defaults.put("Help_UnLabel", "&6/brew unlabel &9Removes the detailled label of a potion");
+		defaults.put("Help_Copy", "&6/brew copy <Quanitiy>&9 Copies the potion in your hand");
+		defaults.put("Help_Delete", "&6/brew delete &9Deletes the potion in your hand");
+		defaults.put("Help_InfoOther", "&6/brew info <Player>&9 Displays the current Drunkeness and Quality of <Player>");
+		defaults.put("Help_Wakeup", "&6/brew wakeup list <Page>&9 Lists all wakeup points");
+		defaults.put("Help_WakeupList", "&6/brew wakeup list <Page> <World>&9 Lists all wakeup points of <world>");
+		defaults.put("Help_WakeupCheck", "&6/brew wakeup check &9Teleports to all wakeup points");
+		defaults.put("Help_WakeupCheckSpecific", "&6/brew wakeup check <id> &9Teleports to the wakeup point with <id>");
+		defaults.put("Help_WakeupAdd", "&6/brew wakeup add &9Adds a wakeup point at your current position");
+		defaults.put("Help_WakeupRemove", "&6/brew wakeup remove <id> &9Removes the wakeup point with <id>");
+		defaults.put("Help_Reload", "&6/brew reload &9Reload config");
+		defaults.put("Help_Persist", "&6/brew persist &9Make Brew persistent -> copyable by any plugin and technique");
 		
 		/* Etc. */
 		defaults.put("Etc_Usage", "Usage:");

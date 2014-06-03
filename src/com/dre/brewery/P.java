@@ -307,9 +307,10 @@ public class P extends JavaPlugin {
 					float ageTime = (float) section.getDouble(uid + ".ageTime", 0.0);
 					float wood = (float) section.getDouble(uid + ".wood", -1.0);
 					String recipe = section.getString(uid + ".recipe", null);
-					Boolean unlabeled = section.getBoolean(uid + ".unlabeled", false);
+					boolean unlabeled = section.getBoolean(uid + ".unlabeled", false);
+					boolean persistent = section.getBoolean(uid + ".persist", false);
 
-					new Brew(parseInt(uid), ingredients, quality, distillRuns, ageTime, wood, recipe, unlabeled);
+					new Brew(parseInt(uid), ingredients, quality, distillRuns, ageTime, wood, recipe, unlabeled, persistent);
 				}
 			}
 

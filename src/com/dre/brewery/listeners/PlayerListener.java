@@ -155,11 +155,11 @@ public class PlayerListener implements Listener {
 		ItemStack item = event.getItem();
 		if (item != null) {
 			if (item.getType() == Material.POTION) {
-				if (item.hasItemMeta()) {
-					if (BPlayer.drink(Brew.getUID(item), player)) {
-						if (player.getGameMode() != org.bukkit.GameMode.CREATIVE) {
-							Brew.remove(item);
-						}
+				Brew brew = Brew.get(item);
+				if (brew != null) {
+					BPlayer.drink(brew, player);
+					if (player.getGameMode() != org.bukkit.GameMode.CREATIVE) {
+						brew.remove(item);
 					}
 				}
 			} else if (BPlayer.drainItems.containsKey(item.getType())) {

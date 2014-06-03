@@ -77,39 +77,34 @@ public class BPlayer {
 		return org.bukkit.Bukkit.getPlayerExact(name);
 	}
 
-	// returns true if drinking was successful
-	public static boolean drink(int uid, Player player) {
-		Brew brew = Brew.get(uid);
-		if (brew != null) {
-			int brewAlc = brew.calcAlcohol();
-			if (brewAlc == 0) {
-				//no alcohol so we dont need to add a BPlayer
-				addBrewEffects(brew, player);
-				return true;
-			}
-			BPlayer bPlayer = get(player.getName());
-			if (bPlayer == null) {
-				bPlayer = new BPlayer();
-				players.put(player.getName(), bPlayer);
-			}
-			bPlayer.drunkeness += brewAlc;
-			if (brew.getQuality() > 0) {
-				bPlayer.quality += brew.getQuality() * brewAlc;
-			} else {
-				bPlayer.quality += brewAlc;
-			}
-
-			if (bPlayer.drunkeness <= 100) {
-
-				addBrewEffects(brew, player);
-				addQualityEffects(brew.getQuality(), brewAlc, player);
-
-			} else {
-				bPlayer.drinkCap(player);
-			}
-			return true;
+	// Drink a brew and apply effects, etc.
+	public static void drink(Brew brew, Player player) {
+		int brewAlc = brew.calcAlcohol();
+		if (brewAlc == 0) {
+			//no alcohol so we dont need to add a BPlayer
+			addBrewEffects(brew, player);
+			return;
 		}
-		return false;
+		BPlayer bPlayer = get(player.getName());
+		if (bPlayer == null) {
+			bPlayer = new BPlayer();
+			players.put(player.getName(), bPlayer);
+		}
+		bPlayer.drunkeness += brewAlc;
+		if (brew.getQuality() > 0) {
+			bPlayer.quality += brew.getQuality() * brewAlc;
+		} else {
+			bPlayer.quality += brewAlc;
+		}
+
+		if (bPlayer.drunkeness <= 100) {
+
+			addBrewEffects(brew, player);
+			addQualityEffects(brew.getQuality(), brewAlc, player);
+
+		} else {
+			bPlayer.drinkCap(player);
+		}
 	}
 
 	// Player has drunken too much

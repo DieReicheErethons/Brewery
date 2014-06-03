@@ -27,6 +27,7 @@ public class Brew {
 	private float wood;
 	private BRecipe currentRecipe;
 	private boolean unlabeled;
+	private boolean persistent;
 
 	public Brew(int uid, BIngredients ingredients) {
 		this.ingredients = ingredients;
@@ -42,7 +43,7 @@ public class Brew {
 	}
 
 	// loading from file
-	public Brew(int uid, BIngredients ingredients, int quality, int distillRuns, float ageTime, float wood, String recipe, Boolean unlabeled) {
+	public Brew(int uid, BIngredients ingredients, int quality, int distillRuns, float ageTime, float wood, String recipe, boolean unlabeled, boolean persistent) {
 		potions.put(uid, this);
 		this.ingredients = ingredients;
 		this.quality = quality;
@@ -50,6 +51,7 @@ public class Brew {
 		this.ageTime = ageTime;
 		this.wood = wood;
 		this.unlabeled = unlabeled;
+		this.persistent = persistent;
 		setRecipeFromString(recipe);
 	}
 
@@ -100,11 +102,6 @@ public class Brew {
 			}
 		}
 		return 0;
-	}
-
-	// remove potion from file (drinking, despawning, combusting, cmdDeleting, should be more!)
-	public static void remove(ItemStack item) {
-		potions.remove(getUID(item));
 	}
 
 	// generate an UID
@@ -166,6 +163,13 @@ public class Brew {
 		brew.ageTime = ageTime;
 		brew.unlabeled = unlabeled;
 		return brew;
+	}
+
+	// remove potion from file (drinking, despawning, combusting, cmdDeleting, should be more!)
+	public void remove(ItemStack item) {
+		if (!persistent) {
+			potions.remove(getUID(item));
+		}
 	}
 
 	// calculate alcohol from recipe
@@ -257,6 +261,20 @@ public class Brew {
 			item.setItemMeta(meta);
 		}
 		unlabeled = true;
+	}
+
+	public boolean isPersistent() {
+		return persistent;
+	}
+
+	// Make a potion persistent to not delete it when drinking it
+	public void makePersistent() {
+		persistent = true;
+	}
+
+	// Remove the Persistence Flag from a brew, so it will be normally deleted when drinking it
+	public void removePersistence() {
+		persistent = false;
 	}
 
 	// Distilling section ---------------
@@ -571,6 +589,9 @@ public class Brew {
 			}
 			if (brew.unlabeled) {
 				idConfig.set("unlabeled", true);
+			}
+			if (brew.persistent) {
+				idConfig.set("persist", true);
 			}
 			// save the ingredients
 			idConfig.set("ingId", brew.ingredients.save(config.getParent()));

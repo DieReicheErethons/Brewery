@@ -35,6 +35,7 @@ public class P extends JavaPlugin {
 	public static int lastBackup = 0;
 	public static int lastSave = 1;
 	public static int autosave = 3;
+	final public static String dataVersion = "1.1";
 
 	// Third Party Enabled
 	public boolean useWG; //WorldGuard
@@ -206,7 +207,7 @@ public class P extends JavaPlugin {
 		// various Settings
 		autosave = config.getInt("autosave", 3);
 		debug = config.getBoolean("debug", false);
-		BPlayer.pukeItemId = Material.matchMaterial(config.getString("pukeItem", "SOUL_SAND")).getId();
+		BPlayer.pukeItem = Material.matchMaterial(config.getString("pukeItem", "SOUL_SAND"));
 		BPlayer.hangoverTime = config.getInt("hangoverDays", 0) * 24 * 60;
 		BPlayer.overdrinkKick = config.getBoolean("enableKickOnOverdrink", false);
 		BPlayer.enableHome = config.getBoolean("enableHome", false);
@@ -276,6 +277,17 @@ public class P extends JavaPlugin {
 
 			FileConfiguration data = YamlConfiguration.loadConfiguration(file);
 
+			// Check if data is the newest version
+			String version = data.getString("Version", null);
+			if (version != null) {
+				if (!version.equals(dataVersion)) {
+					P.p.log("Data File is being updated...");
+					new DataUpdater(data, file).update(version);
+					data = YamlConfiguration.loadConfiguration(file);
+					P.p.log("Data Updated to version: " + dataVersion);
+				}
+			}
+
 			// loading Ingredients into ingMap
 			Map<String, BIngredients> ingMap = new HashMap<String, BIngredients>();
 			ConfigurationSection section = data.getConfigurationSection("Ingredients");
@@ -285,9 +297,8 @@ public class P extends JavaPlugin {
 					if (matSection != null) {
 						// matSection has all the materials + amount as Integers
 						Map<Material, Integer> ingredients = new HashMap<Material, Integer>();
-						for (String ingredient : matSection.getKeys(false)) {
-							// convert to Material
-							ingredients.put(Material.getMaterial(parseInt(ingredient)), matSection.getInt(ingredient));
+						for (String mat : matSection.getKeys(false)) {
+							ingredients.put(Material.getMaterial(mat), matSection.getInt(mat));
 						}
 						ingMap.put(id, new BIngredients(ingredients, section.getInt(id + ".cookedTime", 0)));
 					} else {
@@ -354,11 +365,9 @@ public class P extends JavaPlugin {
 	// loads BIngredients from an ingredient section
 	public BIngredients loadIngredients(ConfigurationSection section) {
 		if (section != null) {
-			// has all the materials + amount as Integers
 			Map<Material, Integer> ingredients = new HashMap<Material, Integer>();
-			for (String ingredient : section.getKeys(false)) {
-				// convert to Material
-				ingredients.put(Material.getMaterial(parseInt(ingredient)), section.getInt(ingredient));
+			for (String mat : section.getKeys(false)) {
+				ingredients.put(Material.getMaterial(mat), section.getInt(mat));
 			}
 			return new BIngredients(ingredients, 0);
 		} else {
@@ -502,7 +511,7 @@ public class P extends JavaPlugin {
 
 		saveWorldNames(configFile, oldData.getConfigurationSection("Worlds"));
 
-		configFile.set("Version", "1.0");
+		configFile.set("Version", dataVersion);
 
 		try {
 			configFile.save(datafile);
@@ -607,7 +616,7 @@ public class P extends JavaPlugin {
 				}
 			}
 			return true;
-		case SIGN:
+		case SIGN_POST:
 		case WALL_SIGN:
 			// remove small Barrels
 			Barrel barrel2 = Barrel.getBySpigot(block);
@@ -626,11 +635,11 @@ public class P extends JavaPlugin {
 			return true;
 		case WOOD:
 		case WOOD_STAIRS:
-		case ACACIA_STAIRS:
 		case BIRCH_WOOD_STAIRS:
-		case DARK_OAK_STAIRS:
 		case JUNGLE_WOOD_STAIRS:
 		case SPRUCE_WOOD_STAIRS:
+		case ACACIA_STAIRS:
+		case DARK_OAK_STAIRS:
 			Barrel barrel3 = Barrel.getByWood(block);
 			if (barrel3 != null) {
 				if (barrel3.hasPermsDestroy(player)) {

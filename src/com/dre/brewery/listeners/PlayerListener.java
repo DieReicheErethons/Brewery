@@ -63,8 +63,8 @@ public class PlayerListener implements Listener {
 								// reset cauldron when refilling to prevent
 								// unlimited source of potions
 							} else if (materialInHand == Material.WATER_BUCKET) {
-								if (clickedBlock.getData() != 0) {
-									if (clickedBlock.getData() < 3) {
+								if (BCauldron.getFillLevel(clickedBlock) != 0) {
+									if (BCauldron.getFillLevel(clickedBlock) < 2) {
 										// will only remove when existing
 										BCauldron.remove(clickedBlock);
 									}
@@ -118,7 +118,7 @@ public class PlayerListener implements Listener {
 								break;
 							}
 						}
-					} else if (type == Material.FENCE || type == Material.NETHER_FENCE || type == Material.SIGN || type == Material.WALL_SIGN) {
+					} else if (type == Material.FENCE || type == Material.NETHER_FENCE || type == Material.SIGN_POST || type == Material.WALL_SIGN) {
 						barrel = Barrel.getBySpigot(clickedBlock);
 					}
 

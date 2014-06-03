@@ -32,6 +32,9 @@ public class LogBlockBarrel {
 	}
 
 	private void compareInv(final ItemStack[] after) {
+		if (consumer == null) {
+			return;
+		}
 		final ItemStack[] diff = compareInventories(items, after);
 		for (final ItemStack item : diff) {
 			consumer.queueChestAccess(player.getName(), loc, loc.getWorld().getBlockTypeIdAt(loc), (short) item.getTypeId(), (short) item.getAmount(), rawData(item));
@@ -62,6 +65,9 @@ public class LogBlockBarrel {
 	}
 
 	public static void breakBarrel(String playerName, ItemStack[] contents, Location spigotLoc) {
+		if (consumer == null) {
+			return;
+		}
 		if (!isLogging(spigotLoc.getWorld(), Logging.CHESTACCESS)) return;
 		final ItemStack[] items = compressInventory(contents);
 		for (final ItemStack item : items) {

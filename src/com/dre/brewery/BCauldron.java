@@ -9,6 +9,8 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.Effect;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.material.Cauldron;
+import org.bukkit.material.MaterialData;
 
 public class BCauldron {
 	public static CopyOnWriteArrayList<BCauldron> bcauldrons = new CopyOnWriteArrayList<BCauldron>();
@@ -71,7 +73,7 @@ public class BCauldron {
 	// get cauldron from block and add given ingredient
 	public static boolean ingredientAdd(Block block, Material ingredient) {
 		// if not empty
-		if (block.getData() != 0) {
+		if (getFillLevel(block) != 0) {
 			BCauldron bcauldron = get(block);
 			if (bcauldron != null) {
 				bcauldron.add(ingredient);
@@ -116,6 +118,24 @@ public class BCauldron {
 		return false;
 	}
 
+	// 0 = empty, 1 = something in, 2 = full
+	public static byte getFillLevel(Block block) {
+		if (block.getType() == Material.CAULDRON) {
+			MaterialData data = block.getState().getData();
+			if (data instanceof Cauldron) {
+				Cauldron cauldron = (Cauldron) data;
+				if (cauldron.isEmpty()) {
+					return 0;
+				} else if (cauldron.isFull()) {
+					return 2;
+				} else {
+					return 1;
+				}
+			}
+		}
+		return 0;
+	}
+
 	// prints the current cooking time to the player
 	public static void printTime(Player player, Block block) {
 		if (!player.hasPermission("brewery.cauldron.time")) {
@@ -134,7 +154,7 @@ public class BCauldron {
 
 	// reset to normal cauldron
 	public static void remove(Block block) {
-		if (block.getData() != 0) {
+		if (getFillLevel(block) != 0) {
 			BCauldron bcauldron = get(block);
 			if (bcauldron != null) {
 				bcauldrons.remove(bcauldron);
@@ -171,7 +191,7 @@ public class BCauldron {
 				if (cauldron.state != 1) {
 					config.set(prefix + ".state", cauldron.state);
 				}
-				config.set(prefix + ".ingredients", cauldron.ingredients);
+				config.set(prefix + ".ingredients", cauldron.ingredients.serializeIngredients());
 				id++;
 			}
 		}

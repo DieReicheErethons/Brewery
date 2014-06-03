@@ -22,7 +22,7 @@ public class BPlayer {
 
 	// Settings
 	public static Map<Material, Integer> drainItems = new HashMap<Material, Integer>();// DrainItem Material and Strength
-	public static int pukeItemId;
+	public static Material pukeItem;
 	public static int hangoverTime;
 	public static boolean overdrinkKick;
 	public static boolean enableHome;
@@ -367,7 +367,7 @@ public class BPlayer {
 		loc.setY(loc.getY() + 1.5);
 		loc.setPitch(loc.getPitch() + 10);
 		loc.add(direction);
-		Item item = player.getWorld().dropItem(loc, new ItemStack(pukeItemId));
+		Item item = player.getWorld().dropItem(loc, new ItemStack(pukeItem));
 		item.setVelocity(direction);
 		item.setPickupDelay(Integer.MAX_VALUE);
 	}

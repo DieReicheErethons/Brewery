@@ -110,6 +110,10 @@ public class BIngredients {
 		return count;
 	}
 
+	/*public Map<Material, Integer> getIngredients() {
+		return ingredients;
+	}*/
+
 	public int getCookedTime() {
 		return cookedTime;
 	}
@@ -297,17 +301,17 @@ public class BIngredients {
 		if (cookedTime != 0) {
 			config.set(path + ".cookedTime", cookedTime);
 		}
-		config.set(path + ".mats", ingredients);
+		config.set(path + ".mats", serializeIngredients());
 		return id;
 	}
 
-	// convert the ingredient Material to id
-	/*public Map<Integer, Integer> serializeIngredients() {
-		Map<Integer, Integer> mats = new HashMap<Integer, Integer>();
-		for (Material mat : ingredients.keySet()) {
-			mats.put(mat.getId(), ingredients.get(mat));
+	//convert the ingredient Material to String
+	public Map<String, Integer> serializeIngredients() {
+		Map<String, Integer> mats = new HashMap<String, Integer>();
+		for (Map.Entry<Material, Integer> entry : ingredients.entrySet()) {
+			mats.put(entry.getKey().name(), entry.getValue());
 		}
 		return mats;
-	}*/
+	}
 
 }

@@ -5,10 +5,10 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.Map;
 
 import org.bukkit.Material;
+import org.bukkit.TreeSpecies;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -16,6 +16,7 @@ import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.material.MaterialData;
 import org.bukkit.material.Stairs;
+import org.bukkit.material.Tree;
 import org.bukkit.plugin.Plugin;
 
 import com.dre.brewery.integration.GriefPreventionBarrel;
@@ -333,7 +334,7 @@ public class Barrel {
 			switch (block.getType()) {
 			case FENCE:
 			case NETHER_FENCE:
-			case SIGN:
+			case SIGN_POST:
 			case WALL_SIGN:
 				Barrel barrel = getBySpigot(block);
 				if (barrel != null) {
@@ -342,11 +343,11 @@ public class Barrel {
 				return null;
 			case WOOD:
 			case WOOD_STAIRS:
-			case ACACIA_STAIRS:
 			case BIRCH_WOOD_STAIRS:
-			case DARK_OAK_STAIRS:
 			case JUNGLE_WOOD_STAIRS:
 			case SPRUCE_WOOD_STAIRS:
+			case ACACIA_STAIRS:
+			case DARK_OAK_STAIRS:
 				Barrel barrel2 = getByWood(block);
 				if (barrel2 != null) {
 					return barrel2;
@@ -605,7 +606,7 @@ public class Barrel {
 
 	// true for small barrels
 	public static boolean isSign(Block spigot) {
-		return spigot.getType() == Material.SIGN || spigot.getType() == Material.SIGN_POST;
+		return spigot.getType() == Material.WALL_SIGN || spigot.getType() == Material.SIGN_POST;
 	}
 
 	// woodtype of the block the spigot is attached to
@@ -624,15 +625,22 @@ public class Barrel {
 			wood = this.spigot.getRelative(0, 0, -1);
 		}
 		if (wood.getType() == Material.WOOD) {
-			byte data = wood.getData();
-			if (data == 0x0) {
-				return 2;
-			} else if (data == 0x1) {
-				return 4;
-			} else if (data == 0x2) {
-				return 1;
-			} else {
-				return 3;
+			MaterialData data = wood.getState().getData();
+			if (data instanceof Tree) {
+				TreeSpecies woodType = ((Tree) data).getSpecies();
+				if (woodType == TreeSpecies.GENERIC){
+					return 2;
+				} else if (woodType == TreeSpecies.REDWOOD) {
+					return 4;
+				} else if (woodType == TreeSpecies.BIRCH) {
+					return 1;
+				} else if (woodType == TreeSpecies.JUNGLE) {
+					return 3;
+				} else if (woodType == TreeSpecies.ACACIA) {
+					return 5;
+				} else if (woodType == TreeSpecies.DARK_OAK) {
+					return 6;
+				}
 			}
 		}
 		if (wood.getType() == Material.WOOD_STAIRS) {
@@ -646,6 +654,16 @@ public class Barrel {
 		}
 		if (wood.getType() == Material.JUNGLE_WOOD_STAIRS) {
 			return 3;
+		}
+		try {
+			if (wood.getType() == Material.ACACIA_STAIRS) {
+				return 5;
+			}
+			if (wood.getType() == Material.DARK_OAK_STAIRS) {
+				return 6;
+			}
+		} catch (NoSuchFieldError e) {
+			return 0;
 		}
 		return 0;
 	}
@@ -682,7 +700,17 @@ public class Barrel {
 	}
 
 	public static boolean isStairs(Material material) {
-		return material == Material.WOOD_STAIRS || material == Material.SPRUCE_WOOD_STAIRS || material == Material.BIRCH_WOOD_STAIRS || material == Material.JUNGLE_WOOD_STAIRS || material == Material.ACACIA_STAIRS || material == Material.DARK_OAK_STAIRS;
+		switch (material) {
+			case WOOD_STAIRS:
+			case SPRUCE_WOOD_STAIRS:
+			case BIRCH_WOOD_STAIRS:
+			case JUNGLE_WOOD_STAIRS:
+			case ACACIA_STAIRS:
+			case DARK_OAK_STAIRS:
+				return true;
+			default:
+				return false;
+		}
 	}
 
 	// returns null if Barrel is correctly placed; the block that is missing when not
@@ -748,9 +776,8 @@ public class Barrel {
 						if (y == 0) {
 							// stairs have to be upside down
 							MaterialData data = block.getState().getData();
-							if(data instanceof Stairs){
-								Stairs sdata = (Stairs) data;
-								if (sdata.getFacing() == BlockFace.DOWN) {
+							if (data instanceof Stairs) {
+								if (!((Stairs) data).isInverted()) {
 									return block;
 								}
 							}

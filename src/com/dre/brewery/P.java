@@ -62,7 +62,6 @@ public class P extends JavaPlugin {
 		// Version check
 		String v = Bukkit.getBukkitVersion();
 		useUUID = !v.matches(".*1\\.[1-6].*") && !v.matches(".*1\\.7\\.[0-5].*");
-		P.p.log("Bukkit Version: " + v + "uuid: " + useUUID);
 
 		readConfig();
 		readData();
@@ -683,7 +682,7 @@ public class P extends JavaPlugin {
 		if (useUUID) {
 			try {
 				return Bukkit.getPlayer(UUID.fromString(name));
-			} catch (IllegalArgumentException e) {
+			} catch (Exception e) {
 				return Bukkit.getPlayerExact(name);
 			}
 		}

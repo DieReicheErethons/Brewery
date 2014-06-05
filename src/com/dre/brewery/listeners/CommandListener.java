@@ -78,7 +78,7 @@ public class CommandListener implements CommandExecutor {
 				p.msg(sender, p.languageReader.get("Error_NoPermissions"));
 			}
 
-		} else if (cmd.equalsIgnoreCase("delete") || cmd.equalsIgnoreCase("rm")) {
+		} else if (cmd.equalsIgnoreCase("delete") || cmd.equalsIgnoreCase("rm") || cmd.equalsIgnoreCase("remove")) {
 
 			if (sender.hasPermission("brewery.cmd.delete")) {
 				cmdDelete(sender);
@@ -104,7 +104,7 @@ public class CommandListener implements CommandExecutor {
 
 		} else {
 
-			if (p.getServer().getPlayerExact(cmd) != null || BPlayer.players.containsKey(cmd)) {
+			if (p.getServer().getPlayerExact(cmd) != null || BPlayer.hasPlayerbyName(cmd)) {
 
 				if (args.length == 1) {
 					if (sender.hasPermission("brewery.cmd.infoOther")) {
@@ -267,23 +267,30 @@ public class CommandListener implements CommandExecutor {
 		}
 
 		String playerName = args[0];
-		BPlayer bPlayer = BPlayer.get(playerName);
-		if (bPlayer == null) {
+		Player player = P.p.getServer().getPlayerExact(playerName);
+		BPlayer bPlayer;
+		if (player == null) {
+			bPlayer = BPlayer.getByName(playerName);
+		} else {
+			bPlayer = BPlayer.get(player);
+		}
+		if (bPlayer == null && player != null) {
 			if (drunkeness == 0) {
 				return;
 			}
-			bPlayer = new BPlayer();
-			BPlayer.players.put(playerName, bPlayer);
+			bPlayer = BPlayer.addPlayer(player);
+		}
+		if (bPlayer == null) {
+			return;
 		}
 
 		if (drunkeness == 0) {
-			BPlayer.players.remove(playerName);
+			bPlayer.remove();
 		} else {
 			bPlayer.setData(drunkeness, quality);
 		}
 
 		if (drunkeness > 100) {
-			Player player = p.getServer().getPlayer(playerName);
 			if (player != null) {
 				bPlayer.drinkCap(player);
 			} else {
@@ -308,7 +315,13 @@ public class CommandListener implements CommandExecutor {
 			}
 		}
 
-		BPlayer bPlayer = BPlayer.get(playerName);
+		Player player = P.p.getServer().getPlayerExact(playerName);
+		BPlayer bPlayer;
+		if (player == null) {
+			bPlayer = BPlayer.getByName(playerName);
+		} else {
+			bPlayer = BPlayer.get(player);
+		}
 		if (bPlayer == null) {
 			p.msg(sender, p.languageReader.get("CMD_Info_NotDrunk", playerName));
 		} else {

@@ -66,6 +66,8 @@ permissions:
     description: Copy Potions
   brewery.cmd.delete:
     description: Delete Potions
+  brewery.cmd.persist:
+    description: Make Potions Persistent
   brewery.cmd.reload:
     description: Reload config
 

@@ -3,7 +3,9 @@ package com.dre.brewery;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.UUID;
 
+import org.bukkit.OfflinePlayer;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Entity;
@@ -16,7 +18,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.configuration.ConfigurationSection;
 
 public class BPlayer {
-	public static Map<String, BPlayer> players = new HashMap<String, BPlayer>();// Players name and BPlayer
+	private static Map<String, BPlayer> players = new HashMap<String, BPlayer>();// Players name/uuid and BPlayer
 	private static Map<Player, Integer> pTasks = new HashMap<Player, Integer>();// Player and count
 	private static int taskId;
 
@@ -49,66 +51,110 @@ public class BPlayer {
 		players.put(name, this);
 	}
 
-	public static BPlayer get(String name) {
+	public static BPlayer get(Player player) {
 		if (!players.isEmpty()) {
-			if (players.containsKey(name)) {
-				return players.get(name);
-			}
+			return players.get(P.playerString(player));
 		}
 		return null;
 	}
 
-	/*public String getPlayerName() {
-		for (Map.Entry<String,BPlayer> entry : players.entrySet()) {
+	// This method may be slow and should not be used if not needed
+	public static BPlayer getByName(String playerName) {
+		if (P.useUUID) {
+			for (Map.Entry<String, BPlayer> entry : players.entrySet()) {
+				OfflinePlayer p = P.p.getServer().getOfflinePlayer(UUID.fromString(entry.getKey()));
+				if (p != null) {
+					String name = p.getName();
+					if (name != null) {
+						if (name.equalsIgnoreCase(playerName)) {
+							return entry.getValue();
+						}
+					}
+				}
+			}
+			return null;
+		}
+		return players.get(playerName);
+	}
+
+	// This method may be slow and should not be used if not needed
+	public static boolean hasPlayerbyName(String playerName) {
+		if (P.useUUID) {
+			for (Map.Entry<String, BPlayer> entry : players.entrySet()) {
+				OfflinePlayer p = P.p.getServer().getOfflinePlayer(UUID.fromString(entry.getKey()));
+				if (p != null) {
+					String name = p.getName();
+					if (name != null) {
+						if (name.equalsIgnoreCase(playerName)) {
+							return true;
+						}
+					}
+				}
+			}
+			return false;
+		}
+		return players.containsKey(playerName);
+	}
+
+	public static boolean isEmpty() {
+		return players.isEmpty();
+	}
+
+	public static boolean hasPlayer(Player player) {
+		return players.containsKey(P.playerString(player));
+	}
+
+	// Create a new BPlayer and add it to the list
+	public static BPlayer addPlayer(Player player) {
+		BPlayer bPlayer = new BPlayer();
+		players.put(P.playerString(player), bPlayer);
+		return bPlayer;
+	}
+
+	public static void remove(Player player) {
+		players.remove(P.playerString(player));
+	}
+
+	public void remove() {
+		for (Map.Entry<String, BPlayer> entry : players.entrySet()) {
 			if (entry.getValue() == this) {
-				return entry.getKey();
+				players.remove(entry.getKey());
+				return;
 			}
 		}
-		return null;
 	}
 
-	public Player getPlayer() {
-		return org.bukkit.Bukkit.getPlayer(getPlayerName());
-	}*/
-
-	// returns the Player if online
-	public static Player getPlayer(String name) {
-		return org.bukkit.Bukkit.getPlayerExact(name);
+	public static void clear() {
+		players.clear();
 	}
 
-	// returns true if drinking was successful
-	public static boolean drink(int uid, Player player) {
-		Brew brew = Brew.get(uid);
-		if (brew != null) {
-			int brewAlc = brew.calcAlcohol();
-			if (brewAlc == 0) {
-				//no alcohol so we dont need to add a BPlayer
-				addBrewEffects(brew, player);
-				return true;
-			}
-			BPlayer bPlayer = get(player.getName());
-			if (bPlayer == null) {
-				bPlayer = new BPlayer();
-				players.put(player.getName(), bPlayer);
-			}
-			bPlayer.drunkeness += brewAlc;
-			if (brew.getQuality() > 0) {
-				bPlayer.quality += brew.getQuality() * brewAlc;
-			} else {
-				bPlayer.quality += brewAlc;
-			}
-
-			if (bPlayer.drunkeness <= 100) {
-
-				addBrewEffects(brew, player);
-				addQualityEffects(brew.getQuality(), brewAlc, player);
-
-			} else {
-				bPlayer.drinkCap(player);
-			}
-			return true;
+	// Drink a brew and apply effects, etc.
+	public static void drink(Brew brew, Player player) {
+		int brewAlc = brew.calcAlcohol();
+		if (brewAlc == 0) {
+			//no alcohol so we dont need to add a BPlayer
+			addBrewEffects(brew, player);
+			return;
 		}
-		return false;
+		BPlayer bPlayer = get(player);
+		if (bPlayer == null) {
+			bPlayer = addPlayer(player);
+		}
+		bPlayer.drunkeness += brewAlc;
+		if (brew.getQuality() > 0) {
+			bPlayer.quality += brew.getQuality() * brewAlc;
+		} else {
+			bPlayer.quality += brewAlc;
+		}
+
+		if (bPlayer.drunkeness <= 100) {
+
+			addBrewEffects(brew, player);
+			addQualityEffects(brew.getQuality(), brewAlc, player);
+
+		} else {
+			bPlayer.drinkCap(player);
+		}
 	}
 
 	// Player has drunken too much
@@ -125,29 +171,29 @@ public class BPlayer {
 
 	// push the player around if he moves
 	public static void playerMove(PlayerMoveEvent event) {
-		BPlayer bPlayer = get(event.getPlayer().getName());
+		BPlayer bPlayer = get(event.getPlayer());
 		if (bPlayer != null) {
 			bPlayer.move(event);
 		}
 	}
 
 	// Eat something to drain the drunkeness
-	public void drainByItem(String name, Material mat) {
+	public void drainByItem(Player player, Material mat) {
 		int strength = drainItems.get(mat);
-		if (drain(name, strength)) {
-			players.remove(name);
+		if (drain(player, strength)) {
+			remove(player);
 		}
 	}
 
 	// drain the drunkeness by amount, returns true when player has to be removed
-	public boolean drain(String name, int amount) {
+	public boolean drain(Player player, int amount) {
 		if (drunkeness > 0) {
 			quality -= getQuality() * amount;
 		}
 		drunkeness -= amount;
 		if (drunkeness > 0) {
 			if (offlineDrunk == 0) {
-				if (getPlayer(name) == null) {
+				if (player == null) {
 					offlineDrunk = drunkeness;
 				}
 			}
@@ -158,7 +204,7 @@ public class BPlayer {
 			quality = getQuality();
 			if (drunkeness <= -offlineDrunk) {
 				if (drunkeness <= -hangoverTime) {
-				return true;
+					return true;
 				}
 			}
 		}
@@ -267,7 +313,7 @@ public class BPlayer {
 			}
 			hangoverEffects(player);
 			// wird der spieler noch gebraucht?
-			players.remove(player.getName());
+			players.remove(P.playerString(player));
 
 		} else if (offlineDrunk - drunkeness >= 30) {
 			Location randomLoc = Wakeup.getRandom(player.getLocation());
@@ -452,7 +498,7 @@ public class BPlayer {
 
 			if (bplayer.drunkeness > 30) {
 				if (bplayer.offlineDrunk == 0) {
-					Player player = getPlayer(name);
+					Player player = P.getPlayerfromString(name);
 					if (player != null) {
 
 						bplayer.drunkEffects(player);
@@ -480,7 +526,7 @@ public class BPlayer {
 					// Prevent 0 drunkeness
 					soberPerMin++;
 				}
-				if (bplayer.drain(name, soberPerMin)) {
+				if (bplayer.drain(P.getPlayerfromString(name), soberPerMin)) {
 					iter.remove();
 				}
 			}
@@ -489,14 +535,15 @@ public class BPlayer {
 
 	// save all data
 	public static void save(ConfigurationSection config) {
-		for (String name : players.keySet()) {
-			ConfigurationSection section = config.createSection(name);
-			section.set("quality", players.get(name).quality);
-			section.set("drunk", players.get(name).drunkeness);
-			if (players.get(name).offlineDrunk != 0) {
-				section.set("offDrunk", players.get(name).offlineDrunk);
+		for (Map.Entry<String, BPlayer> entry : players.entrySet()) {
+			ConfigurationSection section = config.createSection(entry.getKey());
+			BPlayer bPlayer = entry.getValue();
+			section.set("quality", bPlayer.quality);
+			section.set("drunk", bPlayer.drunkeness);
+			if (bPlayer.offlineDrunk != 0) {
+				section.set("offDrunk", bPlayer.offlineDrunk);
 			}
-			if (players.get(name).passedOut) {
+			if (bPlayer.passedOut) {
 				section.set("passedOut", true);
 			}
 		}

@@ -7,6 +7,7 @@ import java.util.ListIterator;
 import java.util.HashMap;
 import java.io.IOException;
 import java.io.File;
+import java.util.UUID;
 import java.util.logging.Level;
 
 import org.bukkit.entity.Player;
@@ -36,6 +37,7 @@ public class P extends JavaPlugin {
 	public static int lastSave = 1;
 	public static int autosave = 3;
 	final public static String dataVersion = "1.1";
+	public static boolean useUUID;
 
 	// Third Party Enabled
 	public boolean useWG; //WorldGuard
@@ -57,6 +59,10 @@ public class P extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		p = this;
+
+		// Version check
+		String v = Bukkit.getBukkitVersion();
+		useUUID = !v.matches(".*1\\.[1-6].*") && !v.matches(".*1\\.7\\.[0-5].*");
 
 		readConfig();
 		readData();
@@ -106,7 +112,7 @@ public class P extends JavaPlugin {
 		BIngredients.possibleIngredients.clear();
 		BIngredients.recipes.clear();
 		BIngredients.cookedNames.clear();
-		BPlayer.players.clear();
+		BPlayer.clear();
 		Brew.potions.clear();
 		Wakeup.wakeups.clear();
 		Words.words.clear();
@@ -318,9 +324,10 @@ public class P extends JavaPlugin {
 					float ageTime = (float) section.getDouble(uid + ".ageTime", 0.0);
 					float wood = (float) section.getDouble(uid + ".wood", -1.0);
 					String recipe = section.getString(uid + ".recipe", null);
-					Boolean unlabeled = section.getBoolean(uid + ".unlabeled", false);
+					boolean unlabeled = section.getBoolean(uid + ".unlabeled", false);
+					boolean persistent = section.getBoolean(uid + ".persist", false);
 
-					new Brew(parseInt(uid), ingredients, quality, distillRuns, ageTime, wood, recipe, unlabeled);
+					new Brew(parseInt(uid), ingredients, quality, distillRuns, ageTime, wood, recipe, unlabeled, persistent);
 				}
 			}
 
@@ -329,6 +336,17 @@ public class P extends JavaPlugin {
 			if (section != null) {
 				// keys have players name
 				for (String name : section.getKeys(false)) {
+					try {
+						UUID.fromString(name);
+						if (!useUUID) {
+							continue;
+						}
+					} catch (IllegalArgumentException e) {
+						if (useUUID) {
+							continue;
+						}
+					}
+
 					int quality = section.getInt(name + ".quality");
 					int drunk = section.getInt(name + ".drunk");
 					int offDrunk = section.getInt(name + ".offDrunk", 0);
@@ -501,7 +519,7 @@ public class P extends JavaPlugin {
 			Barrel.save(configFile.createSection("Barrel"), oldData.getConfigurationSection("Barrel"));
 		}
 
-		if (!BPlayer.players.isEmpty()) {
+		if (!BPlayer.isEmpty()) {
 			BPlayer.save(configFile.createSection("Player"));
 		}
 
@@ -661,6 +679,27 @@ public class P extends JavaPlugin {
 		return msg;
 	}
 
+	// Returns either uuid or Name of player, depending on bukkit version
+	public static String playerString(Player player) {
+		if (useUUID) {
+			return player.getUniqueId().toString();
+		} else {
+			return player.getName();
+		}
+	}
+
+	// returns the Player if online
+	public static Player getPlayerfromString(String name) {
+		if (useUUID) {
+			try {
+				return Bukkit.getPlayer(UUID.fromString(name));
+			} catch (Exception e) {
+				return Bukkit.getPlayerExact(name);
+			}
+		}
+		return Bukkit.getPlayerExact(name);
+	}
+
 	// Runnables
 
 	public class DrunkRunnable implements Runnable {
@@ -670,7 +709,7 @@ public class P extends JavaPlugin {
 
 		@Override
 		public void run() {
-			if (!BPlayer.players.isEmpty()) {
+			if (!BPlayer.isEmpty()) {
 				BPlayer.drunkeness();
 			}
 		}

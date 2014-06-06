@@ -37,7 +37,7 @@ public class BlockListener implements Listener {
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onSignChangeLow(SignChangeEvent event) {
 		if (Words.doSigns) {
-			if (BPlayer.players.containsKey(event.getPlayer().getName())) {
+			if (BPlayer.hasPlayer(event.getPlayer())) {
 				Words.signWrite(event);
 			}
 		}

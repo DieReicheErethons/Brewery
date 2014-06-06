@@ -76,10 +76,10 @@ public class Words {
 
 	// Distort players words when he uses a command
 	public static void playerCommand(PlayerCommandPreprocessEvent event) {
-		String name = event.getPlayer().getName();
-		BPlayer bPlayer = BPlayer.get(name);
+		BPlayer bPlayer = BPlayer.get(event.getPlayer());
 		if (bPlayer != null) {
 			if (!commands.isEmpty() && loadWords()) {
+				String name = event.getPlayer().getName();
 				if (!waitPlayers.containsKey(name) || waitPlayers.get(name) + 500 < System.currentTimeMillis()) {
 					String chat = event.getMessage();
 					for (String command : commands) {
@@ -106,7 +106,7 @@ public class Words {
 
 	// Distort players words when he uses a command
 	public static void signWrite(SignChangeEvent event) {
-		BPlayer bPlayer = BPlayer.get(event.getPlayer().getName());
+		BPlayer bPlayer = BPlayer.get(event.getPlayer());
 		if (bPlayer != null) {
 			if (loadWords()) {
 				int index = 0;
@@ -127,7 +127,7 @@ public class Words {
 
 	// Distort players words when he talks
 	public static void playerChat(AsyncPlayerChatEvent event) {
-		BPlayer bPlayer = BPlayer.get(event.getPlayer().getName());
+		BPlayer bPlayer = BPlayer.get(event.getPlayer());
 		if (bPlayer != null) {
 			if (loadWords()) {
 				String message = event.getMessage();

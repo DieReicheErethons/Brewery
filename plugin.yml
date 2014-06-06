@@ -6,7 +6,7 @@ softdepend: [LWC, LogBlock, WorldGuard, GriefPrevention]
 commands:
   brewery:
     description: Command for Administration
-    aliases: [brew,br]
+    aliases: [brew]
 permissions:
 # -- Groups --
 # User
@@ -39,6 +39,7 @@ permissions:
       brewery.cmd.player: true
       brewery.cmd.copy: true
       brewery.cmd.delete: true
+      brewery.cmd.persist: true
       brewery.cmd.reload: true
 # *
   brewery.*:
@@ -65,6 +66,8 @@ permissions:
     description: Copy Potions
   brewery.cmd.delete:
     description: Delete Potions
+  brewery.cmd.persist:
+    description: Make Potions Persistent
   brewery.cmd.reload:
     description: Reload config
 

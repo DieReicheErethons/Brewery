@@ -154,17 +154,17 @@ public class PlayerListener implements Listener {
 		ItemStack item = event.getItem();
 		if (item != null) {
 			if (item.getType() == Material.POTION) {
-				if (item.hasItemMeta()) {
-					if (BPlayer.drink(Brew.getUID(item), player)) {
-						if (player.getGameMode() != org.bukkit.GameMode.CREATIVE) {
-							Brew.remove(item);
-						}
+				Brew brew = Brew.get(item);
+				if (brew != null) {
+					BPlayer.drink(brew, player);
+					if (player.getGameMode() != org.bukkit.GameMode.CREATIVE) {
+						brew.remove(item);
 					}
 				}
 			} else if (BPlayer.drainItems.containsKey(item.getType())) {
-				BPlayer bplayer = BPlayer.get(player.getName());
+				BPlayer bplayer = BPlayer.get(player);
 				if (bplayer != null) {
-					bplayer.drainByItem(player.getName(), item.getType());
+					bplayer.drainByItem(player, item.getType());
 				}
 			}
 		}
@@ -173,13 +173,12 @@ public class PlayerListener implements Listener {
 	// Player has died! Decrease Drunkeness by 20
 	@EventHandler
 	public void onPlayerRespawn(PlayerRespawnEvent event) {
-		String playerName = event.getPlayer().getName();
-		BPlayer bPlayer = BPlayer.get(playerName);
+		BPlayer bPlayer = BPlayer.get(event.getPlayer());
 		if (bPlayer != null) {
 			if (bPlayer.getDrunkeness() > 20) {
 				bPlayer.setData(bPlayer.getDrunkeness() - 20, 0);
 			} else {
-				BPlayer.players.remove(playerName);
+				BPlayer.remove(event.getPlayer());
 			}
 		}
 	}
@@ -187,7 +186,7 @@ public class PlayerListener implements Listener {
 	// player walks while drunk, push him around!
 	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerMove(PlayerMoveEvent event) {
-		if (BPlayer.players.containsKey(event.getPlayer().getName())) {
+		if (BPlayer.hasPlayer(event.getPlayer())) {
 			BPlayer.playerMove(event);
 		}
 	}
@@ -195,17 +194,13 @@ public class PlayerListener implements Listener {
 	// player talks while drunk, but he cant speak very well
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
-		if (BPlayer.players.containsKey(event.getPlayer().getName())) {
-			Words.playerChat(event);
-		}
+		Words.playerChat(event);
 	}
 	
 	// player commands while drunk, distort chat commands
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onCommandPreProcess(PlayerCommandPreprocessEvent event) {
-		if (BPlayer.players.containsKey(event.getPlayer().getName())) {
-			Words.playerCommand(event);
-		}
+		Words.playerCommand(event);
 	}
 
 	// player joins while passed out
@@ -213,7 +208,7 @@ public class PlayerListener implements Listener {
 	public void onPlayerLogin(PlayerLoginEvent event) {
 		if (event.getResult() == PlayerLoginEvent.Result.ALLOWED) {
 			final Player player = event.getPlayer();
-			BPlayer bplayer = BPlayer.get(player.getName());
+			BPlayer bplayer = BPlayer.get(player);
 			if (bplayer != null) {
 				if (player.hasPermission("brewery.bypass.logindeny")) {
 					if (bplayer.getDrunkeness() > 100) {
@@ -238,7 +233,7 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent event) {
-		BPlayer bplayer = BPlayer.get(event.getPlayer().getName());
+		BPlayer bplayer = BPlayer.get(event.getPlayer());
 		if (bplayer != null) {
 			bplayer.disconnecting();
 		}
@@ -246,7 +241,7 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void onPlayerKick(PlayerKickEvent event) {
-		BPlayer bplayer = BPlayer.get(event.getPlayer().getName());
+		BPlayer bplayer = BPlayer.get(event.getPlayer());
 		if (bplayer != null) {
 			bplayer.disconnecting();
 		}

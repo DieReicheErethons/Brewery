@@ -20,7 +20,7 @@ public class BCauldron {
 	private int state = 1;
 	private boolean someRemoved = false;
 
-	public BCauldron(Block block, Material ingredient) {
+	public BCauldron(Block block, ItemStack ingredient) {
 		this.block = block;
 		add(ingredient);
 		bcauldrons.add(this);
@@ -48,11 +48,12 @@ public class BCauldron {
 	}
 
 	// add an ingredient to the cauldron
-	public void add(Material ingredient) {
+	public void add(ItemStack ingredient) {
 		if (someRemoved) {
 			ingredients = ingredients.clone();
 			someRemoved = false;
 		}
+		ingredient = new ItemStack(ingredient.getType(), 1, ingredient.getDurability());
 		ingredients.add(ingredient);
 		block.getWorld().playEffect(block.getLocation(), Effect.EXTINGUISH, 0);
 		if (state > 1) {
@@ -71,7 +72,7 @@ public class BCauldron {
 	}
 
 	// get cauldron from block and add given ingredient
-	public static boolean ingredientAdd(Block block, Material ingredient) {
+	public static boolean ingredientAdd(Block block, ItemStack ingredient) {
 		// if not empty
 		if (getFillLevel(block) != 0) {
 			BCauldron bcauldron = get(block);

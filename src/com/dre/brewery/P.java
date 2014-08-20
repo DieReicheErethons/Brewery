@@ -11,6 +11,7 @@ import java.util.UUID;
 import java.util.logging.Level;
 
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -302,10 +303,7 @@ public class P extends JavaPlugin {
 					ConfigurationSection matSection = section.getConfigurationSection(id + ".mats");
 					if (matSection != null) {
 						// matSection has all the materials + amount as Integers
-						Map<Material, Integer> ingredients = new HashMap<Material, Integer>();
-						for (String mat : matSection.getKeys(false)) {
-							ingredients.put(Material.getMaterial(mat), matSection.getInt(mat));
-						}
+						ArrayList<ItemStack> ingredients = deserializeIngredients(matSection);
 						ingMap.put(id, new BIngredients(ingredients, section.getInt(id + ".cookedTime", 0)));
 					} else {
 						errorLog("Ingredient id: '" + id + "' incomplete in data.yml");
@@ -369,6 +367,19 @@ public class P extends JavaPlugin {
 		}
 	}
 
+	public ArrayList<ItemStack> deserializeIngredients(ConfigurationSection matSection) {
+		ArrayList<ItemStack> ingredients = new ArrayList<ItemStack>();
+		for (String mat : matSection.getKeys(false)) {
+			String[] matSplit = mat.split(",");
+			ItemStack item = new ItemStack(Material.getMaterial(matSplit[0]), matSection.getInt(mat));
+			if (matSplit.length == 2) {
+				item.setDurability((short) P.p.parseInt(matSplit[1]));
+			}
+			ingredients.add(item);
+		}
+		return ingredients;
+	}
+
 	// returns Ingredients by id from the specified ingMap
 	public BIngredients getIngredients(Map<String, BIngredients> ingMap, String id) {
 		if (!ingMap.isEmpty()) {
@@ -383,11 +394,7 @@ public class P extends JavaPlugin {
 	// loads BIngredients from an ingredient section
 	public BIngredients loadIngredients(ConfigurationSection section) {
 		if (section != null) {
-			Map<Material, Integer> ingredients = new HashMap<Material, Integer>();
-			for (String mat : section.getKeys(false)) {
-				ingredients.put(Material.getMaterial(mat), section.getInt(mat));
-			}
-			return new BIngredients(ingredients, 0);
+			return new BIngredients(deserializeIngredients(section), 0);
 		} else {
 			errorLog("Cauldron is missing Ingredient Section");
 		}

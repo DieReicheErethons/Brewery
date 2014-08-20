@@ -1,16 +1,18 @@
 package com.dre.brewery;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
 
 public class BRecipe {
 
 	private String[] name;
-	private Map<Material, Integer> ingredients = new HashMap<Material, Integer>();// material and amount
+	private ArrayList<ItemStack> ingredients = new ArrayList<ItemStack>();// material and amount
 	private int cookingTime;// time to cook in cauldron
 	private int distillruns;// runs through the brewer
 	private byte wood;// type of wood the barrel has to consist of
@@ -38,9 +40,23 @@ public class BRecipe {
 			for (String item : ingredientsList) {
 				String[] ingredParts = item.split("/");
 				if (ingredParts.length == 2) {
-					Material mat = Material.matchMaterial(ingredParts[0]);
+					String[] matParts;
+					if (ingredParts[0].contains(",")) {
+						matParts = ingredParts[0].split(",");
+					} else if (ingredParts[0].contains(":")) {
+						matParts = ingredParts[0].split(":");
+					} else if (ingredParts[0].contains(";")) {
+						matParts = ingredParts[0].split(";");
+					} else {
+						matParts = ingredParts[0].split("\\.");
+					}
+					Material mat = Material.matchMaterial(matParts[0]);
 					if (mat != null) {
-						this.ingredients.put(Material.matchMaterial(ingredParts[0]), P.p.parseInt(ingredParts[1]));
+						ItemStack stack = new ItemStack(mat, P.p.parseInt(ingredParts[1]), (short) -1);
+						if (matParts.length == 2) {
+							stack.setDurability((short) P.p.parseInt(matParts[1]));
+						}
+						this.ingredients.add(stack);
 					} else {
 						P.p.errorLog("Unknown Material: " + ingredParts[0]);
 						this.ingredients = null;
@@ -124,17 +140,37 @@ public class BRecipe {
 		return age != 0;
 	}
 
-	// true if given map misses an ingredient
-	public boolean isMissingIngredients(Map<Material, Integer> map) {
-		if (map.size() < ingredients.size()) {
+	// true if given list misses an ingredient
+	public boolean isMissingIngredients(List<ItemStack> list) {
+		if (list.size() < ingredients.size()) {
 			return true;
 		}
-		for (Material ingredient : ingredients.keySet()) {
-			if (!map.containsKey(ingredient)) {
-				return true;
+		for (ItemStack ingredient : ingredients) {
+			for (ItemStack used : list) {
+				if (!ingredientsMatch(used, ingredient)) {
+					return true;
+				}
 			}
 		}
 		return false;
+	}
+
+	// Returns true if this ingredient cares about durability
+	public boolean hasExactData(ItemStack item) {
+		for (ItemStack ingredient : ingredients) {
+			if (ingredient.getType().equals(item.getType())) {
+				return ingredient.getDurability() != -1;
+			}
+		}
+		return true;
+	}
+
+	// Returns true if this item matches the item from a recipe
+	public static boolean ingredientsMatch(ItemStack usedItem, ItemStack recipeItem) {
+		if (!recipeItem.getType().equals(usedItem.getType())) {
+			return false;
+		}
+		return recipeItem.getDurability() == -1 || recipeItem.getDurability() == usedItem.getDurability();
 	}
 
 	// true if name and ingredients are correct
@@ -146,9 +182,11 @@ public class BRecipe {
 	// Getter
 
 	// how many of a specific ingredient in the recipe
-	public int amountOf(Material material) {
-		if (ingredients.containsKey(material)) {
-			return ingredients.get(material);
+	public int amountOf(ItemStack item) {
+		for (ItemStack ingredient : ingredients) {
+			if (ingredientsMatch(item, ingredient)) {
+				return ingredient.getAmount();
+			}
 		}
 		return 0;
 	}

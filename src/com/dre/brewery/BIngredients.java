@@ -17,7 +17,8 @@ public class BIngredients {
 	private static int lastId = 0;
 
 	private int id;
-	private Map<Material, Integer> ingredients = new HashMap<Material, Integer>();
+	private ArrayList<ItemStack> ingredients = new ArrayList<ItemStack>();
+	private Map<Material, Integer> materials = new HashMap<Material, Integer>(); // Merged List Of ingredients that doesnt consider Durability
 	private int cookedTime;
 
 	// Represents ingredients in Cauldron, Brew
@@ -28,20 +29,35 @@ public class BIngredients {
 	}
 
 	// Load from File
-	public BIngredients(Map<Material, Integer> ingredients, int cookedTime) {
+	public BIngredients(ArrayList<ItemStack> ingredients, int cookedTime) {
 		this.ingredients = ingredients;
 		this.cookedTime = cookedTime;
 		this.id = lastId;
 		lastId++;
+
+		for (ItemStack item : ingredients) {
+			addMaterial(item);
+		}
 	}
 
 	// Add an ingredient to this
-	public void add(Material ingredient) {
-		if (ingredients.containsKey(ingredient)) {
-			int newAmount = ingredients.get(ingredient) + 1;
-			ingredients.put(ingredient, newAmount);
+	public void add(ItemStack ingredient) {
+		addMaterial(ingredient);
+		for (ItemStack item : ingredients) {
+			if (item.isSimilar(ingredient)) {
+				item.setAmount(item.getAmount() + ingredient.getAmount());
+				return;
+			}
+		}
+		ingredients.add(ingredient);
+	}
+
+	private void addMaterial(ItemStack ingredient) {
+		if (materials.containsKey(ingredient.getType())) {
+			int newAmount = materials.get(ingredient.getType()) + ingredient.getAmount();
+			materials.put(ingredient.getType(), newAmount);
 		} else {
-			this.ingredients.put(ingredient, 1);
+			materials.put(ingredient.getType(), ingredient.getAmount());
 		}
 	}
 
@@ -76,10 +92,10 @@ public class BIngredients {
 				cookedName = P.p.languageReader.get("Brew_ThickBrew");
 				potion.setDurability(Brew.PotionColor.BLUE.getColorId(false));
 			} else {
-				for (Material ingredient : ingredients.keySet()) {
+				for (Material ingredient : materials.keySet()) {
 					if (cookedNames.containsKey(ingredient)) {
 						// if more than half of the ingredients is of one kind
-						if (ingredients.get(ingredient) > (getIngredientsCount() / 2)) {
+						if (materials.get(ingredient) > (getIngredientsCount() / 2)) {
 							cookedName = cookedNames.get(ingredient);
 							potion.setDurability(Brew.PotionColor.CYAN.getColorId(true));
 						}
@@ -104,8 +120,8 @@ public class BIngredients {
 	// returns amount of ingredients
 	private int getIngredientsCount() {
 		int count = 0;
-		for (int value : ingredients.values()) {
-			count += value;
+		for (ItemStack item : ingredients) {
+			count += item.getAmount();
 		}
 		return count;
 	}
@@ -211,9 +227,21 @@ public class BIngredients {
 			// when ingredients are not complete
 			return -1;
 		}
-		for (Material ingredient : ingredients.keySet()) {
-			count = ingredients.get(ingredient);
-			if (recipe.amountOf(ingredient) == 0) {
+		ArrayList<Material> mergedChecked = new ArrayList<Material>();
+		for (ItemStack ingredient : ingredients) {
+			if (mergedChecked.contains(ingredient.getType())) {
+				// This ingredient type was already checked as part of a merged material
+				continue;
+			}
+			int amountInRecipe = recipe.amountOf(ingredient);
+			// If we dont consider durability for this ingredient, check the merged material
+			if (recipe.hasExactData(ingredient)) {
+				count = ingredient.getAmount();
+			} else {
+				mergedChecked.add(ingredient.getType());
+				count = materials.get(ingredient.getType());
+			}
+			if (amountInRecipe == 0) {
 				// this ingredient doesnt belong into the recipe
 				if (count > (getIngredientsCount() / 2)) {
 					// when more than half of the ingredients dont fit into the
@@ -231,7 +259,7 @@ public class BIngredients {
 				}
 			}
 			// calculate the quality
-			quality -= ((float) Math.abs(count - recipe.amountOf(ingredient)) / recipe.allowedCountDiff(recipe.amountOf(ingredient))) * 10.0;
+			quality -= ((float) Math.abs(count - amountInRecipe) / recipe.allowedCountDiff(amountInRecipe)) * 10.0;
 		}
 		if (quality >= 0) {
 			return Math.round(quality);
@@ -290,7 +318,8 @@ public class BIngredients {
 	// Creates a copy ingredients
 	public BIngredients clone() {
 		BIngredients copy = new BIngredients();
-		copy.ingredients.putAll(ingredients);
+		copy.ingredients.addAll(ingredients);
+		copy.materials.putAll(materials);
 		copy.cookedTime = cookedTime;
 		return copy;
 	}
@@ -308,8 +337,9 @@ public class BIngredients {
 	//convert the ingredient Material to String
 	public Map<String, Integer> serializeIngredients() {
 		Map<String, Integer> mats = new HashMap<String, Integer>();
-		for (Map.Entry<Material, Integer> entry : ingredients.entrySet()) {
-			mats.put(entry.getKey().name(), entry.getValue());
+		for (ItemStack item : ingredients) {
+			String mat = item.getType().name() + "," + item.getDurability();
+			mats.put(mat, item.getAmount());
 		}
 		return mats;
 	}

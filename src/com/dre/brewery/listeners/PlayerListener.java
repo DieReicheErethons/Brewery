@@ -74,7 +74,7 @@ public class PlayerListener implements Listener {
 								// contitions
 							} else if (BIngredients.possibleIngredients.contains(materialInHand)) {
 								if (player.hasPermission("brewery.cauldron.insert")) {
-									if (BCauldron.ingredientAdd(clickedBlock, materialInHand)) {
+									if (BCauldron.ingredientAdd(clickedBlock, item)) {
 										boolean isBucket = item.getType().equals(Material.WATER_BUCKET)
 												|| item.getType().equals(Material.LAVA_BUCKET)
 												|| item.getType().equals(Material.MILK_BUCKET);

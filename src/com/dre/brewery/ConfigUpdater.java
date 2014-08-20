@@ -375,4 +375,76 @@ public class ConfigUpdater {
 		}
 	}
 
+	// Update de from 1.2 to 1.3
+	private void update12de() {
+		updateVersion("1.3");
+
+		// Add the Example to the Cooked Section
+		int index = indexOfStart("# cooked:");
+		if (index != -1) {
+			addLines(index, "# [Beispiel] MATERIAL_oder_id: Name nach Gähren");
+		}
+
+		// Add new ingredients description
+		String replacedLine = "# ingredients: Auflistung von 'Material oder ID,Data/Anzahl' (Item-ids anstatt Material werden von Bukkit nicht mehr unterstützt und funktionieren möglicherweise in Zukunft nicht mehr!)";
+		String[] lines = new String[] {
+				"#   Eine Liste von allen Materialien kann hier gefunden werden: http://jd.bukkit.org/beta/apidocs/org/bukkit/Material.html",
+				"#   Es kann ein Data-Wert angegeben werden, weglassen ignoriert diesen beim hinzufügen einer Zutat"
+		};
+		index = indexOfStart("# ingredients:");
+		if (index != -1) {
+			setLine(index, replacedLine);
+			addLines(index, lines);
+		} else {
+			index = indexOfStart("# name:");
+			if (index != -1) {
+				addLines(index, lines);
+				addLines(index, replacedLine);
+			} else {
+				index = indexOfStart("# -- Rezepte für Getränke --");
+				if (index != -1) {
+					addLines(index, lines);
+					addLines(index, "", replacedLine);
+				}
+			}
+		}
+
+	}
+
+	// Update en from 1.2 to 1.3
+	private void update12en() {
+		updateVersion("1.3");
+
+		// Add the Example to the Cooked Section
+		int index = indexOfStart("# cooked:");
+		if (index != -1) {
+			addLines(index, "# [Example] MATERIAL_or_id: Name after cooking");
+		}
+
+		// Add new ingredients description
+		String replacedLine = "# ingredients: List of 'material or id,data/amount' (Item-ids instead of material are deprecated by bukkit and may not work in the future!)";
+		String[] lines = new String[] {
+				"#   A list of materials can be found here: http://jd.bukkit.org/beta/apidocs/org/bukkit/Material.html",
+				"#   You can specify a data value, omitting it will ignore the data value of the added ingredient"
+		};
+		index = indexOfStart("# ingredients:");
+		if (index != -1) {
+			setLine(index, replacedLine);
+			addLines(index, lines);
+		} else {
+			index = indexOfStart("# name:");
+			if (index != -1) {
+				addLines(index, lines);
+				addLines(index, replacedLine);
+			} else {
+				index = indexOfStart("# -- Recipes for Potions --");
+				if (index != -1) {
+					addLines(index, lines);
+					addLines(index, "", replacedLine);
+				}
+			}
+		}
+
+	}
+
 }

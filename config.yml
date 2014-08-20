@@ -61,7 +61,9 @@ version: '1.2'
 # -- Recipes for Potions --
 
 # name: Different names for bad/normal/good (Formatting codes possible: such as &6)
-# ingredients: List of material/amount
+# ingredients: List of 'material or id,data/amount' (Item-ids instead of material are deprecated by bukkit and may not work in the future!)
+#   A list of materials can be found here: http://jd.bukkit.org/beta/apidocs/org/bukkit/Material.html
+#   You can specify a data value, omitting it will ignore the data value of the added ingredient
 # cookingtime: Time in real minutes ingredients have to boil
 # distillruns: How often it has to be distilled for full alcohol (0=without distilling)
 # wood: Wood of the barrel 0=any 1=Birch 2=Oak 3=Jungle 4=Spruce
@@ -183,6 +185,7 @@ recipes:
 
 
 # cooked: EVERY possible ingredient and the names for the originating potions after fermenting:
+# [Example] MATERIAL_or_id: Name after cooking
 
 cooked:
    WHEAT: Fermented wheat

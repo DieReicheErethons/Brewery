@@ -55,7 +55,7 @@ openLargeBarrelEverywhere: true
 autosave: 3
 
 # Config Version
-version: '1.2'
+version: '1.3'
 
 
 # -- Recipes for Potions --
@@ -66,7 +66,7 @@ version: '1.2'
 #   You can specify a data value, omitting it will ignore the data value of the added ingredient
 # cookingtime: Time in real minutes ingredients have to boil
 # distillruns: How often it has to be distilled for full alcohol (0=without distilling)
-# wood: Wood of the barrel 0=any 1=Birch 2=Oak 3=Jungle 4=Spruce
+# wood: Wood of the barrel 0=any 1=Birch 2=Oak 3=Jungle 4=Spruce 5=Acacia 6=Dark Oak
 # age: Time in Minecraft-days, the potion has to age in a barrel 0=no aging
 # color: Color of the potion after distilling/aging. DARK_RED, RED, BRIGHT_RED, ORANGE, PINK, BLUE, CYAN, WATER, GREEN, BLACK, GREY, BRIGHT_GREY
 # difficulty: 1-10 accuracy needed to get good quality (1 = unaccurate/easy, 10 = very precise/hard)

@@ -105,7 +105,16 @@ public class ConfigUpdater {
 			fromVersion = "1.2";
 		}
 
-		if (!fromVersion.equals("1.2")) {
+		if (fromVersion.equals("1.2")) {
+			if (lang.equals("de")) {
+				update12de();
+			} else {
+				update12en();
+			}
+			fromVersion = "1.3";
+		}
+
+		if (!fromVersion.equals("1.3")) {
 			P.p.log(P.p.languageReader.get("Error_ConfigUpdate", fromVersion));
 			return;
 		}
@@ -379,10 +388,16 @@ public class ConfigUpdater {
 	private void update12de() {
 		updateVersion("1.3");
 
-		// Add the Example to the Cooked Section
-		int index = indexOfStart("# cooked:");
+		// Add the new Wood Types to the Description
+		int index = indexOfStart("# wood:");
 		if (index != -1) {
-			addLines(index, "# [Beispiel] MATERIAL_oder_id: Name nach Gähren");
+			setLine(index, "# wood: Wood of the barrel 0=any 1=Birch 2=Oak 3=Jungle 4=Spruce 5=Acacia 6=Dark Oak");
+		}
+
+		// Add the Example to the Cooked Section
+		index = indexOfStart("# cooked:");
+		if (index != -1) {
+			addLines(index + 1, "# [Beispiel] MATERIAL_oder_id: Name nach Gähren");
 		}
 
 		// Add new ingredients description
@@ -394,17 +409,17 @@ public class ConfigUpdater {
 		index = indexOfStart("# ingredients:");
 		if (index != -1) {
 			setLine(index, replacedLine);
-			addLines(index, lines);
+			addLines(index + 1, lines);
 		} else {
 			index = indexOfStart("# name:");
 			if (index != -1) {
-				addLines(index, lines);
-				addLines(index, replacedLine);
+				addLines(index + 1, lines);
+				addLines(index + 1, replacedLine);
 			} else {
 				index = indexOfStart("# -- Rezepte für Getränke --");
 				if (index != -1) {
-					addLines(index, lines);
-					addLines(index, "", replacedLine);
+					addLines(index + 2, lines);
+					addLines(index + 2, "", replacedLine);
 				}
 			}
 		}
@@ -415,10 +430,16 @@ public class ConfigUpdater {
 	private void update12en() {
 		updateVersion("1.3");
 
-		// Add the Example to the Cooked Section
-		int index = indexOfStart("# cooked:");
+		// Add the new Wood Types to the Description
+		int index = indexOfStart("# wood:");
 		if (index != -1) {
-			addLines(index, "# [Example] MATERIAL_or_id: Name after cooking");
+			setLine(index, "# wood: Holz des Fasses 0=alle Holzsorten 1=Birke 2=Eiche 3=Jungel 4=Fichte 5=Akazie 6=Schwarzeiche");
+		}
+
+		// Add the Example to the Cooked Section
+		index = indexOfStart("# cooked:");
+		if (index != -1) {
+			addLines(index + 1, "# [Example] MATERIAL_or_id: Name after cooking");
 		}
 
 		// Add new ingredients description
@@ -430,17 +451,17 @@ public class ConfigUpdater {
 		index = indexOfStart("# ingredients:");
 		if (index != -1) {
 			setLine(index, replacedLine);
-			addLines(index, lines);
+			addLines(index + 1, lines);
 		} else {
 			index = indexOfStart("# name:");
 			if (index != -1) {
-				addLines(index, lines);
-				addLines(index, replacedLine);
+				addLines(index + 1, lines);
+				addLines(index + 1, replacedLine);
 			} else {
 				index = indexOfStart("# -- Recipes for Potions --");
 				if (index != -1) {
-					addLines(index, lines);
-					addLines(index, "", replacedLine);
+					addLines(index + 2, lines);
+					addLines(index + 2, "", replacedLine);
 				}
 			}
 		}

@@ -8,6 +8,8 @@ import java.util.HashMap;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.PotionMeta;
+import org.bukkit.potion.PotionEffectType;
 
 public class BRecipe {
 
@@ -173,6 +175,38 @@ public class BRecipe {
 		return recipeItem.getDurability() == -1 || recipeItem.getDurability() == usedItem.getDurability();
 	}
 
+	// Create a Potion from this Recipe with best values. Quality can be set, but will reset to 10 if put in a barrel
+	public ItemStack create(int quality) {
+		ItemStack potion = new ItemStack(Material.POTION);
+		PotionMeta potionMeta = (PotionMeta) potion.getItemMeta();
+
+		int uid = Brew.generateUID();
+
+		ArrayList<ItemStack> list = new ArrayList<ItemStack>(ingredients.size());
+		for (ItemStack item : ingredients) {
+			if (item.getDurability() == -1) {
+				list.add(new ItemStack(item.getType(), item.getAmount()));
+			} else {
+				list.add(item.clone());
+			}
+		}
+
+		BIngredients bIngredients = new BIngredients(list, cookingTime);
+
+		Brew brew = new Brew(uid, bIngredients, quality, distillruns, getAge(), wood, getName(5), false, false);
+
+		potion.setDurability(Brew.PotionColor.valueOf(getColor()).getColorId(false));
+		potionMeta.setDisplayName(P.p.color("&f" + getName(quality)));
+		// This effect stores the UID in its Duration
+		potionMeta.addCustomEffect((PotionEffectType.REGENERATION).createEffect((uid * 4), 0), true);
+
+		brew.convertLore(potionMeta, false);
+		Brew.addOrReplaceEffects(potionMeta, effects);
+
+		potion.setItemMeta(potionMeta);
+		return potion;
+	}
+
 	// true if name and ingredients are correct
 	public boolean isValid() {
 		return (name != null && ingredients != null && !ingredients.isEmpty());
@@ -204,6 +238,16 @@ public class BRecipe {
 		} else {
 			return name[0];
 		}
+	}
+
+	// If one of the quality names equalIgnoreCase given name
+	public boolean hasName(String name) {
+		for (String test : this.name) {
+			if (test.equalsIgnoreCase(name)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public int getCookingTime() {

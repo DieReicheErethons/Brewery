@@ -9,6 +9,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import com.dre.brewery.BIngredients;
+import com.dre.brewery.BRecipe;
 import com.dre.brewery.P;
 import com.dre.brewery.Wakeup;
 import com.dre.brewery.BPlayer;
@@ -49,7 +51,11 @@ public class CommandListener implements CommandExecutor {
 
 		} else if (cmd.equalsIgnoreCase("create")) {
 
-			//TODO: create command
+			if (sender.hasPermission("brewery.cmd.create")) {
+				cmdCreate(sender, args);
+			} else {
+				p.msg(sender, p.languageReader.get("Error_NoPermissions"));
+			}
 
 		} else if (cmd.equalsIgnoreCase("info")) {
 
@@ -191,6 +197,10 @@ public class CommandListener implements CommandExecutor {
 
 		if (sender.hasPermission("brewery.cmd.persist")) {
 			cmds.add(p.languageReader.get("Help_Persist"));
+		}
+
+		if (sender.hasPermission("brewery.cmd.create")) {
+			cmds.add(p.languageReader.get("Help_Create"));
 		}
 
 		return cmds;
@@ -434,6 +444,71 @@ public class CommandListener implements CommandExecutor {
 			p.msg(sender, p.languageReader.get("Error_PlayerCommand"));
 		}
 
+	}
+
+	public void cmdCreate(CommandSender sender, String[] args) {
+
+		if (sender instanceof Player) {
+			if (args.length < 2) {
+				p.msg(sender, p.languageReader.get("Etc_Usage"));
+				p.msg(sender, p.languageReader.get("Help_Create"));
+				return;
+			}
+
+			int quality = 10;
+			boolean hasQuality = false;
+			if (args.length > 2) {
+				quality = p.parseInt(args[args.length - 1]);
+				if (quality > 0 && quality <= 10) {
+					hasQuality = true;
+				} else {
+					quality = 10;
+				}
+			}
+
+			int stringLength;
+			if (hasQuality) {
+				stringLength = args.length - 2;
+			} else {
+				stringLength = args.length - 1;
+			}
+
+			String name;
+			if (stringLength > 1) {
+				StringBuilder builder = new StringBuilder(args[1]);
+
+				for (int i = 2; i < stringLength + 1; i++) {
+					builder.append(" ").append(args[i]);
+				}
+				name = builder.toString();
+			} else {
+				name = args[1];
+			}
+
+
+			Player player = (Player) sender;
+
+			if (player.getInventory().firstEmpty() == -1) {
+				p.msg(sender, p.languageReader.get("CMD_Copy_Error", "1"));
+				return;
+			}
+
+			BRecipe recipe = null;
+			for (BRecipe r : BIngredients.recipes) {
+				if (r.hasName(name)) {
+					recipe = r;
+					break;
+				}
+			}
+			if (recipe != null) {
+				player.getInventory().addItem(recipe.create(quality));
+			} else {
+				p.msg(sender, p.languageReader.get("Error_NoBrewName", name));
+			}
+
+		} else {
+			p.msg(sender, p.languageReader.get("Error_PlayerCommand"));
+		}
 	}
 
 }

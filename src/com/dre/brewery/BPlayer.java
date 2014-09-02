@@ -1,5 +1,6 @@
 package com.dre.brewery;
 
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -462,20 +463,10 @@ public class BPlayer {
 	}
 
 	public static void addBrewEffects(Brew brew, Player player) {
-		Map<String, Integer> effects = brew.getEffects();
+		ArrayList<BEffect> effects = brew.getEffects();
 		if (effects != null) {
-			for (Map.Entry<String, Integer> entry : effects.entrySet()) {
-				PotionEffectType type = PotionEffectType.getByName(entry.getKey().replace("X", ""));
-				if (type != null) {
-					int duration = (entry.getValue() * brew.getQuality()) / 8;
-					if (type.isInstant()) {
-						type.createEffect(0, duration - 1).apply(player);
-					} else {
-						int amplifier = brew.getQuality() / 4;
-						duration /= type.getDurationModifier();
-						type.createEffect(duration * 20, amplifier).apply(player);
-					}
-				}
+			for (BEffect effect : effects) {
+				effect.apply(brew.getQuality(), player);
 			}
 		}
 	}

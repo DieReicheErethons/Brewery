@@ -110,7 +110,7 @@
 
 		<repository>
 			<id>sacredlabyrinth-repo</id>
-			<url>http://repo.sacredlabyrinth.net:8081/artifactory/repo/</url>
+			<url>http://repo.sacredlabyrinth.net/artifactory/repo/</url>
 			<snapshots>
 				<enabled>true</enabled>
 				<updatePolicy>always</updatePolicy>

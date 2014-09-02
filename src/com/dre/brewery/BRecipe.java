@@ -2,8 +2,6 @@ package com.dre.brewery;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.Material;
@@ -22,7 +20,7 @@ public class BRecipe {
 	private String color;// color of the destilled/finished potion
 	private int difficulty;// difficulty to brew the potion, how exact the instruction has to be followed
 	private int alcohol;// Alcohol in perfect potion
-	private Map<String, Integer> effects = new HashMap<String, Integer>(); // Special Effect, Duration
+	private ArrayList<BEffect> effects = new ArrayList<BEffect>(); // Special Effects when drinking
 
 	public BRecipe(ConfigurationSection configSectionRecipes, String recipeId) {
 		String nameList = configSectionRecipes.getString(recipeId + ".name");
@@ -80,20 +78,11 @@ public class BRecipe {
 		List<String> effectStringList = configSectionRecipes.getStringList(recipeId + ".effects");
 		if (effectStringList != null) {
 			for (String effectString : effectStringList) {
-				String[] effectSplit = effectString.split("/");
-				String effect = effectSplit[0];
-				if (effect.equalsIgnoreCase("WEAKNESS") ||
-					effect.equalsIgnoreCase("INCREASE_DAMAGE") ||
-					effect.equalsIgnoreCase("SLOW") ||
-					effect.equalsIgnoreCase("SPEED") ||
-					effect.equalsIgnoreCase("REGENERATION")) {
-					// hide these effects as they put crap into lore
-					effect = effect + "X";
-				}
-				if (effectSplit.length > 1) {
-					effects.put(effect, P.p.parseInt(effectSplit[1]));
+				BEffect effect = new BEffect(effectString);
+				if (effect.isValid()) {
+					effects.add(effect);
 				} else {
-					effects.put(effect, 20);
+					P.p.errorLog("Error adding Effect to Recipe: " + getName(5));
 				}
 			}
 		}
@@ -148,10 +137,15 @@ public class BRecipe {
 			return true;
 		}
 		for (ItemStack ingredient : ingredients) {
+			boolean matches = false;
 			for (ItemStack used : list) {
-				if (!ingredientsMatch(used, ingredient)) {
-					return true;
+				if (ingredientsMatch(used, ingredient)) {
+					matches = true;
+					break;
 				}
+			}
+			if (!matches) {
+				return true;
 			}
 		}
 		return false;
@@ -201,7 +195,7 @@ public class BRecipe {
 		potionMeta.addCustomEffect((PotionEffectType.REGENERATION).createEffect((uid * 4), 0), true);
 
 		brew.convertLore(potionMeta, false);
-		Brew.addOrReplaceEffects(potionMeta, effects);
+		Brew.addOrReplaceEffects(potionMeta, effects, quality);
 
 		potion.setItemMeta(potionMeta);
 		return potion;
@@ -282,7 +276,7 @@ public class BRecipe {
 		return alcohol;
 	}
 
-	public Map<String, Integer> getEffects() {
+	public ArrayList<BEffect> getEffects() {
 		return effects;
 	}
 

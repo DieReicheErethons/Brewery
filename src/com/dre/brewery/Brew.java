@@ -242,7 +242,7 @@ public class Brew {
 	}
 
 	// return special effect
-	public Map<String, Integer> getEffects() {
+	public ArrayList<BEffect> getEffects() {
 		if (currentRecipe != null && quality > 0) {
 			return currentRecipe.getEffects();
 		}
@@ -303,11 +303,12 @@ public class Brew {
 			currentRecipe = recipe;
 			quality = calcQuality();
 
-			addOrReplaceEffects(potionMeta, getEffects());
+			addOrReplaceEffects(potionMeta, getEffects(), quality);
 			potionMeta.setDisplayName(P.p.color("&f" + recipe.getName(quality)));
 			slotItem.setDurability(PotionColor.valueOf(recipe.getColor()).getColorId(canDistill()));
 		} else {
 			quality = 0;
+			removeEffects(potionMeta);
 			potionMeta.setDisplayName(P.p.color("&f" + P.p.languageReader.get("Brew_DistillUndefined")));
 			slotItem.setDurability(PotionColor.GREY.getColorId(canDistill()));
 		}
@@ -347,11 +348,12 @@ public class Brew {
 				currentRecipe = recipe;
 				quality = calcQuality();
 
-				addOrReplaceEffects(potionMeta, getEffects());
+				addOrReplaceEffects(potionMeta, getEffects(), quality);
 				potionMeta.setDisplayName(P.p.color("&f" + recipe.getName(quality)));
 				item.setDurability(PotionColor.valueOf(recipe.getColor()).getColorId(canDistill()));
 			} else {
 				quality = 0;
+				removeEffects(potionMeta);
 				potionMeta.setDisplayName(P.p.color("&f" + P.p.languageReader.get("Brew_BadPotion")));
 				item.setDurability(PotionColor.GREY.getColorId(canDistill()));
 			}
@@ -520,14 +522,23 @@ public class Brew {
 	}
 
 	// Adds the Effect names to the Items description
-	public static void addOrReplaceEffects(PotionMeta meta, Map<String, Integer> effects) {
+	public static void addOrReplaceEffects(PotionMeta meta, ArrayList<BEffect> effects, int quality) {
 		if (effects != null) {
-			for (Map.Entry<String, Integer> entry : effects.entrySet()) {
-				if (!entry.getKey().endsWith("X")) {
-					PotionEffectType type = PotionEffectType.getByName(entry.getKey());
-					if (type != null) {
-						meta.addCustomEffect(type.createEffect(0, 0), true);
-					}
+			for (BEffect effect : effects) {
+				if (!effect.isHidden()) {
+					effect.writeInto(meta, quality);
+				}
+			}
+		}
+	}
+
+	// Removes all effects except regeneration which stores data
+	public static void removeEffects(PotionMeta meta) {
+		if (meta.hasCustomEffects()) {
+			for (PotionEffect effect : meta.getCustomEffects()) {
+				PotionEffectType type = effect.getType();
+				if (!type.equals(PotionEffectType.REGENERATION)) {
+					meta.removeCustomEffect(type);
 				}
 			}
 		}

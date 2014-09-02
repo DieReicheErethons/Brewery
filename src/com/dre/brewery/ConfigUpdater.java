@@ -391,7 +391,7 @@ public class ConfigUpdater {
 		// Add the new Wood Types to the Description
 		int index = indexOfStart("# wood:");
 		if (index != -1) {
-			setLine(index, "# wood: Wood of the barrel 0=any 1=Birch 2=Oak 3=Jungle 4=Spruce 5=Acacia 6=Dark Oak");
+			setLine(index, "# wood: Holz des Fasses 0=alle Holzsorten 1=Birke 2=Eiche 3=Jungel 4=Fichte 5=Akazie 6=Schwarzeiche");
 		}
 
 		// Add the Example to the Cooked Section
@@ -401,8 +401,9 @@ public class ConfigUpdater {
 		}
 
 		// Add new ingredients description
-		String replacedLine = "# ingredients: Auflistung von 'Material oder ID,Data/Anzahl' (Item-ids anstatt Material werden von Bukkit nicht mehr unterstützt und funktionieren möglicherweise in Zukunft nicht mehr!)";
+		String replacedLine = "# ingredients: Auflistung von 'Material oder ID,Data/Anzahl'";
 		String[] lines = new String[] {
+				"#   (Item-ids anstatt Material werden von Bukkit nicht mehr unterstützt und funktionieren möglicherweise in Zukunft nicht mehr!)",
 				"#   Eine Liste von allen Materialien kann hier gefunden werden: http://jd.bukkit.org/beta/apidocs/org/bukkit/Material.html",
 				"#   Es kann ein Data-Wert angegeben werden, weglassen ignoriert diesen beim hinzufügen einer Zutat"
 		};
@@ -424,6 +425,62 @@ public class ConfigUpdater {
 			}
 		}
 
+		// Split the Color explanation into two lines
+		replacedLine = "# color: Farbe des Getränks nach destillieren/reifen.";
+		lines = new String[] {
+				"#   Benutzbare Farben: DARK_RED, RED, BRIGHT_RED, ORANGE, PINK, BLUE, CYAN, WATER, GREEN, BLACK, GREY, BRIGHT_GREY"
+		};
+
+		index = indexOfStart("# color:");
+		if (index != -1) {
+			setLine(index, replacedLine);
+			addLines(index + 1, lines);
+		} else {
+			index = indexOfStart("# age:");
+			if (index != -1) {
+				addLines(index + 1, lines);
+				addLines(index + 1, replacedLine);
+			}
+		}
+
+		// Add all the new info to the effects description
+		replacedLine = "# effects: Auflistung Effekt/Level/Dauer  Besonderere Trank-Effekte beim Trinken, Dauer in sek.";
+		lines = new String[] {
+				"#   Ein 'X' an den Namen anhängen, um ihn zu verbergen. Bsp: 'POISONX/2/10' (WEAKNESS, INCREASE_DAMAGE, SLOW und SPEED sind immer verborgen.)",
+				"#   Mögliche Effekte: http://jd.bukkit.org/rb/apidocs/org/bukkit/potion/PotionEffectType.html",
+				"#   Minimale und Maximale Level/Dauer können durch \"-\" festgelegt werden, Bsp: 'SPEED/1-2/30-40' = Level 1 und 30 sek minimal, Level 2 und 40 sek maximal",
+				"#   Diese Bereiche funktionieren auch umgekehrt, Bsp: 'POISON/3-1/20-5' für abschwächende Effekte bei guter Qualität",
+				"#   Längste mögliche Effektdauer: 1638 sek. Es muss keine Dauer für Effekte mit sofortiger Wirkung angegeben werden."
+		};
+
+		index = indexOfStart("# effects:");
+		if (index != -1) {
+			setLine(index, replacedLine);
+			addLines(index + 1, lines);
+		} else {
+			index = indexOfStart("# alcohol:");
+			if (index != -1) {
+				addLines(index + 1, lines);
+				addLines(index + 1, replacedLine);
+			} else {
+				index = indexOfStart("# -- Rezepte für Getränke --");
+				if (index != -1) {
+					addLines(index + 2, lines);
+					addLines(index + 2, "", replacedLine);
+				}
+			}
+		}
+		if (index != -1) {
+			index = indexOfStart("#   (WEAKNESS, INCREASE_DAMAGE, SLOW und SPEED sind immer verborgen.)  Mögliche Effekte:");
+			if (index != -1) {
+				config.remove(index);
+			}
+		}
+		index = indexOfStart("#   Bei Effekten mit sofortiger Wirkung ");
+		if (index != -1) {
+			config.remove(index);
+		}
+
 	}
 
 	// Update en from 1.2 to 1.3
@@ -433,7 +490,7 @@ public class ConfigUpdater {
 		// Add the new Wood Types to the Description
 		int index = indexOfStart("# wood:");
 		if (index != -1) {
-			setLine(index, "# wood: Holz des Fasses 0=alle Holzsorten 1=Birke 2=Eiche 3=Jungel 4=Fichte 5=Akazie 6=Schwarzeiche");
+			setLine(index, "# wood: Wood of the barrel 0=any 1=Birch 2=Oak 3=Jungle 4=Spruce 5=Acacia 6=Dark Oak");
 		}
 
 		// Add the Example to the Cooked Section
@@ -443,8 +500,9 @@ public class ConfigUpdater {
 		}
 
 		// Add new ingredients description
-		String replacedLine = "# ingredients: List of 'material or id,data/amount' (Item-ids instead of material are deprecated by bukkit and may not work in the future!)";
+		String replacedLine = "# ingredients: List of 'material or id,data/amount'";
 		String[] lines = new String[] {
+				"#   (Item-ids instead of material are deprecated by bukkit and may not work in the future!)",
 				"#   A list of materials can be found here: http://jd.bukkit.org/beta/apidocs/org/bukkit/Material.html",
 				"#   You can specify a data value, omitting it will ignore the data value of the added ingredient"
 		};
@@ -464,6 +522,62 @@ public class ConfigUpdater {
 					addLines(index + 2, "", replacedLine);
 				}
 			}
+		}
+
+		// Split the Color explanation into two lines
+		replacedLine = "# color: Color of the potion after distilling/aging.";
+		lines = new String[] {
+				"#   Usable Colors: DARK_RED, RED, BRIGHT_RED, ORANGE, PINK, BLUE, CYAN, WATER, GREEN, BLACK, GREY, BRIGHT_GREY"
+		};
+
+		index = indexOfStart("# color:");
+		if (index != -1) {
+			setLine(index, replacedLine);
+			addLines(index + 1, lines);
+		} else {
+			index = indexOfStart("# age:");
+			if (index != -1) {
+				addLines(index + 1, lines);
+				addLines(index + 1, replacedLine);
+			}
+		}
+
+		// Add all the new info to the effects description
+		replacedLine = "# effects: List of effect/level/duration  Special potion-effect when drinking, duration in sek.";
+		lines = new String[] {
+				"#   Suffix name with 'X' to hide effect from label. Sample: 'POISONX/2/10' (WEAKNESS, INCREASE_DAMAGE, SLOW and SPEED are always hidden.)",
+				"#   Possible Effects: http://jd.bukkit.org/rb/apidocs/org/bukkit/potion/PotionEffectType.html",
+				"#   Level or Duration ranges may be specified with a \"-\", ex. 'SPEED/1-2/30-40' = lvl 1 and 30 sec at worst and lvl 2 and 40 sec at best",
+				"#   Ranges also work high-low, ex. 'POISON/3-1/20-5' for weaker effects at good quality.",
+				"#   Highest possible Duration: 1638 sec. Instant Effects dont need any duration specified."
+		};
+
+		index = indexOfStart("# effects:");
+		if (index != -1) {
+			setLine(index, replacedLine);
+			addLines(index + 1, lines);
+		} else {
+			index = indexOfStart("# alcohol:");
+			if (index != -1) {
+				addLines(index + 1, lines);
+				addLines(index + 1, replacedLine);
+			} else {
+				index = indexOfStart("# -- Recipes for Potions --");
+				if (index != -1) {
+					addLines(index + 2, lines);
+					addLines(index + 2, "", replacedLine);
+				}
+			}
+		}
+		if (index != -1) {
+			index = indexOfStart("#   (WEAKNESS, INCREASE_DAMAGE, SLOW and SPEED are always hidden.)  Possible Effects:");
+			if (index != -1) {
+				config.remove(index);
+			}
+		}
+		index = indexOfStart("#   instant effects ");
+		if (index != -1) {
+			config.remove(index);
 		}
 
 	}

@@ -29,6 +29,7 @@ public class Brew {
 	private BRecipe currentRecipe;
 	private boolean unlabeled;
 	private boolean persistent;
+	private boolean stat; // static potions should not be changed
 
 	public Brew(int uid, BIngredients ingredients) {
 		this.ingredients = ingredients;
@@ -44,7 +45,7 @@ public class Brew {
 	}
 
 	// loading from file
-	public Brew(int uid, BIngredients ingredients, int quality, int distillRuns, float ageTime, float wood, String recipe, boolean unlabeled, boolean persistent) {
+	public Brew(int uid, BIngredients ingredients, int quality, int distillRuns, float ageTime, float wood, String recipe, boolean unlabeled, boolean persistent, boolean stat) {
 		potions.put(uid, this);
 		this.ingredients = ingredients;
 		this.quality = quality;
@@ -53,6 +54,7 @@ public class Brew {
 		this.wood = wood;
 		this.unlabeled = unlabeled;
 		this.persistent = persistent;
+		this.stat = stat;
 		setRecipeFromString(recipe);
 	}
 
@@ -128,7 +130,9 @@ public class Brew {
 			if (quality > 0) {
 				currentRecipe = ingredients.getBestRecipe(wood, ageTime, distillRuns > 0);
 				if (currentRecipe != null) {
-					this.quality = calcQuality();
+					if (!stat) {
+						this.quality = calcQuality();
+					}
 					P.p.log("Brew was made from Recipe: '" + name + "' which could not be found. '" + currentRecipe.getName(5) + "' used instead!");
 					return true;
 				} else {
@@ -163,6 +167,9 @@ public class Brew {
 		brew.distillRuns = distillRuns;
 		brew.ageTime = ageTime;
 		brew.unlabeled = unlabeled;
+		if (!brew.persistent) {
+			brew.stat = stat;
+		}
 		return brew;
 	}
 
@@ -278,6 +285,22 @@ public class Brew {
 		persistent = false;
 	}
 
+	public boolean isStatic() {
+		return stat;
+	}
+
+	// Set the Static flag, so potion is unchangeable
+	public void setStatic(boolean stat, ItemStack potion) {
+		this.stat = stat;
+		if (currentRecipe != null && canDistill()) {
+			if (stat) {
+				potion.setDurability(PotionColor.valueOf(currentRecipe.getColor()).getColorId(false));
+			} else {
+				potion.setDurability(PotionColor.valueOf(currentRecipe.getColor()).getColorId(true));
+			}
+		}
+	}
+
 	// Distilling section ---------------
 
 	// distill all custom potions in the brewer
@@ -296,6 +319,10 @@ public class Brew {
 
 	// distill custom potion in given slot
 	public void distillSlot(ItemStack slotItem, PotionMeta potionMeta) {
+		if (stat) {
+			return;
+		}
+
 		distillRuns += 1;
 		BRecipe recipe = ingredients.getdistillRecipe(wood, ageTime);
 		if (recipe != null) {
@@ -331,6 +358,10 @@ public class Brew {
 	// Ageing Section ------------------
 
 	public void age(ItemStack item, float time, byte woodType) {
+		if (stat) {
+			return;
+		}
+
 		PotionMeta potionMeta = (PotionMeta) item.getItemMeta();
 		ageTime += time;
 		
@@ -604,6 +635,9 @@ public class Brew {
 			}
 			if (brew.persistent) {
 				idConfig.set("persist", true);
+			}
+			if (brew.stat) {
+				idConfig.set("stat", true);
 			}
 			// save the ingredients
 			idConfig.set("ingId", brew.ingredients.save(config.getParent()));

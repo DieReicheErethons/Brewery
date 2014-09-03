@@ -101,6 +101,14 @@ public class CommandListener implements CommandExecutor {
 				p.msg(sender, p.languageReader.get("Error_NoPermissions"));
 			}
 
+		} else if (cmd.equalsIgnoreCase("static")) {
+
+			if (sender.hasPermission("brewery.cmd.static")) {
+				cmdStatic(sender);
+			} else {
+				p.msg(sender, p.languageReader.get("Error_NoPermissions"));
+			}
+
 		} else if (cmd.equalsIgnoreCase("unlabel")) {
 
 			if (sender.hasPermission("brewery.cmd.unlabel")) {
@@ -197,6 +205,10 @@ public class CommandListener implements CommandExecutor {
 
 		if (sender.hasPermission("brewery.cmd.persist")) {
 			cmds.add(p.languageReader.get("Help_Persist"));
+		}
+
+		if (sender.hasPermission("brewery.cmd.static")) {
+			cmds.add(p.languageReader.get("Help_Static"));
 		}
 
 		if (sender.hasPermission("brewery.cmd.create")) {
@@ -411,10 +423,41 @@ public class CommandListener implements CommandExecutor {
 				if (brew != null) {
 					if (brew.isPersistent()) {
 						brew.removePersistence();
+						brew.setStatic(false, hand);
 						p.msg(sender, p.languageReader.get("CMD_UnPersist"));
 					} else {
 						brew.makePersistent();
+						brew.setStatic(true, hand);
 						p.msg(sender, p.languageReader.get("CMD_Persistent"));
+					}
+					return;
+				}
+			}
+			p.msg(sender, p.languageReader.get("Error_ItemNotPotion"));
+		} else {
+			p.msg(sender, p.languageReader.get("Error_PlayerCommand"));
+		}
+
+	}
+
+	public void cmdStatic(CommandSender sender) {
+
+		if (sender instanceof Player) {
+			Player player = (Player) sender;
+			ItemStack hand = player.getItemInHand();
+			if (hand != null) {
+				Brew brew = Brew.get(hand);
+				if (brew != null) {
+					if (brew.isStatic()) {
+						if (!brew.isPersistent()) {
+							brew.setStatic(false, hand);
+							p.msg(sender, p.languageReader.get("CMD_NonStatic"));
+						} else {
+							p.msg(sender, p.languageReader.get("Error_PersistStatic"));
+						}
+					} else {
+						brew.setStatic(true, hand);
+						p.msg(sender, p.languageReader.get("CMD_Static"));
 					}
 					return;
 				}

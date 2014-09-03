@@ -82,11 +82,13 @@ public class LanguageReader {
 		defaults.put("CMD_Info_NotDrunk", "&v1 is not drunk");
 		defaults.put("CMD_Info_Drunk", "&v1 is &6&v2% &fdrunk, with a quality of &6&v3");
 		defaults.put("CMD_UnLabel", "&aLabel removed!");
-		defaults.put("CMD_Persistent", "&aPotion is now Persistent and may be copied like any other item. You can remove the persistence with the same command.");
-		defaults.put("CMD_PersistRemove", "&cThis Brew is Persistent. Deleting it would render every copy of it NOT made with '/brew copy' useless. To proceed, remove the persistence before deleting.");
-		defaults.put("CMD_UnPersist", "&aPersistence Removed. &eEvery Potential copy NOT made with '/brew copy' could become useless now!");
+		defaults.put("CMD_Persistent", "&aPotion is now Persistent and Static and may now be copied like any other item. You can remove the persistence with the same command.");
+		defaults.put("CMD_PersistRemove", "&cPersistent Brews cannot be removed from the Database. It would render any copies of them useless!");
+		defaults.put("CMD_UnPersist", "&aPersistence and static Removed. &eEvery Potential copy NOT made with '/brew copy' could become useless now!");
 		defaults.put("CMD_Copy_Error", "&6&v1 &cPotions did not fit into your inventory");
-		defaults.put("CMD_CopyNotPersistent", "&eThese copies of this Brew will not be persistent!");
+		defaults.put("CMD_CopyNotPersistent", "&eThese copies of this Brew will not be persistent or static!");
+		defaults.put("CMD_Static", "&aPotion is now static and will not change in barrels or brewing stands.");
+		defaults.put("CMD_NonStatic", "&ePotion is not static anymore and will normally age in barrels.");
 		
 		/* Error */
 		defaults.put("Error_UnknownCommand", "Unknown Command");
@@ -96,6 +98,7 @@ public class LanguageReader {
 		defaults.put("Error_NoBrewName", "&cNo Recipe with Name: '&v1&c' found!");
 		defaults.put("Error_Recipeload", "&cNot all recipes could be restored: More information in the server log!");
 		defaults.put("Error_ConfigUpdate", "Unknown Brewery config version: v&v1, config was not updated!");
+		defaults.put("Error_PersistStatic", "&cPersistent potions are always static!");
 
 		/* Permissions */
 		defaults.put("Error_NoPermissions", "&cYou don't have permissions to do this!");
@@ -122,6 +125,7 @@ public class LanguageReader {
 		defaults.put("Help_WakeupRemove", "&6/brew wakeup remove <id> &9Removes the wakeup point with <id>");
 		defaults.put("Help_Reload", "&6/brew reload &9Reload config");
 		defaults.put("Help_Persist", "&6/brew persist &9Make Brew persistent -> copyable by any plugin and technique");
+		defaults.put("Help_Static", "&6/brew static &9Make Brew static -> No further ageing or distilling");
 		defaults.put("Help_Create", "&6/brew create <Recipe> <Quality> &9Create a Brew with optional quality (1-10)");
 		
 		/* Etc. */

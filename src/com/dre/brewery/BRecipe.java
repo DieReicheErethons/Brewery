@@ -187,7 +187,7 @@ public class BRecipe {
 
 		BIngredients bIngredients = new BIngredients(list, cookingTime);
 
-		Brew brew = new Brew(uid, bIngredients, quality, distillruns, getAge(), wood, getName(5), false, false);
+		Brew brew = new Brew(uid, bIngredients, quality, distillruns, getAge(), wood, getName(5), false, false, true);
 
 		potion.setDurability(Brew.PotionColor.valueOf(getColor()).getColorId(false));
 		potionMeta.setDisplayName(P.p.color("&f" + getName(quality)));

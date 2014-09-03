@@ -324,8 +324,9 @@ public class P extends JavaPlugin {
 					String recipe = section.getString(uid + ".recipe", null);
 					boolean unlabeled = section.getBoolean(uid + ".unlabeled", false);
 					boolean persistent = section.getBoolean(uid + ".persist", false);
+					boolean stat = section.getBoolean(uid + ".stat", false);
 
-					new Brew(parseInt(uid), ingredients, quality, distillRuns, ageTime, wood, recipe, unlabeled, persistent);
+					new Brew(parseInt(uid), ingredients, quality, distillRuns, ageTime, wood, recipe, unlabeled, persistent, stat);
 				}
 			}
 

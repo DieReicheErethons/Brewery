@@ -10,6 +10,7 @@ import org.bukkit.World;
 import com.dre.brewery.P;
 import com.dre.brewery.BCauldron;
 import com.dre.brewery.Barrel;
+import com.dre.brewery.filedata.DataSave;
 
 public class WorldListener implements Listener {
 
@@ -26,7 +27,7 @@ public class WorldListener implements Listener {
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onWorldUnload(WorldUnloadEvent event) {
-		P.p.saveData();
+		DataSave.save(true);
 		Barrel.onUnload(event.getWorld().getName());
 		BCauldron.onUnload(event.getWorld().getName());
 	}

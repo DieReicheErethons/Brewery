@@ -17,7 +17,6 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.ConfigurationSection;
 
-import com.dre.brewery.integration.LogBlockBarrel;
 import org.apache.commons.lang.math.NumberUtils;
 import org.bukkit.event.HandlerList;
 import org.bukkit.Bukkit;
@@ -30,14 +29,12 @@ import org.bukkit.block.Block;
 import org.mcstats.Metrics;
 
 import com.dre.brewery.listeners.*;
+import com.dre.brewery.filedata.*;
+import com.dre.brewery.integration.LogBlockBarrel;
 
 public class P extends JavaPlugin {
 	public static P p;
 	public static boolean debug;
-	public static int lastBackup = 0;
-	public static int lastSave = 1;
-	public static int autosave = 3;
-	final public static String dataVersion = "1.1";
 	public static boolean useUUID;
 
 	// Third Party Enabled
@@ -102,7 +99,7 @@ public class P extends JavaPlugin {
 		p.getServer().getScheduler().cancelTasks(this);
 
 		// save Data to Disk
-		saveData();
+		DataSave.save(true);
 		
 		// save LanguageReader
 		languageReader.save();
@@ -212,7 +209,7 @@ public class P extends JavaPlugin {
 		useLB = config.getBoolean("useLogBlock", false) && getServer().getPluginManager().isPluginEnabled("LogBlock");
 
 		// various Settings
-		autosave = config.getInt("autosave", 3);
+		DataSave.autosave = config.getInt("autosave", 3);
 		debug = config.getBoolean("debug", false);
 		BPlayer.pukeItem = Material.matchMaterial(config.getString("pukeItem", "SOUL_SAND"));
 		BPlayer.hangoverTime = config.getInt("hangoverDays", 0) * 24 * 60;
@@ -287,11 +284,11 @@ public class P extends JavaPlugin {
 			// Check if data is the newest version
 			String version = data.getString("Version", null);
 			if (version != null) {
-				if (!version.equals(dataVersion)) {
+				if (!version.equals(DataSave.dataVersion)) {
 					P.p.log("Data File is being updated...");
 					new DataUpdater(data, file).update(version);
 					data = YamlConfiguration.loadConfiguration(file);
-					P.p.log("Data Updated to version: " + dataVersion);
+					P.p.log("Data Updated to version: " + DataSave.dataVersion);
 				}
 			}
 
@@ -497,77 +494,6 @@ public class P extends JavaPlugin {
 		}
 	}
 
-	// save all Data
-	public void saveData() {
-		long time = System.nanoTime();
-		File datafile = new File(p.getDataFolder(), "data.yml");
-
-		FileConfiguration oldData = YamlConfiguration.loadConfiguration(datafile);
-
-		if (datafile.exists()) {
-			if (lastBackup > 10) {
-				datafile.renameTo(new File(p.getDataFolder(), "dataBackup.yml"));
-				lastBackup = 0;
-			} else {
-				lastBackup++;
-			}
-		}
-
-		FileConfiguration configFile = new YamlConfiguration();
-
-		if (!Brew.potions.isEmpty()) {
-			Brew.save(configFile.createSection("Brew"));
-		}
-
-		if (!BCauldron.bcauldrons.isEmpty() || oldData.contains("BCauldron")) {
-			BCauldron.save(configFile.createSection("BCauldron"), oldData.getConfigurationSection("BCauldron"));
-		}
-
-		if (!Barrel.barrels.isEmpty() || oldData.contains("Barrel")) {
-			Barrel.save(configFile.createSection("Barrel"), oldData.getConfigurationSection("Barrel"));
-		}
-
-		if (!BPlayer.isEmpty()) {
-			BPlayer.save(configFile.createSection("Player"));
-		}
-
-		if (!Wakeup.wakeups.isEmpty() || oldData.contains("Wakeup")) {
-			Wakeup.save(configFile.createSection("Wakeup"), oldData.getConfigurationSection("Wakeup"));
-		}
-
-		saveWorldNames(configFile, oldData.getConfigurationSection("Worlds"));
-
-		configFile.set("Version", dataVersion);
-
-		try {
-			configFile.save(datafile);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		lastSave = 1;
-
-		time = System.nanoTime() - time;
-		float ftime = (float) (time / 1000000.0);
-		p.debugLog("Writing Data to File (" + ftime + "ms)");
-	}
-
-	public void saveWorldNames(FileConfiguration root, ConfigurationSection old) {
-		if (old != null) {
-			root.set("Worlds", old);
-		}
-		for (World world : p.getServer().getWorlds()) {
-			String worldName = world.getName();
-			if (worldName.startsWith("DXL_")) {
-				worldName = getDxlName(worldName);
-				root.set("Worlds." + worldName, 0);
-			} else {
-				worldName = world.getUID().toString();
-				root.set("Worlds." + worldName, world.getName());
-			}
-		}
-	}
-
 	// Utility
 
 	public int parseInt(String string) {
@@ -738,11 +664,7 @@ public class P extends JavaPlugin {
 
 			debugLog("Update");
 
-			if (lastSave >= autosave) {
-				saveData();// save all data
-			} else {
-				lastSave++;
-			}
+			DataSave.autoSave();
 		}
 
 	}

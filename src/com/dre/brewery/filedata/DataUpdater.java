@@ -1,4 +1,4 @@
-package com.dre.brewery;
+package com.dre.brewery.filedata;
 
 import java.io.File;
 import java.io.IOException;
@@ -8,6 +8,8 @@ import java.util.Map;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
+
+import com.dre.brewery.P;
 
 public class DataUpdater {
 
@@ -40,7 +42,7 @@ public class DataUpdater {
 	@SuppressWarnings("deprecation")
 	public void update10() {
 
-		data.set("Version", P.dataVersion);
+		data.set("Version", DataSave.dataVersion);
 
 		ConfigurationSection section = data.getConfigurationSection("Ingredients");
 		try {

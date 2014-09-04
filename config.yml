@@ -210,14 +210,18 @@ recipes:
    10:
       name: Stale Coffee/Coffee/Strong Coffee
       ingredients:
-      - INK_SACK,3/6
-      - MILK_BUCKET/1
+      - INK_SACK,3/12
+      - MILK_BUCKET/2
       cookingtime: 2
       color: BLACK
       difficulty: 3
       effects:
       - REGENERATION/1/2-5
-      - SPEED/1-2/10-25
+      - SPEED/1/30-140
+
+# More Recipes ideas: Cachaca, Gin, Whiskey, Tequila, Cider, etc. as well as high quality abbreviations like golden vodka etc.
+# I will not add more Recipes to the default config, as they would be public and viewable by users to cheat.
+# It is up to the Serveradmin to change and add Recipes, so players cannot cheat from the default config.
 
 
 

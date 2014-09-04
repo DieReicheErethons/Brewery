@@ -1,4 +1,4 @@
-package com.dre.brewery;
+package com.dre.brewery.filedata;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -8,6 +8,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import com.dre.brewery.P;
 
 public class ConfigUpdater {
 

@@ -263,6 +263,17 @@ distortCommands:
 - /fl
 - /s
 - /letter
+- /g
+- /l
+- /lokal
+- /local
+- /mail send
+- /m
+- /msg
+- /w
+- /whisper
+- /reply
+- /r
 
 # Distort the Text written on a Sign while drunk [false]
 distortSignText: false

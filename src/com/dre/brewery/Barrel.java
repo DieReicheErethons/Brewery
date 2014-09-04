@@ -18,6 +18,7 @@ import org.bukkit.material.MaterialData;
 import org.bukkit.material.Stairs;
 import org.bukkit.material.Tree;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import com.dre.brewery.integration.GriefPreventionBarrel;
 import com.dre.brewery.integration.LWCBarrel;
@@ -29,12 +30,13 @@ import org.apache.commons.lang.ArrayUtils;
 public class Barrel {
 
 	public static CopyOnWriteArrayList<Barrel> barrels = new CopyOnWriteArrayList<Barrel>();
+	private static int check = 0;
 
 	private Block spigot;
 	private int[] woodsloc = null; // location of wood Blocks
 	private int[] stairsloc = null; // location of stair Blocks
 	private byte signoffset;
-	private boolean checked = false;
+	private boolean checked;
 	private Inventory inventory;
 	private float time;
 
@@ -90,25 +92,18 @@ public class Barrel {
 	}
 
 	public static void onUpdate() {
-		Block broken;
 		for (Barrel barrel : barrels) {
-			if (!barrel.checked) {
-				broken = barrel.getBrokenBlock(false);
-				if (broken != null) {
-					// remove the barrel if it was destroyed
-					barrel.willDestroy();
-					barrel.remove(broken, null);
-					continue;
-				} else {
-					// Dont check this barrel again, its enough to check it once after every restart
-					// as now this is only the backup if we dont register the barrel breaking, as sample
-					// when removing it with some world editor
-					barrel.checked = true;
-				}
-			}
-
 			// Minecraft day is 20 min, so add 1/20 to the time every minute
 			barrel.time += (1.0 / 20.0);
+		}
+		if (check == 0 && barrels.size() > 0) {
+			Barrel random = barrels.get((int) Math.floor(Math.random() * barrels.size()));
+			if (random != null) {
+				// You have been selected for a random search
+				// We want to check at least one barrel every time
+				random.checked = false;
+			}
+			new BarrelCheck().runTaskTimer(P.p, 1, 1);
 		}
 	}
 
@@ -892,6 +887,40 @@ public class Barrel {
 		woodsloc = ArrayUtils.toPrimitive(woods.toArray(new Integer[woods.size()]));
 
 		return null;
+	}
+
+	public static class BarrelCheck extends BukkitRunnable {
+		@Override
+		public void run() {
+			boolean repeat = true;
+			while (repeat) {
+				if (check < barrels.size()) {
+					Barrel barrel = barrels.get(check);
+					if (!barrel.checked) {
+						Block broken = barrel.getBrokenBlock(false);
+						if (broken != null) {
+							P.p.debugLog("Barrel at " + broken.getWorld().getName() + "/" + broken.getX() + "/" + broken.getY() + "/" + broken.getZ()
+									+ " has been destroyed unexpectedly, contents will drop");
+							// remove the barrel if it was destroyed
+							barrel.willDestroy();
+							barrel.remove(broken, null);
+						} else {
+							// Dont check this barrel again, its enough to check it once after every restart
+							// as now this is only the backup if we dont register the barrel breaking, as sample
+							// when removing it with some world editor
+							barrel.checked = true;
+						}
+						repeat = false;
+					}
+					check++;
+				} else {
+					check = 0;
+					repeat = false;
+					cancel();
+				}
+			}
+		}
+
 	}
 
 }

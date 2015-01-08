@@ -23,7 +23,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import com.dre.brewery.integration.GriefPreventionBarrel;
 import com.dre.brewery.integration.LWCBarrel;
 import com.dre.brewery.integration.LogBlockBarrel;
-import com.dre.brewery.integration.WGBarrel;
 
 import org.apache.commons.lang.ArrayUtils;
 
@@ -124,12 +123,13 @@ public class Barrel {
 			Plugin plugin = P.p.getServer().getPluginManager().getPlugin("WorldGuard");
 			if (plugin != null) {
 				try {
-					if (!WGBarrel.checkAccess(player, spigot, plugin)) {
+					if (!P.p.wg.checkAccess(player, spigot, plugin)) {
 						return false;
 					}
-				} catch (Exception e) {
+				} catch (Throwable e) {
 					P.p.errorLog("Failed to Check WorldGuard for Barrel Open Permissions!");
-					P.p.errorLog("Brewery was tested with version 5.8 of WorldGuard!");
+					P.p.errorLog("Brewery was tested with version 5.8 to 6.0 of WorldGuard!");
+					P.p.errorLog("Disable the WorldGuard support in the config and do /brew reload");
 					e.printStackTrace();
 					P.p.msg(player, "&cError opening Barrel, please report to an Admin!");
 					return false;
@@ -143,9 +143,10 @@ public class Barrel {
 					if (!GriefPreventionBarrel.checkAccess(player, spigot)) {
 						return false;
 					}
-				} catch (Exception e) {
+				} catch (Throwable e) {
 					P.p.errorLog("Failed to Check GriefPrevention for Barrel Open Permissions!");
 					P.p.errorLog("Brewery only works with the latest release of GriefPrevention (7.8)");
+					P.p.errorLog("Disable the GriefPrevention support in the config and do /brew reload");
 					e.printStackTrace();
 					P.p.msg(player, "&cError opening Barrel, please report to an Admin!");
 					return false;
@@ -164,9 +165,10 @@ public class Barrel {
 					if (!sign.equals(event.getClickedBlock())) {
 						try {
 							return LWCBarrel.checkAccess(player, sign, event, plugin);
-						} catch (Exception e) {
+						} catch (Throwable e) {
 							P.p.errorLog("Failed to Check LWC for Barrel Open Permissions!");
 							P.p.errorLog("Brewery was tested with version 4.3.1 of LWC!");
+							P.p.errorLog("Disable the LWC support in the config and do /brew reload");
 							e.printStackTrace();
 							P.p.msg(player, "&cError opening Barrel, please report to an Admin!");
 							return false;
@@ -188,8 +190,10 @@ public class Barrel {
 		if (P.p.useLWC) {
 			try {
 				return LWCBarrel.checkDestroy(player, this);
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				P.p.errorLog("Failed to Check LWC for Barrel Break Permissions!");
+				P.p.errorLog("Brewery was tested with version 4.3.1 of LWC!");
+				P.p.errorLog("Disable the LWC support in the config and do /brew reload");
 				e.printStackTrace();
 				P.p.msg(player, "&cError breaking Barrel, please report to an Admin!");
 				return false;
@@ -204,8 +208,9 @@ public class Barrel {
 		if (P.p.useLWC) {
 			try {
 				LWCBarrel.remove(this);
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				P.p.errorLog("Failed to Remove LWC Lock from Barrel!");
+				P.p.errorLog("Brewery was tested with version 4.3.1 of LWC!");
 				e.printStackTrace();
 			}
 		}
@@ -248,7 +253,7 @@ public class Barrel {
 		if (P.p.useLB) {
 			try {
 				LogBlockBarrel.openBarrel(player, inventory, spigot.getLocation());
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				P.p.errorLog("Failed to Log Barrel to LogBlock!");
 				P.p.errorLog("Brewery was tested with version 1.80 of LogBlock!");
 				e.printStackTrace();
@@ -442,7 +447,7 @@ public class Barrel {
 			if (P.p.useLB && breaker != null) {
 				try {
 					LogBlockBarrel.breakBarrel(breaker.getName(), items, spigot.getLocation());
-				} catch (Exception e) {
+				} catch (Throwable e) {
 					P.p.errorLog("Failed to Log Barrel-break to LogBlock!");
 					P.p.errorLog("Brewery was tested with version 1.80 of LogBlock!");
 					e.printStackTrace();

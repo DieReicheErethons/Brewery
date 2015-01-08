@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.io.IOException;
 import java.io.File;
 import java.util.UUID;
-import java.util.logging.Level;
 
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -17,6 +16,9 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.ConfigurationSection;
 
+import com.dre.brewery.integration.WGBarrel;
+import com.dre.brewery.integration.WGBarrelNew;
+import com.dre.brewery.integration.WGBarrelOld;
 import org.apache.commons.lang.math.NumberUtils;
 import org.bukkit.event.HandlerList;
 import org.bukkit.Bukkit;
@@ -39,6 +41,7 @@ public class P extends JavaPlugin {
 
 	// Third Party Enabled
 	public boolean useWG; //WorldGuard
+	public WGBarrel wg;
 	public boolean useLWC; //LWC
 	public boolean useLB; //LogBlock
 	public boolean useGP; //GriefPrevention
@@ -175,7 +178,7 @@ public class P extends JavaPlugin {
 	}
 
 	public void errorLog(String msg) {
-		Bukkit.getLogger().log(Level.SEVERE, ChatColor.DARK_GREEN + "[Brewery] " + ChatColor.DARK_RED + "ERROR: " + ChatColor.RED + msg);
+		Bukkit.getConsoleSender().sendMessage(ChatColor.DARK_GREEN + "[Brewery] " + ChatColor.DARK_RED + "ERROR: " + ChatColor.RED + msg);
 	}
 
 	public void readConfig() {
@@ -204,6 +207,24 @@ public class P extends JavaPlugin {
 
 		// Third-Party
 		useWG = config.getBoolean("useWorldGuard", true) && getServer().getPluginManager().isPluginEnabled("WorldGuard");
+		if (useWG) {
+			try {
+				try {
+					Class.forName("com.sk89q.worldguard.bukkit.RegionContainer");
+					log("Using New WorldGuard!");
+					wg = new WGBarrelNew();
+				} catch (ClassNotFoundException e) {
+					log("Using Old WorldGuard!");
+					wg = new WGBarrelOld();
+				}
+			} catch (Throwable e) {
+				wg = null;
+				P.p.errorLog("Failed loading WorldGuard Integration! Opening Barrels will NOT work!");
+				P.p.errorLog("Brewery was tested with version 5.8 to 6.0 of WorldGuard!");
+				P.p.errorLog("Disable the WorldGuard support in the config and do /brew reload");
+				e.printStackTrace();
+			}
+		}
 		useLWC = config.getBoolean("useLWC", true) && getServer().getPluginManager().isPluginEnabled("LWC");
 		useGP = config.getBoolean("useGriefPrevention", true) && getServer().getPluginManager().isPluginEnabled("GriefPrevention");
 		useLB = config.getBoolean("useLogBlock", false) && getServer().getPluginManager().isPluginEnabled("LogBlock");

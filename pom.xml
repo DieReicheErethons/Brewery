@@ -97,15 +97,6 @@
 		</repository>
 
 		<repository>
-			<id>ChestShop-repo</id>
-			<url>https://github.com/Acrobot/ChestShop-3/tree/master/repo</url>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>always</updatePolicy>
-			</snapshots>
-		</repository>
-
-		<repository>
 			<id>addstar-repo</id>
 			<url>http://maven.addstar.com.au/artifactory/ext-release-local/</url>
 			<snapshots>
@@ -142,7 +133,7 @@
 		<dependency>
 			<groupId>com.griefcraft</groupId>
 			<artifactId>lwc</artifactId>
-			<version>4.3.1</version>
+			<version>4.4.0</version>
 			<scope>compile</scope>
 			<type>jar</type>
 		</dependency>
@@ -156,9 +147,9 @@
 		</dependency>
 
 		<dependency>
-			<groupId>de.diddiz</groupId>
-			<artifactId>logblock</artifactId>
-			<version>dev-SNAPSHOT</version>
+			<groupId>de.diddiz.LogBlock</groupId>
+			<artifactId>LogBlock</artifactId>
+			<version>1.80</version>
 			<scope>compile</scope>
 			<type>jar</type>
 		</dependency>

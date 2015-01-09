@@ -36,6 +36,7 @@ import com.dre.brewery.integration.LogBlockBarrel;
 
 public class P extends JavaPlugin {
 	public static P p;
+	public static String configVersion = "1.3";
 	public static boolean debug;
 	public static boolean useUUID;
 
@@ -197,10 +198,9 @@ public class P extends JavaPlugin {
 		// Check if config is the newest version
 		String version = config.getString("version", null);
 		if (version != null) {
-			String currentVersion = getDescription().getVersion();
-			if (!version.equals(currentVersion)) {
+			if (!version.equals(configVersion)) {
 				new ConfigUpdater(file).update(version, language);
-				P.p.log("Config Updated to version: " + currentVersion);
+				P.p.log("Config Updated to version: " + configVersion);
 				config = YamlConfiguration.loadConfiguration(file);
 			}
 		}

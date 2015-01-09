@@ -51,11 +51,15 @@ colorInBrewer: false
 # Si le grand tonneau peut être ouvert en cliquant sur n'importe quel bloc, non seulement le robinet ou le panneau. Toujours "true" pour les petits tonneaux. [true]
 openLargeBarrelEverywhere: true
 
+# Enable checking for Updates, Checks the curseforge api for updates to Brewery [true]
+# If an Update is found a Message is logged on Server-start and displayed to ops joining the game
+updateCheck: true
+
 # Intervale de la sauvegarde automatique en minutes [3]
 autosave: 3
 
 # Version de configuration
-version: '1.3'
+version: '1.3.1'
 
 
 # -- Recette pour les boissons --

@@ -211,10 +211,8 @@ public class P extends JavaPlugin {
 			try {
 				try {
 					Class.forName("com.sk89q.worldguard.bukkit.RegionContainer");
-					log("Using New WorldGuard!");
 					wg = new WGBarrelNew();
 				} catch (ClassNotFoundException e) {
-					log("Using Old WorldGuard!");
 					wg = new WGBarrelOld();
 				}
 			} catch (Throwable e) {

@@ -25,7 +25,7 @@ public class WGBarrelOld implements WGBarrel {
 			allows = ApplicableRegionSet.class.getMethod("allows", StateFlag.class, LocalPlayer.class);
 			canBuild = ApplicableRegionSet.class.getMethod("canBuild", LocalPlayer.class);
 		} catch (NoSuchMethodException e) {
-			P.p.errorLog("Failed to Hook WorldGuard for Barrel Open Permissions!");
+			P.p.errorLog("Failed to Hook WorldGuard for Barrel Open Permissions! Opening Barrels will NOT work!");
 			P.p.errorLog("Brewery was tested with version 5.8 to 6.0 of WorldGuard!");
 			P.p.errorLog("Disable the WorldGuard support in the config and do /brew reload");
 			e.printStackTrace();

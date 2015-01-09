@@ -19,7 +19,7 @@
 			<!-- Static resources -->
 			<resource>
 				<filtering>false</filtering>
-				<directory>${project.basedir}</directory>
+				<directory>${project.basedir}/resources</directory>
 				<includes>
 					<include>**/*.yml</include>
 				</includes>

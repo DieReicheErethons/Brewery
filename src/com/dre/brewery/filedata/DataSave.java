@@ -129,7 +129,7 @@ public class DataSave extends BukkitRunnable {
 			}
 		} else {
 			running = new DataSave(null);
-			running.runTask(P.p);
+			running.run();
 		}
 		P.p.debugLog("saving: " + ((System.nanoTime() - time) / 1000000.0) + "ms");
 	}

@@ -1,0 +1,74 @@
+Brew_-times: -times
+Brew_BadPotion: Ruined Potion
+Brew_BarrelRiped: Barrel aged
+Brew_DistillUndefined: Indefinable Distillate
+Brew_Distilled: Distilled
+Brew_HundredsOfYears: Hundreds of Years
+Brew_Ingredients: Ingredients
+Brew_MinutePluralPostfix: s
+Brew_OneYear: One Year
+Brew_ThickBrew: Muddy Brewxxxxx
+Brew_Undefined: Indefinable Brew
+Brew_Woodtype: Woodtype
+Brew_Years: Years
+Brew_fermented: fermented
+Brew_minute: minute
+CMD_Copy_Error: '&6&v1 &cPotions did not fit into your inventory'
+CMD_Info_Drunk: '&v1 is &6&v2% &fdrunk, with a quality of &6&v3'
+CMD_Info_NotDrunk: '&v1 is not drunk'
+CMD_Player: '&a&v1 is now &6&v2% &adrunk, with a quality of &6&v3'
+CMD_Player_Error: '&cThe Quality has to be between 1 and 10!'
+CMD_Reload: '&aConfig was successfully reloaded'
+CMD_UnLabel: '&aLabel removed!'
+Error_ConfigUpdate: 'Unknown Brewery Config version: v&v1, Config was not Updated!'
+Error_ItemNotPotion: '&cThe Item in your hand could not be identified as Potion'
+Error_NoPermissions: '&cYou have no permission to do this!'
+Error_PlayerCommand: '&cThis command can only be executed as player'
+Error_Recipeload: '&cNot all recipes could be restored: More information in the Serverlog!'
+Error_ShowHelp: use &6/brew help &fto display the help
+Error_UnknownCommand: Unknown Command
+Etc_Barrel: Barrel
+Etc_Page: Page
+Etc_Usage: 'Usage:'
+Help_Copy: '&6/brew Copy <Quanitiy>&9 Copies the Potion in your Hand'
+Help_Delete: '&6/brew Delete &9Deletes the Potion in your Hand'
+Help_Help: '&6/brew help <Page> &9Shows a specific help-page'
+Help_Info: '&6/brew Info&9 Displays your current Drunkeness and Quality'
+Help_InfoOther: '&6/brew Info <Player>&9 Displays the current Drunkeness and Quality
+  of <Player>'
+Help_Player: '&6/brew <Player> <%Drunkeness> <Quality>&9 Sets Drunkeness (and Quality)
+  of a Player'
+Help_Reload: '&6/brew reload &9Reload config'
+Help_UnLabel: '&6/brew UnLabel &9Removes the detailled label of a Potion'
+Help_Wakeup: '&6/brew Wakeup List <Page>&9 Lists all Wakeup Points'
+Help_WakeupAdd: '&6/brew Wakeup Add &9Adds a Wakeup Point at your current Position'
+Help_WakeupCheck: '&6/brew Wakeup Check &9Teleports to all Wakeup Points'
+Help_WakeupCheckSpecific: '&6/brew Wakeup Check <id> &9Teleports to the Wakeup Point
+  with <id>'
+Help_WakeupList: '&6/brew Wakeup List <Page> <World>&9 Lists all Wakeup Points of a
+  World'
+Help_WakeupRemove: '&6/brew Wakeup Remove <id> &9Removes the Wakeup Point with <id>'
+Player_BarrelCreated: Barrel created
+Player_CantDrink: You can't drink any more
+Player_CauldronInfo1: This Cauldron seethes since &v1 minutes
+Player_CauldronInfo2: This Cauldron seethes since less than one minute
+Player_DrunkPassOut: You have drunken too much and fainted!
+Player_LoginDeny: Your character is drunk and does not react. Try again!
+Player_LoginDenyLong: Your character is really drunk and unconscious. Try again in 10 minutes!
+Player_TriedToSay: '&v1 tried to say: &0&v2'
+Player_Wake: Ohh no! I cannot remember how I got here...
+Player_WakeAlreadyDeleted: '&cThe Wakeup Point with the id: &6&v1 &chas already been
+  deleted!'
+Player_WakeCancel: '&6Wakeup Point Check was cancelled'
+Player_WakeCreated: '&aWakeup Point with id: &6&v1 &awas created successfully!'
+Player_WakeDeleted: '&aThe Wakeup Point with the id: &6&v1 &awas successfully deleted!'
+Player_WakeFilled: '&cThe Wakeup Point with the id: &6&v1&c at position &6&v2 &v3,
+  &v4, &v5&c is filled with Blocks!'
+Player_WakeHint1: 'To Next Wakeup Point: Punch your fist in the air'
+Player_WakeHint2: 'To Cancel: &9/brew wakeup cancel'
+Player_WakeLast: '&aThis was the last Wakeup Point'
+Player_WakeNoCheck: '&cNo Wakeup Point Check is currently active'
+Player_WakeNoPoints: '&cThere are no Wakeup Points!'
+Player_WakeNotExist: '&cThe Wakeup Point with the id: &6&v1 &cdoesn''t exist!'
+Player_WakeTeleport: 'Teleport to Wakeup Point with the id: &6&v1&f At position: &6&v2
+  &v3, &v4, &v5'

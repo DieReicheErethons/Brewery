@@ -1,0 +1,546 @@
+# config for Brewery.jar
+
+
+# -- Paramètres --
+# Les paramètres par défaut sont entre []
+# Supprimer un paramètre le désactive
+
+# Fichier de langage utilisé (trouvable dans plugins/Brewery/languages)
+language: fr
+
+# Si le joueur se réveille à son /home lors de sa connexion après un excès alcool (Un plugin de /home est nécessaire!) [true]
+enableHome: true
+
+# Type de la téléportation /home: ['cmd: home']
+# bed = Le joueur se téléportera à son lit de réapparition.
+# SamplePlugin = Le plugin /home installé. Supporte: ManagerXL. Si non disponible:
+# 'cmd: home' = /home sera exécuté par le joueur. Il devra avoir la permission sans le délai pour y parvenir!
+# 'cmd: spawn' = /spawn sera exécuté par le joueur.
+# 'cmd: whatever' = /whatever sera exécuté par le joueur. (Peu importe)
+homeType: 'cmd: home'
+
+# Si le joueur se "réveille" à un point aléatoire sur la carte à sa connexion, pendant un excès d'alccol (Les points de réveil doivent être ajoutés avec '/br Wakeup add' via un administrateur.)
+# Le joueur se réveillera aléatoirement parmis les deux points de "réveil" les plus proches de lui [true]
+enableWake: true
+
+# Si le joueur reçoit des connexions refusées au serveur s'il est ivre.[true]
+enableLoginDisallow: false
+
+# Si le joueur s'évanouit (il sera kické) lorsqu'il boit trop d'alcool[true]
+enableKickOnOverdrink: false
+
+# Si le joueur vomit en cas d'alcoolémie élevée (Le type d'objet "droppé" est configurable en dessous) [true]
+# L'objet ne peut pas être collecté et reste sur le sol jusqu'à ce qu'il disparaisse (ATTENTION: Peut être collecté si le serveur redémarre!)
+enablePuke: true
+
+# L'objet utilisé pour représenter le vomit [SOUL_SAND]
+pukeItem: SOUL_SAND
+
+# Consommables Objet/Force. Réduit le montant d'alcool par <Force> lors de la consommation. (list)
+drainItems:
+- BREAD/4
+- MILK_BUCKET/2
+
+# Temps (en jours) pour que les données d'ivresse restent sauvergardées lorsque le joueur est déconnecté, pour appliquer les effets. [7]
+hangoverDays: 7
+
+# Colorer les informations d'objets (lore) au dépend de la qualité dans un tonneau et/ou dans un stand de brassage (l'alambic) [true, false]
+colorInBarrels: true
+colorInBrewer: false
+
+# Si le grand tonneau peut être ouvert en cliquant sur n'importe quel bloc, non seulement le robinet ou le panneau. Toujours "true" pour les petits tonneaux. [true]
+openLargeBarrelEverywhere: true
+
+# Intervale de la sauvegarde automatique en minutes [3]
+autosave: 3
+
+# Version de configuration
+version: '1.3'
+
+
+# -- Recette pour les boissons --
+
+# name: Différents noms pour la mauvaise/moyen/bonne qualité (Les codes de mise en forme sont pris en charge: comme par exemple &6 pour la couleur Or.)
+# ingredients: Liste des 'matériaux ou id,data/montant'
+#   (Les id d'objets à la place des matériaux sont obsolètes pour bukkit et pourraient ne pas fonctionner dans le futur!)
+#     Ex: 'SUGAR_CANE' 
+#   Une liste des matériaux peuvent-être trouvés ici: http://jd.bukkit.org/beta/apidocs/org/bukkit/Material.html
+#   Vous pouvez spécifier une data (Ex: 5:3 -> Planche de bois de jungle), si vous ne le faites pas la data ne sera pas prise en compte (Ex : 5 -> Bois en général)
+# cookingtime: Temps en minutes réelles durant lesquelles les ingrédients devront bouillir
+# distillruns: Combien de fois le breuvage devra être distillé pour un alcool de qualité (0=Ne pas distiller)
+# wood: Type de bois du baril 0=aucun 1=Bouleau 2=Chêne 3=Jungle 4=Pin 5=Acacia 6=Chêne Noir
+# age: Temps en jours de Minecraft, la potion devra être âgée dans un baril. 0=Pas besoin d'âge
+# color: Couleur de la potion après distillation/avoir laissé vieillir.
+#   Couleurs disponibles: DARK_RED, RED, BRIGHT_RED, ORANGE, PINK, BLUE, CYAN, WATER, GREEN, BLACK, GREY, BRIGHT_GREY (Dans l'ordre : Rouge foncé, Rouge, Rouge clair, Orange, Rose, Bleu, Cyan, Eau, Vert, Noir, Gris, Gris clair)
+# difficulty: 1-10 précision nécessaire pour obtenir une bonne qualité (1 = imprécis/facile, 10 = très précis/difficile)
+# alcohol: Le montant d'alcool absolu dans une boisson parfaite (cela sera ajouté directement au joueur, où 100% entraînera l'évanouissement), un degré d'alcooléisme en fait
+# effects: Liste des effets/durée en secondes lors de la consommation.
+#   Rajouter le suffixe 'X' pour le cacher du label. Exemple: POISONX/10
+#   (WEAKNESS, INCREASE_DAMAGE, SLOW et SPEED sont toujours cachés.)
+#   Effets posssible: http://jd.bukkit.org/rb/apidocs/org/bukkit/potion/PotionEffectType.html
+#   POUR LES EFFETS EN FONCTIONS DE LA QUALITE : Les Niveaux (I ou II) ou les Intervalles de durées d'effets doivent être spécifiés avec un "-".
+#       Ex: 'SPEED/1-2/30-40' => Vitesse niveau 1 et durée de 30 sec pour la pire qualité, et niveau 2 et durée de 40 sec pour la meilleure.
+#     Il est aussi possible de faire l'inverse, c'est à dire que le schéma "Meilleure qualité, meilleur effets" soit "Meilleure qualité, effets moins puissants.
+#     Cela peut-être utile pour des potions avec l'effet poison pour empoisonner moins avec une bonne qualité.
+#       Ex: 'POISON/3-1/20-5' => Poison de niveau 3 durant 20 sec à la moins bonne qualité et de niveau 1 et de durée 5 sec à la meilleure.
+#     Durées possibles maximum: 1638 sec. Les effets instantanés n'ont pas besoin d'avoir une durée spécifiée (Ex : Les potions de Soin instantané).
+
+recipes:
+#  Exemple de recette avec tous les paramètres possibles :
+   0:
+      name: Mauvais Exemple/Exemple/Bonne Exemple
+      ingredients:
+      - SUGAR_CANE/5
+      - 264/1
+      - INK_SACK,3/20
+      - 5,1/8
+      cookingtime: 3
+      distillruns: 2
+      wood: 4
+      age: 11
+      color: DARK_RED
+      difficulty: 3
+      alcohol: 23
+      effects:
+      - FIRE_RESISTANCE/20
+      - HEAL/1
+      - WEAKNESS/2-3/50-60
+      - POISONX/1-0/20-0
+   1:
+      name: Bière Blanche Fade/Bière Blanche/Bonne Bière Blanche
+      ingredients: 
+      - WHEAT/3
+      cookingtime: 8
+      distillruns: 0
+      wood: 1
+      age: 2
+      color: BRIGHT_GREY
+      difficulty: 1
+      alcohol: 5
+   2:
+      name: Bière Fade/Bière/Bonne Bière
+      ingredients: 
+      - WHEAT/6
+      cookingtime: 8
+      distillruns: 0
+      wood: 0
+      age: 3
+      color: ORANGE
+      difficulty: 1
+      alcohol: 6
+   3:
+      name: Bière Brune Fade/Bière Brune/Bonne Bière Brune
+      ingredients: 
+      - WHEAT/6
+      cookingtime: 8
+      distillruns: 0
+      wood: 4
+      age: 8
+      color: BLACK
+      difficulty: 2
+      alcohol: 7
+   4:
+      name: Hydromel Bizarre/Hydromel/&6Hydromel Doré
+      ingredients: 
+      - SUGAR_CANE/6
+      cookingtime: 3
+      distillruns: 0
+      wood: 2
+      age: 4
+      color: ORANGE
+      difficulty: 2
+      alcohol: 9
+   5:
+      name: Hydromel de Pommes/Doux Hydromel de Pommes/&6Doux Hydromel de Pommes Dorées
+      ingredients: 
+      - SUGAR_CANE/6
+      - APPLE/2
+      cookingtime: 4
+      distillruns: 0
+      wood: 2
+      age: 4
+      color: ORANGE
+      difficulty: 4
+      alcohol: 12
+      effects:
+      - WATER_BREATHINGX/1-2/150
+   6:
+      name: Rhum Amer/Rhum Epicé/&6Rhum Doré
+      ingredients: 
+      - SUGAR_CANE/14
+      cookingtime: 5
+      distillruns: 2
+      wood: 2
+      age: 14
+      color: DARK_RED
+      difficulty: 6
+      alcohol: 30
+      effects:
+      - FIRE_RESISTANCE/1/20-100
+      - POISONX/1-0/30-0
+   7:
+      name: Vodka Sale/Vodka/Vodka Russe
+      ingredients: 
+      - POTATO_ITEM/10
+      cookingtime: 15
+      distillruns: 3
+      age: 0
+      color: BRIGHT_GREY
+      difficulty: 4
+      alcohol: 20
+      effects:
+      - WEAKNESS/15
+      - POISON/10
+   8:
+      name: Absinthe pauvre/Absinthe/Absinthe forte
+      ingredients:
+      - LONG_GRASS/15
+      cookingtime: 3
+      distillruns: 6
+      color: GREEN
+      difficulty: 8
+      alcohol: 45
+      effects:
+      - POISON/20-30
+   9:
+      name: Potato soup
+      ingredients:
+      - POTATO_ITEM/5
+      - LONG_GRASS/3
+      cookingtime: 3
+      color: PINK
+      difficulty: 1
+      effects:
+      - HEAL/0-1
+   10:
+      name: Café fétide/Café/Café fort
+      ingredients:
+      - INK_SACK,3/12
+      - MILK_BUCKET/2
+      cookingtime: 2
+      color: BLACK
+      difficulty: 3
+      effects:
+      - REGENERATION/1/2-5
+      - SPEED/1/30-140
+
+# Plus d'idées de recettes: Cachaça, Gin, Whisky, Tequila, Cidre, etc. et abréviations de haute qualité comme la vodka dorée etc.
+# Je n'ajouterai pas plus de recettes à la configuration par défaut, car elles seront publiques et visibles par tous les utilisateurs et parce que les joueurs pourraient tricher en les voyant.
+# Ce sera aux Admins des serveurs de changer et d'ajouter les recettes, ainsi les joueurs ne pourront pas tricher avec les configuration de base.
+
+
+
+# cooked: CHAQUE ingrédient possible avec le nom donné après la fermentation (la cuisson):
+# [Exemple] MATERIEL_ou_id: Nom après la cuisson
+
+cooked:
+   WHEAT: Blé fermenté
+   SUGAR_CANE: Sucre fermenté
+   APPLE: Cidre de pommes
+   POTATO_ITEM: Purée de Pommes de Terre
+   LONG_GRASS: Herbes bouillies
+   RED_MUSHROOM: Champignons fermentés
+   INK_SACK: Fermentation colorée
+   MILK_BUCKET: Eau laiteuse
+
+
+
+# -- Compatibilité entre Plugins --
+
+# Activer la vérification des autres plugins (si installés) pour les permissions des tonneaux. [true]
+useWorldGuard: true
+useLWC: true
+useGriefPrevention: true
+
+# Activer l'historique du contenu des tonneaux avec LogBlock [true]
+useLogBlock: true
+
+
+# -- Paramètres de la distorsion du Chat --
+
+# Ecrire dans les "logs" du serveur ce que le joueur devrait dire, à la place de la distorsion. [false]
+logRealChat: false
+
+# Distordre le texte dans le Chat après les commandes spécifiées (list) [- /gl]
+distortCommands:
+- /gl
+- /global
+- /fl
+- /s
+- /letter
+- /g
+- /l
+- /lokal
+- /local
+- /mail send
+- /m
+- /msg
+- /w
+- /whisper
+- /reply
+- /r
+
+# Distordre le texte sur les panneaux pendant l'ivresse [false]
+distortSignText: false
+
+# Entourer les textes avec ces caractères pour ignorer la distorsion (Utilisez "," comme un séparateur) (list) [- '[,]']
+distortBypass:
+- '*,*'
+- '[,]'
+
+# words: Les mots et les lettres altérées dans le chat lors d'un état d'ivresse.
+# Commence du haut jusqu'au bas. Les phrases sont altérées par l'ordre écrit.
+
+# replace: Mot ou lettre à remplacer (Spécial: "-space": remplace les espaces, "-random": s'insère dans une position aléatoire, "-all": Toute la ligne, "-start": Au début, "-end": A la fin.)
+# to: Ce qui remplacera.
+# pre: Les mots et les lettres avant le mot désiré (séparez avec ",")
+# match: true = Si un des "Pre-Mots" est nécessaire avant le mot désiré, false = Aucun des "Pre-Mots" n'est autorisé avant le mot désiré.
+# alcohol: 1-100 Le montant minimal d'alcool pour que la distorsion fonctionne.
+# percentage: Probabilité en pourcentage que le mot soit remplacé.
+
+words:
+-  replace: s
+   to: sh
+   percentage: 90
+   alcohol: 30
+
+-  replace: ch
+   to: sh
+   pre: u,s,o,a
+   match: false
+   alcohol: 10
+   percentage: 70
+
+-  replace: h
+   to: hh
+   pre: sch,h,t
+   match: false
+   percentage: 60
+   alcohol: 20
+
+-  replace: th
+   to: thl
+   percentage: 40
+   alcohol: 30
+
+-  replace: sch
+   to: shk
+   percentage: 60
+   alcohol: 40
+
+-  replace: u
+   to: uuh
+   percentage: 20
+
+-  replace: y
+   to: yy
+   percentage: 60
+   alcohol: 15
+
+-  replace: e
+   to: ee
+   percentage: 40
+   alcohol: 15
+
+-  replace: toi
+   to: twa
+   percentage: 40
+
+-  replace: u
+   to: uo
+   pre: u
+   match: false
+   percentage: 60
+
+-  replace: ça
+   to: sha
+   percentage: 20
+   alcohol: 40
+
+-  replace: p
+   to: b
+   percentage: 30
+
+-  replace: p
+   to: b
+   percentage: 70
+   alcohol: 60
+
+-  replace: up
+   to: ubb
+   percentage: 80
+   alcohol: 25
+
+-  replace: o
+   to: oh
+   percentage: 20
+
+-  replace: ei
+   to: i
+   percentage: 30
+   alcohol: 15
+
+-  replace: b
+   to: bb
+   percentage: 80
+   alcohol: 40
+
+-  replace: '!!!'
+   to: '!!!?!???!?!?!!!'
+   pre: '!'
+   match: false
+   percentage: 20
+   alcohol: 70
+
+-  replace: '!'
+   to: '!!'
+   pre: '!'
+   match: false
+   percentage: 90
+
+-  replace: ivre
+   to: shaoul
+   pre: es, êtes
+   match: false
+   percentage: 70
+   alcohol: 65
+
+-  replace: marcher
+   to: mrashere
+   pre: tu peux, vous pouvez, tu ne peux pas, vous ne pouvez pas
+   match: false
+   percentage: 80
+   alcohol: 30
+
+-  replace: wtf
+   to: wft
+   percentage: 20
+   alcohol: 40
+
+-  replace: lol
+   to: loool
+   percentage: 80
+   alcohol: 10
+
+-  replace: afk
+   to: aaAAaafffFFFfffKAAAAAA
+   percentage: 30
+   alcohol: 30
+
+-  replace: écrire
+   to: ekrir
+   pre: tu peux, vous pouvez, tu ne peux pas, vous ne pouvez pas
+   match: false
+   percentage: 80
+   alcohol: 50
+
+-  replace: drink
+   to: booze
+   percentage: 80
+   alcohol: 70
+
+-  replace: '?'
+   to: '????'
+   pre: '?'
+   match: false
+   percentage: 80
+   alcohol: 40
+
+-  replace: -space
+   to: ''
+   pre: h,g,w
+   match: true
+   alcohol: 10
+
+-  replace: -space
+   to: ''
+   percentage: 30
+   alcohol: 35
+
+-  replace: -space
+   to: ''
+   percentage: 10
+
+-  replace: -start
+   to: dho
+   percentage: 15
+   alcohol: 50
+
+-  replace: -start
+   to: hhn
+   percentage: 10
+   alcohol: 50
+
+-  replace: -random
+   to: lu
+   percentage: 10
+
+-  replace: -random
+   to: lug
+   percentage: 10
+   alcohol: 50
+
+-  replace: -random
+   to: blub
+   percentage: 20
+   alcohol: 80
+
+-  replace: -random
+   to: lerg
+   percentage: 40
+   alcohol: 85
+
+-  replace: -random
+   to: gul
+   percentage: 40
+   alcohol: 80
+
+-  replace: -random
+   to: ' '
+   percentage: 100
+   alcohol: 70
+
+-  replace: -random
+   to: ' '
+   percentage: 60
+   alcohol: 40
+
+-  replace: -random
+   to: ' '
+   percentage: 50
+   alcohol: 30
+
+-  replace: -end
+   to: '!'
+   percentage: 40
+   alcohol: 30
+
+-  replace: -random
+   to: ' *hic* '
+   percentage: 80
+   alcohol: 70
+
+-  replace: -random
+   to: ' *hic* '
+   percentage: 15
+   alcohol: 40
+
+-  replace: -space
+   to: ' *hic* '
+   percentage: 5
+   alcohol: 20
+
+-  replace: -end
+   to: ' *hic*'
+   percentage: 70
+   alcohol: 50
+
+-  replace: -all
+   to: '*burp*'
+   percentage: 3
+   alcohol: 60
+
+-  replace: -all
+   to: '*burp*'
+   percentage: 6
+   alcohol: 80

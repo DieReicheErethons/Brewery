@@ -1,5 +1,8 @@
 package com.dre.brewery;
 
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
@@ -67,7 +70,11 @@ public class P extends JavaPlugin {
 		String v = Bukkit.getBukkitVersion();
 		useUUID = !v.matches(".*1\\.[1-6].*") && !v.matches(".*1\\.7\\.[0-5].*");
 
-		readConfig();
+		if (!readConfig()) {
+			p = null;
+			getServer().getPluginManager().disablePlugin(this);
+			return;
+		}
 		readData();
 		
 		// Setup Metrics
@@ -102,10 +109,14 @@ public class P extends JavaPlugin {
 	public void onDisable() {
 
 		// Disable listeners
-		HandlerList.unregisterAll(p);
+		HandlerList.unregisterAll(this);
 
 		// Stop shedulers
-		p.getServer().getScheduler().cancelTasks(this);
+		getServer().getScheduler().cancelTasks(this);
+
+		if (p == null) {
+			return;
+		}
 
 		// save Data to Disk
 		DataSave.save(true);
@@ -187,10 +198,10 @@ public class P extends JavaPlugin {
 		Bukkit.getConsoleSender().sendMessage(ChatColor.DARK_GREEN + "[Brewery] " + ChatColor.DARK_RED + "ERROR: " + ChatColor.RED + msg);
 	}
 
-	public void readConfig() {
+	public boolean readConfig() {
 		File file = new File(p.getDataFolder(), "config.yml");
-		if (!file.exists()) {
-			saveDefaultConfig();
+		if (!checkConfigs()) {
+			return false;
 		}
 		FileConfiguration config = YamlConfiguration.loadConfiguration(file);
 
@@ -299,6 +310,8 @@ public class P extends JavaPlugin {
 
 		// telling Words the path, it will load it when needed
 		Words.config = config;
+
+		return true;
 	}
 
 	// load all Data
@@ -521,6 +534,54 @@ public class P extends JavaPlugin {
 		}
 	}
 
+	private boolean checkConfigs() {
+		File cfg = new File(p.getDataFolder(), "config.yml");
+		if (!cfg.exists()) {
+			errorLog("No config.yml found, creating default file! You may want to choose a config according to your language!");
+			InputStream defconf = getResource("config/en/config.yml");
+			if (defconf == null) {
+				errorLog("default config file not found, your jarfile may be corrupt. Disabling Brewery!");
+				return false;
+			}
+			try {
+				saveFile(defconf, getDataFolder(), "config.yml");
+			} catch (IOException e) {
+				e.printStackTrace();
+				return false;
+			}
+		}
+		if (!cfg.exists()) {
+			errorLog("default config file could not be copied, your jarfile may be corrupt. Disabling Brewery!");
+			return false;
+		}
+
+		File configs = new File(getDataFolder(), "configs");
+		if (!configs.exists()) {
+			String lang[] = new String[] {"de", "en", "fr"};
+			for (String l : lang) {
+				File lfold = new File(configs, l);
+				try {
+					saveFile(getResource("config/" + l + "/config.yml"), lfold, "config.yml");
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+		File languages = new File(getDataFolder(), "languages");
+		if (!languages.exists()) {
+			String lang[] = new String[] {"de", "en", "fr", "no"};
+			for (String l : lang) {
+				try {
+					saveFile(getResource("languages/" + l + ".yml"), languages, l + ".yml");
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return true;
+	}
+
 	// Utility
 
 	public int parseInt(String string) {
@@ -638,6 +699,29 @@ public class P extends JavaPlugin {
 			msg = ChatColor.translateAlternateColorCodes('&', msg);
 		}
 		return msg;
+	}
+
+	public static void saveFile(InputStream in, File dest, String name) throws IOException {
+		if (in == null) return;
+		if (!dest.exists()) {
+			dest.mkdirs();
+		}
+		File result = new File(dest, name);
+		if (result.exists()) {
+			return;
+		}
+
+		OutputStream out = new FileOutputStream(result);
+		byte[] buffer = new byte[1024];
+
+		int length;
+		//copy the file content in bytes
+		while ((length = in.read(buffer)) > 0){
+			out.write(buffer, 0, length);
+		}
+
+		in.close();
+		out.close();
 	}
 
 	// Returns either uuid or Name of player, depending on bukkit version

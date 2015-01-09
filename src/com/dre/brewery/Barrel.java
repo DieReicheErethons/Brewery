@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.block.Block;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.configuration.ConfigurationSection;
@@ -26,7 +27,7 @@ import com.dre.brewery.integration.LogBlockBarrel;
 
 import org.apache.commons.lang.ArrayUtils;
 
-public class Barrel {
+public class Barrel implements InventoryHolder {
 
 	public static CopyOnWriteArrayList<Barrel> barrels = new CopyOnWriteArrayList<Barrel>();
 	private static int check = 0;
@@ -49,9 +50,9 @@ public class Barrel {
 		this.spigot = spigot;
 		this.signoffset = sign;
 		if (isLarge()) {
-			this.inventory = org.bukkit.Bukkit.createInventory(null, 27, P.p.languageReader.get("Etc_Barrel"));
+			this.inventory = org.bukkit.Bukkit.createInventory(this, 27, P.p.languageReader.get("Etc_Barrel"));
 		} else {
-			this.inventory = org.bukkit.Bukkit.createInventory(null, 9, P.p.languageReader.get("Etc_Barrel"));
+			this.inventory = org.bukkit.Bukkit.createInventory(this, 9, P.p.languageReader.get("Etc_Barrel"));
 		}
 		if (items != null) {
 			for (String slot : items.keySet()) {
@@ -220,9 +221,9 @@ public class Barrel {
 	public void open(Player player) {
 		if (inventory == null) {
 			if (isLarge()) {
-				inventory = org.bukkit.Bukkit.createInventory(null, 27, P.p.languageReader.get("Etc_Barrel"));
+				inventory = org.bukkit.Bukkit.createInventory(this, 27, P.p.languageReader.get("Etc_Barrel"));
 			} else {
-				inventory = org.bukkit.Bukkit.createInventory(null, 9, P.p.languageReader.get("Etc_Barrel"));
+				inventory = org.bukkit.Bukkit.createInventory(this, 9, P.p.languageReader.get("Etc_Barrel"));
 			}
 		} else {
 			if (time > 0) {
@@ -260,6 +261,11 @@ public class Barrel {
 			}
 		}
 		player.openInventory(inventory);
+	}
+
+	@Override
+	public Inventory getInventory() {
+		return inventory;
 	}
 
 	// Returns true if this Block is part of this Barrel

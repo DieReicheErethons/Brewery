@@ -13,6 +13,7 @@ import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.Material;
 
+import com.dre.brewery.Barrel;
 import com.dre.brewery.Brew;
 import com.dre.brewery.P;
 import com.dre.brewery.integration.LogBlockBarrel;
@@ -60,11 +61,7 @@ public class InventoryListener implements Listener {
 			if (event.getSlot() > 2) {
 				return;
 			}
-		} else if (event.getInventory().getType() == InventoryType.CHEST) {
-			if (!event.getInventory().getTitle().equals(P.p.languageReader.get("Etc_Barrel"))) {
-				return;
-			}
-		} else {
+		} else if (!(event.getInventory().getHolder() instanceof Barrel)) {
 			return;
 		}
 
@@ -96,15 +93,13 @@ public class InventoryListener implements Listener {
 	@EventHandler
 	public void onInventoryClose(InventoryCloseEvent event) {
 		if (P.p.useLB) {
-			if (event.getInventory().getType() == InventoryType.CHEST) {
-				if (event.getInventory().getTitle().equals(P.p.languageReader.get("Etc_Barrel"))) {
-					try {
-						LogBlockBarrel.closeBarrel(event.getPlayer(), event.getInventory());
-					} catch (Exception e) {
-						P.p.errorLog("Failed to Log Barrel to LogBlock!");
-						P.p.errorLog("Brewery was tested with version 1.80 of LogBlock!");
-						e.printStackTrace();
-					}
+			if (event.getInventory().getHolder() instanceof Barrel) {
+				try {
+					LogBlockBarrel.closeBarrel(event.getPlayer(), event.getInventory());
+				} catch (Exception e) {
+					P.p.errorLog("Failed to Log Barrel to LogBlock!");
+					P.p.errorLog("Brewery was tested with version 1.80 of LogBlock!");
+					e.printStackTrace();
 				}
 			}
 		}

@@ -116,7 +116,16 @@ public class ConfigUpdater {
 			fromVersion = "1.3";
 		}
 
-		if (!fromVersion.equals("1.3")) {
+		if (fromVersion.equals("1.3")) {
+			if (lang.equals("de")) {
+				update13de();
+			} else {
+				update13en();
+			}
+			fromVersion = "1.3.1";
+		}
+
+		if (!fromVersion.equals("1.3.1")) {
 			P.p.log(P.p.languageReader.get("Error_ConfigUpdate", fromVersion));
 			return;
 		}
@@ -583,5 +592,55 @@ public class ConfigUpdater {
 		}
 
 	}
+
+	private void update13de() {
+		updateVersion("1.3.1");
+
+		int index = indexOfStart("# Autosave");
+		String[] lines = new String[] { "# Aktiviert das Suchen nach Updates für Brewery mit der curseforge api [true]",
+				"# Wenn ein Update gefunden wurde, wird dies bei Serverstart im log angezeigt, sowie ops benachrichtigt",
+				"updateCheck: true",
+				"" };
+
+		if (index == -1) {
+			index = indexOfStart("autosave:");
+			if (index == -1) {
+				index = indexOfStart("# Sprachedatei");
+				if (index == -1) {
+					index = indexOfStart("language:");
+				}
+			}
+		}
+		if (index == -1) {
+			appendLines(lines);
+		} else {
+			addLines(index, lines);
+		}
+	}
+	private void update13en() {
+		updateVersion("1.3.1");
+
+		int index = indexOfStart("# Autosave");
+		String[] lines = new String[] { "# Enable checking for Updates, Checks the curseforge api for updates to Brewery [true]",
+				"# If an Update is found a Message is logged on Server-start and displayed to ops joining the game",
+				"updateCheck: true",
+				"" };
+
+		if (index == -1) {
+			index = indexOfStart("autosave:");
+			if (index == -1) {
+				index = indexOfStart("# Languagefile");
+				if (index == -1) {
+					index = indexOfStart("language:");
+				}
+			}
+		}
+		if (index == -1) {
+			appendLines(lines);
+		} else {
+			addLines(index, lines);
+		}
+	}
+
 
 }

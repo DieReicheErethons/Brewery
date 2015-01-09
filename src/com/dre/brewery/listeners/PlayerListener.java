@@ -19,6 +19,7 @@ import com.dre.brewery.BPlayer;
 import com.dre.brewery.Words;
 import com.dre.brewery.Wakeup;
 import com.dre.brewery.P;
+import com.dre.brewery.filedata.UpdateChecker;
 
 
 public class PlayerListener implements Listener {
@@ -229,6 +230,11 @@ public class PlayerListener implements Listener {
 				}
 			}
 		}
+	}
+
+	@EventHandler(ignoreCancelled = true)
+	public void onPlayerJoin(PlayerJoinEvent event) {
+		UpdateChecker.notify(event.getPlayer());
 	}
 
 	@EventHandler

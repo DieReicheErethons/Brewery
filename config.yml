@@ -51,11 +51,15 @@ colorInBrewer: false
 # If a Large Barrel can be opened by clicking on any of its blocks, not just Spigot or Sign. This is always true for Small Barrels. [true]
 openLargeBarrelEverywhere: true
 
+# Enable checking for Updates, Checks the curseforge api for updates to Brewery [true]
+# If an Update is found a Message is logged on Server-start and displayed to ops joining the game
+updateCheck: true
+
 # Autosave interval in minutes [3]
 autosave: 3
 
 # Config Version
-version: '1.3'
+version: '1.3.1'
 
 
 # -- Recipes for Potions --

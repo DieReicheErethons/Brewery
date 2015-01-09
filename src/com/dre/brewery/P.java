@@ -36,9 +36,10 @@ import com.dre.brewery.integration.LogBlockBarrel;
 
 public class P extends JavaPlugin {
 	public static P p;
-	public static String configVersion = "1.3";
+	public static String configVersion = "1.3.1";
 	public static boolean debug;
 	public static boolean useUUID;
+	public static boolean updateCheck;
 
 	// Third Party Enabled
 	public boolean useWG; //WorldGuard
@@ -89,6 +90,10 @@ public class P extends JavaPlugin {
 		// Heartbeat
 		p.getServer().getScheduler().runTaskTimer(p, new BreweryRunnable(), 650, 1200);
 		p.getServer().getScheduler().runTaskTimer(p, new DrunkRunnable(), 120, 120);
+
+		if (updateCheck) {
+			p.getServer().getScheduler().runTaskLaterAsynchronously(p, new UpdateChecker(), 135);
+		}
 
 		this.log(this.getDescription().getName() + " enabled!");
 	}
@@ -204,6 +209,9 @@ public class P extends JavaPlugin {
 				config = YamlConfiguration.loadConfiguration(file);
 			}
 		}
+
+		// If the Update Checker should be enabled
+		updateCheck = config.getBoolean("updateCheck", false);
 
 		// Third-Party
 		useWG = config.getBoolean("useWorldGuard", true) && getServer().getPluginManager().isPluginEnabled("WorldGuard");
@@ -656,10 +664,6 @@ public class P extends JavaPlugin {
 	// Runnables
 
 	public class DrunkRunnable implements Runnable {
-
-		public DrunkRunnable() {
-		}
-
 		@Override
 		public void run() {
 			if (!BPlayer.isEmpty()) {
@@ -669,10 +673,6 @@ public class P extends JavaPlugin {
 	}
 
 	public class BreweryRunnable implements Runnable {
-
-		public BreweryRunnable() {
-		}
-
 		@Override
 		public void run() {
 			for (BCauldron cauldron : BCauldron.bcauldrons) {

@@ -645,6 +645,12 @@ public class P extends JavaPlugin {
 			return true;
 		case FENCE:
 		case NETHER_FENCE:
+		case ACACIA_FENCE:
+		case BIRCH_FENCE:
+		case DARK_OAK_FENCE:
+		case IRON_FENCE:
+		case JUNGLE_FENCE:
+		case SPRUCE_FENCE:
 			// remove barrel and throw potions on the ground
 			Barrel barrel = Barrel.getBySpigot(block);
 			if (barrel != null) {

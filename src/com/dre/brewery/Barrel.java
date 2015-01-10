@@ -342,6 +342,12 @@ public class Barrel implements InventoryHolder {
 			case NETHER_FENCE:
 			case SIGN_POST:
 			case WALL_SIGN:
+			case ACACIA_FENCE:
+			case BIRCH_FENCE:
+			case DARK_OAK_FENCE:
+			case IRON_FENCE:
+			case JUNGLE_FENCE:
+			case SPRUCE_FENCE:
 				Barrel barrel = getBySpigot(block);
 				if (barrel != null) {
 					return barrel;
@@ -697,7 +703,7 @@ public class Barrel implements InventoryHolder {
 		while (y <= 1) {
 			// Fence and Netherfence
 			Block relative = block.getRelative(0, y, 0);
-			if (relative.getType() == Material.FENCE || relative.getType() == Material.NETHER_FENCE) {
+			if (isFence(relative.getType())) {
 				return (relative);
 			}
 			y++;
@@ -713,6 +719,22 @@ public class Barrel implements InventoryHolder {
 			case JUNGLE_WOOD_STAIRS:
 			case ACACIA_STAIRS:
 			case DARK_OAK_STAIRS:
+				return true;
+			default:
+				return false;
+		}
+	}
+
+	public static boolean isFence(Material material) {
+		switch (material) {
+			case FENCE:
+			case NETHER_FENCE:
+			case ACACIA_FENCE:
+			case BIRCH_FENCE:
+			case DARK_OAK_FENCE:
+			case IRON_FENCE:
+			case JUNGLE_FENCE:
+			case SPRUCE_FENCE:
 				return true;
 			default:
 				return false;

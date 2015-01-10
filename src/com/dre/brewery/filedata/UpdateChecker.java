@@ -21,7 +21,7 @@ import org.json.simple.JSONValue;
  */
 public class UpdateChecker implements Runnable {
 	// The project's unique ID
-	private final int projectID = 68006;
+	private static final int projectID = 68006;
 
 	// Used for locating version numbers in file names
 	private static final String DELIMETER = "^v|[\\s_-]v";

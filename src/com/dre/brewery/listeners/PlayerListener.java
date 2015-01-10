@@ -119,7 +119,7 @@ public class PlayerListener implements Listener {
 								break;
 							}
 						}
-					} else if (type == Material.FENCE || type == Material.NETHER_FENCE || type == Material.SIGN_POST || type == Material.WALL_SIGN) {
+					} else if (Barrel.isFence(type) || type == Material.SIGN_POST || type == Material.WALL_SIGN) {
 						barrel = Barrel.getBySpigot(clickedBlock);
 					}
 

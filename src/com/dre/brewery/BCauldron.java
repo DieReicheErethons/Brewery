@@ -97,22 +97,28 @@ public class BCauldron {
 			}
 			ItemStack potion = bcauldron.ingredients.cook(bcauldron.state);
 			if (potion != null) {
+				byte data = block.getData();
+				if (data > 3) {
+					data = 3;
+					block.setData(data);
+				} else if (data <= 0) {
+					bcauldrons.remove(bcauldron);
+					return false;
+				}
+				data -= 1;
+				block.setData(data);
+
+				if (data == 0) {
+					bcauldrons.remove(bcauldron);
+				} else {
+					bcauldron.someRemoved = true;
+				}
 				// Bukkit Bug, inventory not updating while in event so this
 				// will delay the give
 				// but could also just use deprecated updateInventory()
 				giveItem(player, potion);
 				// player.getInventory().addItem(potion);
 				// player.getInventory().updateInventory();
-				if (block.getData() > 3) {
-					block.setData((byte) 3);
-				}
-				block.setData((byte) (block.getData() - 1));
-
-				if (block.getData() == 0) {
-					bcauldrons.remove(bcauldron);
-				} else {
-					bcauldron.someRemoved = true;
-				}
 				return true;
 			}
 		}

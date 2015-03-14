@@ -34,46 +34,51 @@ public class PlayerListener implements Listener {
 				Player player = event.getPlayer();
 				if (!player.isSneaking()) {
 					Material type = clickedBlock.getType();
+
+					// Interacting with a Cauldron
 					if (type == Material.CAULDRON) {
-						Block down = clickedBlock.getRelative(BlockFace.DOWN);
-						if (down.getType() == Material.FIRE || down.getType() == Material.STATIONARY_LAVA || down.getType() == Material.LAVA) {
-							Material materialInHand = event.getMaterial();
-							ItemStack item = event.getItem();
+						Material materialInHand = event.getMaterial();
+						ItemStack item = event.getItem();
 
-							
-							if (materialInHand == Material.WATCH) {
-								BCauldron.printTime(player, clickedBlock);
+						if (materialInHand == Material.WATCH) {
+							BCauldron.printTime(player, clickedBlock);
+							return;
 
-								// fill a glass bottle with potion
-							} else if (materialInHand == Material.GLASS_BOTTLE) {
-								if (player.getInventory().firstEmpty() != -1 || item.getAmount() == 1) {
-									if (BCauldron.fill(player, clickedBlock)) {
-										event.setCancelled(true);
-										if (player.hasPermission("brewery.cauldron.fill")) {
-											if (item.getAmount() > 1) {
-												item.setAmount(item.getAmount() - 1);
-											} else {
-												player.setItemInHand(new ItemStack(Material.AIR));
-											}
+							// fill a glass bottle with potion
+						} else if (materialInHand == Material.GLASS_BOTTLE) {
+							if (player.getInventory().firstEmpty() != -1 || item.getAmount() == 1) {
+								if (BCauldron.fill(player, clickedBlock)) {
+									event.setCancelled(true);
+									if (player.hasPermission("brewery.cauldron.fill")) {
+										if (item.getAmount() > 1) {
+											item.setAmount(item.getAmount() - 1);
+										} else {
+											player.setItemInHand(new ItemStack(Material.AIR));
 										}
 									}
-								} else {
-									event.setCancelled(true);
 								}
+							} else {
+								event.setCancelled(true);
+							}
+							return;
 
-								// reset cauldron when refilling to prevent
-								// unlimited source of potions
-							} else if (materialInHand == Material.WATER_BUCKET) {
-								if (BCauldron.getFillLevel(clickedBlock) != 0) {
-									if (BCauldron.getFillLevel(clickedBlock) < 2) {
-										// will only remove when existing
-										BCauldron.remove(clickedBlock);
-									}
-								}
+							// reset cauldron when refilling to prevent
+							// unlimited source of potions
+						} else if (materialInHand == Material.WATER_BUCKET) {
+							if (BCauldron.getFillLevel(clickedBlock) != 0 && BCauldron.getFillLevel(clickedBlock) < 2) {
+								// will only remove when existing
+								BCauldron.remove(clickedBlock);
+							}
+							return;
+						}
 
-								// add ingredient to cauldron that meet the previous
-								// contitions
-							} else if (BIngredients.possibleIngredients.contains(materialInHand)) {
+						// Check if fire alive below cauldron when adding ingredients
+						Block down = clickedBlock.getRelative(BlockFace.DOWN);
+						if (down.getType() == Material.FIRE || down.getType() == Material.STATIONARY_LAVA || down.getType() == Material.LAVA) {
+
+							// add ingredient to cauldron that meet the previous conditions
+							if (BIngredients.possibleIngredients.contains(materialInHand)) {
+
 								if (player.hasPermission("brewery.cauldron.insert")) {
 									if (BCauldron.ingredientAdd(clickedBlock, item)) {
 										boolean isBucket = item.getType().equals(Material.WATER_BUCKET)
@@ -100,8 +105,8 @@ public class PlayerListener implements Listener {
 							} else {
 								event.setCancelled(true);
 							}
-							return;
 						}
+						return;
 					}
 
 					// Access a Barrel

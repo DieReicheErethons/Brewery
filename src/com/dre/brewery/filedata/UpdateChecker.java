@@ -110,9 +110,20 @@ public class UpdateChecker implements Runnable {
 				if (split.length < 2) {
 					P.p.log("Malformed Remote File Name, could not check for updates");
 				} else {
+					String version = split[1];
 					if (!P.p.getDescription().getVersion().equals(split[1].split(" ")[0])) {
-						P.p.log("Update available for Brewery-" + P.p.getDescription().getVersion() + ": " + versionName);
-						update = "Update available: v" + split[1];
+						String[] verNew = version.split("\\.");
+						String[] verOld = P.p.getDescription().getVersion().split("\\.");
+
+						for (int i = 0; i < verNew.length; i++) {
+							if (i < verOld.length && P.p.parseInt(verOld[i]) > P.p.parseInt(verNew[i])) {
+								break;
+							} else if (i >= verOld.length || P.p.parseInt(verOld[i]) < P.p.parseInt(verNew[i])) {
+								P.p.log("Update available for Brewery-" + P.p.getDescription().getVersion() + ": " + versionName);
+								update = "Update available: v" + version;
+								break;
+							}
+						}
 					}
 				}
 

@@ -1,8 +1,10 @@
 package com.dre.brewery;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Set;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
@@ -11,7 +13,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.inventory.meta.PotionMeta;
 
 public class BIngredients {
-	public static ArrayList<Material> possibleIngredients = new ArrayList<Material>();
+	public static Set<Material> possibleIngredients = new HashSet<Material>();
 	public static ArrayList<BRecipe> recipes = new ArrayList<BRecipe>();
 	public static Map<Material, String> cookedNames = new HashMap<Material, String>();
 	private static int lastId = 0;

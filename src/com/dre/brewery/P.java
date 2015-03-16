@@ -70,7 +70,15 @@ public class P extends JavaPlugin {
 		String v = Bukkit.getBukkitVersion();
 		useUUID = !v.matches(".*1\\.[1-6].*") && !v.matches(".*1\\.7\\.[0-5].*");
 
-		if (!readConfig()) {
+		// load the Config
+		try {
+			if (!readConfig()) {
+				p = null;
+				getServer().getPluginManager().disablePlugin(this);
+				return;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 			p = null;
 			getServer().getPluginManager().disablePlugin(this);
 			return;
@@ -161,7 +169,18 @@ public class P extends JavaPlugin {
 		}
 
 		// load the Config
-		readConfig();
+		try {
+			if (!readConfig()) {
+				p = null;
+				getServer().getPluginManager().disablePlugin(this);
+				return;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			p = null;
+			getServer().getPluginManager().disablePlugin(this);
+			return;
+		}
 
 		// save and load LanguageReader
 		languageReader.save();

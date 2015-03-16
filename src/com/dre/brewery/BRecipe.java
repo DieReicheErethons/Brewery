@@ -72,6 +72,7 @@ public class BRecipe {
 					if (mat != null) {
 						ItemStack stack = new ItemStack(mat, P.p.parseInt(ingredParts[1]), durability);
 						this.ingredients.add(stack);
+						BIngredients.possibleIngredients.add(mat);
 					} else {
 						P.p.errorLog("Unknown Material: " + ingredParts[0]);
 						this.ingredients = null;

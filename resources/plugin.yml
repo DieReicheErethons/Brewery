@@ -2,7 +2,7 @@ name: Brewery
 version: 1.3.2
 main: com.dre.brewery.P
 authors: [Milan Albrecht, Frank Baumann]
-softdepend: [LWC, LogBlock, WorldGuard, GriefPrevention]
+softdepend: [LWC, LogBlock, WorldGuard, GriefPrevention, Vault]
 commands:
   brewery:
     description: Command for Administration

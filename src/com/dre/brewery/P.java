@@ -49,6 +49,7 @@ public class P extends JavaPlugin {
 	public boolean useLWC; //LWC
 	public boolean useLB; //LogBlock
 	public boolean useGP; //GriefPrevention
+	public boolean hasVault;
 
 	// Listeners
 	public BlockListener blockListener;
@@ -243,6 +244,7 @@ public class P extends JavaPlugin {
 		useLWC = config.getBoolean("useLWC", true) && getServer().getPluginManager().isPluginEnabled("LWC");
 		useGP = config.getBoolean("useGriefPrevention", true) && getServer().getPluginManager().isPluginEnabled("GriefPrevention");
 		useLB = config.getBoolean("useLogBlock", false) && getServer().getPluginManager().isPluginEnabled("LogBlock");
+		hasVault = getServer().getPluginManager().isPluginEnabled("Vault");
 
 		// various Settings
 		DataSave.autosave = config.getInt("autosave", 3);
@@ -282,6 +284,17 @@ public class P extends JavaPlugin {
 		if (configSection != null) {
 			for (String ingredient : configSection.getKeys(false)) {
 				Material mat = Material.matchMaterial(ingredient);
+				if (mat == null && hasVault) {
+					try {
+						net.milkbowl.vault.item.ItemInfo vaultItem = net.milkbowl.vault.item.Items.itemByString(ingredient);
+						if (vaultItem != null) {
+							mat = vaultItem.getType();
+						}
+					} catch (Exception e) {
+						P.p.errorLog("Could not check vault for Item Name");
+						e.printStackTrace();
+					}
+				}
 				if (mat != null) {
 					BIngredients.cookedNames.put(mat, (configSection.getString(ingredient, null)));
 					BIngredients.possibleIngredients.add(mat);
@@ -299,6 +312,17 @@ public class P extends JavaPlugin {
 				if (drainSplit.length > 1) {
 					Material mat = Material.matchMaterial(drainSplit[0]);
 					int strength = p.parseInt(drainSplit[1]);
+					if (mat == null && hasVault && strength > 0) {
+						try {
+							net.milkbowl.vault.item.ItemInfo vaultItem = net.milkbowl.vault.item.Items.itemByString(drainSplit[0]);
+							if (vaultItem != null) {
+								mat = vaultItem.getType();
+							}
+						} catch (Exception e) {
+							P.p.errorLog("Could not check vault for Item Name");
+							e.printStackTrace();
+						}
+					}
 					if (mat != null && strength > 0) {
 						BPlayer.drainItems.put(mat, strength);
 					}

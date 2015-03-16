@@ -51,11 +51,26 @@ public class BRecipe {
 						matParts = ingredParts[0].split("\\.");
 					}
 					Material mat = Material.matchMaterial(matParts[0]);
-					if (mat != null) {
-						ItemStack stack = new ItemStack(mat, P.p.parseInt(ingredParts[1]), (short) -1);
-						if (matParts.length == 2) {
-							stack.setDurability((short) P.p.parseInt(matParts[1]));
+					short durability = -1;
+					if (matParts.length == 2) {
+						durability = (short) P.p.parseInt(matParts[1]);
+					}
+					if (mat == null && P.p.hasVault) {
+						try {
+							net.milkbowl.vault.item.ItemInfo vaultItem = net.milkbowl.vault.item.Items.itemByString(matParts[0]);
+							if (vaultItem != null) {
+								mat = vaultItem.getType();
+								if (durability == -1 && vaultItem.getSubTypeId() != 0) {
+									durability = vaultItem.getSubTypeId();
+								}
+							}
+						} catch (Exception e) {
+							P.p.errorLog("Could not check vault for Item Name");
+							e.printStackTrace();
 						}
+					}
+					if (mat != null) {
+						ItemStack stack = new ItemStack(mat, P.p.parseInt(ingredParts[1]), durability);
 						this.ingredients.add(stack);
 					} else {
 						P.p.errorLog("Unknown Material: " + ingredParts[0]);

@@ -31,7 +31,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.mcstats.Metrics;
 
 import com.dre.brewery.listeners.*;
 import com.dre.brewery.filedata.*;
@@ -140,9 +139,8 @@ public class P extends JavaPlugin {
 	
 	public void setupMetrics() {
 		try {
-		    Metrics metrics = new Metrics(this);
-		    metrics.start();
-		} catch (IOException e) {
+			new com.dre.brewery.integration.Metrics(this).start();
+		} catch (Exception ignored) {
 		}
 	}
 	

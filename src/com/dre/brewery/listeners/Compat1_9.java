@@ -11,21 +11,21 @@ import org.bukkit.inventory.meta.PotionMeta;
 // Workaround to remove unwanted potion effects
 public class Compat1_9 implements Listener {
 
-    @EventHandler
-    public void onPlayerDrink(PlayerItemConsumeEvent event) {
-        ItemStack item = event.getItem();
-        Brew brew = Brew.get(item);
-        if (brew == null) {
-            return;
-        }
+	@EventHandler
+	public void onPlayerDrink(PlayerItemConsumeEvent event) {
+		ItemStack item = event.getItem();
+		Brew brew = Brew.get(item);
+		if (brew == null) {
+			return;
+		}
 
-        if (item.getType() == Material.POTION) {
-            try {
-                PotionMeta meta = (PotionMeta) item.getItemMeta();
-                meta.setMainEffect(null);
-                item.setItemMeta(meta);
-            } catch (Exception exception) {}
-        }
-    }
+		if (item.getType() == Material.POTION) {
+			try {
+				PotionMeta meta = (PotionMeta) item.getItemMeta();
+				meta.setMainEffect(null);
+				item.setItemMeta(meta);
+			} catch (Exception exception) {}
+		}
+	}
 
 }

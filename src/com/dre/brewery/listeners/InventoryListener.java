@@ -20,8 +20,13 @@ import com.dre.brewery.integration.LogBlockBarrel;
 
 public class InventoryListener implements Listener {
 
-	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = false)
 	public void onBrew(BrewEvent event) {
+		if (event.isCancelled()) {
+			P.p.log("Got Cancelled Brew Event");			
+		} else {
+			P.p.log("Got Brew Event");
+		}
 		int slot = 0;
 		BrewerInventory inv = event.getContents();
 		ItemStack item;

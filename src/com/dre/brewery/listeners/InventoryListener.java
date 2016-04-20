@@ -1,16 +1,29 @@
 package com.dre.brewery.listeners;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.UUID;
+
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.BrewingStand;
+import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.BrewEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.BrewerInventory;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 
 import com.dre.brewery.Barrel;
@@ -19,11 +32,112 @@ import com.dre.brewery.P;
 import com.dre.brewery.integration.LogBlockBarrel;
 
 public class InventoryListener implements Listener {
-
+	
+	/* === Recreating manually the prior BrewEvent behavior. === */
+	private HashSet<UUID> trackedBrewmen = new HashSet<UUID>();
+	private HashMap<Block, Integer> trackedBrewers = new HashMap<Block, Integer>();
+	
+	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+	public void onBrewerOpen(InventoryOpenEvent event) {
+		HumanEntity player = event.getPlayer();
+		Inventory inv = event.getInventory();
+		if (player == null || inv == null || !(inv instanceof BrewerInventory)) return;
+		
+		P.p.log("Starting brew inventory tracking");
+		trackedBrewmen.add(player.getUniqueId());
+	}
+	
+	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+	public void onBrewerClose(InventoryCloseEvent event) {
+		HumanEntity player = event.getPlayer();
+		Inventory inv = event.getInventory();
+		if (player == null || inv == null || !(inv instanceof BrewerInventory)) return;
+		
+		P.p.log("Stopping brew inventory tracking");
+		trackedBrewmen.remove(player.getUniqueId());
+	}
+	
+	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+	public void onBrewerClick(InventoryClickEvent event) {
+		HumanEntity player = event.getWhoClicked();
+		Inventory inv = event.getInventory();
+		if (player == null || inv == null || !(inv instanceof BrewerInventory)) return;
+		
+		UUID puid = player.getUniqueId();
+		if (!trackedBrewmen.contains(puid)) return;
+		
+		P.p.log("Tracking a new brew click event");
+		
+		BrewerInventory brewer = (BrewerInventory) inv;
+		final Block brewery = brewer.getHolder().getBlock();
+		
+		if (isCustom(brewer)) {
+			Integer curTask = trackedBrewers.get(brewery);
+			if (curTask != null) {
+				Bukkit.getScheduler().cancelTask(curTask); // cancel prior
+				P.p.log("Cancelling prior brew countdown");
+			}
+			
+			P.p.log("Starting a new brew countdown");
+			trackedBrewers.put(brewery, new BukkitRunnable() {
+				@Override
+				public void run() {
+					BlockState now = brewery.getState();
+					if (now instanceof BrewingStand) {
+						BrewingStand stand = (BrewingStand) now;
+						// check if still custom
+						BrewerInventory brewer = stand.getInventory();
+						if (isCustom(brewer) ) {
+							P.p.log("Still a valid brew distillation");
+							if (stand.getBrewingTime() == 0) {
+								stand.setBrewingTime(400); // arbitrary for now
+							} else {
+								stand.setBrewingTime(stand.getBrewingTime() - 5); // count down.
+							}
+							
+							if (stand.getBrewingTime() <= 5) { // trigger.
+								P.p.log("Complete brew distillation!");
+								BrewEvent doBrew = new BrewEvent(brewery, brewer);
+								Bukkit.getServer().getPluginManager().callEvent(doBrew);
+								if (doBrew.isCancelled()) {
+									this.cancel();
+									trackedBrewers.remove(brewery);
+								}
+								stand.setBrewingTime(0);
+							}
+						}
+					}
+				}
+			}.runTaskTimer(P.p, 5l, 5l).getTaskId());
+		}
+	}
+	
+	private boolean isCustom(BrewerInventory brewer) {
+		int slot = 0;
+		ItemStack item;
+		Boolean[] contents = new Boolean[3];
+		while (slot < 3) {
+			item = brewer.getItem(slot);
+			contents[slot] = false;
+			if (item != null) {
+				if (item.getType() == Material.POTION) {
+					if (item.hasItemMeta()) {
+						int uid = Brew.getUID(item);
+						if (Brew.potions.containsKey(uid)) {
+							return true;
+						}
+					}
+				}
+			}
+		}
+		return false;
+	}
+	
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = false)
 	public void onBrew(BrewEvent event) {
 		if (event.isCancelled()) {
-			P.p.log("Got Cancelled Brew Event");			
+			P.p.log("Got Cancelled Brew Event");
+			return;
 		} else {
 			P.p.log("Got Brew Event");
 		}

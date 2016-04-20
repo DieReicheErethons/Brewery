@@ -80,6 +80,7 @@ public class InventoryListener implements Listener {
 			
 			P.p.log("Starting a new brew countdown");
 			trackedBrewers.put(brewery, new BukkitRunnable() {
+				private int brewTime = 405;
 				@Override
 				public void run() {
 					BlockState now = brewery.getState();
@@ -89,13 +90,10 @@ public class InventoryListener implements Listener {
 						BrewerInventory brewer = stand.getInventory();
 						if (isCustom(brewer) ) {
 							P.p.log("Still a valid brew distillation");
-							if (stand.getBrewingTime() == 0) {
-								stand.setBrewingTime(400); // arbitrary for now
-							} else {
-								stand.setBrewingTime(stand.getBrewingTime() - 5); // count down.
-							}
+							brewTime = brewTime - 5; // count down.
+							stand.setBrewingTime(brewTime); // arbitrary for now
 							
-							if (stand.getBrewingTime() <= 5) { // trigger.
+							if (brewTime <= 5) { // trigger.
 								P.p.log("Complete brew distillation!");
 								BrewEvent doBrew = new BrewEvent(brewery, brewer);
 								Bukkit.getServer().getPluginManager().callEvent(doBrew);
@@ -129,6 +127,7 @@ public class InventoryListener implements Listener {
 					}
 				}
 			}
+			slot++;
 		}
 		return false;
 	}

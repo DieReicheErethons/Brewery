@@ -8,7 +8,6 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.BrewingStand;
 import org.bukkit.entity.HumanEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -18,6 +17,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.inventory.InventoryType.SlotType;
 import org.bukkit.inventory.BrewerInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.meta.PotionMeta;
@@ -31,14 +31,26 @@ import com.dre.brewery.Brew;
 import com.dre.brewery.P;
 import com.dre.brewery.integration.LogBlockBarrel;
 
+/**
+ * Updated for 1.9 to replicate the "Brewing" process for distilling.
+ * Because of how metadata has changed, the brewer no longer triggers as previously described.
+ * So, I've added some event tracking and manual forcing of the brewing "animation" if the 
+ *  set of ingredients in the brewer can be distilled. 
+ * Nothing here should interfere with vanilla brewing.  
+ */
 public class InventoryListener implements Listener {
 	
 	/* === Recreating manually the prior BrewEvent behavior. === */
 	private HashSet<UUID> trackedBrewmen = new HashSet<UUID>();
 	private HashMap<Block, Integer> trackedBrewers = new HashMap<Block, Integer>();
 	
+	/**
+	 * Start tracking distillation for a person when they open the brewer window.
+	 * @param event
+	 */
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onBrewerOpen(InventoryOpenEvent event) {
+		if (!P.use1_9) return;
 		HumanEntity player = event.getPlayer();
 		Inventory inv = event.getInventory();
 		if (player == null || inv == null || !(inv instanceof BrewerInventory)) return;
@@ -47,8 +59,13 @@ public class InventoryListener implements Listener {
 		trackedBrewmen.add(player.getUniqueId());
 	}
 	
+	/**
+	 * Stop tracking distillation for a person when they close the brewer window.
+	 * @param event
+	 */
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onBrewerClose(InventoryCloseEvent event) {
+		if (!P.use1_9) return;
 		HumanEntity player = event.getPlayer();
 		Inventory inv = event.getInventory();
 		if (player == null || inv == null || !(inv instanceof BrewerInventory)) return;
@@ -56,31 +73,46 @@ public class InventoryListener implements Listener {
 		P.p.log("Stopping brew inventory tracking");
 		trackedBrewmen.remove(player.getUniqueId());
 	}
-	
+
+	/**
+	 * Clicking can either start or stop the new brew distillation tracking.
+	 * Note that server restart will halt any ongoing brewing processes and
+	 * they will _not_ restart until a new click event.
+	 * 
+	 * @param event the Click event.
+	 */
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onBrewerClick(InventoryClickEvent event) {
+		if (!P.use1_9) return;
 		HumanEntity player = event.getWhoClicked();
 		Inventory inv = event.getInventory();
 		if (player == null || inv == null || !(inv instanceof BrewerInventory)) return;
 		
 		UUID puid = player.getUniqueId();
 		if (!trackedBrewmen.contains(puid)) return;
+		P.p.debugLog("This brewery was opened by a monitored agent");
 		
-		P.p.log("Tracking a new brew click event");
+		if (InventoryType.BREWING != inv.getType()) return;
+		P.p.debugLog("Clicked inventory was a brewing inventory");
+		
+		if (SlotType.FUEL != event.getSlotType() && SlotType.CRAFTING != event.getSlotType()) return;
+		P.p.debugLog("Tracking a new brew click event -- slots clicked in Brewer!");
 		
 		BrewerInventory brewer = (BrewerInventory) inv;
 		final Block brewery = brewer.getHolder().getBlock();
 		
-		if (isCustom(brewer)) {
-			Integer curTask = trackedBrewers.get(brewery);
-			if (curTask != null) {
-				Bukkit.getScheduler().cancelTask(curTask); // cancel prior
-				P.p.log("Cancelling prior brew countdown");
-			}
-			
-			P.p.log("Starting a new brew countdown");
+		// If we were already tracking the brewer, cancel any ongoing event due to the click.
+		Integer curTask = trackedBrewers.get(brewery);
+		if (curTask != null) {
+			Bukkit.getScheduler().cancelTask(curTask); // cancel prior
+			P.p.debugLog("Cancelling prior brew countdown");
+		}
+		
+		// Now check if we should bother to track it.
+		if (isCustomAndDistill(brewer)) {		
+			P.p.debugLog("Starting a new brew countdown");
 			trackedBrewers.put(brewery, new BukkitRunnable() {
-				private int brewTime = 405;
+				private int brewTime = 401;
 				@Override
 				public void run() {
 					BlockState now = brewery.getState();
@@ -88,58 +120,58 @@ public class InventoryListener implements Listener {
 						BrewingStand stand = (BrewingStand) now;
 						// check if still custom
 						BrewerInventory brewer = stand.getInventory();
-						if (isCustom(brewer) ) {
-							P.p.log("Still a valid brew distillation");
-							brewTime = brewTime - 5; // count down.
+						if (isCustomAndDistill(brewer) ) {
+							
+							// Still a valid brew distillation
+							brewTime = brewTime - 1; // count down.
 							stand.setBrewingTime(brewTime); // arbitrary for now
 							
-							if (brewTime <= 5) { // trigger.
-								P.p.log("Complete brew distillation!");
+							if (brewTime <= 1) { // Done!
+								P.p.debugLog("Complete brew distillation!");
 								BrewEvent doBrew = new BrewEvent(brewery, brewer);
 								Bukkit.getServer().getPluginManager().callEvent(doBrew);
-								if (doBrew.isCancelled()) {
+								if (!doBrew.isCancelled()) { // BrewEvent _wasn't_ cancelled.
 									this.cancel();
 									trackedBrewers.remove(brewery);
+									stand.setBrewingTime(0);
+									P.p.debugLog("All done distilling");
+								} else {
+									brewTime = 401; // go again.
+									P.p.debugLog("Can distill more! Continuing.");
 								}
-								stand.setBrewingTime(0);
 							}
 						}
 					}
 				}
-			}.runTaskTimer(P.p, 5l, 5l).getTaskId());
+			}.runTaskTimer(P.p, 1l, 1l).getTaskId());
 		}
 	}
 	
-	private boolean isCustom(BrewerInventory brewer) {
-		int slot = 0;
-		ItemStack item;
+	private boolean isCustomAndDistill(BrewerInventory brewer) {
+		ItemStack item = brewer.getIngredient();
+		if (item == null || Material.GLOWSTONE_DUST != item.getType()) return false; // need dust in the top slot.
 		Boolean[] contents = new Boolean[3];
-		while (slot < 3) {
+		for (int slot = 0; slot < 3; slot++) {
 			item = brewer.getItem(slot);
 			contents[slot] = false;
 			if (item != null) {
 				if (item.getType() == Material.POTION) {
 					if (item.hasItemMeta()) {
 						int uid = Brew.getUID(item);
-						if (Brew.potions.containsKey(uid)) {
+						Brew pot = Brew.potions.get(uid);
+						if (pot != null && pot.canDistill()) { // need at least one distillable potion.
 							return true;
 						}
 					}
 				}
 			}
-			slot++;
 		}
 		return false;
 	}
 	
-	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = false)
+	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onBrew(BrewEvent event) {
-		if (event.isCancelled()) {
-			P.p.log("Got Cancelled Brew Event");
-			return;
-		} else {
-			P.p.log("Got Brew Event");
-		}
+		P.p.debugLog("Got Brew Event");
 		int slot = 0;
 		BrewerInventory inv = event.getContents();
 		ItemStack item;

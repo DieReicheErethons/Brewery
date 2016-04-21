@@ -17,7 +17,6 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.event.inventory.InventoryType.SlotType;
 import org.bukkit.inventory.BrewerInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.meta.PotionMeta;
@@ -36,7 +35,14 @@ import com.dre.brewery.integration.LogBlockBarrel;
  * Because of how metadata has changed, the brewer no longer triggers as previously described.
  * So, I've added some event tracking and manual forcing of the brewing "animation" if the 
  *  set of ingredients in the brewer can be distilled. 
- * Nothing here should interfere with vanilla brewing.  
+ * Nothing here should interfere with vanilla brewing.
+ * 
+ * Note in testing I did discover a few ways to "hack" brewing to distill your brews alongside
+ * potions; put fuel and at least one "valid" water bottle w/ a brewing component. You can distill
+ * two brews this way, just remove them before the "final" distillation or you will actually
+ * brew the potion as well.
+ * 
+ * @author ProgrammerDan (1.9 distillation update only)
  */
 public class InventoryListener implements Listener {
 	
@@ -55,7 +61,7 @@ public class InventoryListener implements Listener {
 		Inventory inv = event.getInventory();
 		if (player == null || inv == null || !(inv instanceof BrewerInventory)) return;
 		
-		P.p.log("Starting brew inventory tracking");
+		P.p.debugLog("Starting brew inventory tracking");
 		trackedBrewmen.add(player.getUniqueId());
 	}
 	
@@ -70,7 +76,7 @@ public class InventoryListener implements Listener {
 		Inventory inv = event.getInventory();
 		if (player == null || inv == null || !(inv instanceof BrewerInventory)) return;
 		
-		P.p.log("Stopping brew inventory tracking");
+		P.p.debugLog("Stopping brew inventory tracking");
 		trackedBrewmen.remove(player.getUniqueId());
 	}
 
@@ -90,13 +96,8 @@ public class InventoryListener implements Listener {
 		
 		UUID puid = player.getUniqueId();
 		if (!trackedBrewmen.contains(puid)) return;
-		P.p.debugLog("This brewery was opened by a monitored agent");
 		
 		if (InventoryType.BREWING != inv.getType()) return;
-		P.p.debugLog("Clicked inventory was a brewing inventory");
-		
-		if (SlotType.FUEL != event.getSlotType() && SlotType.CRAFTING != event.getSlotType()) return;
-		P.p.debugLog("Tracking a new brew click event -- slots clicked in Brewer!");
 		
 		BrewerInventory brewer = (BrewerInventory) inv;
 		final Block brewery = brewer.getHolder().getBlock();
@@ -105,50 +106,52 @@ public class InventoryListener implements Listener {
 		Integer curTask = trackedBrewers.get(brewery);
 		if (curTask != null) {
 			Bukkit.getScheduler().cancelTask(curTask); // cancel prior
-			P.p.debugLog("Cancelling prior brew countdown");
 		}
 		
 		// Now check if we should bother to track it.
-		if (isCustomAndDistill(brewer)) {		
-			P.p.debugLog("Starting a new brew countdown");
-			trackedBrewers.put(brewery, new BukkitRunnable() {
-				private int brewTime = 401;
-				@Override
-				public void run() {
-					BlockState now = brewery.getState();
-					if (now instanceof BrewingStand) {
-						BrewingStand stand = (BrewingStand) now;
-						// check if still custom
-						BrewerInventory brewer = stand.getInventory();
-						if (isCustomAndDistill(brewer) ) {
-							
-							// Still a valid brew distillation
-							brewTime = brewTime - 1; // count down.
-							stand.setBrewingTime(brewTime); // arbitrary for now
-							
-							if (brewTime <= 1) { // Done!
-								P.p.debugLog("Complete brew distillation!");
-								BrewEvent doBrew = new BrewEvent(brewery, brewer);
-								Bukkit.getServer().getPluginManager().callEvent(doBrew);
-								if (!doBrew.isCancelled()) { // BrewEvent _wasn't_ cancelled.
-									this.cancel();
-									trackedBrewers.remove(brewery);
-									stand.setBrewingTime(0);
-									P.p.debugLog("All done distilling");
-								} else {
-									brewTime = 401; // go again.
-									P.p.debugLog("Can distill more! Continuing.");
-								}
+		trackedBrewers.put(brewery, new BukkitRunnable() {
+			private int brewTime = 401;
+			@Override
+			public void run() {
+				BlockState now = brewery.getState();
+				if (now instanceof BrewingStand) {
+					BrewingStand stand = (BrewingStand) now;
+					// check if still custom
+					BrewerInventory brewer = stand.getInventory();
+					if (isCustomAndDistill(brewer) ) {
+						
+						// Still a valid brew distillation
+						brewTime = brewTime - 1; // count down.
+						stand.setBrewingTime(brewTime); // arbitrary for now
+						
+						if (brewTime <= 1) { // Done!
+							BrewEvent doBrew = new BrewEvent(brewery, brewer);
+							Bukkit.getServer().getPluginManager().callEvent(doBrew);
+							if (!doBrew.isCancelled()) { // BrewEvent _wasn't_ cancelled.
+								this.cancel();
+								trackedBrewers.remove(brewery);
+								stand.setBrewingTime(0);
+								P.p.debugLog("All done distilling");
+							} else {
+								brewTime = 401; // go again.
+								P.p.debugLog("Can distill more! Continuing.");
 							}
 						}
+					} else {
+						this.cancel();
+						trackedBrewers.remove(brewery);
 					}
+				} else {
+					this.cancel();
+					trackedBrewers.remove(brewery);
+					P.p.debugLog("The block was replaced; not a brewing stand.");
 				}
-			}.runTaskTimer(P.p, 1l, 1l).getTaskId());
-		}
+			}
+		}.runTaskTimer(P.p, 2l, 1l).getTaskId());
 	}
 	
 	private boolean isCustomAndDistill(BrewerInventory brewer) {
-		ItemStack item = brewer.getIngredient();
+		ItemStack item = brewer.getItem(3); // ingredient
 		if (item == null || Material.GLOWSTONE_DUST != item.getType()) return false; // need dust in the top slot.
 		Boolean[] contents = new Boolean[3];
 		for (int slot = 0; slot < 3; slot++) {
@@ -171,7 +174,6 @@ public class InventoryListener implements Listener {
 	
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onBrew(BrewEvent event) {
-		P.p.debugLog("Got Brew Event");
 		int slot = 0;
 		BrewerInventory inv = event.getContents();
 		ItemStack item;

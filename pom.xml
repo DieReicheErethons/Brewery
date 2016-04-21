@@ -4,7 +4,7 @@
 
 	<groupId>com.dre</groupId>
 	<artifactId>brewery</artifactId>
-	<version>1.4.0</version>
+	<version>1.4.1</version>
 	<name>Brewery</name>
 
 	<properties>
@@ -18,7 +18,7 @@
 		<resources>
 			<!-- Static resources -->
 			<resource>
-				<filtering>false</filtering>
+				<filtering>true</filtering>
 				<directory>${project.basedir}/resources</directory>
 				<includes>
 					<include>**/*.yml</include>

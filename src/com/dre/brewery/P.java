@@ -38,7 +38,7 @@ public class P extends JavaPlugin {
 	public static String configVersion = "1.3.1";
 	public static boolean debug;
 	public static boolean useUUID;
-        public static boolean use1_9;
+	public static boolean use1_9;
 	public static boolean updateCheck;
 
 	// Third Party Enabled
@@ -55,7 +55,7 @@ public class P extends JavaPlugin {
 	public EntityListener entityListener;
 	public InventoryListener inventoryListener;
 	public WorldListener worldListener;
-        public Compat1_9 compat1_9;
+	public Compat1_9 compat1_9;
 
 	// Language
 	public String language;
@@ -68,11 +68,10 @@ public class P extends JavaPlugin {
 		// Version check
 		String v = Bukkit.getBukkitVersion();
 		useUUID = !v.matches(".*1\\.[0-6].*") && !v.matches(".*1\\.7\\.[0-5].*");
-                use1_9 = !v.matches(".*1\\.[0-8].*");
-                if (use1_9) {
-                    log("&cExperimental support for Bukkit 1.9 enabled.");
-                    log("&cPlease note that the changes of 1.9 make a build of Brewery with the same quality as for older versions impossible.");
-                }
+		use1_9 = !v.matches(".*1\\.[0-8].*");
+		if (use1_9) {
+			log("&cExperimental support for Bukkit 1.9 enabled.");
+		}
 
 		// load the Config
 		try {
@@ -98,7 +97,7 @@ public class P extends JavaPlugin {
 		entityListener = new EntityListener();
 		inventoryListener = new InventoryListener();
 		worldListener = new WorldListener();
-                compat1_9 = new Compat1_9();
+		compat1_9 = new Compat1_9();
 		getCommand("Brewery").setExecutor(new CommandListener());
 
 		p.getServer().getPluginManager().registerEvents(blockListener, p);
@@ -106,9 +105,9 @@ public class P extends JavaPlugin {
 		p.getServer().getPluginManager().registerEvents(entityListener, p);
 		p.getServer().getPluginManager().registerEvents(inventoryListener, p);
 		p.getServer().getPluginManager().registerEvents(worldListener, p);
-                if (use1_9) {
-                    p.getServer().getPluginManager().registerEvents(compat1_9, p);
-                }
+		if (use1_9) {
+			p.getServer().getPluginManager().registerEvents(compat1_9, p);
+		}
 
 		// Heartbeat
 		p.getServer().getScheduler().runTaskTimer(p, new BreweryRunnable(), 650, 1200);

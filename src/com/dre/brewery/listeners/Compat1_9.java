@@ -22,7 +22,8 @@ public class Compat1_9 implements Listener {
 		if (item.getType() == Material.POTION) {
 			try {
 				PotionMeta meta = (PotionMeta) item.getItemMeta();
-				meta.setMainEffect(null);
+				// Throw away former "base" effect and replace with MUNDANE.
+				meta.setBasePotionData(new PotionData(PotionType.MUNDANE, false, false));
 				item.setItemMeta(meta);
 			} catch (Exception exception) {}
 		}

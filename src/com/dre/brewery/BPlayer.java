@@ -1,22 +1,21 @@
 package com.dre.brewery;
 
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.UUID;
-
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.entity.Player;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
+import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.Material;
-import org.bukkit.util.Vector;
-import org.bukkit.Location;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.util.Vector;
 
 public class BPlayer {
 	private static Map<String, BPlayer> players = new HashMap<String, BPlayer>();// Players name/uuid and BPlayer
@@ -339,10 +338,6 @@ public class BPlayer {
 			Location home = null;
 			if (homeType.equalsIgnoreCase("bed")) {
 				home = player.getBedSpawnLocation();
-			} else if (homeType.equalsIgnoreCase("ManagerXL")) {
-				if (com.dre.managerxl.MPlayer.get(player.getName()) != null) {
-					home = com.dre.managerxl.MPlayer.get(player.getName()).getHome();
-				}
 			} else if (homeType.startsWith("cmd: ")) {
 				player.performCommand(homeType.substring(5));
 			} else if (homeType.startsWith("cmd:")) {

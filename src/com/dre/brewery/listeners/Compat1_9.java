@@ -7,6 +7,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
+import org.bukkit.potion.PotionData;
+import org.bukkit.potion.PotionType;
 
 // Workaround to remove unwanted potion effects
 public class Compat1_9 implements Listener {
@@ -20,12 +22,10 @@ public class Compat1_9 implements Listener {
 		}
 
 		if (item.getType() == Material.POTION) {
-			try {
-				PotionMeta meta = (PotionMeta) item.getItemMeta();
-				// Throw away former "base" effect and replace with MUNDANE.
-				meta.setBasePotionData(new PotionData(PotionType.MUNDANE, false, false));
-				item.setItemMeta(meta);
-			} catch (Exception exception) {}
+			PotionMeta meta = (PotionMeta) item.getItemMeta();
+			// Throw away former "base" effect and replace with MUNDANE.
+			meta.setBasePotionData(new PotionData(PotionType.MUNDANE, false, false));
+			item.setItemMeta(meta);
 		}
 	}
 

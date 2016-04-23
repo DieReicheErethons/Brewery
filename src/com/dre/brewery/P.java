@@ -70,7 +70,7 @@ public class P extends JavaPlugin {
 		useUUID = !v.matches(".*1\\.[0-6].*") && !v.matches(".*1\\.7\\.[0-5].*");
 		use1_9 = !v.matches(".*1\\.[0-8].*");
 		if (use1_9) {
-			log("&cExperimental support for Bukkit 1.9 enabled.");
+			log("&eExperimental support for Bukkit 1.9 enabled.");
 		}
 
 		// load the Config

@@ -15,6 +15,7 @@ import org.bukkit.potion.PotionEffectType;
 public class Brew {
 
 	// represents the liquid in the brewed Potions
+
 	public static Map<Integer, Brew> potions = new HashMap<Integer, Brew>();
 	public static Boolean colorInBarrels; // color the Lore while in Barrels
 	public static Boolean colorInBrewer; // color the Lore while in Brewer
@@ -307,6 +308,7 @@ public class Brew {
 	}
 
 	// Distilling section ---------------
+
 	// distill all custom potions in the brewer
 	public static void distillAll(BrewerInventory inv, Boolean[] contents) {
 		int slot = 0;
@@ -369,6 +371,7 @@ public class Brew {
 	}
 
 	// Ageing Section ------------------
+
 	public void age(ItemStack item, float time, byte woodType) {
 		if (stat) {
 			return;
@@ -452,6 +455,7 @@ public class Brew {
 	}
 
 	// Lore -----------
+	
 	// Converts to/from qualitycolored Lore
 	public void convertLore(PotionMeta meta, Boolean toQuality) {
 		if (currentRecipe == null) {

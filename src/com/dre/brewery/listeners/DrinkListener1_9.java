@@ -11,7 +11,7 @@ import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionType;
 
 // Workaround to remove unwanted potion effects
-public class Compat1_9 implements Listener {
+public class DrinkListener1_9 implements Listener {
 
 	@EventHandler
 	public void onPlayerDrink(PlayerItemConsumeEvent event) {

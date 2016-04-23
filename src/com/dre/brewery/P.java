@@ -1,46 +1,44 @@
 package com.dre.brewery;
 
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Map;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.ListIterator;
-import java.util.HashMap;
-import java.io.IOException;
-import java.io.File;
-import java.util.UUID;
-
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.configuration.ConfigurationSection;
-
+import com.dre.brewery.filedata.*;
+import com.dre.brewery.integration.LogBlockBarrel;
 import com.dre.brewery.integration.WGBarrel;
 import com.dre.brewery.integration.WGBarrelNew;
 import com.dre.brewery.integration.WGBarrelOld;
-import org.apache.commons.lang.math.NumberUtils;
-import org.bukkit.event.HandlerList;
-import org.bukkit.Bukkit;
-import org.bukkit.World;
-import org.bukkit.Location;
-import org.bukkit.command.CommandSender;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.block.Block;
-
 import com.dre.brewery.listeners.*;
-import com.dre.brewery.filedata.*;
-import com.dre.brewery.integration.LogBlockBarrel;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.UUID;
+import org.apache.commons.lang.math.NumberUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.event.HandlerList;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.java.JavaPlugin;
 
 public class P extends JavaPlugin {
 	public static P p;
 	public static String configVersion = "1.3.1";
 	public static boolean debug;
 	public static boolean useUUID;
+	public static boolean use1_9;
 	public static boolean updateCheck;
 
 	// Third Party Enabled
@@ -57,6 +55,7 @@ public class P extends JavaPlugin {
 	public EntityListener entityListener;
 	public InventoryListener inventoryListener;
 	public WorldListener worldListener;
+	public Compat1_9 compat1_9;
 
 	// Language
 	public String language;
@@ -68,7 +67,11 @@ public class P extends JavaPlugin {
 
 		// Version check
 		String v = Bukkit.getBukkitVersion();
-		useUUID = !v.matches(".*1\\.[1-6].*") && !v.matches(".*1\\.7\\.[0-5].*");
+		useUUID = !v.matches(".*1\\.[0-6].*") && !v.matches(".*1\\.7\\.[0-5].*");
+		use1_9 = !v.matches(".*1\\.[0-8].*");
+		if (use1_9) {
+			log("&cExperimental support for Bukkit 1.9 enabled.");
+		}
 
 		// load the Config
 		try {
@@ -94,6 +97,7 @@ public class P extends JavaPlugin {
 		entityListener = new EntityListener();
 		inventoryListener = new InventoryListener();
 		worldListener = new WorldListener();
+		compat1_9 = new Compat1_9();
 		getCommand("Brewery").setExecutor(new CommandListener());
 
 		p.getServer().getPluginManager().registerEvents(blockListener, p);
@@ -101,6 +105,9 @@ public class P extends JavaPlugin {
 		p.getServer().getPluginManager().registerEvents(entityListener, p);
 		p.getServer().getPluginManager().registerEvents(inventoryListener, p);
 		p.getServer().getPluginManager().registerEvents(worldListener, p);
+		if (use1_9) {
+			p.getServer().getPluginManager().registerEvents(compat1_9, p);
+		}
 
 		// Heartbeat
 		p.getServer().getScheduler().runTaskTimer(p, new BreweryRunnable(), 650, 1200);

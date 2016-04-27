@@ -1,15 +1,12 @@
 package com.dre.brewery;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffectType;
+
+import java.util.*;
 
 public class BIngredients {
 	public static Set<Material> possibleIngredients = new HashSet<Material>();
@@ -83,11 +80,7 @@ public class BIngredients {
 			Brew.addOrReplaceEffects(potionMeta, brew.getEffects(), brew.getQuality());
 
 			cookedName = cookRecipe.getName(quality);
-                        if (P.use1_9) {
-                            potionMeta.setMainEffect(Brew.PotionColor.valueOf(cookRecipe.getColor()).getEffect());
-                        } else {
-                            potion.setDurability(Brew.PotionColor.valueOf(cookRecipe.getColor()).getColorId(false));
-                        }
+			Brew.PotionColor.valueOf(cookRecipe.getColor()).colorBrew(potionMeta, potion, false);
 
 		} else {
 			// new base potion
@@ -95,22 +88,14 @@ public class BIngredients {
 
 			if (state <= 1) {
 				cookedName = P.p.languageReader.get("Brew_ThickBrew");
-                                if (P.use1_9) {
-                                    potionMeta.setMainEffect(Brew.PotionColor.BLUE.getEffect());
-                                } else {
-                                    potion.setDurability(Brew.PotionColor.BLUE.getColorId(false));
-                                }
+				Brew.PotionColor.BLUE.colorBrew(potionMeta, potion, false);
 			} else {
 				for (Material ingredient : materials.keySet()) {
 					if (cookedNames.containsKey(ingredient)) {
 						// if more than half of the ingredients is of one kind
 						if (materials.get(ingredient) > (getIngredientsCount() / 2)) {
 							cookedName = cookedNames.get(ingredient);
-                                                        if (P.use1_9) {
-                                                            potionMeta.setMainEffect(Brew.PotionColor.CYAN.getEffect());
-                                                        } else {
-                                                            potion.setDurability(Brew.PotionColor.CYAN.getColorId(true));
-                                                        }
+							Brew.PotionColor.CYAN.colorBrew(potionMeta, potion, true);
 						}
 					}
 				}
@@ -119,11 +104,7 @@ public class BIngredients {
 		if (cookedName == null) {
 			// if no name could be found
 			cookedName = P.p.languageReader.get("Brew_Undefined");
-                        if (P.use1_9) {
-                            potionMeta.setMainEffect(Brew.PotionColor.CYAN.getEffect());
-                        } else {
-                            potion.setDurability(Brew.PotionColor.CYAN.getColorId(true));
-                        }
+			Brew.PotionColor.CYAN.colorBrew(potionMeta, potion, true);
 		}
 
 		potionMeta.setDisplayName(P.p.color("&f" + cookedName));

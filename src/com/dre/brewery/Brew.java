@@ -1,20 +1,25 @@
 package com.dre.brewery;
 
+import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.inventory.BrewerInventory;
+import org.bukkit.inventory.ItemFlag;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.PotionMeta;
+import org.bukkit.potion.PotionData;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.potion.PotionType;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.bukkit.Material;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.inventory.BrewerInventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.PotionMeta;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 
 public class Brew {
 
 	// represents the liquid in the brewed Potions
+
 	public static Map<Integer, Brew> potions = new HashMap<Integer, Brew>();
 	public static Boolean colorInBarrels; // color the Lore while in Barrels
 	public static Boolean colorInBrewer; // color the Lore while in Brewer
@@ -237,6 +242,7 @@ public class Brew {
 	}
 
 	public boolean canDistill() {
+		if (stat) return false;
 		if (currentRecipe != null) {
 			return currentRecipe.getDistillRuns() > distillRuns;
 		} else if (distillRuns >= 6) {
@@ -291,22 +297,15 @@ public class Brew {
 		this.stat = stat;
 		if (currentRecipe != null && canDistill()) {
 			if (stat) {
-				if (P.use1_9) {
-					PotionMeta potionMeta = (PotionMeta) potion.getItemMeta();
-					potionMeta.setMainEffect(PotionColor.valueOf(currentRecipe.getColor()).getEffect());
-				} else {
-					potion.setDurability(PotionColor.valueOf(currentRecipe.getColor()).getColorId(false));
-				}
-			} else if (P.use1_9) {
-				PotionMeta potionMeta = (PotionMeta) potion.getItemMeta();
-				potionMeta.setMainEffect(PotionColor.valueOf(currentRecipe.getColor()).getEffect());
+				PotionColor.valueOf(currentRecipe.getColor()).colorBrew(((PotionMeta) potion.getItemMeta()), potion, false);
 			} else {
-				potion.setDurability(PotionColor.valueOf(currentRecipe.getColor()).getColorId(true));
+				PotionColor.valueOf(currentRecipe.getColor()).colorBrew(((PotionMeta) potion.getItemMeta()), potion, true);
 			}
 		}
 	}
 
 	// Distilling section ---------------
+
 	// distill all custom potions in the brewer
 	public static void distillAll(BrewerInventory inv, Boolean[] contents) {
 		int slot = 0;
@@ -336,21 +335,13 @@ public class Brew {
 
 			addOrReplaceEffects(potionMeta, getEffects(), quality);
 			potionMeta.setDisplayName(P.p.color("&f" + recipe.getName(quality)));
-			if (P.use1_9) {
-				potionMeta.setMainEffect(PotionColor.valueOf(recipe.getColor()).getEffect());
-			} else {
-				slotItem.setDurability(PotionColor.valueOf(recipe.getColor()).getColorId(canDistill()));
-			}
+			PotionColor.valueOf(recipe.getColor()).colorBrew(potionMeta, slotItem, canDistill());
 
 		} else {
 			quality = 0;
 			removeEffects(potionMeta);
 			potionMeta.setDisplayName(P.p.color("&f" + P.p.languageReader.get("Brew_DistillUndefined")));
-			if (P.use1_9) {
-				potionMeta.setMainEffect(PotionColor.GREY.getEffect());
-			} else {
-				slotItem.setDurability(PotionColor.GREY.getColorId(canDistill()));
-			}
+			PotionColor.GREY.colorBrew(potionMeta, slotItem, canDistill());
 		}
 
 		// Distill Lore
@@ -369,6 +360,7 @@ public class Brew {
 	}
 
 	// Ageing Section ------------------
+
 	public void age(ItemStack item, float time, byte woodType) {
 		if (stat) {
 			return;
@@ -391,20 +383,12 @@ public class Brew {
 
 				addOrReplaceEffects(potionMeta, getEffects(), quality);
 				potionMeta.setDisplayName(P.p.color("&f" + recipe.getName(quality)));
-				if (P.use1_9) {
-					potionMeta.setMainEffect(PotionColor.valueOf(recipe.getColor()).getEffect());
-				} else {
-					item.setDurability(PotionColor.valueOf(recipe.getColor()).getColorId(canDistill()));
-				}
+				PotionColor.valueOf(recipe.getColor()).colorBrew(potionMeta, item, canDistill());
 			} else {
 				quality = 0;
 				removeEffects(potionMeta);
 				potionMeta.setDisplayName(P.p.color("&f" + P.p.languageReader.get("Brew_BadPotion")));
-				if (P.use1_9) {
-					potionMeta.setMainEffect(PotionColor.GREY.getEffect());
-				} else {
-					item.setDurability(PotionColor.GREY.getColorId(canDistill()));
-				}
+				PotionColor.GREY.colorBrew(potionMeta, item, canDistill());
 			}
 		}
 
@@ -452,6 +436,7 @@ public class Brew {
 	}
 
 	// Lore -----------
+	
 	// Converts to/from qualitycolored Lore
 	public void convertLore(PotionMeta meta, Boolean toQuality) {
 		if (currentRecipe == null) {
@@ -660,25 +645,25 @@ public class Brew {
 	}
 
 	public static enum PotionColor {
-		PINK(1, PotionEffectType.REGENERATION),
-		CYAN(2, PotionEffectType.SPEED),
-		ORANGE(3, PotionEffectType.FIRE_RESISTANCE),
-		GREEN(4, PotionEffectType.POISON),
-		BRIGHT_RED(5, PotionEffectType.HEAL),
-		BLUE(6, PotionEffectType.NIGHT_VISION),
-		BLACK(8, PotionEffectType.WEAKNESS),
-		RED(9, PotionEffectType.INCREASE_DAMAGE),
-		GREY(10, PotionEffectType.SLOW),
-		WATER(11, PotionEffectType.WATER_BREATHING),
-		DARK_RED(12, PotionEffectType.HARM),
-		BRIGHT_GREY(14, PotionEffectType.INVISIBILITY);
+		PINK(1, PotionType.REGEN),
+		CYAN(2, PotionType.SPEED),
+		ORANGE(3, PotionType.FIRE_RESISTANCE),
+		GREEN(4, PotionType.POISON),
+		BRIGHT_RED(5, PotionType.INSTANT_HEAL),
+		BLUE(6, PotionType.NIGHT_VISION),
+		BLACK(8, PotionType.WEAKNESS),
+		RED(9, PotionType.STRENGTH),
+		GREY(10, PotionType.SLOWNESS),
+		WATER(11, PotionType.WATER_BREATHING),
+		DARK_RED(12, PotionType.INSTANT_DAMAGE),
+		BRIGHT_GREY(14, PotionType.INVISIBILITY);
 
 		private final int colorId;
-		private final PotionEffectType effect;
+		private final PotionType type;
 
-		private PotionColor(int colorId, PotionEffectType effect) {
+		private PotionColor(int colorId, PotionType type) {
 			this.colorId = colorId;
-			this.effect = effect;
+			this.type = type;
 		}
 
 		// gets the Damage Value, that sets a color on the potion
@@ -690,8 +675,17 @@ public class Brew {
 			return (short) (colorId + 32);
 		}
 
-		public PotionEffectType getEffect() {
-			return effect;
+		public PotionType getType() {
+			return type;
+		}
+
+		public void colorBrew(PotionMeta meta, ItemStack potion, boolean destillable) {
+			if (P.use1_9) {
+				meta.setBasePotionData(new PotionData(getType()));
+				meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
+			} else {
+				potion.setDurability(getColorId(destillable));
+			}
 		}
 
 	}

@@ -1,12 +1,13 @@
 package com.dre.brewery;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffectType;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class BRecipe {
 
@@ -204,11 +205,7 @@ public class BRecipe {
 
 		Brew brew = new Brew(uid, bIngredients, quality, distillruns, getAge(), wood, getName(5), false, false, true);
 
-                if (P.use1_9) {
-                    potionMeta.setMainEffect(Brew.PotionColor.valueOf(getColor()).getEffect());
-                } else {
-                    potion.setDurability(Brew.PotionColor.valueOf(getColor()).getColorId(false));
-                }
+		Brew.PotionColor.valueOf(getColor()).colorBrew(potionMeta, potion, false);
 		potionMeta.setDisplayName(P.p.color("&f" + getName(quality)));
 		// This effect stores the UID in its Duration
 		potionMeta.addCustomEffect((PotionEffectType.REGENERATION).createEffect((uid * 4), 0), true);

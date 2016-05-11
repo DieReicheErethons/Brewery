@@ -35,7 +35,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class P extends JavaPlugin {
 	public static P p;
-	public static String configVersion = "1.3.1";
+	public static final String configVersion = "1.3.1";
 	public static boolean debug;
 	public static boolean useUUID;
 	public static boolean use1_9;
@@ -55,7 +55,7 @@ public class P extends JavaPlugin {
 	public EntityListener entityListener;
 	public InventoryListener inventoryListener;
 	public WorldListener worldListener;
-	public Compat1_9 compat1_9;
+	public DrinkListener1_9 drinkListener1_9;
 
 	// Language
 	public String language;
@@ -70,7 +70,7 @@ public class P extends JavaPlugin {
 		useUUID = !v.matches(".*1\\.[0-6].*") && !v.matches(".*1\\.7\\.[0-5].*");
 		use1_9 = !v.matches(".*1\\.[0-8].*");
 		if (use1_9) {
-			log("&cExperimental support for Bukkit 1.9 enabled.");
+			log("&eExperimental support for Bukkit 1.9 enabled.");
 		}
 
 		// load the Config
@@ -87,7 +87,7 @@ public class P extends JavaPlugin {
 			return;
 		}
 		readData();
-		
+
 		// Setup Metrics
 		setupMetrics();
 
@@ -97,7 +97,7 @@ public class P extends JavaPlugin {
 		entityListener = new EntityListener();
 		inventoryListener = new InventoryListener();
 		worldListener = new WorldListener();
-		compat1_9 = new Compat1_9();
+		drinkListener1_9 = new DrinkListener1_9();
 		getCommand("Brewery").setExecutor(new CommandListener());
 
 		p.getServer().getPluginManager().registerEvents(blockListener, p);
@@ -106,7 +106,7 @@ public class P extends JavaPlugin {
 		p.getServer().getPluginManager().registerEvents(inventoryListener, p);
 		p.getServer().getPluginManager().registerEvents(worldListener, p);
 		if (use1_9) {
-			p.getServer().getPluginManager().registerEvents(compat1_9, p);
+			p.getServer().getPluginManager().registerEvents(drinkListener1_9, p);
 		}
 
 		// Heartbeat
@@ -135,7 +135,7 @@ public class P extends JavaPlugin {
 
 		// save Data to Disk
 		DataSave.save(true);
-		
+
 		// save LanguageReader
 		languageReader.save();
 
@@ -152,14 +152,14 @@ public class P extends JavaPlugin {
 
 		this.log(this.getDescription().getName() + " disabled!");
 	}
-	
+
 	public void setupMetrics() {
 		try {
 			new com.dre.brewery.integration.Metrics(this).start();
 		} catch (Exception ignored) {
 		}
 	}
-	
+
 	public void reload(CommandSender sender) {
 		// clear all existent config Data
 		BIngredients.possibleIngredients.clear();

@@ -70,6 +70,14 @@ public class PlayerListener implements Listener {
 								BCauldron.remove(clickedBlock);
 							}
 							return;
+
+							// Its possible to empty a Cauldron with a Bucket in 1.9
+						} else if (P.use1_9 && materialInHand == Material.BUCKET) {
+							if (BCauldron.getFillLevel(clickedBlock) == 2) {
+								// will only remove when existing
+								BCauldron.remove(clickedBlock);
+							}
+							return;
 						}
 
 						// Check if fire alive below cauldron when adding ingredients
@@ -202,7 +210,7 @@ public class PlayerListener implements Listener {
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
 		Words.playerChat(event);
 	}
-	
+
 	// player commands while drunk, distort chat commands
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onCommandPreProcess(PlayerCommandPreprocessEvent event) {

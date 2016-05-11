@@ -229,8 +229,13 @@ public class BPlayer {
 							if (time == 0) {
 								// push him only to the side? or any direction
 								// like now
-								push.setX(Math.random() - 0.5);
-								push.setZ(Math.random() - 0.5);
+								if (P.use1_9) { // Pushing is way stronger in 1.9
+									push.setX((Math.random() - 0.5) / 2.0);
+									push.setZ((Math.random() - 0.5) / 2.0);
+								} else {
+									push.setX(Math.random() - 0.5);
+									push.setZ(Math.random() - 0.5);
+								}
 								player.setVelocity(push);
 							} else if (time < 0 && time > -10) {
 								// push him some more in the same direction

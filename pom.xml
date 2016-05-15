@@ -33,7 +33,7 @@
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.5.1</version>
+				<version>3.5.1</version>
 				<configuration>
 					<source>1.7</source>
 					<target>1.7</target>
@@ -44,6 +44,10 @@
 	</build>
 
 	<repositories>
+                <repository>
+			<id>dre2n-rpo</id>
+			<url>http://feuerstern.bplaced.net/repo/</url>
+		</repository>
 		<repository>
 			<id>spigot-repo</id>
 			<url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
@@ -52,21 +56,13 @@
 			<id>vault-repo</id>
 			<url>http://nexus.theyeticave.net/content/repositories/pub_releases</url>
 		</repository>
-		<!--<repository>
-			<id>dre2n-repo</id>
-			<url>http://feuerstern.bplaced.net/repo/</url>
-		</repository>-->
+		<repository>
+			<id>mcstats-repo</id>
+			<url>http://repo.mcstats.org/content/repositories/public/</url>
+		</repository>
 		<repository>
 			<id>sk89q-repo</id>
 			<url>http://maven.sk89q.com/repo/</url>
-		</repository>
-		<repository>
-			<id>addstar-repo</id>
-			<url>http://maven.addstar.com.au/artifactory/ext-release-local/</url>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>always</updatePolicy>
-			</snapshots>
 		</repository>
 		<repository>
 			<id>md_5-releases</id>
@@ -94,12 +90,12 @@
 		<dependency>
 			<groupId>com.griefcraft.lwc</groupId>
 			<artifactId>LWCPlugin</artifactId>
-			<version>1.7.2</version>
+			<version>4.5.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>me.ryanhamshire</groupId>
 			<artifactId>GriefPrevention</artifactId>
-			<version>14.5.1</version>
+			<version>14.5.4</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>

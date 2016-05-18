@@ -44,9 +44,9 @@
 	</build>
 
 	<repositories>
-                <repository>
-			<id>dre2n-rpo</id>
-			<url>http://feuerstern.bplaced.net/repo/</url>
+		<repository>
+			<id>md_5-releases</id>
+			<url>http://repo.md-5.net/content/repositories/releases/</url>
 		</repository>
 		<repository>
 			<id>spigot-repo</id>
@@ -65,8 +65,8 @@
 			<url>http://maven.sk89q.com/repo/</url>
 		</repository>
 		<repository>
-			<id>md_5-releases</id>
-			<url>http://repo.md-5.net/content/repositories/releases/</url>
+			<id>dre2n-rpo</id>
+			<url>http://feuerstern.bplaced.net/repo/</url>
 		</repository>
 	</repositories>
 
@@ -74,7 +74,8 @@
 		<dependency>
 			<groupId>org.bukkit</groupId>
 			<artifactId>bukkit</artifactId>
-			<version>1.9-R0.1-SNAPSHOT</version>
+			<version>1.9.4-R0.1-SNAPSHOT</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>net.milkbowl.vault</groupId>
@@ -86,22 +87,31 @@
 			<groupId>com.sk89q</groupId>
 			<artifactId>worldguard</artifactId>
 			<version>6.1</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.griefcraft.lwc</groupId>
 			<artifactId>LWCPlugin</artifactId>
 			<version>4.5.0-SNAPSHOT</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>me.ryanhamshire</groupId>
 			<artifactId>GriefPrevention</artifactId>
 			<version>14.5.4</version>
-			<scope>compile</scope>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.diddiz</groupId>
 			<artifactId>logblock</artifactId>
 			<version>1.94</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>de.diddiz</groupId>
+			<artifactId>questioner</artifactId>
+			<version>1.94</version>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 </project>

@@ -69,9 +69,6 @@ public class P extends JavaPlugin {
 		String v = Bukkit.getBukkitVersion();
 		useUUID = !v.matches(".*1\\.[0-6].*") && !v.matches(".*1\\.7\\.[0-5].*");
 		use1_9 = !v.matches(".*1\\.[0-8].*");
-		if (use1_9) {
-			log("&eExperimental support for Bukkit 1.9 enabled.");
-		}
 
 		// load the Config
 		try {

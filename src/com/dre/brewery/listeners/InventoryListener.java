@@ -115,7 +115,7 @@ public class InventoryListener implements Listener {
 				if (now instanceof BrewingStand) {
 					BrewingStand stand = (BrewingStand) now;
 					if (brewTime == DISTILLTIME) { // only check at the beginning (and end) for distillables
-						if (!isCustomAndDistill(stand.getInventory())) {
+						if (!isCustom(stand.getInventory(), true)) {
 							this.cancel();
 							trackedBrewers.remove(brewery);
 							P.p.debugLog("nothing to distill");
@@ -150,7 +150,7 @@ public class InventoryListener implements Listener {
 		}.runTaskTimer(P.p, 2L, 1L).getTaskId());
 	}
 
-	private boolean isCustomAndDistill(BrewerInventory brewer) {
+	private boolean isCustom(BrewerInventory brewer, boolean distill) {
 		ItemStack item = brewer.getItem(3); // ingredient
 		if (item == null || Material.GLOWSTONE_DUST != item.getType()) return false; // need dust in the top slot.
 		for (int slot = 0; slot < 3; slot++) {
@@ -160,7 +160,7 @@ public class InventoryListener implements Listener {
 					if (item.hasItemMeta()) {
 						int uid = Brew.getUID(item);
 						Brew pot = Brew.potions.get(uid);
-						if (pot != null && pot.canDistill()) { // need at least one distillable potion.
+						if (pot != null && (!distill || pot.canDistill())) { // need at least one distillable potion.
 							return true;
 						}
 					}
@@ -172,6 +172,12 @@ public class InventoryListener implements Listener {
 
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onBrew(BrewEvent event) {
+		if (P.use1_9) {
+			if (isCustom(event.getContents(), false)) {
+				event.setCancelled(true);
+			}
+			return;
+		}
 		if (runDistill(event.getContents())) {
 			event.setCancelled(true);
 		}

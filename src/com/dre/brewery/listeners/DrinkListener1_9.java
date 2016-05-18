@@ -17,13 +17,12 @@ public class DrinkListener1_9 implements Listener {
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
 	public void onPlayerDrink(PlayerItemConsumeEvent event) {
 		ItemStack item = event.getItem();
-		Brew brew = Brew.get(item);
-		if (brew == null) {
-			return;
-		}
-
 		if (item.getType() == Material.POTION) {
 			PotionMeta meta = (PotionMeta) item.getItemMeta();
+			Brew brew = Brew.get(meta);
+			if (brew == null) {
+				return;
+			}
 			// Throw away former "base" effect and replace with MUNDANE.
 			meta.setBasePotionData(new PotionData(PotionType.MUNDANE, false, false));
 			item.setItemMeta(meta);

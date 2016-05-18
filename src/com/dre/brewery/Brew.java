@@ -83,8 +83,7 @@ public class Brew {
 	public static Brew get(ItemStack item) {
 		if (item.getType() == Material.POTION) {
 			if (item.hasItemMeta()) {
-				PotionMeta potionMeta = (PotionMeta) item.getItemMeta();
-				return get(potionMeta);
+				return get((PotionMeta) item.getItemMeta());
 			}
 		}
 		return null;
@@ -272,6 +271,18 @@ public class Brew {
 			item.setItemMeta(meta);
 		}
 		unlabeled = true;
+	}
+
+	public int getDistillRuns() {
+		return distillRuns;
+	}
+
+	public float getAgeTime() {
+		return ageTime;
+	}
+
+	public BRecipe getCurrentRecipe() {
+		return currentRecipe;
 	}
 
 	public boolean isPersistent() {

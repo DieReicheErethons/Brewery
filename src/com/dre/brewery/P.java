@@ -262,7 +262,7 @@ public class P extends JavaPlugin {
 			} catch (Throwable e) {
 				wg = null;
 				P.p.errorLog("Failed loading WorldGuard Integration! Opening Barrels will NOT work!");
-				P.p.errorLog("Brewery was tested with version 5.8 to 6.0 of WorldGuard!");
+				P.p.errorLog("Brewery was tested with version 5.8 to 6.1 of WorldGuard!");
 				P.p.errorLog("Disable the WorldGuard support in the config and do /brew reload");
 				e.printStackTrace();
 			}

@@ -146,7 +146,7 @@ public class Barrel implements InventoryHolder {
 					}
 				} catch (Throwable e) {
 					P.p.errorLog("Failed to Check GriefPrevention for Barrel Open Permissions!");
-					P.p.errorLog("Brewery was tested with GriefPrevention 14.5.1");
+					P.p.errorLog("Brewery was tested with GriefPrevention 14.5.4");
 					P.p.errorLog("Disable the GriefPrevention support in the config and do /brew reload");
 					e.printStackTrace();
 					P.p.msg(player, "&cError opening Barrel, please report to an Admin!");
@@ -168,7 +168,7 @@ public class Barrel implements InventoryHolder {
 							return LWCBarrel.checkAccess(player, sign, event, plugin);
 						} catch (Throwable e) {
 							P.p.errorLog("Failed to Check LWC for Barrel Open Permissions!");
-							P.p.errorLog("Brewery was tested with version 4.3.1 of LWC!");
+							P.p.errorLog("Brewery was tested with version 4.5.0 of LWC!");
 							P.p.errorLog("Disable the LWC support in the config and do /brew reload");
 							e.printStackTrace();
 							P.p.msg(player, "&cError opening Barrel, please report to an Admin!");
@@ -193,7 +193,7 @@ public class Barrel implements InventoryHolder {
 				return LWCBarrel.checkDestroy(player, this);
 			} catch (Throwable e) {
 				P.p.errorLog("Failed to Check LWC for Barrel Break Permissions!");
-				P.p.errorLog("Brewery was tested with version 4.3.1 of LWC!");
+				P.p.errorLog("Brewery was tested with version 4.5.0 of LWC!");
 				P.p.errorLog("Disable the LWC support in the config and do /brew reload");
 				e.printStackTrace();
 				P.p.msg(player, "&cError breaking Barrel, please report to an Admin!");
@@ -211,7 +211,7 @@ public class Barrel implements InventoryHolder {
 				LWCBarrel.remove(this);
 			} catch (Throwable e) {
 				P.p.errorLog("Failed to Remove LWC Lock from Barrel!");
-				P.p.errorLog("Brewery was tested with version 4.3.1 of LWC!");
+				P.p.errorLog("Brewery was tested with version 4.5.0 of LWC!");
 				e.printStackTrace();
 			}
 		}
@@ -256,7 +256,7 @@ public class Barrel implements InventoryHolder {
 				LogBlockBarrel.openBarrel(player, inventory, spigot.getLocation());
 			} catch (Throwable e) {
 				P.p.errorLog("Failed to Log Barrel to LogBlock!");
-				P.p.errorLog("Brewery was tested with version 1.80 of LogBlock!");
+				P.p.errorLog("Brewery was tested with version 1.94 of LogBlock!");
 				e.printStackTrace();
 			}
 		}
@@ -461,7 +461,7 @@ public class Barrel implements InventoryHolder {
 					LogBlockBarrel.breakBarrel(breaker.getName(), items, spigot.getLocation());
 				} catch (Throwable e) {
 					P.p.errorLog("Failed to Log Barrel-break to LogBlock!");
-					P.p.errorLog("Brewery was tested with version 1.80 of LogBlock!");
+					P.p.errorLog("Brewery was tested with version 1.94 of LogBlock!");
 					e.printStackTrace();
 				}
 			}

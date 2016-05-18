@@ -209,24 +209,24 @@ public class InventoryListener implements Listener {
 		return false;
 	}
 
-	// convert potions from 1.8 for color and to remove effect descriptions in 1.9
+	// Clicked a Brew somewhere, do some updating
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = false)
 	public void onInventoryClickLow(InventoryClickEvent event) {
-		if (!P.use1_9) return;
-
 		if (event.getCurrentItem() != null && event.getCurrentItem().getType().equals(Material.POTION)) {
 			ItemStack item = event.getCurrentItem();
 			if (item.hasItemMeta()) {
 				PotionMeta potion = ((PotionMeta) item.getItemMeta());
-				if (!potion.hasItemFlag(ItemFlag.HIDE_POTION_EFFECTS)) {
-					Brew brew = Brew.get(potion);
-					if (brew != null) {
+				Brew brew = Brew.get(potion);
+				if (brew != null) {
+					// convert potions from 1.8 to 1.9 for color and to remove effect descriptions
+					if (P.use1_9 && !potion.hasItemFlag(ItemFlag.HIDE_POTION_EFFECTS)) {
 						BRecipe recipe = brew.getCurrentRecipe();
 						if (recipe != null) {
 							Brew.PotionColor.valueOf(recipe.getColor()).colorBrew(potion, item, brew.canDistill());
 							item.setItemMeta(potion);
 						}
 					}
+					brew.touch();
 				}
 			}
 		}

@@ -203,7 +203,7 @@ public class BRecipe {
 
 		BIngredients bIngredients = new BIngredients(list, cookingTime);
 
-		Brew brew = new Brew(uid, bIngredients, quality, distillruns, getAge(), wood, getName(5), false, false, true);
+		Brew brew = new Brew(uid, bIngredients, quality, distillruns, getAge(), wood, getName(5), false, false, true, 0);
 
 		Brew.PotionColor.valueOf(getColor()).colorBrew(potionMeta, potion, false);
 		potionMeta.setDisplayName(P.p.color("&f" + getName(quality)));
@@ -212,6 +212,7 @@ public class BRecipe {
 
 		brew.convertLore(potionMeta, false);
 		Brew.addOrReplaceEffects(potionMeta, effects, quality);
+		brew.touch();
 
 		potion.setItemMeta(potionMeta);
 		return potion;

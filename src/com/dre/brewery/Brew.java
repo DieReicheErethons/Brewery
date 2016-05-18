@@ -21,6 +21,7 @@ public class Brew {
 	// represents the liquid in the brewed Potions
 
 	public static Map<Integer, Brew> potions = new HashMap<Integer, Brew>();
+	public static long installTime = System.currentTimeMillis(); // plugin install time in millis after epoch
 	public static Boolean colorInBarrels; // color the Lore while in Barrels
 	public static Boolean colorInBrewer; // color the Lore while in Brewer
 
@@ -33,9 +34,11 @@ public class Brew {
 	private boolean unlabeled;
 	private boolean persistent;
 	private boolean stat; // static potions should not be changed
+	private int lastUpdate; // last update in hours after install time
 
 	public Brew(int uid, BIngredients ingredients) {
 		this.ingredients = ingredients;
+		touch();
 		potions.put(uid, this);
 	}
 
@@ -44,11 +47,12 @@ public class Brew {
 		this.ingredients = ingredients;
 		this.quality = quality;
 		this.currentRecipe = recipe;
+		touch();
 		potions.put(uid, this);
 	}
 
 	// loading from file
-	public Brew(int uid, BIngredients ingredients, int quality, int distillRuns, float ageTime, float wood, String recipe, boolean unlabeled, boolean persistent, boolean stat) {
+	public Brew(int uid, BIngredients ingredients, int quality, int distillRuns, float ageTime, float wood, String recipe, boolean unlabeled, boolean persistent, boolean stat, int lastUpdate) {
 		potions.put(uid, this);
 		this.ingredients = ingredients;
 		this.quality = quality;
@@ -58,6 +62,7 @@ public class Brew {
 		this.unlabeled = unlabeled;
 		this.persistent = persistent;
 		this.stat = stat;
+		this.lastUpdate = lastUpdate;
 		setRecipeFromString(recipe);
 	}
 
@@ -273,6 +278,11 @@ public class Brew {
 		unlabeled = true;
 	}
 
+	// Do some regular updates
+	public void touch() {
+		lastUpdate = (int) ((float) (System.currentTimeMillis() - installTime) / 3600000F);
+	}
+
 	public int getDistillRuns() {
 		return distillRuns;
 	}
@@ -313,6 +323,10 @@ public class Brew {
 				PotionColor.valueOf(currentRecipe.getColor()).colorBrew(((PotionMeta) potion.getItemMeta()), potion, true);
 			}
 		}
+	}
+
+	public int getLastUpdate() {
+		return lastUpdate;
 	}
 
 	// Distilling section ---------------
@@ -366,6 +380,7 @@ public class Brew {
 			prefix = getQualityColor(ingredients.getDistillQuality(recipe, distillRuns));
 		}
 		updateDistillLore(prefix, potionMeta);
+		touch();
 
 		slotItem.setItemMeta(potionMeta);
 	}
@@ -421,6 +436,7 @@ public class Brew {
 				updateWoodLore(potionMeta);
 			}
 		}
+		touch();
 		item.setItemMeta(potionMeta);
 	}
 
@@ -649,6 +665,9 @@ public class Brew {
 			}
 			if (brew.stat) {
 				idConfig.set("stat", true);
+			}
+			if (brew.lastUpdate > 0) {
+				idConfig.set("lastUpdate", brew.lastUpdate);
 			}
 			// save the ingredients
 			idConfig.set("ingId", brew.ingredients.save(config.getParent()));

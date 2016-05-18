@@ -369,6 +369,8 @@ public class P extends JavaPlugin {
 
 			FileConfiguration data = YamlConfiguration.loadConfiguration(file);
 
+			Brew.installTime = data.getLong("installTime", System.currentTimeMillis());
+
 			// Check if data is the newest version
 			String version = data.getString("Version", null);
 			if (version != null) {
@@ -410,8 +412,9 @@ public class P extends JavaPlugin {
 					boolean unlabeled = section.getBoolean(uid + ".unlabeled", false);
 					boolean persistent = section.getBoolean(uid + ".persist", false);
 					boolean stat = section.getBoolean(uid + ".stat", false);
+					int lastUpdate = section.getInt("lastUpdate", 0);
 
-					new Brew(parseInt(uid), ingredients, quality, distillRuns, ageTime, wood, recipe, unlabeled, persistent, stat);
+					new Brew(parseInt(uid), ingredients, quality, distillRuns, ageTime, wood, recipe, unlabeled, persistent, stat, lastUpdate);
 				}
 			}
 

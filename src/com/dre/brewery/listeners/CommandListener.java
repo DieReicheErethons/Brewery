@@ -430,6 +430,7 @@ public class CommandListener implements CommandExecutor {
 						brew.setStatic(true, hand);
 						p.msg(sender, p.languageReader.get("CMD_Persistent"));
 					}
+					brew.touch();
 					return;
 				}
 			}
@@ -459,6 +460,7 @@ public class CommandListener implements CommandExecutor {
 						brew.setStatic(true, hand);
 						p.msg(sender, p.languageReader.get("CMD_Static"));
 					}
+					brew.touch();
 					return;
 				}
 			}
@@ -478,6 +480,7 @@ public class CommandListener implements CommandExecutor {
 				Brew brew = Brew.get(hand);
 				if (brew != null) {
 					brew.unLabel(hand);
+					brew.touch();
 					p.msg(sender, p.languageReader.get("CMD_UnLabel"));
 					return;
 				}

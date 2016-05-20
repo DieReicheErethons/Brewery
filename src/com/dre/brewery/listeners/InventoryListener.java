@@ -1,9 +1,12 @@
 package com.dre.brewery.listeners;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.UUID;
-
+import com.dre.brewery.BRecipe;
+import com.dre.brewery.Barrel;
+import com.dre.brewery.Brew;
+import com.dre.brewery.P;
+import com.dre.brewery.integration.LogBlockBarrel;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.BrewingStand;
@@ -11,25 +14,17 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.BrewEvent;
-import org.bukkit.event.inventory.InventoryAction;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryOpenEvent;
-import org.bukkit.event.inventory.InventoryPickupItemEvent;
-import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.inventory.*;
 import org.bukkit.inventory.BrewerInventory;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.meta.PotionMeta;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
 
-import com.dre.brewery.Barrel;
-import com.dre.brewery.Brew;
-import com.dre.brewery.P;
-import com.dre.brewery.integration.LogBlockBarrel;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.UUID;
 
 /**
  * Updated for 1.9 to replicate the "Brewing" process for distilling.
@@ -120,7 +115,7 @@ public class InventoryListener implements Listener {
 				if (now instanceof BrewingStand) {
 					BrewingStand stand = (BrewingStand) now;
 					if (brewTime == DISTILLTIME) { // only check at the beginning (and end) for distillables
-						if (!isCustomAndDistill(stand.getInventory())) {
+						if (!isCustom(stand.getInventory(), true)) {
 							this.cancel();
 							trackedBrewers.remove(brewery);
 							P.p.debugLog("nothing to distill");
@@ -152,22 +147,20 @@ public class InventoryListener implements Listener {
 					P.p.debugLog("The block was replaced; not a brewing stand.");
 				}
 			}
-		}.runTaskTimer(P.p, 2l, 1l).getTaskId());
+		}.runTaskTimer(P.p, 2L, 1L).getTaskId());
 	}
 
-	private boolean isCustomAndDistill(BrewerInventory brewer) {
+	private boolean isCustom(BrewerInventory brewer, boolean distill) {
 		ItemStack item = brewer.getItem(3); // ingredient
 		if (item == null || Material.GLOWSTONE_DUST != item.getType()) return false; // need dust in the top slot.
-		Boolean[] contents = new Boolean[3];
 		for (int slot = 0; slot < 3; slot++) {
 			item = brewer.getItem(slot);
-			contents[slot] = false;
 			if (item != null) {
 				if (item.getType() == Material.POTION) {
 					if (item.hasItemMeta()) {
 						int uid = Brew.getUID(item);
 						Brew pot = Brew.potions.get(uid);
-						if (pot != null && pot.canDistill()) { // need at least one distillable potion.
+						if (pot != null && (!distill || pot.canDistill())) { // need at least one distillable potion.
 							return true;
 						}
 					}
@@ -179,6 +172,12 @@ public class InventoryListener implements Listener {
 
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onBrew(BrewEvent event) {
+		if (P.use1_9) {
+			if (isCustom(event.getContents(), false)) {
+				event.setCancelled(true);
+			}
+			return;
+		}
 		if (runDistill(event.getContents())) {
 			event.setCancelled(true);
 		}
@@ -214,6 +213,29 @@ public class InventoryListener implements Listener {
 			return true;
 		}
 		return false;
+	}
+
+	// Clicked a Brew somewhere, do some updating
+	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = false)
+	public void onInventoryClickLow(InventoryClickEvent event) {
+		if (event.getCurrentItem() != null && event.getCurrentItem().getType().equals(Material.POTION)) {
+			ItemStack item = event.getCurrentItem();
+			if (item.hasItemMeta()) {
+				PotionMeta potion = ((PotionMeta) item.getItemMeta());
+				Brew brew = Brew.get(potion);
+				if (brew != null) {
+					// convert potions from 1.8 to 1.9 for color and to remove effect descriptions
+					if (P.use1_9 && !potion.hasItemFlag(ItemFlag.HIDE_POTION_EFFECTS)) {
+						BRecipe recipe = brew.getCurrentRecipe();
+						if (recipe != null) {
+							Brew.PotionColor.valueOf(recipe.getColor()).colorBrew(potion, item, brew.canDistill());
+							item.setItemMeta(potion);
+						}
+					}
+					brew.touch();
+				}
+			}
+		}
 	}
 
 	// convert to non colored Lore when taking out of Barrel/Brewer
@@ -260,7 +282,7 @@ public class InventoryListener implements Listener {
 					LogBlockBarrel.closeBarrel(event.getPlayer(), event.getInventory());
 				} catch (Exception e) {
 					P.p.errorLog("Failed to Log Barrel to LogBlock!");
-					P.p.errorLog("Brewery was tested with version 1.80 of LogBlock!");
+					P.p.errorLog("Brewery was tested with version 1.94 of LogBlock!");
 					e.printStackTrace();
 				}
 			}

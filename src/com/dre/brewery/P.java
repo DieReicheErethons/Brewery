@@ -69,9 +69,6 @@ public class P extends JavaPlugin {
 		String v = Bukkit.getBukkitVersion();
 		useUUID = !v.matches(".*1\\.[0-6].*") && !v.matches(".*1\\.7\\.[0-5].*");
 		use1_9 = !v.matches(".*1\\.[0-8].*");
-		if (use1_9) {
-			log("&eExperimental support for Bukkit 1.9 enabled.");
-		}
 
 		// load the Config
 		try {
@@ -262,7 +259,7 @@ public class P extends JavaPlugin {
 			} catch (Throwable e) {
 				wg = null;
 				P.p.errorLog("Failed loading WorldGuard Integration! Opening Barrels will NOT work!");
-				P.p.errorLog("Brewery was tested with version 5.8 to 6.0 of WorldGuard!");
+				P.p.errorLog("Brewery was tested with version 5.8 to 6.1 of WorldGuard!");
 				P.p.errorLog("Disable the WorldGuard support in the config and do /brew reload");
 				e.printStackTrace();
 			}
@@ -369,6 +366,8 @@ public class P extends JavaPlugin {
 
 			FileConfiguration data = YamlConfiguration.loadConfiguration(file);
 
+			Brew.installTime = data.getLong("installTime", System.currentTimeMillis());
+
 			// Check if data is the newest version
 			String version = data.getString("Version", null);
 			if (version != null) {
@@ -410,8 +409,9 @@ public class P extends JavaPlugin {
 					boolean unlabeled = section.getBoolean(uid + ".unlabeled", false);
 					boolean persistent = section.getBoolean(uid + ".persist", false);
 					boolean stat = section.getBoolean(uid + ".stat", false);
+					int lastUpdate = section.getInt("lastUpdate", 0);
 
-					new Brew(parseInt(uid), ingredients, quality, distillRuns, ageTime, wood, recipe, unlabeled, persistent, stat);
+					new Brew(parseInt(uid), ingredients, quality, distillRuns, ageTime, wood, recipe, unlabeled, persistent, stat, lastUpdate);
 				}
 			}
 

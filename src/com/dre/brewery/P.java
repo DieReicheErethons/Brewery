@@ -67,8 +67,8 @@ public class P extends JavaPlugin {
 
 		// Version check
 		String v = Bukkit.getBukkitVersion();
-		useUUID = !v.matches(".*1\\.[0-6].*") && !v.matches(".*1\\.7\\.[0-5].*");
-		use1_9 = !v.matches(".*1\\.[0-8].*");
+		useUUID = !v.matches("(^|.*[^\\.\\d])1\\.[0-6]([^\\d].*|$)") && !v.matches("(^|.*[^\\.\\d])1\\.7\\.[0-5]([^\\d].*|$)");
+		use1_9 = !v.matches("(^|.*[^\\.\\d])1\\.[0-8]([^\\d].*|$)");
 
 		// load the Config
 		try {

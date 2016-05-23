@@ -280,7 +280,7 @@ public class Brew {
 
 	// Do some regular updates
 	public void touch() {
-		lastUpdate = (int) ((float) (System.currentTimeMillis() - installTime) / 3600000F);
+		lastUpdate = (int) ((double) (System.currentTimeMillis() - installTime) / 3600000D);
 	}
 
 	public int getDistillRuns() {

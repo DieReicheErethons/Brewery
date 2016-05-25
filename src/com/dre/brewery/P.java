@@ -61,6 +61,8 @@ public class P extends JavaPlugin {
 	public String language;
 	public LanguageReader languageReader;
 
+	private CommandSender reloader;
+
 	@Override
 	public void onEnable() {
 		p = this;
@@ -158,6 +160,9 @@ public class P extends JavaPlugin {
 	}
 
 	public void reload(CommandSender sender) {
+		if (sender != null && !sender.equals(getServer().getConsoleSender())) {
+			reloader = sender;
+		}
 		// clear all existent config Data
 		BIngredients.possibleIngredients.clear();
 		BIngredients.recipes.clear();
@@ -200,6 +205,7 @@ public class P extends JavaPlugin {
 		if (!successful) {
 			msg(sender, p.languageReader.get("Error_Recipeload"));
 		}
+		reloader = null;
 	}
 
 	public void msg(CommandSender sender, String msg) {
@@ -218,6 +224,9 @@ public class P extends JavaPlugin {
 
 	public void errorLog(String msg) {
 		Bukkit.getConsoleSender().sendMessage(ChatColor.DARK_GREEN + "[Brewery] " + ChatColor.DARK_RED + "ERROR: " + ChatColor.RED + msg);
+		if (reloader != null) {
+			reloader.sendMessage(ChatColor.DARK_GREEN + "[Brewery] " + ChatColor.DARK_RED + "ERROR: " + ChatColor.RED + msg);
+		}
 	}
 
 	public boolean readConfig() {
@@ -813,6 +822,7 @@ public class P extends JavaPlugin {
 	public class BreweryRunnable implements Runnable {
 		@Override
 		public void run() {
+			reloader = null;
 			for (BCauldron cauldron : BCauldron.bcauldrons) {
 				cauldron.onUpdate();// runs every min to update cooking time
 			}

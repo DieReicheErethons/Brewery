@@ -104,6 +104,53 @@ public class BRecipe {
 		}
 	}
 
+	// check every part of the recipe for validity
+	public boolean isValid() {
+		if (name == null || name.length < 1) {
+			P.p.errorLog("Recipe Name missing or invalid!");
+			return false;
+		}
+		if (getName(5) == null || getName(5).length() < 1) {
+			P.p.errorLog("Recipe Name invalid");
+			return false;
+		}
+		if (ingredients == null || ingredients.isEmpty()) {
+			P.p.errorLog("No ingredients could be loaded for Recipe: " + getName(5));
+			return false;
+		}
+		if (cookingTime < 1) {
+			P.p.errorLog("Invalid cooking time '" + cookingTime + "' in Recipe: " + getName(5));
+			return false;
+		}
+		if (distillruns < 0) {
+			P.p.errorLog("Invalid distillruns '" + distillruns + "' in Recipe: " + getName(5));
+			return false;
+		}
+		if (wood < 0 || wood > 6) {
+			P.p.errorLog("Invalid wood type '" + wood + "' in Recipe: " + getName(5));
+			return false;
+		}
+		if (age < 0) {
+			P.p.errorLog("Invalid age time '" + age + "' in Recipe: " + getName(5));
+			return false;
+		}
+		try {
+			Brew.PotionColor.valueOf(getColor());
+		} catch (IllegalArgumentException e) {
+			P.p.errorLog("Invalid Color '" + color + "' in Recipe: " + getName(5));
+			return false;
+		}
+		if (difficulty < 0 || difficulty > 10) {
+			P.p.errorLog("Invalid difficulty '" + difficulty + "' in Recipe: " + getName(5));
+			return false;
+		}
+		if (alcohol < 0) {
+			P.p.errorLog("Invalid alcohol '" + alcohol + "' in Recipe: " + getName(5));
+			return false;
+		}
+		return true;
+	}
+
 	// allowed deviation to the recipes count of ingredients at the given difficulty
 	public int allowedCountDiff(int count) {
 		if (count < 8) {
@@ -216,11 +263,6 @@ public class BRecipe {
 
 		potion.setItemMeta(potionMeta);
 		return potion;
-	}
-
-	// true if name and ingredients are correct
-	public boolean isValid() {
-		return (name != null && ingredients != null && !ingredients.isEmpty());
 	}
 
 

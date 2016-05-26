@@ -34,7 +34,6 @@ public class BPlayer {
 
 	private int quality = 0;// = quality of drunkeness * drunkeness
 	private int drunkeness = 0;// = amount of drunkeness
-	private boolean passedOut = false;// if kicked because of drunkeness
 	private int offlineDrunk = 0;// drunkeness when gone offline
 	private Vector push = new Vector(0, 0, 0);
 	private int time = 20;
@@ -43,11 +42,10 @@ public class BPlayer {
 	}
 
 	// reading from file
-	public BPlayer(String name, int quality, int drunkeness, int offlineDrunk, Boolean passedOut) {
+	public BPlayer(String name, int quality, int drunkeness, int offlineDrunk) {
 		this.quality = quality;
 		this.drunkeness = drunkeness;
 		this.offlineDrunk = offlineDrunk;
-		this.passedOut = passedOut;
 		players.put(name, this);
 	}
 
@@ -254,7 +252,6 @@ public class BPlayer {
 	public void passOut(Player player) {
 		player.kickPlayer(P.p.languageReader.get("Player_DrunkPassOut"));
 		offlineDrunk = drunkeness;
-		passedOut = true;
 	}
 
 
@@ -272,11 +269,7 @@ public class BPlayer {
 				return 3;
 			}
 		}
-		if (drunkeness <= 80) {
-			if (passedOut) {
-				// he has suffered enough. Let him through
-				return 0;
-			}
+		if (drunkeness <= 90) {
 			if (Math.random() > 0.4) {
 				return 0;
 			} else {
@@ -284,12 +277,10 @@ public class BPlayer {
 			}
 		}
 		if (drunkeness <= 100) {
-			if (!passedOut) {
-				if (Math.random() > 0.6) {
-					return 0;
-				} else {
-					return 2;
-				}
+			if (Math.random() > 0.6) {
+				return 0;
+			} else {
+				return 2;
 			}
 		}
 		return 3;
@@ -331,7 +322,6 @@ public class BPlayer {
 		}
 
 		offlineDrunk = 0;
-		passedOut = false;
 	}
 
 	public void disconnecting() {
@@ -533,9 +523,6 @@ public class BPlayer {
 			section.set("drunk", bPlayer.drunkeness);
 			if (bPlayer.offlineDrunk != 0) {
 				section.set("offDrunk", bPlayer.offlineDrunk);
-			}
-			if (bPlayer.passedOut) {
-				section.set("passedOut", true);
 			}
 		}
 	}

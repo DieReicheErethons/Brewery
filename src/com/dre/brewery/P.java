@@ -443,9 +443,8 @@ public class P extends JavaPlugin {
 					int quality = section.getInt(name + ".quality");
 					int drunk = section.getInt(name + ".drunk");
 					int offDrunk = section.getInt(name + ".offDrunk", 0);
-					boolean passedOut = section.getBoolean(name + ".passedOut", false);
 
-					new BPlayer(name, quality, drunk, offDrunk, passedOut);
+					new BPlayer(name, quality, drunk, offDrunk);
 				}
 			}
 

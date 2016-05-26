@@ -13,24 +13,23 @@ enableHome: true
 
 # Type de la téléportation /home: ['cmd: home']
 # bed = Le joueur se téléportera à son lit de réapparition.
-# SamplePlugin = Le plugin /home installé. Supporte: ManagerXL. Si non disponible:
 # 'cmd: home' = /home sera exécuté par le joueur. Il devra avoir la permission sans le délai pour y parvenir!
 # 'cmd: spawn' = /spawn sera exécuté par le joueur.
 # 'cmd: whatever' = /whatever sera exécuté par le joueur. (Peu importe)
 homeType: 'cmd: home'
 
-# Si le joueur se "réveille" à un point aléatoire sur la carte à sa connexion, pendant un excès d'alccol (Les points de réveil doivent être ajoutés avec '/br Wakeup add' via un administrateur.)
+# Si le joueur se "réveille" à un point aléatoire sur la carte à sa connexion, pendant un excès d'alccol (Les points de réveil doivent être ajoutés avec '/brew Wakeup add' via un administrateur.)
 # Le joueur se réveillera aléatoirement parmis les deux points de "réveil" les plus proches de lui [true]
 enableWake: true
 
-# Si le joueur reçoit des connexions refusées au serveur s'il est ivre.[true]
-enableLoginDisallow: false
+# Si le joueur reçoit des connexions refusées au serveur s'il est ivre. [true]
+enableLoginDisallow: true
 
-# Si le joueur s'évanouit (il sera kické) lorsqu'il boit trop d'alcool[true]
+# Si le joueur s'évanouit (il sera kické) lorsqu'il boit trop d'alcool [false]
 enableKickOnOverdrink: false
 
 # Si le joueur vomit en cas d'alcoolémie élevée (Le type d'objet "droppé" est configurable en dessous) [true]
-# L'objet ne peut pas être collecté et reste sur le sol jusqu'à ce qu'il disparaisse (ATTENTION: Peut être collecté si le serveur redémarre!)
+# L'objet ne peut pas être collecté et reste sur le sol jusqu'à ce qu'il disparaisse
 enablePuke: true
 
 # L'objet utilisé pour représenter le vomit [SOUL_SAND]
@@ -44,22 +43,22 @@ drainItems:
 # Temps (en jours) pour que les données d'ivresse restent sauvergardées lorsque le joueur est déconnecté, pour appliquer les effets. [7]
 hangoverDays: 7
 
-# Colorer les informations d'objets (lore) au dépend de la qualité dans un tonneau et/ou dans un stand de brassage (l'alambic) [true, false]
+# Colorer les informations d'objets (lore) au dépend de la qualité dans un tonneau et/ou dans un stand de brassage (l'alambic) [true, true]
 colorInBarrels: true
-colorInBrewer: false
+colorInBrewer: true
 
 # Si le grand tonneau peut être ouvert en cliquant sur n'importe quel bloc, non seulement le robinet ou le panneau. Toujours "true" pour les petits tonneaux. [true]
 openLargeBarrelEverywhere: true
 
 # Enable checking for Updates, Checks the curseforge api for updates to Brewery [true]
-# If an Update is found a Message is logged on Server-start and displayed to ops joining the game
+# If an Update is found a Message is logged on Server-start and displayed to OPs joining the game
 updateCheck: true
 
 # Intervale de la sauvegarde automatique en minutes [3]
 autosave: 3
 
 # Version de configuration
-version: '1.3.1'
+version: '1.4'
 
 
 # -- Recette pour les boissons --
@@ -68,8 +67,10 @@ version: '1.3.1'
 # ingredients: Liste des 'matériaux ou id,data/montant'
 #   (Les id d'objets à la place des matériaux sont obsolètes pour bukkit et pourraient ne pas fonctionner dans le futur!)
 #     Ex: 'SUGAR_CANE' 
-#   Une liste des matériaux peuvent-être trouvés ici: http://jd.bukkit.org/beta/apidocs/org/bukkit/Material.html
-#   Vous pouvez spécifier une data (Ex: 5:3 -> Planche de bois de jungle), si vous ne le faites pas la data ne sera pas prise en compte (Ex : 5 -> Bois en général)
+#   Une liste des matériaux peuvent-être trouvés ici: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
+#   Vous pouvez spécifier une data (Ex: 5,3 -> Planche de bois de jungle), si vous ne le faites pas la data ne sera pas prise en compte (Ex : 5 -> Bois en général)
+#   If Vault is installed normal names can be used instead of material or id, so using Vault is highly recommended.
+#   Vault will recognize things like "Jungle Leaves" instead of "5,3"
 # cookingtime: Temps en minutes réelles durant lesquelles les ingrédients devront bouillir
 # distillruns: Combien de fois le breuvage devra être distillé pour un alcool de qualité (0=Ne pas distiller)
 # wood: Type de bois du baril 0=aucun 1=Bouleau 2=Chêne 3=Jungle 4=Pin 5=Acacia 6=Chêne Noir
@@ -81,7 +82,8 @@ version: '1.3.1'
 # effects: Liste des effets/durée en secondes lors de la consommation.
 #   Rajouter le suffixe 'X' pour le cacher du label. Exemple: POISONX/10
 #   (WEAKNESS, INCREASE_DAMAGE, SLOW et SPEED sont toujours cachés.)
-#   Effets posssible: http://jd.bukkit.org/rb/apidocs/org/bukkit/potion/PotionEffectType.html
+#   Effects are always hidden in 1.9 and newer, because of changes in the potion mechanics.
+#   Effets posssible: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/potion/PotionEffectType.html
 #   POUR LES EFFETS EN FONCTIONS DE LA QUALITE : Les Niveaux (I ou II) ou les Intervalles de durées d'effets doivent être spécifiés avec un "-".
 #       Ex: 'SPEED/1-2/30-40' => Vitesse niveau 1 et durée de 30 sec pour la pire qualité, et niveau 2 et durée de 40 sec pour la meilleure.
 #     Il est aussi possible de faire l'inverse, c'est à dire que le schéma "Meilleure qualité, meilleur effets" soit "Meilleure qualité, effets moins puissants.
@@ -98,6 +100,9 @@ recipes:
       - 264/1
       - INK_SACK,3/20
       - 5,1/8
+      - BEDROCK/1
+#     - Jungle Leaves/64  # Only with Vault
+#     - Green Dye/6       # Only with Vault
       cookingtime: 3
       distillruns: 2
       wood: 4
@@ -283,6 +288,8 @@ distortCommands:
 - /whisper
 - /reply
 - /r
+- /t
+- /tell
 
 # Distordre le texte sur les panneaux pendant l'ivresse [false]
 distortSignText: false

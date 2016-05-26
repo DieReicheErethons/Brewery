@@ -1,9 +1,6 @@
 package com.dre.brewery.listeners;
 
-import com.dre.brewery.BRecipe;
-import com.dre.brewery.Barrel;
-import com.dre.brewery.Brew;
-import com.dre.brewery.P;
+import com.dre.brewery.*;
 import com.dre.brewery.integration.LogBlockBarrel;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -269,7 +266,7 @@ public class InventoryListener implements Listener {
 	// block the pickup of items where getPickupDelay is > 1000 (puke)
 	@EventHandler(ignoreCancelled = true)
 	public void onInventoryPickupItem(InventoryPickupItemEvent event){
-		if (event.getItem().getPickupDelay() > 1000) {
+		if (event.getItem().getPickupDelay() > 1000 && event.getItem().getItemStack().getType() == BPlayer.pukeItem) {
 			event.setCancelled(true);
 		}
 	}

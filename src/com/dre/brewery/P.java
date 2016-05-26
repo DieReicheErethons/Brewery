@@ -35,7 +35,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class P extends JavaPlugin {
 	public static P p;
-	public static final String configVersion = "1.3.1";
+	public static final String configVersion = "1.4";
 	public static boolean debug;
 	public static boolean useUUID;
 	public static boolean use1_9;

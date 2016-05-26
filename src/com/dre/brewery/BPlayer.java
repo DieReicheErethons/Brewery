@@ -159,11 +159,11 @@ public class BPlayer {
 
 	// Player has drunken too much
 	public void drinkCap(Player player) {
+		quality = getQuality() * 100;
+		drunkeness = 100;
 		if (overdrinkKick && !player.hasPermission("brewery.bypass.overdrink")) {
 			passOut(player);
 		} else {
-			quality = getQuality() * 100;
-			drunkeness = 100;
 			addPuke(player, 60 + (int) (Math.random() * 60.0));
 			P.p.msg(player, P.p.languageReader.get("Player_CantDrink"));
 		}
@@ -416,7 +416,7 @@ public class BPlayer {
 		loc.add(direction);
 		Item item = player.getWorld().dropItem(loc, new ItemStack(pukeItem));
 		item.setVelocity(direction);
-		item.setPickupDelay(Integer.MAX_VALUE);
+		item.setPickupDelay(32767); // Item can never be picked up when pickup delay is 32767
 	}
 
 

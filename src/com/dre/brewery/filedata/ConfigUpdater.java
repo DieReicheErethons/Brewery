@@ -683,6 +683,30 @@ public class ConfigUpdater {
 			setLine(index, "# Das Item kann nicht aufgesammelt werden und bleibt bis zum Despawnen liegen.");
 		}
 
+		String[] lines = new String[] { "",
+				"# Zeit in Sekunden bis die pukeitems despawnen, (mc standard wäre 300 = 5 min) [60]",
+				"# Wurde die item Despawnzeit in der spigot.yml verändert, verändert sich auch die pukeDespawnzeit in Abhängigkeit.",
+				"pukeDespawntime: 60" };
+
+		index = indexOfStart("pukeItem:");
+		if (index == -1) {
+			index = indexOfStart("enablePuke:");
+			if (index == -1) {
+				index = indexOfStart("# Konsumierbares Item") - 1;
+				if (index == -2) {
+					index = indexOfStart("enableKickOnOverdrink:");
+					if (index == -1) {
+						index = indexOfStart("language:");
+					}
+				}
+			}
+		}
+		if (index == -1) {
+			appendLines(lines);
+		} else {
+			addLines(index + 1, lines);
+		}
+
 		index = indexOfStart("# Färben der Iteminformationen je nach Qualität während sie sich 1. im Fass und/oder 2. im Braustand befinden [true, false]");
 		if (index != -1) {
 			setLine(index, "# Färben der Iteminformationen je nach Qualität während sie sich 1. im Fass und/oder 2. im Braustand befinden [true, true]");
@@ -698,7 +722,7 @@ public class ConfigUpdater {
 			setLine(index, "#   Eine Liste von allen Materialien kann hier gefunden werden: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html");
 		}
 
-		String[] lines = new String[] { "#   Wenn Vault installiert ist können normale englische Item Namen verwendet werden, anstatt Material, ID und Data!",
+		lines = new String[] { "#   Wenn Vault installiert ist können normale englische Item Namen verwendet werden, anstatt Material, ID und Data!",
 				"#   Vault erkennt Namen wie \"Jungle Leaves\" anstatt \"LEAVES,3\". Dies macht es viel einfacher!" };
 
 		index = indexOfStart("#   Es kann ein Data-Wert angegeben werden, weglassen");
@@ -781,6 +805,30 @@ public class ConfigUpdater {
 			setLine(index, "# The item can not be collected and stays on the ground until it despawns.");
 		}
 
+		String[] lines = new String[] { "",
+				"# Time in seconds until the pukeitems despawn, (mc default is 300 = 5 min) [60]",
+				"# If the item despawn time was changed in the spigot.yml, the pukeDespawntime changes as well.",
+				"pukeDespawntime: 60" };
+
+		index = indexOfStart("pukeItem:");
+		if (index == -1) {
+			index = indexOfStart("enablePuke:");
+			if (index == -1) {
+				index = indexOfStart("# Consumable Item") - 1;
+				if (index == -2) {
+					index = indexOfStart("enableKickOnOverdrink:");
+					if (index == -1) {
+						index = indexOfStart("language:");
+					}
+				}
+			}
+		}
+		if (index == -1) {
+			appendLines(lines);
+		} else {
+			addLines(index + 1, lines);
+		}
+
 		index = indexOfStart("# Color the Item information (lore) depending on quality while it is 1. in a barrel and/or 2. in a brewing stand [true, false]");
 		if (index != -1) {
 			setLine(index, "# Color the Item information (lore) depending on quality while it is 1. in a barrel and/or 2. in a brewing stand [true, true]");
@@ -796,7 +844,7 @@ public class ConfigUpdater {
 			setLine(index, "#   A list of materials can be found here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html");
 		}
 
-		String[] lines = new String[] { "#   If Vault is installed normal names can be used instead of material or id, so using Vault is highly recommended.",
+		lines = new String[] { "#   If Vault is installed normal names can be used instead of material or id, so using Vault is highly recommended.",
 				"#   Vault will recognize things like \"Jungle Leaves\" instead of \"LEAVES,3\"" };
 
 		index = indexOfStart("#   You can specify a data value, omitting");

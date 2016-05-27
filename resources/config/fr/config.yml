@@ -35,6 +35,10 @@ enablePuke: true
 # L'objet utilisé pour représenter le vomit [SOUL_SAND]
 pukeItem: SOUL_SAND
 
+# Time in seconds until the pukeitems despawn, (mc default is 300 = 5 min) [60]
+# If the item despawn time was changed in the spigot.yml, the pukeDespawntime changes as well.
+pukeDespawntime: 60
+
 # Consommables Objet/Force. Réduit le montant d'alcool par <Force> lors de la consommation. (list)
 drainItems:
 - BREAD/4

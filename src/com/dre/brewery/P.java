@@ -287,6 +287,7 @@ public class P extends JavaPlugin {
 		BPlayer.enableHome = config.getBoolean("enableHome", false);
 		BPlayer.enableLoginDisallow = config.getBoolean("enableLoginDisallow", false);
 		BPlayer.enablePuke = config.getBoolean("enablePuke", false);
+		BPlayer.pukeDespawntime = config.getInt("pukeDespawntime", 60) * 20;
 		BPlayer.homeType = config.getString("homeType", null);
 		Brew.colorInBarrels = config.getBoolean("colorInBarrels", false);
 		Brew.colorInBrewer = config.getBoolean("colorInBrewer", false);

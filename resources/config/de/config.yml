@@ -35,6 +35,10 @@ enablePuke: true
 # Item das beim Erbrechen mehrfach unaufsammelbar fallen gelassen wird [SOUL_SAND]
 pukeItem: SOUL_SAND
 
+# Zeit in Sekunden bis die pukeitems despawnen, (mc standard wäre 300 = 5 min) [60]
+# Wurde die item Despawnzeit in der spigot.yml verändert, verändert sich auch die pukeDespawnzeit in Abhängigkeit.
+pukeDespawntime: 60
+
 # Konsumierbares Item/Stärke. Senkt den Alkoholpegel um <Stärke> wenn konsumiert.
 drainItems:
 - BREAD/4

@@ -13,7 +13,7 @@ import com.dre.brewery.P;
 
 public class ConfigUpdater {
 
-	private ArrayList<String> config = new ArrayList<String>();
+	private ArrayList<String> config = new ArrayList<>();
 	private File file;
 
 	public ConfigUpdater(File file) {

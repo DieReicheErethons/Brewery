@@ -54,7 +54,7 @@ public class DataSave extends BukkitRunnable {
 		}
 		try {
 			cancel();
-		} catch (IllegalStateException e) {
+		} catch (IllegalStateException ignored) {
 		}
 
 		FileConfiguration configFile = new YamlConfiguration();

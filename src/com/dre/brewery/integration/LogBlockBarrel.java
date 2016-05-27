@@ -17,7 +17,7 @@ import static de.diddiz.util.BukkitUtils.compressInventory;
 import static de.diddiz.util.BukkitUtils.rawData;
 
 public class LogBlockBarrel {
-	private static final List<LogBlockBarrel> opened = new ArrayList<LogBlockBarrel>();
+	private static final List<LogBlockBarrel> opened = new ArrayList<>();
 	public static Consumer consumer = LogBlock.getInstance().getConsumer();
 
 	private HumanEntity player;

@@ -20,7 +20,7 @@ public class Brew {
 
 	// represents the liquid in the brewed Potions
 
-	public static Map<Integer, Brew> potions = new HashMap<Integer, Brew>();
+	public static Map<Integer, Brew> potions = new HashMap<>();
 	public static long installTime = System.currentTimeMillis(); // plugin install time in millis after epoch
 	public static Boolean colorInBarrels; // color the Lore while in Barrels
 	public static Boolean colorInBrewer; // color the Lore while in Brewer
@@ -150,10 +150,7 @@ public class Brew {
 	}
 
 	public boolean reloadRecipe() {
-		if (currentRecipe != null) {
-			return setRecipeFromString(currentRecipe.getName(5));
-		}
-		return true;
+		return currentRecipe == null || setRecipeFromString(currentRecipe.getName(5));
 	}
 
 	// Copy a Brew with a new unique ID and return its item
@@ -573,7 +570,7 @@ public class Brew {
 			meta.setLore(existingLore);
 			return;
 		}
-		List<String> newLore = new ArrayList<String>();
+		List<String> newLore = new ArrayList<>();
 		newLore.add("");
 		newLore.add(prefix + lore);
 		meta.setLore(newLore);
@@ -674,7 +671,7 @@ public class Brew {
 		}
 	}
 
-	public static enum PotionColor {
+	public enum PotionColor {
 		PINK(1, PotionType.REGEN),
 		CYAN(2, PotionType.SPEED),
 		ORANGE(3, PotionType.FIRE_RESISTANCE),
@@ -691,7 +688,7 @@ public class Brew {
 		private final int colorId;
 		private final PotionType type;
 
-		private PotionColor(int colorId, PotionType type) {
+		PotionColor(int colorId, PotionType type) {
 			this.colorId = colorId;
 			this.type = type;
 		}

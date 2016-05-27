@@ -389,7 +389,7 @@ public class P extends JavaPlugin {
 			}
 
 			// loading Ingredients into ingMap
-			Map<String, BIngredients> ingMap = new HashMap<String, BIngredients>();
+			Map<String, BIngredients> ingMap = new HashMap<>();
 			ConfigurationSection section = data.getConfigurationSection("Ingredients");
 			if (section != null) {
 				for (String id : section.getKeys(false)) {
@@ -430,6 +430,7 @@ public class P extends JavaPlugin {
 				// keys have players name
 				for (String name : section.getKeys(false)) {
 					try {
+						//noinspection ResultOfMethodCallIgnored
 						UUID.fromString(name);
 						if (!useUUID) {
 							continue;
@@ -462,7 +463,7 @@ public class P extends JavaPlugin {
 	}
 
 	public ArrayList<ItemStack> deserializeIngredients(ConfigurationSection matSection) {
-		ArrayList<ItemStack> ingredients = new ArrayList<ItemStack>();
+		ArrayList<ItemStack> ingredients = new ArrayList<>();
 		for (String mat : matSection.getKeys(false)) {
 			String[] matSplit = mat.split(",");
 			ItemStack item = new ItemStack(Material.getMaterial(matSplit[0]), matSection.getInt(mat));
@@ -763,6 +764,7 @@ public class P extends JavaPlugin {
 		return msg;
 	}
 
+	@SuppressWarnings("ResultOfMethodCallIgnored")
 	public static void saveFile(InputStream in, File dest, String name) throws IOException {
 		if (in == null) return;
 		if (!dest.exists()) {

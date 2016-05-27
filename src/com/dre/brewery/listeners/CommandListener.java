@@ -163,7 +163,7 @@ public class CommandListener implements CommandExecutor {
 
 	public ArrayList<String> getCommands(CommandSender sender) {
 
-		ArrayList<String> cmds = new ArrayList<String>();
+		ArrayList<String> cmds = new ArrayList<>();
 		cmds.add(p.languageReader.get("Help_Help"));
 
 		if (sender.hasPermission("brewery.cmd.player")) {

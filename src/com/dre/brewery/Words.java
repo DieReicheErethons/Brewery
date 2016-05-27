@@ -15,13 +15,13 @@ public class Words {
 
 	// represends Words and letters, that are replaced in drunk players messages
 
-	public static ArrayList<Words> words = new ArrayList<Words>();
+	public static ArrayList<Words> words = new ArrayList<>();
 	public static List<String> commands;
-	public static List<String[]> ignoreText = new ArrayList<String[]>();
+	public static List<String[]> ignoreText = new ArrayList<>();
 	public static FileConfiguration config;
 	public static Boolean doSigns;
 	public static Boolean log;
-	private static Map<String, Long> waitPlayers = new HashMap<String, Long>();
+	private static Map<String, Long> waitPlayers = new HashMap<>();
 
 	private String from;
 	private String to;
@@ -270,18 +270,10 @@ public class Words {
 		boolean isBefore = !match;
 		if (pre != null) {
 			for (String pr : pre) {
-				if (match) {
-					// if one is correct, it is enough
-					if (part.endsWith(pr) == match) {
-						isBefore = true;
-						break;
-					}
-				} else {
-					// if one is wrong, its over
-					if (part.endsWith(pr) != match) {
-						isBefore = false;
-						break;
-					}
+				if (part.endsWith(pr)) {
+					// If a match is wanted set isBefore to true, else to false
+					isBefore = match;
+					break;
 				}
 			}
 		} else {

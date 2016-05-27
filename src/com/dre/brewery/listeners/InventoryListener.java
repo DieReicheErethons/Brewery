@@ -40,8 +40,8 @@ import java.util.UUID;
 public class InventoryListener implements Listener {
 
 	/* === Recreating manually the prior BrewEvent behavior. === */
-	private HashSet<UUID> trackedBrewmen = new HashSet<UUID>();
-	private HashMap<Block, Integer> trackedBrewers = new HashMap<Block, Integer>();
+	private HashSet<UUID> trackedBrewmen = new HashSet<>();
+	private HashMap<Block, Integer> trackedBrewers = new HashMap<>();
 	private static final int DISTILLTIME = 401;
 
 	/**

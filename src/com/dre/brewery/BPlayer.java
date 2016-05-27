@@ -18,12 +18,12 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 public class BPlayer {
-	private static Map<String, BPlayer> players = new HashMap<String, BPlayer>();// Players name/uuid and BPlayer
-	private static Map<Player, Integer> pTasks = new HashMap<Player, Integer>();// Player and count
+	private static Map<String, BPlayer> players = new HashMap<>();// Players name/uuid and BPlayer
+	private static Map<Player, Integer> pTasks = new HashMap<>();// Player and count
 	private static int taskId;
 
 	// Settings
-	public static Map<Material, Integer> drainItems = new HashMap<Material, Integer>();// DrainItem Material and Strength
+	public static Map<Material, Integer> drainItems = new HashMap<>();// DrainItem Material and Strength
 	public static Material pukeItem;
 	public static int hangoverTime;
 	public static boolean overdrinkKick;

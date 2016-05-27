@@ -12,7 +12,7 @@ import java.util.List;
 public class BRecipe {
 
 	private String[] name;
-	private ArrayList<ItemStack> ingredients = new ArrayList<ItemStack>();// material and amount
+	private ArrayList<ItemStack> ingredients = new ArrayList<>();// material and amount
 	private int cookingTime;// time to cook in cauldron
 	private int distillruns;// runs through the brewer
 	private byte wood;// type of wood the barrel has to consist of
@@ -20,7 +20,7 @@ public class BRecipe {
 	private String color;// color of the destilled/finished potion
 	private int difficulty;// difficulty to brew the potion, how exact the instruction has to be followed
 	private int alcohol;// Alcohol in perfect potion
-	private ArrayList<BEffect> effects = new ArrayList<BEffect>(); // Special Effects when drinking
+	private ArrayList<BEffect> effects = new ArrayList<>(); // Special Effects when drinking
 
 	public BRecipe(ConfigurationSection configSectionRecipes, String recipeId) {
 		String nameList = configSectionRecipes.getString(recipeId + ".name");
@@ -244,7 +244,7 @@ public class BRecipe {
 
 		int uid = Brew.generateUID();
 
-		ArrayList<ItemStack> list = new ArrayList<ItemStack>(ingredients.size());
+		ArrayList<ItemStack> list = new ArrayList<>(ingredients.size());
 		for (ItemStack item : ingredients) {
 			if (item.getDurability() == -1) {
 				list.add(new ItemStack(item.getType(), item.getAmount()));

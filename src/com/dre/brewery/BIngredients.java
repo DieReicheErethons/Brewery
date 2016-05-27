@@ -9,14 +9,14 @@ import org.bukkit.potion.PotionEffectType;
 import java.util.*;
 
 public class BIngredients {
-	public static Set<Material> possibleIngredients = new HashSet<Material>();
-	public static ArrayList<BRecipe> recipes = new ArrayList<BRecipe>();
-	public static Map<Material, String> cookedNames = new HashMap<Material, String>();
+	public static Set<Material> possibleIngredients = new HashSet<>();
+	public static ArrayList<BRecipe> recipes = new ArrayList<>();
+	public static Map<Material, String> cookedNames = new HashMap<>();
 	private static int lastId = 0;
 
 	private int id;
-	private ArrayList<ItemStack> ingredients = new ArrayList<ItemStack>();
-	private Map<Material, Integer> materials = new HashMap<Material, Integer>(); // Merged List Of ingredients that doesnt consider Durability
+	private ArrayList<ItemStack> ingredients = new ArrayList<>();
+	private Map<Material, Integer> materials = new HashMap<>(); // Merged List Of ingredients that doesnt consider Durability
 	private int cookedTime;
 
 	// Represents ingredients in Cauldron, Brew
@@ -225,7 +225,7 @@ public class BIngredients {
 			// when ingredients are not complete
 			return -1;
 		}
-		ArrayList<Material> mergedChecked = new ArrayList<Material>();
+		ArrayList<Material> mergedChecked = new ArrayList<>();
 		for (ItemStack ingredient : ingredients) {
 			if (mergedChecked.contains(ingredient.getType())) {
 				// This ingredient type was already checked as part of a merged material
@@ -334,7 +334,7 @@ public class BIngredients {
 
 	//convert the ingredient Material to String
 	public Map<String, Integer> serializeIngredients() {
-		Map<String, Integer> mats = new HashMap<String, Integer>();
+		Map<String, Integer> mats = new HashMap<>();
 		for (ItemStack item : ingredients) {
 			String mat = item.getType().name() + "," + item.getDurability();
 			mats.put(mat, item.getAmount());

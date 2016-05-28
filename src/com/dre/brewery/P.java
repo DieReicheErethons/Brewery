@@ -18,6 +18,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import com.dre.brewery.lore.LoreOutputStream;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
@@ -84,6 +85,109 @@ public class P extends JavaPlugin {
 		use1_14 = !v.matches("(^|.*[^.\\d])1\\.1[0-3]([^\\d].*|$)") && !v.matches("(^|.*[^.\\d])1\\.[0-9]([^\\d].*|$)");
 
 		//P.p.log("§" + (use1_9 ? "a":"c") + "1.9 " + "§" + (use1_11 ? "a":"c") + "1.11 " + "§" + (use1_13 ? "a":"c") + "1.13 " + "§" + (use1_14 ? "a":"c") + "1.14");
+
+
+		try {
+			ItemMeta meta = new ItemStack(Material.POTION).getItemMeta();
+			LoreOutputStream out = new LoreOutputStream(meta, 3);
+			DataOutputStream data = new DataOutputStream(out);
+
+			data.writeInt(2);
+			data.writeLong(5);
+
+			byte[] test = new byte[128];
+			test[1] = 6;
+			test[2] = 12;
+			test[3] = 21;
+			data.write(test);
+
+			data.writeInt(123324);
+			data.writeLong(12343843);
+
+			data.close();
+			meta.getLore();
+
+
+
+			/*basE91 basE91 = new basE91();
+			int[] input = new int[] {12, 65, 324, 5, 12, 129459, 1234567, Integer.MIN_VALUE, Integer.MAX_VALUE};
+			ByteArrayOutputStream stream = new ByteArrayOutputStream();
+			DataOutputStream data = new DataOutputStream(stream);
+			for (int i = 0; i < input.length; i++) {
+				data.writeInt(input[i]);
+			}
+			data.flush();
+			data.close();
+			byte[] in = stream.toByteArray();
+			byte[] out = new byte[4096];
+			int lenght = basE91.encode(in, in.length, out);
+			basE91.encEnd(out);
+			String done = new String(out, 0, lenght);
+
+			byte[] tin = done.getBytes();
+
+			byte[] tout = new byte[4096];
+			lenght = basE91.decode(tin, tin.length, tout);
+			basE91.decEnd(tout);
+
+
+			ByteArrayInputStream tstream = new ByteArrayInputStream(tout, 0, lenght);
+			DataInputStream tdata = new DataInputStream(tstream);
+			int[] test = new int[4096];
+			for (int j = 0; j < 6; j++) {
+				if (tstream.available() <= 0) break;
+				test[j] = tdata.readInt();
+
+			}
+			tdata.close();
+			test = test;*/
+
+
+
+			/*basE91 basE91 = new basE91();
+			int[] input = new int[] {12, 65, 324, 5, 12, 129459, 1234567, Integer.MIN_VALUE, Integer.MAX_VALUE};
+			ByteArrayOutputStream stream = new ByteArrayOutputStream();
+			DataOutputStream data = new DataOutputStream(stream);
+			for (int i = 0; i < input.length; i++) {
+				data.writeInt(input[i]);
+			}
+			data.flush();
+			data.close();
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			ByteArrayInputStream in = new ByteArrayInputStream(stream.toByteArray());
+
+			encode(in, out, in.available());
+
+			in.close();
+			out.flush();
+			out.close();
+
+			String done = new String(out.toByteArray());
+
+			ByteArrayInputStream tin = new ByteArrayInputStream(done.getBytes());
+			ByteArrayOutputStream tout = new ByteArrayOutputStream();
+
+			decode(tin, tout, tin.available());
+
+			tin.close();
+			tout.flush();
+			tout.close();
+
+			ByteArrayInputStream tstream = new ByteArrayInputStream(tout.toByteArray());
+			DataInputStream tdata = new DataInputStream(tstream);
+			int[] test = new int[4096];
+			for (int j = 0; j < 9; j++) {
+				if (tstream.available() <= 0) break;
+				test[j] = tdata.readInt();
+
+			}
+			tdata.close();
+			test = test;*/
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 
 		// load the Config
 		try {

@@ -1,14 +1,10 @@
 package com.dre.brewery.lore;
 
-import org.bukkit.inventory.meta.ItemMeta;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 
-public class LoreInputStream extends InputStream {
+public class Base91DecoderStream extends FilterInputStream {
 
 	private static final basE91 DECODER = new basE91();
 
@@ -16,34 +12,15 @@ public class LoreInputStream extends InputStream {
 	private byte[] buf = new byte[16];
 	private int reader = 0;
 	private int count = 0;
-	private ByteArrayInputStream readStream;
+	private byte[] markBuf = null;
 
-	public LoreInputStream(ItemMeta meta) throws IOException {
-		if (meta.hasLore()) {
-			List<String> lore = meta.getLore();
-			for (String line : lore) {
-				if (line.startsWith("§%")) {
-					StringBuilder build = new StringBuilder((int) (line.length() / 2F));
-					byte skip = 2;
-					for (char c : line.toCharArray()) {
-						if (skip > 0) {
-							skip--;
-							continue;
-						}
-						if (c == '§') continue;
-						build.append(c);
-					}
-					readStream = new ByteArrayInputStream(build.toString().getBytes());
-					break;
-				}
-			}
-		}
-		if (readStream == null) throw new IOException("Meta has no data in lore");
+	public Base91DecoderStream(InputStream in) {
+		super(in);
 	}
 
 	private void decode() throws IOException {
 		reader = 0;
-		count = readStream.read(decbuf);
+		count = in.read(decbuf);
 		if (count < 1) {
 			count = DECODER.decEnd(buf);
 			if (count < 1) {
@@ -102,39 +79,68 @@ public class LoreInputStream extends InputStream {
 
 	@Override
 	public long skip(long n) throws IOException {
-		return super.skip(n);
+		if (count == -1) return 0;
+		if (count > 0 && count - reader >= n) {
+			reader += n;
+			return n;
+		}
+		long skipped = count - reader;
+		decode();
+
+		while (count > 0) {
+			if (count > n - skipped) {
+				reader = (int) (n - skipped);
+				return n;
+			}
+			skipped += count;
+			decode();
+		}
+		return skipped;
 	}
 
 	@Override
 	public int available() throws IOException {
-		return Math.round(readStream.available() * 0.813F); // Ratio encoded to decoded with random data
+		return Math.round(in.available() * 0.813F); // Ratio encoded to decoded with random data
 	}
 
 	@Override
 	public void close() throws IOException {
+		in.close();
 		count = -1;
 		DECODER.decReset();
 		buf = null;
 		decbuf = null;
-		readStream = null;
 	}
 
 	@Override
 	public synchronized void mark(int readlimit) {
 		if (!markSupported()) return;
-		readStream.mark(readlimit);
+		if (count == -1) return;
+		in.mark(readlimit);
 		DECODER.decMark();
+		if (count > 0 && reader < count) {
+			markBuf = new byte[count - reader];
+			System.arraycopy(buf, reader, markBuf, 0, markBuf.length);
+		} else {
+			markBuf = null;
+		}
 	}
 
 	@Override
 	public synchronized void reset() throws IOException {
-		if (!markSupported()) super.reset();
-		readStream.reset();
+		if (!markSupported()) throw new IOException("mark and reset not supported");
+		in.reset();
 		DECODER.decUnmark();
+		reader = 0;
+		count = 0;
+		if (markBuf != null) {
+			System.arraycopy(markBuf, 0, buf, 0, markBuf.length);
+			count = markBuf.length;
+		}
 	}
 
 	@Override
 	public boolean markSupported() {
-		return readStream.markSupported();
+		return in.markSupported();
 	}
 }

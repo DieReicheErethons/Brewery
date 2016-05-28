@@ -6,8 +6,10 @@ import com.dre.brewery.integration.WGBarrel;
 import com.dre.brewery.integration.WGBarrelNew;
 import com.dre.brewery.integration.WGBarrelOld;
 import com.dre.brewery.listeners.*;
-import com.dre.brewery.lore.LoreInputStream;
-import com.dre.brewery.lore.LoreOutputStream;
+import com.dre.brewery.lore.Base91DecoderStream;
+import com.dre.brewery.lore.Base91EncoderStream;
+import com.dre.brewery.lore.LoreReader;
+import com.dre.brewery.lore.LoreWriter;
 import org.apache.commons.lang.math.NumberUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -66,8 +68,7 @@ public class P extends JavaPlugin {
 
 		try {
 			ItemMeta meta = new ItemStack(Material.POTION).getItemMeta();
-			LoreOutputStream out = new LoreOutputStream(meta, 3);
-			DataOutputStream data = new DataOutputStream(out);
+			DataOutputStream data = new DataOutputStream(new Base91EncoderStream(new LoreWriter(meta, 3)));
 
 			data.writeInt(2);
 			data.writeLong(5);
@@ -85,10 +86,10 @@ public class P extends JavaPlugin {
 			data.close();
 			meta.getLore();
 
-			LoreInputStream in = new LoreInputStream(meta);
-			DataInputStream dataIn = new DataInputStream(in);
+			DataInputStream dataIn = new DataInputStream(new Base91DecoderStream(new LoreReader(meta)));
 
 			P.p.log(dataIn.readInt() + ", " + dataIn.readLong() + ", ");
+
 			byte[] testIn = new byte[128];
 			dataIn.read(testIn);
 			P.p.log(testIn[1] + ", " + testIn[2] + ", " + testIn[3] + ", " + testIn[127]);

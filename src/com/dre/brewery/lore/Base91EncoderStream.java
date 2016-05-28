@@ -1,12 +1,11 @@
 package com.dre.brewery.lore;
 
-import org.bukkit.inventory.meta.ItemMeta;
+import java.io.ByteArrayInputStream;
+import java.io.FilterOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 
-import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-
-public class LoreOutputStream extends OutputStream {
+public class Base91EncoderStream extends FilterOutputStream {
 
 	private static final basE91 ENCODER = new basE91();
 
@@ -15,18 +14,13 @@ public class LoreOutputStream extends OutputStream {
 	private int writer = 0;
 	private int encoded = 0;
 
-	private ItemMeta meta;
-	private final int line;
-	private ByteArrayOutputStream stream = new ByteArrayOutputStream(128);
-
-	public LoreOutputStream(ItemMeta meta, int line) {
-		this.meta = meta;
-		this.line = line;
+	public Base91EncoderStream(OutputStream out) {
+		super(out);
 	}
 
-	private void encFlush() {
+	private void encFlush() throws IOException {
 		encoded = ENCODER.encode(buf, writer, encBuf);
-		stream.write(encBuf, 0, encoded);
+		out.write(encBuf, 0, encoded);
 		writer = 0;
 	}
 
@@ -60,7 +54,7 @@ public class LoreOutputStream extends OutputStream {
 			// Buffer is too full, so flush and encode data directly
 			encFlush();
 			encoded = ENCODER.encode(b, len, encBuf);
-			stream.write(encBuf, 0, encoded);
+			out.write(encBuf, 0, encoded);
 			return;
 		}
 
@@ -78,47 +72,22 @@ public class LoreOutputStream extends OutputStream {
 
 	@Override
 	public void flush() throws IOException {
-		super.flush();
 		if (writer > 0) {
 			encFlush();
 		}
 
 		encoded = ENCODER.encEnd(encBuf);
 		if (encoded > 0) {
-			stream.write(encBuf, 0, encoded);
+			out.write(encBuf, 0, encoded);
 		}
-		if (stream.size() <= 0) return;
-
-		stream.flush();
-		String s = stream.toString();
-
-		StringBuilder loreLineBuilder = new StringBuilder((s.length() * 2) + 6);
-		loreLineBuilder.append("§%");
-		for (char c : s.toCharArray()) {
-			loreLineBuilder.append('§').append(c);
-		}
-		List<String> lore;
-		if (meta.hasLore()) {
-			lore = meta.getLore();
-		} else {
-			lore = new ArrayList<>();
-		}
-		while (lore.size() < line) {
-			lore.add("");
-		}
-		//TODO when existing data string in lore
-		lore.add(line, loreLineBuilder.toString());
-		meta.setLore(lore);
+		super.flush();
 	}
 
 	@Override
 	public void close() throws IOException {
 		super.close();
-		stream.close();
 		ENCODER.encReset();
 		buf = null;
 		encBuf = null;
-		meta = null;
-		stream = null;
 	}
 }

@@ -7,8 +7,10 @@ import com.dre.brewery.Brew;
 import com.dre.brewery.MCBarrel;
 import com.dre.brewery.P;
 import com.dre.brewery.integration.LogBlockBarrel;
-import com.dre.brewery.lore.LoreInputStream;
-import com.dre.brewery.lore.LoreOutputStream;
+import com.dre.brewery.lore.Base91DecoderStream;
+import com.dre.brewery.lore.Base91EncoderStream;
+import com.dre.brewery.lore.LoreReader;
+import com.dre.brewery.lore.LoreWriter;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -305,34 +307,51 @@ public class InventoryListener implements Listener {
 					brew.touch();
 
 					try {
-						LoreInputStream loreIn = new LoreInputStream(potion);
-						DataInputStream in = new DataInputStream(loreIn);
+						DataInputStream in = new DataInputStream(new Base91DecoderStream(new LoreReader(potion)));
 
-						if (in.readByte() == 27 && in.readUTF().equals("TESTHalloª∆Ω") && in.readInt() == 34834 && in.readLong() == Long.MAX_VALUE) {
-							P.p.log("true");
+						if (in.readByte() == 27 && in.skip(48) > 0) {
+							in.mark(100);
+							if (in.readUTF().equals("TESTHalloª∆Ω") && in.readInt() == 34834 && in.skip(4) > 0 && in.readLong() == Long.MAX_VALUE) {
+								in.reset();
+								if (in.readUTF().equals("TESTHalloª∆Ω")) {
+									P.p.log("true");
+								} else {
+									P.p.log("false3");
+								}
+							} else {
+								P.p.log("false2");
+							}
 						} else {
-							P.p.log("false");
+							P.p.log("false1");
 						}
+
 						in.close();
 					} catch (IOException e) {
 						e.printStackTrace();
-					}
 
-					try {
+						try {
 
-						LoreOutputStream lore = new LoreOutputStream(potion, 3);
-						DataOutputStream out = new DataOutputStream(lore);
+							DataOutputStream out = new DataOutputStream(new Base91EncoderStream(new LoreWriter(potion, 0)));
 
-						out.writeByte(27);
-						out.writeUTF("TESTHalloª∆Ω");
-						out.writeInt(34834);
-						out.writeLong(Long.MAX_VALUE);
+							out.writeByte(27);
+							out.writeLong(1111); //skip
+							out.writeLong(1111); //skip
+							out.writeLong(1111); //skip
+							out.writeLong(1111); //skip
+							out.writeLong(1111); //skip
+							out.writeLong(1111); //skip
+							out.writeUTF("TESTHalloª∆Ω");
+							out.writeInt(34834);
+							out.writeInt(6436); //skip
+							out.writeLong(Long.MAX_VALUE);
 
-						out.close();
-						item.setItemMeta(potion);
+							out.close();
+							item.setItemMeta(potion);
 
-					} catch (IOException e) {
-						e.printStackTrace();
+						} catch (IOException h) {
+							h.printStackTrace();
+						}
+
 					}
 				}
 			}

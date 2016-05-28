@@ -11,6 +11,8 @@ import com.dre.brewery.integration.WGBarrel7;
 import com.dre.brewery.integration.WGBarrelNew;
 import com.dre.brewery.integration.WGBarrelOld;
 import com.dre.brewery.listeners.*;
+import com.dre.brewery.lore.LoreInputStream;
+import com.dre.brewery.lore.LoreOutputStream;
 import org.apache.commons.lang.math.NumberUtils;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
@@ -99,6 +101,7 @@ public class P extends JavaPlugin {
 			test[1] = 6;
 			test[2] = 12;
 			test[3] = 21;
+			test[127] = 99;
 			data.write(test);
 
 			data.writeInt(123324);
@@ -106,6 +109,18 @@ public class P extends JavaPlugin {
 
 			data.close();
 			meta.getLore();
+
+			LoreInputStream in = new LoreInputStream(meta);
+			DataInputStream dataIn = new DataInputStream(in);
+
+			P.p.log(dataIn.readInt() + ", " + dataIn.readLong() + ", ");
+			byte[] testIn = new byte[128];
+			dataIn.read(testIn);
+			P.p.log(testIn[1] + ", " + testIn[2] + ", " + testIn[3] + ", " + testIn[127]);
+
+			P.p.log(dataIn.readInt() + ", " + dataIn.readLong() + ", ");
+
+			dataIn.close();
 
 
 

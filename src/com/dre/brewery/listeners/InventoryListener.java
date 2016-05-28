@@ -7,6 +7,8 @@ import com.dre.brewery.Brew;
 import com.dre.brewery.MCBarrel;
 import com.dre.brewery.P;
 import com.dre.brewery.integration.LogBlockBarrel;
+import com.dre.brewery.lore.LoreInputStream;
+import com.dre.brewery.lore.LoreOutputStream;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -34,6 +36,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -298,6 +303,37 @@ public class InventoryListener implements Listener {
 						}
 					}
 					brew.touch();
+
+					try {
+						LoreInputStream loreIn = new LoreInputStream(potion);
+						DataInputStream in = new DataInputStream(loreIn);
+
+						if (in.readByte() == 27 && in.readUTF().equals("TESTHalloª∆Ω") && in.readInt() == 34834 && in.readLong() == Long.MAX_VALUE) {
+							P.p.log("true");
+						} else {
+							P.p.log("false");
+						}
+						in.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+
+					try {
+
+						LoreOutputStream lore = new LoreOutputStream(potion, 3);
+						DataOutputStream out = new DataOutputStream(lore);
+
+						out.writeByte(27);
+						out.writeUTF("TESTHalloª∆Ω");
+						out.writeInt(34834);
+						out.writeLong(Long.MAX_VALUE);
+
+						out.close();
+						item.setItemMeta(potion);
+
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		}

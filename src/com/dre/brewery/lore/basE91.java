@@ -34,6 +34,7 @@ package com.dre.brewery.lore;
 public class basE91
 {
 	private int ebq, en, dbq, dn, dv;
+	private int[] marker = null;
 	public final byte[] enctab;
 	private final byte[] dectab;
 
@@ -120,6 +121,17 @@ public class basE91
 		dbq = 0;
 		dn = 0;
 		dv = -1;
+	}
+
+	public void decMark() {
+		marker = new int[] {dbq, dn, dv};
+	}
+
+	public void decUnmark() {
+		if (marker == null) return;
+		dbq = marker[0];
+		dn = marker[1];
+		dv = marker[2];
 	}
 
 	public basE91()

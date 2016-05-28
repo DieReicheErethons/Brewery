@@ -92,7 +92,8 @@ public class LoreOutputStream extends OutputStream {
 		stream.flush();
 		String s = stream.toString();
 
-		StringBuilder loreLineBuilder = new StringBuilder(s.length() * 2);
+		StringBuilder loreLineBuilder = new StringBuilder((s.length() * 2) + 6);
+		loreLineBuilder.append("§%");
 		for (char c : s.toCharArray()) {
 			loreLineBuilder.append('§').append(c);
 		}

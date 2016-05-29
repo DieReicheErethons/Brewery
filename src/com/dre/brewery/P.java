@@ -241,6 +241,7 @@ public class P extends JavaPlugin {
 		String version = config.getString("version", null);
 		if (version != null) {
 			if (!version.equals(configVersion)) {
+				copyDefaultConfigs(true);
 				new ConfigUpdater(file).update(version, language);
 				P.p.log("Config Updated to version: " + configVersion);
 				config = YamlConfiguration.loadConfiguration(file);
@@ -591,13 +592,14 @@ public class P extends JavaPlugin {
 		File cfg = new File(p.getDataFolder(), "config.yml");
 		if (!cfg.exists()) {
 			errorLog("No config.yml found, creating default file! You may want to choose a config according to your language!");
+			errorLog("You can find them in plugins/Brewery/configs/");
 			InputStream defconf = getResource("config/en/config.yml");
 			if (defconf == null) {
 				errorLog("default config file not found, your jarfile may be corrupt. Disabling Brewery!");
 				return false;
 			}
 			try {
-				saveFile(defconf, getDataFolder(), "config.yml");
+				saveFile(defconf, getDataFolder(), "config.yml", false);
 			} catch (IOException e) {
 				e.printStackTrace();
 				return false;
@@ -608,31 +610,34 @@ public class P extends JavaPlugin {
 			return false;
 		}
 
-		File configs = new File(getDataFolder(), "configs");
-		if (!configs.exists()) {
-			String lang[] = new String[] {"de", "en", "fr"};
-			for (String l : lang) {
-				File lfold = new File(configs, l);
-				try {
-					saveFile(getResource("config/" + l + "/config.yml"), lfold, "config.yml");
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
+		copyDefaultConfigs(false);
 
 		File languages = new File(getDataFolder(), "languages");
 		if (!languages.exists()) {
 			String lang[] = new String[] {"de", "en", "fr", "no"};
 			for (String l : lang) {
 				try {
-					saveFile(getResource("languages/" + l + ".yml"), languages, l + ".yml");
+					saveFile(getResource("languages/" + l + ".yml"), languages, l + ".yml", false);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			}
 		}
 		return true;
+	}
+
+	private void copyDefaultConfigs(boolean overwrite) {
+		File configs = new File(getDataFolder(), "configs");
+		if (overwrite || !configs.exists()) {
+			for (String l : new String[] {"de", "en", "fr"}) {
+				File lfold = new File(configs, l);
+				try {
+					saveFile(getResource("config/" + l + "/config.yml"), lfold, "config.yml", overwrite);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 
 	// Utility
@@ -761,14 +766,18 @@ public class P extends JavaPlugin {
 	}
 
 	@SuppressWarnings("ResultOfMethodCallIgnored")
-	public static void saveFile(InputStream in, File dest, String name) throws IOException {
+	public static void saveFile(InputStream in, File dest, String name, boolean overwrite) throws IOException {
 		if (in == null) return;
 		if (!dest.exists()) {
 			dest.mkdirs();
 		}
 		File result = new File(dest, name);
 		if (result.exists()) {
-			return;
+			if (overwrite) {
+				result.delete();
+			} else {
+				return;
+			}
 		}
 
 		OutputStream out = new FileOutputStream(result);

@@ -1,5 +1,6 @@
 package com.dre.brewery.listeners;
 
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.*;
 import org.bukkit.event.EventHandler;
@@ -162,7 +163,7 @@ public class PlayerListener implements Listener {
 	}
 
 	// player drinks a custom potion
-	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onPlayerItemConsume(PlayerItemConsumeEvent event) {
 		Player player = event.getPlayer();
 		ItemStack item = event.getItem();
@@ -171,8 +172,17 @@ public class PlayerListener implements Listener {
 				Brew brew = Brew.get(item);
 				if (brew != null) {
 					BPlayer.drink(brew, player);
-					if (player.getGameMode() != org.bukkit.GameMode.CREATIVE) {
+					if (player.getGameMode() != GameMode.CREATIVE) {
 						brew.remove(item);
+					}
+					if (P.use1_9) {
+						if (player.getGameMode() != GameMode.CREATIVE) {
+							// replace the potion with an empty potion to avoid effects
+							event.setItem(new ItemStack(Material.POTION));
+						} else {
+							// Dont replace the item when keeping the potion, just cancel the event
+							event.setCancelled(true);
+						}
 					}
 				}
 			} else if (BPlayer.drainItems.containsKey(item.getType())) {

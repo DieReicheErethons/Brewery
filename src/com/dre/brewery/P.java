@@ -55,7 +55,6 @@ public class P extends JavaPlugin {
 	public EntityListener entityListener;
 	public InventoryListener inventoryListener;
 	public WorldListener worldListener;
-	public DrinkListener1_9 drinkListener1_9;
 
 	// Language
 	public String language;
@@ -96,7 +95,6 @@ public class P extends JavaPlugin {
 		entityListener = new EntityListener();
 		inventoryListener = new InventoryListener();
 		worldListener = new WorldListener();
-		drinkListener1_9 = new DrinkListener1_9();
 		getCommand("Brewery").setExecutor(new CommandListener());
 
 		p.getServer().getPluginManager().registerEvents(blockListener, p);
@@ -104,9 +102,6 @@ public class P extends JavaPlugin {
 		p.getServer().getPluginManager().registerEvents(entityListener, p);
 		p.getServer().getPluginManager().registerEvents(inventoryListener, p);
 		p.getServer().getPluginManager().registerEvents(worldListener, p);
-		if (use1_9) {
-			p.getServer().getPluginManager().registerEvents(drinkListener1_9, p);
-		}
 
 		// Heartbeat
 		p.getServer().getScheduler().runTaskTimer(p, new BreweryRunnable(), 650, 1200);

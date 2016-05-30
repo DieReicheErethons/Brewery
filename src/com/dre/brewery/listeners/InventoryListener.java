@@ -241,7 +241,9 @@ public class InventoryListener implements Listener {
 					try {
 						DataInputStream in = new DataInputStream(new Base91DecoderStream(new LoreReader(potion)));
 
-						if (in.readByte() == 27 && in.skip(48) > 0) {
+						brew.testLoad(in);
+
+						/*if (in.readByte() == 27 && in.skip(48) > 0) {
 							in.mark(100);
 							if (in.readUTF().equals("TESTHalloª∆Ω") && in.readInt() == 34834 && in.skip(4) > 0 && in.readLong() == Long.MAX_VALUE) {
 								in.reset();
@@ -255,7 +257,7 @@ public class InventoryListener implements Listener {
 							}
 						} else {
 							P.p.log("false1");
-						}
+						}*/
 
 						in.close();
 					} catch (IOException e) {
@@ -263,9 +265,12 @@ public class InventoryListener implements Listener {
 
 						try {
 
-							DataOutputStream out = new DataOutputStream(new Base91EncoderStream(new LoreWriter(potion, 0)));
+							DataOutputStream out = new DataOutputStream(new Base91EncoderStream(new LoreWriter(potion, 2)));
 
-							out.writeByte(27);
+							brew.testStore(out);
+
+
+							/*out.writeByte(27);
 							out.writeLong(1111); //skip
 							out.writeLong(1111); //skip
 							out.writeLong(1111); //skip
@@ -275,7 +280,7 @@ public class InventoryListener implements Listener {
 							out.writeUTF("TESTHalloª∆Ω");
 							out.writeInt(34834);
 							out.writeInt(6436); //skip
-							out.writeLong(Long.MAX_VALUE);
+							out.writeLong(Long.MAX_VALUE);*/
 
 							out.close();
 							item.setItemMeta(potion);

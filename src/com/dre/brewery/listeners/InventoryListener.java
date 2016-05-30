@@ -28,6 +28,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -283,6 +284,13 @@ public class InventoryListener implements Listener {
 							out.writeLong(Long.MAX_VALUE);*/
 
 							out.close();
+							/*StringBuilder b = new StringBuilder();
+							for (char c : "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!$%&()*+,-./:;<=>?@[]^_`{|}~\"".toCharArray()) {
+								b.append('§').append(c);
+							}
+							List<String> lore = potion.getLore();
+							lore.add(b.toString());
+							potion.setLore(lore);*/
 							item.setItemMeta(potion);
 
 						} catch (IOException h) {

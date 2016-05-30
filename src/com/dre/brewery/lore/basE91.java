@@ -137,7 +137,7 @@ public class basE91
 	public basE91()
 	{
 		int i;
-		String ts = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!$%&()*+,-./:;<=>?@[\\]^_`{|}~";
+		String ts = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!$%&()*+,-./:;<=>?@[]^_`{|}~\""; // Added '-' removed '#'
 
 		enctab = ts.getBytes();
 		dectab = new byte[256];

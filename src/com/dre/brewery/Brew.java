@@ -12,6 +12,9 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -647,6 +650,79 @@ public class Brew {
 			color = "&4";
 		}
 		return P.p.color(color);
+	}
+
+	public void testStore(DataOutputStream out) throws IOException {
+		out.writeByte(1); // Version
+		out.writeByte(86); // Parity
+		out.writeInt(quality);
+		int bools = 0;
+		bools += (distillRuns != 0 ? 1 : 0);
+		bools += (ageTime > 0 ? 2 : 0);
+		bools += (wood != -1 ? 4 : 0);
+		bools += (currentRecipe != null ? 8 : 0);
+		bools += (unlabeled ? 16 : 0);
+		bools += (persistent ? 32 : 0);
+		bools += (stat ? 64 : 0);
+		out.writeByte(bools);
+		if (distillRuns != 0) {
+			out.writeByte(distillRuns);
+		}
+		if (ageTime > 0) {
+			out.writeFloat(ageTime);
+		}
+		if (wood != -1) {
+			out.writeFloat(wood);
+		}
+		if (currentRecipe != null) {
+			out.writeUTF(currentRecipe.getName(5));
+		}
+		ingredients.testStore(out);
+	}
+
+	public void testLoad(DataInputStream in) throws IOException {
+		if (in.readByte() != 1) {
+			P.p.log("unknown version");
+			return;
+		}
+		if (in.readByte() != 86) {
+			P.p.log("parity check failed");
+			return;
+		}
+		if (in.readInt() != quality) {
+			P.p.log("quality wrong");
+		}
+		int bools = in.readUnsignedByte();
+		if ((bools & 1) != 0) {
+			if (in.readByte() != distillRuns) {
+				P.p.log("distillruns wrong");
+			}
+		}
+		if ((bools & 2) != 0) {
+			if (in.readFloat() != ageTime) {
+				P.p.log("agetime wrong");
+			}
+		}
+		if ((bools & 4) != 0) {
+			if (in.readFloat() != wood) {
+				P.p.log("wood wrong");
+			}
+		}
+		if ((bools & 8) != 0) {
+			if (!in.readUTF().equals(currentRecipe.getName(5))) {
+				P.p.log("currecipe wrong");
+			}
+		}
+		if ((bools & 16) != 0 && !unlabeled) {
+			P.p.log("unlabeled wrong");
+		}
+		if ((bools & 32) != 0 && !persistent) {
+			P.p.log("persistent wrong");
+		}
+		if ((bools & 64) != 0 && !stat) {
+			P.p.log("stat wrong");
+		}
+		ingredients.testLoad(in);
 	}
 
 	// Saves all data

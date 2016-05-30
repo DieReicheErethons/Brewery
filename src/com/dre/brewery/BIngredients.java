@@ -6,6 +6,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffectType;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.*;
 
 public class BIngredients {
@@ -319,6 +322,37 @@ public class BIngredients {
 		copy.materials.putAll(materials);
 		copy.cookedTime = cookedTime;
 		return copy;
+	}
+
+	public void testStore(DataOutputStream out) throws IOException {
+		out.writeInt(cookedTime);
+		out.writeByte(ingredients.size());
+		for (ItemStack item : ingredients) {
+			out.writeUTF(item.getType().name());
+			out.writeShort(item.getDurability());
+			out.writeShort(item.getAmount());
+		}
+	}
+
+	public void testLoad(DataInputStream in) throws IOException {
+		if (in.readInt() != cookedTime) {
+			P.p.log("cookedtime wrong");
+		}
+		if (in.readUnsignedByte() != ingredients.size()) {
+			P.p.log("size wrong");
+			return;
+		}
+		for (ItemStack item : ingredients) {
+			if (!in.readUTF().equals(item.getType().name())) {
+				P.p.log("name wrong");
+			}
+			if (in.readShort() != item.getDurability()) {
+				P.p.log("dur wrong");
+			}
+			if (in.readShort() != item.getAmount()) {
+				P.p.log("amount wrong");
+			}
+		}
 	}
 
 	// saves data into main Ingredient section. Returns the save id

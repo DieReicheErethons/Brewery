@@ -6,10 +6,9 @@ import java.io.InputStream;
 
 public class Base91DecoderStream extends FilterInputStream {
 
-	private static final basE91 DECODER = new basE91();
-
+	private final basE91 decoder = new basE91();
 	private byte[] decbuf = new byte[18];
-	private byte[] buf = new byte[16];
+	private byte[] buf = new byte[18];
 	private int reader = 0;
 	private int count = 0;
 	private byte[] markBuf = null;
@@ -22,13 +21,13 @@ public class Base91DecoderStream extends FilterInputStream {
 		reader = 0;
 		count = in.read(decbuf);
 		if (count < 1) {
-			count = DECODER.decEnd(buf);
+			count = decoder.decEnd(buf);
 			if (count < 1) {
 				count = -1;
 			}
 			return;
 		}
-		count = DECODER.decode(decbuf, count, buf);
+		count = decoder.decode(decbuf, count, buf);
 	}
 
 	@Override
@@ -100,14 +99,14 @@ public class Base91DecoderStream extends FilterInputStream {
 
 	@Override
 	public int available() throws IOException {
-		return Math.round(in.available() * 0.813F); // Ratio encoded to decoded with random data
+		return (int) (in.available() * 0.813F); // Ratio encoded to decoded with random data
 	}
 
 	@Override
 	public void close() throws IOException {
 		in.close();
 		count = -1;
-		DECODER.decReset();
+		decoder.decReset();
 		buf = null;
 		decbuf = null;
 	}
@@ -117,7 +116,7 @@ public class Base91DecoderStream extends FilterInputStream {
 		if (!markSupported()) return;
 		if (count == -1) return;
 		in.mark(readlimit);
-		DECODER.decMark();
+		decoder.decMark();
 		if (count > 0 && reader < count) {
 			markBuf = new byte[count - reader];
 			System.arraycopy(buf, reader, markBuf, 0, markBuf.length);
@@ -128,9 +127,9 @@ public class Base91DecoderStream extends FilterInputStream {
 
 	@Override
 	public synchronized void reset() throws IOException {
-		if (!markSupported()) throw new IOException("mark and reset not supported");
+		if (!markSupported()) throw new IOException("mark and reset not supported by underlying Stream");
 		in.reset();
-		DECODER.decUnmark();
+		decoder.decUnmark();
 		reader = 0;
 		count = 0;
 		if (markBuf != null) {

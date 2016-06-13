@@ -25,7 +25,7 @@ public class LoreWriter extends ByteArrayOutputStream {
 	public void flush() throws IOException {
 		super.flush();
 		if (size() <= 0) return;
-		if (flushed) {
+		if (flushed || meta == null) {
 			// Dont write twice
 			return;
 		}

@@ -5,15 +5,20 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
-public class LoreWriter extends ByteArrayOutputStream {
+public class LoreSaveStream extends ByteArrayOutputStream {
 
 	private ItemMeta meta;
 	private int line;
 	private boolean flushed = false;
 
-	public LoreWriter(ItemMeta meta, int line) {
+	public LoreSaveStream(ItemMeta meta) {
+		this(meta, -1);
+	}
+
+	public LoreSaveStream(ItemMeta meta, int line) {
 		super(128);
 		this.meta = meta;
 		this.line = line;
@@ -43,10 +48,24 @@ public class LoreWriter extends ByteArrayOutputStream {
 		} else {
 			lore = new ArrayList<>();
 		}
+		int prev = 0;
+		for (Iterator<String> iterator = lore.iterator(); iterator.hasNext(); ) {
+			if (iterator.next().startsWith("§%")) {
+				iterator.remove();
+				break;
+			}
+			prev++;
+		}
+		if (line < 0) {
+			if (prev >= 0) {
+				line = prev;
+			} else {
+				line = lore.size();
+			}
+		}
 		while (lore.size() < line) {
 			lore.add("");
 		}
-		//TODO when existing data string in lore
 		lore.add(line, loreLineBuilder.toString());
 		meta.setLore(lore);
 	}

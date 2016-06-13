@@ -7,8 +7,7 @@ import java.io.OutputStream;
 
 public class Base91EncoderStream extends FilterOutputStream {
 
-	private static final basE91 ENCODER = new basE91();
-
+	private final basE91 encoder = new basE91();
 	private byte[] buf = new byte[16];
 	private byte[] encBuf = new byte[24];
 	private int writer = 0;
@@ -19,7 +18,7 @@ public class Base91EncoderStream extends FilterOutputStream {
 	}
 
 	private void encFlush() throws IOException {
-		encoded = ENCODER.encode(buf, writer, encBuf);
+		encoded = encoder.encode(buf, writer, encBuf);
 		out.write(encBuf, 0, encoded);
 		writer = 0;
 	}
@@ -51,9 +50,9 @@ public class Base91EncoderStream extends FilterOutputStream {
 		}
 
 		if (off == 0 && buf.length >= len) {
-			// Buffer is too full, so flush and encode data directly
+			// Buffer is too full but it would fit, so flush and encode data directly
 			encFlush();
-			encoded = ENCODER.encode(b, len, encBuf);
+			encoded = encoder.encode(b, len, encBuf);
 			out.write(encBuf, 0, encoded);
 			return;
 		}
@@ -76,7 +75,7 @@ public class Base91EncoderStream extends FilterOutputStream {
 			encFlush();
 		}
 
-		encoded = ENCODER.encEnd(encBuf);
+		encoded = encoder.encEnd(encBuf);
 		if (encoded > 0) {
 			out.write(encBuf, 0, encoded);
 		}
@@ -86,7 +85,7 @@ public class Base91EncoderStream extends FilterOutputStream {
 	@Override
 	public void close() throws IOException {
 		super.close();
-		ENCODER.encReset();
+		encoder.encReset();
 		buf = null;
 		encBuf = null;
 	}

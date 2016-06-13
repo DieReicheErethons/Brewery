@@ -33,10 +33,11 @@ package com.dre.brewery.lore;
 
 public class basE91
 {
+	public static final byte[] enctab;
+	private static final byte[] dectab;
+
 	private int ebq, en, dbq, dn, dv;
 	private int[] marker = null;
-	public final byte[] enctab;
-	private final byte[] dectab;
 
 	public int encode(byte[] ib, int n, byte[] ob)
 	{
@@ -136,6 +137,11 @@ public class basE91
 
 	public basE91()
 	{
+		encReset();
+		decReset();
+	}
+
+	static {
 		int i;
 		String ts = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!$%&()*+,-./:;<=>?@[]^_`{|}~\""; // Added '-' removed '#'
 
@@ -145,7 +151,5 @@ public class basE91
 			dectab[i] = -1;
 		for (i = 0; i < 91; ++i)
 			dectab[enctab[i]] = (byte) i;
-		encReset();
-		decReset();
 	}
 }

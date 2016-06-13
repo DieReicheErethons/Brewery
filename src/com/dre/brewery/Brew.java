@@ -653,8 +653,8 @@ public class Brew {
 	}
 
 	public void testStore(DataOutputStream out) throws IOException {
-		out.writeByte(1); // Version
 		out.writeByte(86); // Parity
+		out.writeByte(1); // Version
 		out.writeInt(quality);
 		int bools = 0;
 		bools += (distillRuns != 0 ? 1 : 0);
@@ -681,12 +681,12 @@ public class Brew {
 	}
 
 	public void testLoad(DataInputStream in) throws IOException {
-		if (in.readByte() != 1) {
-			P.p.log("unknown version");
-			return;
-		}
 		if (in.readByte() != 86) {
 			P.p.log("parity check failed");
+			return;
+		}
+		if (in.readByte() != 1) {
+			P.p.log("unknown version");
 			return;
 		}
 		if (in.readInt() != quality) {
@@ -723,6 +723,7 @@ public class Brew {
 			P.p.log("stat wrong");
 		}
 		ingredients.testLoad(in);
+		P.p.log("load successful");
 	}
 
 	// Saves all data

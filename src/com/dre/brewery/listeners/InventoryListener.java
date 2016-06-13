@@ -9,8 +9,8 @@ import com.dre.brewery.P;
 import com.dre.brewery.integration.LogBlockBarrel;
 import com.dre.brewery.lore.Base91DecoderStream;
 import com.dre.brewery.lore.Base91EncoderStream;
-import com.dre.brewery.lore.LoreReader;
-import com.dre.brewery.lore.LoreWriter;
+import com.dre.brewery.lore.LoreLoadStream;
+import com.dre.brewery.lore.LoreSaveStream;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -308,7 +308,7 @@ public class InventoryListener implements Listener {
 					brew.touch();
 
 					try {
-						DataInputStream in = new DataInputStream(new Base91DecoderStream(new LoreReader(potion)));
+						DataInputStream in = new DataInputStream(new Base91DecoderStream(new LoreLoadStream(potion)));
 
 						brew.testLoad(in);
 
@@ -329,12 +329,12 @@ public class InventoryListener implements Listener {
 						}*/
 
 						in.close();
-					} catch (IOException e) {
-						e.printStackTrace();
+					} catch (IllegalArgumentException argExc) {
+						P.p.log("No Data in Lore");
 
 						try {
 
-							DataOutputStream out = new DataOutputStream(new Base91EncoderStream(new LoreWriter(potion, 2)));
+							DataOutputStream out = new DataOutputStream(new Base91EncoderStream(new LoreSaveStream(potion, 2)));
 
 							brew.testStore(out);
 
@@ -365,6 +365,8 @@ public class InventoryListener implements Listener {
 							h.printStackTrace();
 						}
 
+					} catch (IOException e) {
+						e.printStackTrace();
 					}
 				}
 			}

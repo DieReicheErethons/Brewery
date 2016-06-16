@@ -297,7 +297,7 @@ public class InventoryListener implements Listener {
 						}
 					}
 					P.p.log(brew.toString());
-					//P.p.log(potion.getLore().get(0));
+					P.p.log(potion.getLore().get(0).replaceAll("§", ""));
 					//brew.touch();
 
 					/*try {

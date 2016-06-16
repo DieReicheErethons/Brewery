@@ -262,7 +262,7 @@ public class BRecipe {
 
 		BIngredients bIngredients = new BIngredients(list, cookingTime);
 
-		Brew brew = new Brew(bIngredients, quality, distillruns, getAge(), wood, getName(5), false, false, true);
+		Brew brew = new Brew(bIngredients, quality, distillruns, getAge(), wood, getName(5), false, true);
 
 		Brew.PotionColor.fromString(getColor()).colorBrew(potionMeta, potion, false);
 		potionMeta.setDisplayName(P.p.color("&f" + getName(quality)));

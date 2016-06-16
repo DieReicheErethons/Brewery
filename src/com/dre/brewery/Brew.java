@@ -41,8 +41,8 @@ public class Brew {
 	private float wood;
 	private BRecipe currentRecipe;
 	private boolean unlabeled;
-	private boolean persistent;
-	private boolean stat; // static potions should not be changed
+	private boolean persistent; // Only for legacy
+	private boolean immutable; // static/immutable potions should not be changed
 	//private int lastUpdate; // last update in hours after install time
 
 	public Brew(BIngredients ingredients) {
@@ -57,15 +57,14 @@ public class Brew {
 	}
 
 	// loading with all values set
-	public Brew(BIngredients ingredients, int quality, byte distillRuns, float ageTime, float wood, String recipe, boolean unlabeled, boolean persistent, boolean stat) {
+	public Brew(BIngredients ingredients, int quality, byte distillRuns, float ageTime, float wood, String recipe, boolean unlabeled, boolean immutable) {
 		this.ingredients = ingredients;
 		this.quality = quality;
 		this.distillRuns = distillRuns;
 		this.ageTime = ageTime;
 		this.wood = wood;
 		this.unlabeled = unlabeled;
-		this.persistent = persistent;
-		this.stat = stat;
+		this.immutable = immutable;
 		setRecipeFromString(recipe);
 	}
 
@@ -191,7 +190,7 @@ public class Brew {
 			if (quality > 0) {
 				currentRecipe = ingredients.getBestRecipe(wood, ageTime, distillRuns > 0);
 				if (currentRecipe != null) {
-					if (!stat) {
+					if (!immutable) {
 						this.quality = calcQuality();
 					}
 					P.p.log("Brew was made from Recipe: '" + name + "' which could not be found. '" + currentRecipe.getName(5) + "' used instead!");
@@ -232,9 +231,8 @@ public class Brew {
 		brew.distillRuns = distillRuns;
 		brew.ageTime = ageTime;
 		brew.unlabeled = unlabeled;
-		if (!brew.persistent) {
-			brew.stat = stat;
-		}
+		brew.persistent = persistent;
+		brew.immutable = immutable;
 		return brew;
 	}
 
@@ -248,8 +246,7 @@ public class Brew {
 				", wood=" + wood +
 				", currentRecipe=" + currentRecipe +
 				", unlabeled=" + unlabeled +
-				", persistent=" + persistent +
-				", stat=" + stat +
+				", immutable=" + immutable +
 				'}';
 	}
 
@@ -321,7 +318,7 @@ public class Brew {
 	}
 
 	public boolean canDistill() {
-		if (stat) return false;
+		if (immutable) return false;
 		if (currentRecipe != null) {
 			return currentRecipe.getDistillRuns() > distillRuns;
 		} else {
@@ -392,14 +389,14 @@ public class Brew {
 	}
 
 	public boolean isStatic() {
-		return stat;
+		return immutable;
 	}
 
 	// Set the Static flag, so potion is unchangeable
-	public void setStatic(boolean stat, ItemStack potion) {
-		this.stat = stat;
+	public void setStatic(boolean immutable, ItemStack potion) {
+		this.immutable = immutable;
 		if (currentRecipe != null && canDistill()) {
-			if (stat) {
+			if (immutable) {
 				PotionColor.fromString(currentRecipe.getColor()).colorBrew(((PotionMeta) potion.getItemMeta()), potion, false);
 			} else {
 				PotionColor.fromString(currentRecipe.getColor()).colorBrew(((PotionMeta) potion.getItemMeta()), potion, true);
@@ -426,9 +423,7 @@ public class Brew {
 
 	// distill custom potion in given slot
 	public void distillSlot(ItemStack slotItem, PotionMeta potionMeta) {
-		if (stat) {
-			return;
-		}
+		if (immutable) return;
 
 		distillRuns += 1;
 		BRecipe recipe = ingredients.getdistillRecipe(wood, ageTime);
@@ -484,9 +479,7 @@ public class Brew {
 	// Ageing Section ------------------
 
 	public void age(ItemStack item, float time, byte woodType) {
-		if (stat) {
-			return;
-		}
+		if (immutable) return;
 
 		PotionMeta potionMeta = (PotionMeta) item.getItemMeta();
 		ageTime += time;
@@ -739,8 +732,7 @@ public class Brew {
 		} catch (IllegalArgumentException ignored) {
 			return null;
 		}
-		DataInputStream in = new DataInputStream(new Base91DecoderStream(loreStream));
-		try {
+		try (DataInputStream in = new DataInputStream(new Base91DecoderStream(loreStream))) {
 			if (in.readByte() != 86) {
 				P.p.errorLog("parity check failed on Brew while loading, trying to load anyways!");
 			}
@@ -758,17 +750,9 @@ public class Brew {
 		} catch (IOException e) {
 			P.p.errorLog("IO Error while loading Brew");
 			e.printStackTrace();
-		} finally {
-			try {
-				in.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
 		}
 		return null;
 	}
-
-	// TODO load and save Ingredients
 
 	private void loadFromStream(DataInputStream in) throws IOException {
 		quality = in.readByte();
@@ -788,14 +772,19 @@ public class Brew {
 			setRecipeFromString(null);
 		}
 		unlabeled = (bools & 16) != 0;
-		persistent = (bools & 32) != 0;
-		stat = (bools & 64) != 0;
+		//persistent = (bools & 32) != 0;
+		immutable = (bools & 32) != 0;
+		ingredients = BIngredients.load(in);
 	}
 
 	// Save brew data into meta/lore
 	public void save(ItemMeta meta) {
-		LoreSaveStream loreStream = new LoreSaveStream(meta, 0);
-		saveToStream(new DataOutputStream(new Base91EncoderStream(loreStream)));
+		try (DataOutputStream out = new DataOutputStream(new Base91EncoderStream(new LoreSaveStream(meta, 0)))) {
+			saveToStream(out);
+		} catch (IOException e) {
+			P.p.errorLog("IO Error while saving Brew");
+			e.printStackTrace();
+		}
 	}
 
 	// Save brew data into the meta/lore of the specified item
@@ -811,50 +800,41 @@ public class Brew {
 		item.setItemMeta(meta);
 	}
 
-	public void saveToStream(DataOutputStream out) {
-		try {
-			out.writeByte(86); // Parity/sanity
-			out.writeByte(1); // Version
-			if (quality > 10) {
-				quality = 10;
-			}
-			out.writeByte((byte) quality);
-			int bools = 0;
-			bools |= ((distillRuns != 0) ? 1 : 0);
-			bools |= (ageTime > 0 ? 2 : 0);
-			bools |= (wood != -1 ? 4 : 0);
-			bools |= (currentRecipe != null ? 8 : 0);
-			bools |= (unlabeled ? 16 : 0);
-			bools |= (persistent ? 32 : 0); // TODO remove persistence
-			bools |= (stat ? 64 : 0);
-			out.writeByte(bools);
-			if (distillRuns != 0) {
-				out.writeByte(distillRuns);
-			}
-			if (ageTime > 0) {
-				out.writeFloat(ageTime);
-			}
-			if (wood != -1) {
-				out.writeFloat(wood);
-			}
-			if (currentRecipe != null) {
-				out.writeUTF(currentRecipe.getName(5));
-			}
-		} catch (IOException e) {
-			P.p.errorLog("IO Error while saving Brew");
-			e.printStackTrace();
-		} finally {
-			try {
-				out.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+	public void saveToStream(DataOutputStream out) throws IOException {
+		out.writeByte(86); // Parity/sanity
+		out.writeByte(1); // Version
+		if (quality > 10) {
+			quality = 10;
 		}
+		out.writeByte((byte) quality);
+		int bools = 0;
+		bools |= ((distillRuns != 0) ? 1 : 0);
+		bools |= (ageTime > 0 ? 2 : 0);
+		bools |= (wood != -1 ? 4 : 0);
+		bools |= (currentRecipe != null ? 8 : 0);
+		bools |= (unlabeled ? 16 : 0);
+		//bools |= (persistent ? 32 : 0);
+		bools |= (immutable ? 32 : 0);
+		out.writeByte(bools);
+		if (distillRuns != 0) {
+			out.writeByte(distillRuns);
+		}
+		if (ageTime > 0) {
+			out.writeFloat(ageTime);
+		}
+		if (wood != -1) {
+			out.writeFloat(wood);
+		}
+		if (currentRecipe != null) {
+			out.writeUTF(currentRecipe.getName(5));
+		}
+		ingredients.save(out);
 	}
 
 	// Load potion data from data file for backwards compatibility
 	public static void loadLegacy(BIngredients ingredients, int uid, int quality, byte distillRuns, float ageTime, float wood, String recipe, boolean unlabeled, boolean persistent, boolean stat) {
-		Brew brew = new Brew(ingredients, quality, distillRuns, ageTime, wood, recipe, unlabeled, persistent, stat);
+		Brew brew = new Brew(ingredients, quality, distillRuns, ageTime, wood, recipe, unlabeled, stat);
+		brew.persistent = persistent;
 		legacyPotions.put(uid, brew);
 	}
 
@@ -904,7 +884,7 @@ public class Brew {
 			if (brew.persistent) {
 				idConfig.set("persist", true);
 			}
-			if (brew.stat) {
+			if (brew.immutable) {
 				idConfig.set("stat", true);
 			}
 			/*if (brew.lastUpdate > 0) {

@@ -61,7 +61,7 @@ public class DataSave extends BukkitRunnable {
 
 		configFile.set("installTime", Brew.installTime);
 
-		if (!Brew.potions.isEmpty()) {
+		if (!Brew.legacyPotions.isEmpty()) {
 			Brew.save(configFile.createSection("Brew"));
 		}
 

@@ -171,9 +171,9 @@ public class PlayerListener implements Listener {
 				Brew brew = Brew.get(item);
 				if (brew != null) {
 					BPlayer.drink(brew, player);
-					if (player.getGameMode() != org.bukkit.GameMode.CREATIVE) {
+					/*if (player.getGameMode() != org.bukkit.GameMode.CREATIVE) {
 						brew.remove(item);
-					}
+					}*/
 				}
 			} else if (BPlayer.drainItems.containsKey(item.getType())) {
 				BPlayer bplayer = BPlayer.get(player);

@@ -353,6 +353,7 @@ public class CommandListener implements CommandExecutor {
 
 	}
 
+	@Deprecated
 	public void cmdCopy(CommandSender sender, int count) {
 
 		if (sender instanceof Player) {
@@ -367,7 +368,7 @@ public class CommandListener implements CommandExecutor {
 				Brew brew = Brew.get(hand);
 				if (brew != null) {
 					while (count > 0) {
-						ItemStack item = brew.copy(hand);
+						ItemStack item = hand.clone();
 						if (!(player.getInventory().addItem(item)).isEmpty()) {
 							p.msg(sender, p.languageReader.get("CMD_Copy_Error", "" + count));
 							return;
@@ -389,6 +390,7 @@ public class CommandListener implements CommandExecutor {
 
 	}
 
+	@Deprecated
 	public void cmdDelete(CommandSender sender) {
 
 		if (sender instanceof Player) {
@@ -400,7 +402,7 @@ public class CommandListener implements CommandExecutor {
 					if (brew.isPersistent()) {
 						p.msg(sender, p.languageReader.get("CMD_PersistRemove"));
 					} else {
-						brew.remove(hand);
+						//brew.remove(hand);
 						player.setItemInHand(new ItemStack(Material.AIR));
 					}
 					return;
@@ -413,6 +415,7 @@ public class CommandListener implements CommandExecutor {
 
 	}
 
+	@Deprecated
 	public void cmdPersist(CommandSender sender) {
 
 		if (sender instanceof Player) {
@@ -431,6 +434,7 @@ public class CommandListener implements CommandExecutor {
 						p.msg(sender, p.languageReader.get("CMD_Persistent"));
 					}
 					brew.touch();
+					brew.save(hand);
 					return;
 				}
 			}
@@ -461,6 +465,7 @@ public class CommandListener implements CommandExecutor {
 						p.msg(sender, p.languageReader.get("CMD_Static"));
 					}
 					brew.touch();
+					brew.save(hand);
 					return;
 				}
 			}
@@ -481,6 +486,7 @@ public class CommandListener implements CommandExecutor {
 				if (brew != null) {
 					brew.unLabel(hand);
 					brew.touch();
+					brew.save(hand);
 					p.msg(sender, p.languageReader.get("CMD_UnLabel"));
 					return;
 				}

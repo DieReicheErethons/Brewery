@@ -28,10 +28,7 @@ public class EntityListener implements Listener {
 	public void onItemDespawn(ItemDespawnEvent event) {
 		ItemStack item = event.getEntity().getItemStack();
 		if (item.getType() == Material.POTION) {
-			Brew brew = Brew.get(item);
-			if (brew != null) {
-				brew.remove(item);
-			}
+			Brew.removeLegacy(item);
 		}
 	}
 
@@ -42,10 +39,7 @@ public class EntityListener implements Listener {
 			if (entity instanceof Item) {
 				ItemStack item = ((Item) entity).getItemStack();
 				if (item.getType() == Material.POTION) {
-					Brew brew = Brew.get(item);
-					if (brew != null) {
-						brew.remove(item);
-					}
+					Brew.removeLegacy(item);
 				}
 			}
 		}

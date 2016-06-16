@@ -4,7 +4,6 @@ import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
-import org.bukkit.potion.PotionEffectType;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -17,27 +16,36 @@ public class BIngredients {
 	public static Map<Material, String> cookedNames = new HashMap<>();
 	private static int lastId = 0;
 
-	private int id;
-	private ArrayList<ItemStack> ingredients = new ArrayList<>();
+	private int id; // Legacy
+	private List<ItemStack> ingredients = new ArrayList<>();
 	private Map<Material, Integer> materials = new HashMap<>(); // Merged List Of ingredients that doesnt consider Durability
 	private int cookedTime;
 
 	// Represents ingredients in Cauldron, Brew
 	// Init a new BIngredients
 	public BIngredients() {
-		this.id = lastId;
-		lastId++;
+		//this.id = lastId;
+		//lastId++;
 	}
 
 	// Load from File
-	public BIngredients(ArrayList<ItemStack> ingredients, int cookedTime) {
+	public BIngredients(List<ItemStack> ingredients, int cookedTime) {
 		this.ingredients = ingredients;
 		this.cookedTime = cookedTime;
-		this.id = lastId;
-		lastId++;
+		//this.id = lastId;
+		//lastId++;
 
 		for (ItemStack item : ingredients) {
 			addMaterial(item);
+		}
+	}
+
+	// Load from legacy Brew section
+	public BIngredients(List<ItemStack> ingredients, int cookedTime, boolean legacy) {
+		this(ingredients, cookedTime);
+		if (legacy) {
+			this.id = lastId;
+			lastId++;
 		}
 	}
 
@@ -72,14 +80,15 @@ public class BIngredients {
 		cookedTime = state;
 		String cookedName = null;
 		BRecipe cookRecipe = getCookRecipe();
+		Brew brew;
 
-		int uid = Brew.generateUID();
+		//int uid = Brew.generateUID();
 
 		if (cookRecipe != null) {
 			// Potion is best with cooking only
 			int quality = (int) Math.round((getIngredientQuality(cookRecipe) + getCookingQuality(cookRecipe, false)) / 2.0);
 			P.p.debugLog("cooked potion has Quality: " + quality);
-			Brew brew = new Brew(uid, quality, cookRecipe, this);
+			brew = new Brew(quality, cookRecipe, this);
 			Brew.addOrReplaceEffects(potionMeta, brew.getEffects(), brew.getQuality());
 
 			cookedName = cookRecipe.getName(quality);
@@ -87,7 +96,7 @@ public class BIngredients {
 
 		} else {
 			// new base potion
-			new Brew(uid, this);
+			brew = new Brew(this);
 
 			if (state <= 1) {
 				cookedName = P.p.languageReader.get("Brew_ThickBrew");
@@ -117,14 +126,17 @@ public class BIngredients {
 			uid *= 4;
 		}
 		// This effect stores the UID in its Duration
-		potionMeta.addCustomEffect((PotionEffectType.REGENERATION).createEffect(uid, 0), true);
+		//potionMeta.addCustomEffect((PotionEffectType.REGENERATION).createEffect((uid * 4), 0), true);
+
+		brew.touch();
+		brew.save(potionMeta);
 		potion.setItemMeta(potionMeta);
 
 		return potion;
 	}
 
 	// returns amount of ingredients
-	private int getIngredientsCount() {
+	public int getIngredientsCount() {
 		int count = 0;
 		for (ItemStack item : ingredients) {
 			count += item.getAmount();
@@ -290,7 +302,7 @@ public class BIngredients {
 	}
 
 	// returns pseudo quality of distilling. 0 if doesnt match the need of the recipes distilling
-	public int getDistillQuality(BRecipe recipe, int distillRuns) {
+	public int getDistillQuality(BRecipe recipe, byte distillRuns) {
 		if (recipe.needsDistilling() != distillRuns > 0) {
 			return 0;
 		}
@@ -316,7 +328,12 @@ public class BIngredients {
 	}
 
 	// Creates a copy ingredients
+	@Override
 	public BIngredients clone() {
+		try {
+			super.clone();
+		} catch (CloneNotSupportedException ingored) {
+		}
 		BIngredients copy = new BIngredients();
 		copy.ingredients.addAll(ingredients);
 		copy.materials.putAll(materials);
@@ -324,7 +341,14 @@ public class BIngredients {
 		return copy;
 	}
 
-	public void testStore(DataOutputStream out) throws IOException {
+	@Override
+	public String toString() {
+		return "BIngredients{" +
+				"cookedTime=" + cookedTime +
+				", total ingedients: " + getIngredientsCount() + '}';
+	}
+
+	/*public void testStore(DataOutputStream out) throws IOException {
 		out.writeInt(cookedTime);
 		out.writeByte(ingredients.size());
 		for (ItemStack item : ingredients) {
@@ -353,9 +377,34 @@ public class BIngredients {
 				P.p.log("amount wrong");
 			}
 		}
+	}*/
+
+	public void save(DataOutputStream out) throws IOException {
+		out.writeInt(cookedTime);
+		out.writeByte(ingredients.size());
+		for (ItemStack item : ingredients) {
+			out.writeUTF(item.getType().name());
+			out.writeShort(item.getAmount());
+			out.writeShort(item.getDurability());
+		}
+	}
+
+	public static BIngredients load(DataInputStream in) throws IOException {
+		int cookedTime = in.readInt();
+		byte size = in.readByte();
+		List<ItemStack> ing = new ArrayList<>(size);
+		for (; size > 0; size--) {
+			Material mat = Material.getMaterial(in.readUTF());
+			if (mat != null) {
+				ing.add(new ItemStack(mat, in.readShort(), in.readShort()));
+			}
+		}
+		return new BIngredients(ing, cookedTime);
 	}
 
 	// saves data into main Ingredient section. Returns the save id
+	// Only needed for legacy potions
+	@Deprecated
 	public int save(ConfigurationSection config) {
 		String path = "Ingredients." + id;
 		if (cookedTime != 0) {

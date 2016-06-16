@@ -257,9 +257,9 @@ public class PlayerListener implements Listener {
 				Brew brew = Brew.get(item);
 				if (brew != null) {
 					BPlayer.drink(brew, player);
-					if (player.getGameMode() != GameMode.CREATIVE) {
+					/*if (player.getGameMode() != org.bukkit.GameMode.CREATIVE) {
 						brew.remove(item);
-					}
+					}*/
 					if (P.use1_9) {
 						if (player.getGameMode() != GameMode.CREATIVE) {
 							// replace the potion with an empty potion to avoid effects

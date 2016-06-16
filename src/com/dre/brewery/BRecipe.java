@@ -4,7 +4,6 @@ import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
-import org.bukkit.potion.PotionEffectType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +13,7 @@ public class BRecipe {
 	private String[] name;
 	private ArrayList<ItemStack> ingredients = new ArrayList<>(); // material and amount
 	private int cookingTime; // time to cook in cauldron
-	private int distillruns; // runs through the brewer
+	private byte distillruns; // runs through the brewer
 	private int distillTime; // time for one distill run in seconds
 	private byte wood; // type of wood the barrel has to consist of
 	private int age; // time in minecraft days for the potions to age in barrels
@@ -90,7 +89,12 @@ public class BRecipe {
 			}
 		}
 		this.cookingTime = configSectionRecipes.getInt(recipeId + ".cookingtime", 1);
-		this.distillruns = configSectionRecipes.getInt(recipeId + ".distillruns", 0);
+		int dis = configSectionRecipes.getInt(recipeId + ".distillruns", 0);
+		if (dis > Byte.MAX_VALUE) {
+			this.distillruns = Byte.MAX_VALUE;
+		} else {
+			this.distillruns = (byte) dis;
+		}
 		this.distillTime = configSectionRecipes.getInt(recipeId + ".distilltime", 0) * 20;
 		this.wood = (byte) configSectionRecipes.getInt(recipeId + ".wood", 0);
 		this.age = configSectionRecipes.getInt(recipeId + ".age", 0);
@@ -247,8 +251,6 @@ public class BRecipe {
 		ItemStack potion = new ItemStack(Material.POTION);
 		PotionMeta potionMeta = (PotionMeta) potion.getItemMeta();
 
-		int uid = Brew.generateUID();
-
 		ArrayList<ItemStack> list = new ArrayList<>(ingredients.size());
 		for (ItemStack item : ingredients) {
 			if (item.getDurability() == -1) {
@@ -260,7 +262,7 @@ public class BRecipe {
 
 		BIngredients bIngredients = new BIngredients(list, cookingTime);
 
-		Brew brew = new Brew(uid, bIngredients, quality, distillruns, getAge(), wood, getName(5), false, false, true, 0);
+		Brew brew = new Brew(bIngredients, quality, distillruns, getAge(), wood, getName(5), false, false, true);
 
 		Brew.PotionColor.fromString(getColor()).colorBrew(potionMeta, potion, false);
 		potionMeta.setDisplayName(P.p.color("&f" + getName(quality)));
@@ -270,11 +272,12 @@ public class BRecipe {
 			uid *= 4;
 		}
 		// This effect stores the UID in its Duration
-		potionMeta.addCustomEffect((PotionEffectType.REGENERATION).createEffect(uid, 0), true);
+		//potionMeta.addCustomEffect((PotionEffectType.REGENERATION).createEffect((uid * 4), 0), true);
 
 		brew.convertLore(potionMeta, false);
 		Brew.addOrReplaceEffects(potionMeta, effects, quality);
 		brew.touch();
+		brew.save(potionMeta);
 
 		potion.setItemMeta(potionMeta);
 		return potion;
@@ -322,7 +325,7 @@ public class BRecipe {
 		return cookingTime;
 	}
 
-	public int getDistillRuns() {
+	public byte getDistillRuns() {
 		return distillruns;
 	}
 
@@ -358,4 +361,8 @@ public class BRecipe {
 		return effects;
 	}
 
+	@Override
+	public String toString() {
+		return "BRecipe{" + getName(5) + '}';
+	}
 }

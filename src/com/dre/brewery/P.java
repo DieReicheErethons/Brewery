@@ -11,10 +11,6 @@ import com.dre.brewery.integration.WGBarrel7;
 import com.dre.brewery.integration.WGBarrelNew;
 import com.dre.brewery.integration.WGBarrelOld;
 import com.dre.brewery.listeners.*;
-import com.dre.brewery.lore.Base91DecoderStream;
-import com.dre.brewery.lore.Base91EncoderStream;
-import com.dre.brewery.lore.LoreLoadStream;
-import com.dre.brewery.lore.LoreSaveStream;
 import org.apache.commons.lang.math.NumberUtils;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
@@ -91,7 +87,7 @@ public class P extends JavaPlugin {
 		//P.p.log("§" + (use1_9 ? "a":"c") + "1.9 " + "§" + (use1_11 ? "a":"c") + "1.11 " + "§" + (use1_13 ? "a":"c") + "1.13 " + "§" + (use1_14 ? "a":"c") + "1.14");
 
 
-		try {
+		/*try {
 			ItemMeta meta = new ItemStack(Material.POTION).getItemMeta();
 			DataOutputStream data = new DataOutputStream(new Base91EncoderStream(new LoreSaveStream(meta, 3)));
 
@@ -125,7 +121,7 @@ public class P extends JavaPlugin {
 
 
 
-			/*basE91 basE91 = new basE91();
+			basE91 basE91 = new basE91();
 			int[] input = new int[] {12, 65, 324, 5, 12, 129459, 1234567, Integer.MIN_VALUE, Integer.MAX_VALUE};
 			ByteArrayOutputStream stream = new ByteArrayOutputStream();
 			DataOutputStream data = new DataOutputStream(stream);
@@ -198,11 +194,11 @@ public class P extends JavaPlugin {
 
 			}
 			tdata.close();
-			test = test;*/
+			test = test;
 
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
+		}*/
 
 
 		// load the Config
@@ -338,7 +334,7 @@ public class P extends JavaPlugin {
 		BIngredients.recipes.clear();
 		BIngredients.cookedNames.clear();
 		BPlayer.clear();
-		Brew.potions.clear();
+		Brew.legacyPotions.clear();
 		Wakeup.wakeups.clear();
 		Words.words.clear();
 		Words.ignoreText.clear();
@@ -387,7 +383,7 @@ public class P extends JavaPlugin {
 
 		// Reload Recipes
 		boolean successful = true;
-		for (Brew brew : Brew.potions.values()) {
+		for (Brew brew : Brew.legacyPotions.values()) {
 			if (!brew.reloadRecipe()) {
 				successful = false;
 			}
@@ -603,30 +599,30 @@ public class P extends JavaPlugin {
 					if (matSection != null) {
 						// matSection has all the materials + amount as Integers
 						ArrayList<ItemStack> ingredients = deserializeIngredients(matSection);
-						ingMap.put(id, new BIngredients(ingredients, section.getInt(id + ".cookedTime", 0)));
+						ingMap.put(id, new BIngredients(ingredients, section.getInt(id + ".cookedTime", 0), true));
 					} else {
 						errorLog("Ingredient id: '" + id + "' incomplete in data.yml");
 					}
 				}
 			}
 
-			// loading Brew
+			// loading Brew legacy
 			section = data.getConfigurationSection("Brew");
 			if (section != null) {
 				// All sections have the UID as name
 				for (String uid : section.getKeys(false)) {
 					BIngredients ingredients = getIngredients(ingMap, section.getString(uid + ".ingId"));
 					int quality = section.getInt(uid + ".quality", 0);
-					int distillRuns = section.getInt(uid + ".distillRuns", 0);
+					byte distillRuns = (byte) section.getInt(uid + ".distillRuns", 0);
 					float ageTime = (float) section.getDouble(uid + ".ageTime", 0.0);
 					float wood = (float) section.getDouble(uid + ".wood", -1.0);
 					String recipe = section.getString(uid + ".recipe", null);
 					boolean unlabeled = section.getBoolean(uid + ".unlabeled", false);
 					boolean persistent = section.getBoolean(uid + ".persist", false);
 					boolean stat = section.getBoolean(uid + ".stat", false);
-					int lastUpdate = section.getInt("lastUpdate", 0);
+					//int lastUpdate = section.getInt("lastUpdate", 0);
 
-					new Brew(parseInt(uid), ingredients, quality, distillRuns, ageTime, wood, recipe, unlabeled, persistent, stat, lastUpdate);
+					Brew.loadLegacy(ingredients, parseInt(uid), quality, distillRuns, ageTime, wood, recipe, unlabeled, persistent, stat);
 				}
 			}
 

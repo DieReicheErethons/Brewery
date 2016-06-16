@@ -1,11 +1,16 @@
 package com.dre.brewery;
 
 import org.bukkit.Color;
+import com.dre.brewery.lore.Base91DecoderStream;
+import com.dre.brewery.lore.Base91EncoderStream;
+import com.dre.brewery.lore.LoreLoadStream;
+import com.dre.brewery.lore.LoreSaveStream;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.BrewerInventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
@@ -24,40 +29,35 @@ public class Brew {
 
 	// represents the liquid in the brewed Potions
 
-	public static Map<Integer, Brew> potions = new HashMap<>();
+	public static Map<Integer, Brew> legacyPotions = new HashMap<>();
 	public static long installTime = System.currentTimeMillis(); // plugin install time in millis after epoch
 	public static Boolean colorInBarrels; // color the Lore while in Barrels
 	public static Boolean colorInBrewer; // color the Lore while in Brewer
 
 	private BIngredients ingredients;
 	private int quality;
-	private int distillRuns;
+	private byte distillRuns;
 	private float ageTime;
 	private float wood;
 	private BRecipe currentRecipe;
 	private boolean unlabeled;
 	private boolean persistent;
 	private boolean stat; // static potions should not be changed
-	private int lastUpdate; // last update in hours after install time
+	//private int lastUpdate; // last update in hours after install time
 
-	public Brew(int uid, BIngredients ingredients) {
+	public Brew(BIngredients ingredients) {
 		this.ingredients = ingredients;
-		touch();
-		potions.put(uid, this);
 	}
 
 	// quality already set
-	public Brew(int uid, int quality, BRecipe recipe, BIngredients ingredients) {
+	public Brew(int quality, BRecipe recipe, BIngredients ingredients) {
 		this.ingredients = ingredients;
 		this.quality = quality;
 		this.currentRecipe = recipe;
-		touch();
-		potions.put(uid, this);
 	}
 
-	// loading from file
-	public Brew(int uid, BIngredients ingredients, int quality, int distillRuns, float ageTime, float wood, String recipe, boolean unlabeled, boolean persistent, boolean stat, int lastUpdate) {
-		potions.put(uid, this);
+	// loading with all values set
+	public Brew(BIngredients ingredients, int quality, byte distillRuns, float ageTime, float wood, String recipe, boolean unlabeled, boolean persistent, boolean stat) {
 		this.ingredients = ingredients;
 		this.quality = quality;
 		this.distillRuns = distillRuns;
@@ -66,44 +66,95 @@ public class Brew {
 		this.unlabeled = unlabeled;
 		this.persistent = persistent;
 		this.stat = stat;
-		this.lastUpdate = lastUpdate;
 		setRecipeFromString(recipe);
 	}
 
-	// returns a Brew by its UID
-	public static Brew get(int uid) {
-		if (uid < -1) {
-			if (!potions.containsKey(uid)) {
-				P.p.errorLog("Database failure! unable to find UID " + uid + " of a custom Potion!");
-				return null;// throw some exception?
-			}
-		} else {
-			return null;
-		}
-		return potions.get(uid);
+	// Loading from InputStream
+	private Brew() {
 	}
 
-	// returns a Brew by PotionMeta
-	public static Brew get(PotionMeta meta) {
-		return get(getUID(meta));
+	// returns a Brew by ItemMeta
+	public static Brew get(ItemMeta meta) {
+		if (meta.hasLore()) {
+			if (meta instanceof PotionMeta && ((PotionMeta) meta).hasCustomEffect(PotionEffectType.REGENERATION)) {
+				Brew brew = load(meta);
+				if (brew != null) {
+					brew = getFromPotionEffect(((PotionMeta) meta), false);
+				}
+				return brew;
+			} else {
+				return load(meta);
+			}
+		}
+		return null;
 	}
 
 	// returns a Brew by ItemStack
 	public static Brew get(ItemStack item) {
 		if (item.getType() == Material.POTION) {
 			if (item.hasItemMeta()) {
-				return get((PotionMeta) item.getItemMeta());
+				ItemMeta meta = item.getItemMeta();
+				if (meta.hasLore()) {
+					if (meta instanceof PotionMeta && ((PotionMeta) meta).hasCustomEffect(PotionEffectType.REGENERATION)) {
+						Brew brew = load(meta);
+						if (brew != null) {
+							((PotionMeta) meta).removeCustomEffect(PotionEffectType.REGENERATION);
+						} else {
+							brew = getFromPotionEffect(((PotionMeta) meta), true);
+							if (brew == null) return null;
+							brew.save(meta);
+						}
+						item.setItemMeta(meta);
+						return brew;
+					} else {
+						return load(meta);
+					}
+				}
 			}
 		}
 		return null;
 	}
 
+	private static Brew getFromPotionEffect(PotionMeta potionMeta, boolean remove) {
+		for (PotionEffect effect : potionMeta.getCustomEffects()) {
+			if (effect.getType().equals(PotionEffectType.REGENERATION)) {
+				if (effect.getDuration() < -1) {
+					if (remove) {
+						return legacyPotions.remove(effect.getDuration());
+					} else {
+						return legacyPotions.get(effect.getDuration());
+					}
+				}
+			}
+		}
+		return null;
+	}
+
+	// returns a Brew by its UID
+	// Does not work anymore with new save system
+	@Deprecated
+	public static Brew get(int uid) {
+		if (uid < -1) {
+			if (!legacyPotions.containsKey(uid)) {
+				P.p.errorLog("Database failure! unable to find UID " + uid + " of a custom Potion!");
+				return null;// throw some exception?
+			}
+		} else {
+			return null;
+		}
+		return legacyPotions.get(uid);
+	}
+
 	// returns UID of custom Potion item
+	// Does not work anymore with new save system
+	@Deprecated
 	public static int getUID(ItemStack item) {
 		return getUID((PotionMeta) item.getItemMeta());
 	}
 
 	// returns UID of custom Potion meta
+	// Does not work anymore with new save system
+	@Deprecated
 	public static int getUID(PotionMeta potionMeta) {
 		if (potionMeta.hasCustomEffect(PotionEffectType.REGENERATION)) {
 			for (PotionEffect effect : potionMeta.getCustomEffects()) {
@@ -118,13 +169,13 @@ public class Brew {
 	}
 
 	// generate an UID
-	public static int generateUID() {
+	/*public static int generateUID() {
 		int uid = -2;
 		while (potions.containsKey(uid)) {
 			uid -= 1;
 		}
 		return uid;
-	}
+	}*/
 
 	//returns the recipe with the given name, recalculates if not found
 	public boolean setRecipeFromString(String name) {
@@ -158,7 +209,8 @@ public class Brew {
 	}
 
 	// Copy a Brew with a new unique ID and return its item
-	public ItemStack copy(ItemStack item) {
+	// Not needed anymore
+	/*public ItemStack copy(ItemStack item) {
 		ItemStack copy = item.clone();
 		int uid = generateUID();
 		clone(uid);
@@ -170,11 +222,13 @@ public class Brew {
 		meta.addCustomEffect((PotionEffectType.REGENERATION).createEffect(uid, 0), true);
 		copy.setItemMeta(meta);
 		return copy;
-	}
+	}*/
 
-	// Clones this instance with a new unique ID
-	public Brew clone(int uid) {
-		Brew brew = new Brew(uid, quality, currentRecipe, ingredients);
+	// Clones this instance
+	@Override
+	public Brew clone() throws CloneNotSupportedException {
+		super.clone();
+		Brew brew = new Brew(quality, currentRecipe, ingredients);
 		brew.distillRuns = distillRuns;
 		brew.ageTime = ageTime;
 		brew.unlabeled = unlabeled;
@@ -184,12 +238,28 @@ public class Brew {
 		return brew;
 	}
 
+	@Override
+	public String toString() {
+		return "Brew{" +
+				ingredients + " ingredients" +
+				", quality=" + quality +
+				", distillRuns=" + distillRuns +
+				", ageTime=" + ageTime +
+				", wood=" + wood +
+				", currentRecipe=" + currentRecipe +
+				", unlabeled=" + unlabeled +
+				", persistent=" + persistent +
+				", stat=" + stat +
+				'}';
+	}
+
 	// remove potion from file (drinking, despawning, combusting, cmdDeleting, should be more!)
-	public void remove(ItemStack item) {
+	// Not needed anymore
+	/*public void remove(ItemStack item) {
 		if (!persistent) {
 			potions.remove(getUID(item));
 		}
-	}
+	}*/
 
 	// calculate alcohol from recipe
 	public int calcAlcohol() {
@@ -283,11 +353,12 @@ public class Brew {
 	}
 
 	// Do some regular updates
+	// Currently does nothing, but may be used to update something on this brew
 	public void touch() {
-		lastUpdate = (int) ((double) (System.currentTimeMillis() - installTime) / 3600000D);
+		//lastUpdate = (int) ((double) (System.currentTimeMillis() - installTime) / 3600000D);
 	}
 
-	public int getDistillRuns() {
+	public byte getDistillRuns() {
 		return distillRuns;
 	}
 
@@ -299,16 +370,23 @@ public class Brew {
 		return currentRecipe;
 	}
 
+	// Not needed anymore
+	// TODO remove
+	@Deprecated
 	public boolean isPersistent() {
 		return persistent;
 	}
 
 	// Make a potion persistent to not delete it when drinking it
+	// Not needed anymore
+	@Deprecated
 	public void makePersistent() {
 		persistent = true;
 	}
 
 	// Remove the Persistence Flag from a brew, so it will be normally deleted when drinking it
+	// Not needed anymore
+	@Deprecated
 	public void removePersistence() {
 		persistent = false;
 	}
@@ -329,9 +407,9 @@ public class Brew {
 		}
 	}
 
-	public int getLastUpdate() {
+	/*public int getLastUpdate() {
 		return lastUpdate;
-	}
+	}*/
 
 	// Distilling section ---------------
 
@@ -382,6 +460,7 @@ public class Brew {
 		}
 		updateDistillLore(prefix, potionMeta);
 		touch();
+		save(potionMeta);
 
 		slotItem.setItemMeta(potionMeta);
 	}
@@ -454,6 +533,7 @@ public class Brew {
 			}
 		}
 		touch();
+		save(potionMeta);
 		item.setItemMeta(potionMeta);
 	}
 
@@ -607,14 +687,14 @@ public class Brew {
 		}
 	}
 
-	// Removes all effects except regeneration which stores data
+	// Removes all effects
 	public static void removeEffects(PotionMeta meta) {
 		if (meta.hasCustomEffects()) {
 			for (PotionEffect effect : meta.getCustomEffects()) {
 				PotionEffectType type = effect.getType();
-				if (!type.equals(PotionEffectType.REGENERATION)) {
+				//if (!type.equals(PotionEffectType.REGENERATION)) {
 					meta.removeCustomEffect(type);
-				}
+				//}
 			}
 		}
 	}
@@ -652,83 +732,153 @@ public class Brew {
 		return P.p.color(color);
 	}
 
-	public void testStore(DataOutputStream out) throws IOException {
-		out.writeByte(86); // Parity
-		out.writeByte(1); // Version
-		out.writeInt(quality);
-		int bools = 0;
-		bools += (distillRuns != 0 ? 1 : 0);
-		bools += (ageTime > 0 ? 2 : 0);
-		bools += (wood != -1 ? 4 : 0);
-		bools += (currentRecipe != null ? 8 : 0);
-		bools += (unlabeled ? 16 : 0);
-		bools += (persistent ? 32 : 0);
-		bools += (stat ? 64 : 0);
-		out.writeByte(bools);
-		if (distillRuns != 0) {
-			out.writeByte(distillRuns);
+	private static Brew load(ItemMeta meta) {
+		LoreLoadStream loreStream;
+		try {
+			loreStream = new LoreLoadStream(meta, 0);
+		} catch (IllegalArgumentException ignored) {
+			return null;
 		}
-		if (ageTime > 0) {
-			out.writeFloat(ageTime);
+		DataInputStream in = new DataInputStream(new Base91DecoderStream(loreStream));
+		try {
+			if (in.readByte() != 86) {
+				P.p.errorLog("parity check failed on Brew while loading, trying to load anyways!");
+			}
+			Brew brew = new Brew();
+			byte ver = in.readByte();
+			switch (ver) {
+				case 1:
+					brew.loadFromStream(in);
+					break;
+				default:
+					P.p.errorLog("Brew has data stored in v" + ver + " this version supports up to v1");
+					return null;
+			}
+			return brew;
+		} catch (IOException e) {
+			P.p.errorLog("IO Error while loading Brew");
+			e.printStackTrace();
+		} finally {
+			try {
+				in.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
-		if (wood != -1) {
-			out.writeFloat(wood);
-		}
-		if (currentRecipe != null) {
-			out.writeUTF(currentRecipe.getName(5));
-		}
-		ingredients.testStore(out);
+		return null;
 	}
 
-	public void testLoad(DataInputStream in) throws IOException {
-		if (in.readByte() != 86) {
-			P.p.log("parity check failed");
-			return;
-		}
-		if (in.readByte() != 1) {
-			P.p.log("unknown version");
-			return;
-		}
-		if (in.readInt() != quality) {
-			P.p.log("quality wrong");
-		}
+	// TODO load and save Ingredients
+
+	private void loadFromStream(DataInputStream in) throws IOException {
+		quality = in.readByte();
 		int bools = in.readUnsignedByte();
 		if ((bools & 1) != 0) {
-			if (in.readByte() != distillRuns) {
-				P.p.log("distillruns wrong");
-			}
+			distillRuns = in.readByte();
 		}
 		if ((bools & 2) != 0) {
-			if (in.readFloat() != ageTime) {
-				P.p.log("agetime wrong");
-			}
+			ageTime = in.readFloat();
 		}
 		if ((bools & 4) != 0) {
-			if (in.readFloat() != wood) {
-				P.p.log("wood wrong");
-			}
+			wood = in.readFloat();
 		}
 		if ((bools & 8) != 0) {
-			if (!in.readUTF().equals(currentRecipe.getName(5))) {
-				P.p.log("currecipe wrong");
+			setRecipeFromString(in.readUTF());
+		} else {
+			setRecipeFromString(null);
+		}
+		unlabeled = (bools & 16) != 0;
+		persistent = (bools & 32) != 0;
+		stat = (bools & 64) != 0;
+	}
+
+	// Save brew data into meta/lore
+	public void save(ItemMeta meta) {
+		LoreSaveStream loreStream = new LoreSaveStream(meta, 0);
+		saveToStream(new DataOutputStream(new Base91EncoderStream(loreStream)));
+	}
+
+	// Save brew data into the meta/lore of the specified item
+	// The meta on the item changes, so to make further changes to the meta, item.getItemMeta() has to be called again after this
+	public void save(ItemStack item) {
+		ItemMeta meta;
+		if (!item.hasItemMeta()) {
+			meta = P.p.getServer().getItemFactory().getItemMeta(item.getType());
+		} else {
+			meta = item.getItemMeta();
+		}
+		save(meta);
+		item.setItemMeta(meta);
+	}
+
+	public void saveToStream(DataOutputStream out) {
+		try {
+			out.writeByte(86); // Parity/sanity
+			out.writeByte(1); // Version
+			if (quality > 10) {
+				quality = 10;
+			}
+			out.writeByte((byte) quality);
+			int bools = 0;
+			bools |= ((distillRuns != 0) ? 1 : 0);
+			bools |= (ageTime > 0 ? 2 : 0);
+			bools |= (wood != -1 ? 4 : 0);
+			bools |= (currentRecipe != null ? 8 : 0);
+			bools |= (unlabeled ? 16 : 0);
+			bools |= (persistent ? 32 : 0); // TODO remove persistence
+			bools |= (stat ? 64 : 0);
+			out.writeByte(bools);
+			if (distillRuns != 0) {
+				out.writeByte(distillRuns);
+			}
+			if (ageTime > 0) {
+				out.writeFloat(ageTime);
+			}
+			if (wood != -1) {
+				out.writeFloat(wood);
+			}
+			if (currentRecipe != null) {
+				out.writeUTF(currentRecipe.getName(5));
+			}
+		} catch (IOException e) {
+			P.p.errorLog("IO Error while saving Brew");
+			e.printStackTrace();
+		} finally {
+			try {
+				out.close();
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 		}
-		if ((bools & 16) != 0 && !unlabeled) {
-			P.p.log("unlabeled wrong");
+	}
+
+	// Load potion data from data file for backwards compatibility
+	public static void loadLegacy(BIngredients ingredients, int uid, int quality, byte distillRuns, float ageTime, float wood, String recipe, boolean unlabeled, boolean persistent, boolean stat) {
+		Brew brew = new Brew(ingredients, quality, distillRuns, ageTime, wood, recipe, unlabeled, persistent, stat);
+		legacyPotions.put(uid, brew);
+	}
+
+	// remove legacy potiondata from item
+	public static void removeLegacy(ItemStack item) {
+		if (legacyPotions.isEmpty()) return;
+		if (!item.hasItemMeta()) return;
+		ItemMeta meta = item.getItemMeta();
+		if (!(meta instanceof PotionMeta)) return;
+		for (PotionEffect effect : ((PotionMeta) meta).getCustomEffects()) {
+			if (effect.getType().equals(PotionEffectType.REGENERATION)) {
+				if (effect.getDuration() < -1) {
+					legacyPotions.remove(effect.getDuration());
+					return;
+				}
+			}
 		}
-		if ((bools & 32) != 0 && !persistent) {
-			P.p.log("persistent wrong");
-		}
-		if ((bools & 64) != 0 && !stat) {
-			P.p.log("stat wrong");
-		}
-		ingredients.testLoad(in);
-		P.p.log("load successful");
 	}
 
 	// Saves all data
+	// Legacy method to save to data file
+	@Deprecated
 	public static void save(ConfigurationSection config) {
-		for (Map.Entry<Integer, Brew> entry : potions.entrySet()) {
+		for (Map.Entry<Integer, Brew> entry : legacyPotions.entrySet()) {
 			int uid = entry.getKey();
 			Brew brew = entry.getValue();
 			ConfigurationSection idConfig = config.createSection("" + uid);
@@ -757,9 +907,9 @@ public class Brew {
 			if (brew.stat) {
 				idConfig.set("stat", true);
 			}
-			if (brew.lastUpdate > 0) {
+			/*if (brew.lastUpdate > 0) {
 				idConfig.set("lastUpdate", brew.lastUpdate);
-			}
+			}*/
 			// save the ingredients
 			idConfig.set("ingId", brew.ingredients.save(config.getParent()));
 		}

@@ -7,10 +7,6 @@ import com.dre.brewery.Brew;
 import com.dre.brewery.MCBarrel;
 import com.dre.brewery.P;
 import com.dre.brewery.integration.LogBlockBarrel;
-import com.dre.brewery.lore.Base91DecoderStream;
-import com.dre.brewery.lore.Base91EncoderStream;
-import com.dre.brewery.lore.LoreLoadStream;
-import com.dre.brewery.lore.LoreSaveStream;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -38,9 +34,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -209,25 +202,13 @@ public class InventoryListener implements Listener {
 		for (int slot = 0; slot < 3; slot++) {
 			item = inv.getItem(slot);
 			if (item != null) {
-				contents[slot] = Brew.get(item);
-			}
-		}
-		return contents;
-	}
-
-	private byte hasCustom(BrewerInventory brewer) {
-		ItemStack item = brewer.getItem(3); // ingredient
-		boolean glowstone = (item != null && Material.GLOWSTONE_DUST == item.getType()); // need dust in the top slot.
-		byte customFound = 0;
-		for (Brew brew : getDistillContents(brewer)) {
-			if (brew != null) {
-				if (!glowstone) {
-					return 1;
-				}
-				if (brew.canDistill()) {
-					return 2;
-				} else {
-					customFound = 1;
+				if (item.getType() == Material.POTION) {
+					if (item.hasItemMeta()) {
+						Brew pot = Brew.get(item);
+						if (pot != null && (!distill || pot.canDistill())) { // need at least one distillable potion.
+							return true;
+						}
+					}
 				}
 			}
 		}
@@ -249,14 +230,24 @@ public class InventoryListener implements Listener {
 
 	private boolean runDistill(BrewerInventory inv) {
 		boolean custom = false;
-		Brew[] contents = getDistillContents(inv);
-		for (int slot = 0; slot < 3; slot++) {
-			if (contents[slot] == null) continue;
-			if (contents[slot].canDistill()) {
-				// is further distillable
-				custom = true;
-			} else {
-				contents[slot] = null;
+		Boolean[] contents = new Boolean[3];
+		while (slot < 3) {
+			item = inv.getItem(slot);
+			contents[slot] = false;
+			if (item != null) {
+				if (item.getType() == Material.POTION) {
+					if (item.hasItemMeta()) {
+						Brew brew = Brew.get(item);
+						if (brew != null) {
+							// has custom potion in "slot"
+							if (brew.canDistill()) {
+								// is further distillable
+								contents[slot] = true;
+								custom = true;
+							}
+						}
+					}
+				}
 			}
 		}
 		if (custom) {
@@ -305,14 +296,16 @@ public class InventoryListener implements Listener {
 							item.setItemMeta(potion);
 						}
 					}
-					brew.touch();
+					P.p.log(brew.toString());
+					//P.p.log(potion.getLore().get(0));
+					//brew.touch();
 
-					try {
+					/*try {
 						DataInputStream in = new DataInputStream(new Base91DecoderStream(new LoreLoadStream(potion)));
 
 						brew.testLoad(in);
 
-						/*if (in.readByte() == 27 && in.skip(48) > 0) {
+						*//*if (in.readByte() == 27 && in.skip(48) > 0) {
 							in.mark(100);
 							if (in.readUTF().equals("TESTHalloª∆Ω") && in.readInt() == 34834 && in.skip(4) > 0 && in.readLong() == Long.MAX_VALUE) {
 								in.reset();
@@ -326,7 +319,7 @@ public class InventoryListener implements Listener {
 							}
 						} else {
 							P.p.log("false1");
-						}*/
+						}*//*
 
 						in.close();
 					} catch (IllegalArgumentException argExc) {
@@ -339,7 +332,7 @@ public class InventoryListener implements Listener {
 							brew.testStore(out);
 
 
-							/*out.writeByte(27);
+							*//*out.writeByte(27);
 							out.writeLong(1111); //skip
 							out.writeLong(1111); //skip
 							out.writeLong(1111); //skip
@@ -349,16 +342,16 @@ public class InventoryListener implements Listener {
 							out.writeUTF("TESTHalloª∆Ω");
 							out.writeInt(34834);
 							out.writeInt(6436); //skip
-							out.writeLong(Long.MAX_VALUE);*/
+							out.writeLong(Long.MAX_VALUE);*//*
 
 							out.close();
-							/*StringBuilder b = new StringBuilder();
+							*//*StringBuilder b = new StringBuilder();
 							for (char c : "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!$%&()*+,-./:;<=>?@[]^_`{|}~\"".toCharArray()) {
 								b.append('§').append(c);
 							}
 							List<String> lore = potion.getLore();
 							lore.add(b.toString());
-							potion.setLore(lore);*/
+							potion.setLore(lore);*//*
 							item.setItemMeta(potion);
 
 						} catch (IOException h) {
@@ -367,7 +360,7 @@ public class InventoryListener implements Listener {
 
 					} catch (IOException e) {
 						e.printStackTrace();
-					}
+					}*/
 				}
 			}
 		}

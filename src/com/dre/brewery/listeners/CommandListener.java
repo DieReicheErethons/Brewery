@@ -353,6 +353,7 @@ public class CommandListener implements CommandExecutor {
 
 	}
 
+	@SuppressWarnings("deprecation")
 	public void cmdCopy(CommandSender sender, int count) {
 
 		if (sender instanceof Player) {
@@ -389,6 +390,7 @@ public class CommandListener implements CommandExecutor {
 
 	}
 
+	@SuppressWarnings("deprecation")
 	public void cmdDelete(CommandSender sender) {
 
 		if (sender instanceof Player) {
@@ -413,6 +415,7 @@ public class CommandListener implements CommandExecutor {
 
 	}
 
+	@SuppressWarnings("deprecation")
 	public void cmdPersist(CommandSender sender) {
 
 		if (sender instanceof Player) {
@@ -441,6 +444,7 @@ public class CommandListener implements CommandExecutor {
 
 	}
 
+	@SuppressWarnings("deprecation")
 	public void cmdStatic(CommandSender sender) {
 
 		if (sender instanceof Player) {
@@ -471,6 +475,7 @@ public class CommandListener implements CommandExecutor {
 
 	}
 
+	@SuppressWarnings("deprecation")
 	public void cmdUnlabel(CommandSender sender) {
 
 		if (sender instanceof Player) {

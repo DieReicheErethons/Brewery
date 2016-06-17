@@ -38,10 +38,24 @@ public class PlayerListener implements Listener {
 
 					// Interacting with a Cauldron
 					if (type == Material.CAULDRON) {
-						Material materialInHand = event.getMaterial();
-						ItemStack item = event.getItem();
+						Material materialInHand;
+						ItemStack item;
+						if (P.use1_9) {
+							item = player.getInventory().getItemInMainHand();
+							if (item != null) {
+								materialInHand = item.getType();
+							} else {
+								materialInHand = null;
+							}
+						} else {
+							materialInHand = event.getMaterial();
+							item = event.getItem();
+						}
 
-						if (materialInHand == Material.WATCH) {
+						if (item == null || materialInHand == null) {
+							return;
+
+						} else if (materialInHand == Material.WATCH) {
 							BCauldron.printTime(player, clickedBlock);
 							return;
 
@@ -54,7 +68,7 @@ public class PlayerListener implements Listener {
 										if (item.getAmount() > 1) {
 											item.setAmount(item.getAmount() - 1);
 										} else {
-											player.setItemInHand(new ItemStack(Material.AIR));
+											P.p.setHand(player, new ItemStack(Material.AIR));
 										}
 									}
 								}
@@ -101,9 +115,9 @@ public class PlayerListener implements Listener {
 											}
 										} else {
 											if (isBucket) {
-												player.setItemInHand(new ItemStack(Material.BUCKET));
+												P.p.setHand(player, new ItemStack(Material.BUCKET));
 											} else {
-												player.setItemInHand(new ItemStack(Material.AIR));
+												P.p.setHand(player, new ItemStack(Material.AIR));
 											}
 										}
 									}

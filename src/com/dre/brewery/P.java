@@ -642,6 +642,15 @@ public class P extends JavaPlugin {
 
 	// Utility
 
+	@SuppressWarnings("deprecation")
+	public void setHand(Player player, ItemStack item) {
+		if (P.use1_9) {
+			player.getInventory().setItemInMainHand(item);
+		} else {
+			player.setItemInHand(item);
+		}
+	}
+
 	public int parseInt(String string) {
 		return NumberUtils.toInt(string, 0);
 	}

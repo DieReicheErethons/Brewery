@@ -1,30 +1,28 @@
 package com.dre.brewery.listeners;
 
+import com.dre.brewery.*;
+import com.dre.brewery.filedata.UpdateChecker;
 import org.bukkit.GameMode;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.Material;
+import org.bukkit.event.player.*;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 
-import com.dre.brewery.BCauldron;
-import com.dre.brewery.BIngredients;
-import com.dre.brewery.Brew;
-import com.dre.brewery.Barrel;
-import com.dre.brewery.BPlayer;
-import com.dre.brewery.Words;
-import com.dre.brewery.Wakeup;
-import com.dre.brewery.P;
-import com.dre.brewery.filedata.UpdateChecker;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 
 public class PlayerListener implements Listener {
 	public static boolean openEverywhere;
+	private static Set<UUID> interacted = new HashSet<>();
 
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onPlayerInteract(PlayerInteractEvent event) {
@@ -38,21 +36,10 @@ public class PlayerListener implements Listener {
 
 					// Interacting with a Cauldron
 					if (type == Material.CAULDRON) {
-						Material materialInHand;
-						ItemStack item;
-						if (P.use1_9) {
-							item = player.getInventory().getItemInMainHand();
-							if (item != null) {
-								materialInHand = item.getType();
-							} else {
-								materialInHand = null;
-							}
-						} else {
-							materialInHand = event.getMaterial();
-							item = event.getItem();
-						}
+						Material materialInHand = event.getMaterial();
+						ItemStack item = event.getItem();
 
-						if (item == null || materialInHand == null) {
+						if (materialInHand == null) {
 							return;
 
 						} else if (materialInHand == Material.WATCH) {
@@ -68,7 +55,7 @@ public class PlayerListener implements Listener {
 										if (item.getAmount() > 1) {
 											item.setAmount(item.getAmount() - 1);
 										} else {
-											P.p.setHand(player, new ItemStack(Material.AIR));
+											setItemInHand(event, Material.AIR, false);
 										}
 									}
 								}
@@ -99,6 +86,37 @@ public class PlayerListener implements Listener {
 						Block down = clickedBlock.getRelative(BlockFace.DOWN);
 						if (down.getType() == Material.FIRE || down.getType() == Material.STATIONARY_LAVA || down.getType() == Material.LAVA) {
 
+							event.setCancelled(true);
+							boolean handSwap = false;
+
+							// Interact event is called twice!!!?? in 1.9, once for each hand.
+							// Certain Items in Hand cause one of them to be cancelled or not called at all sometimes.
+							// We mark if a player had the event for the main hand
+							// If not, we handle the main hand in the event for the off hand
+							if (P.use1_9) {
+								if (event.getHand() == EquipmentSlot.HAND) {
+									final UUID id = player.getUniqueId();
+									interacted.add(id);
+									P.p.getServer().getScheduler().runTask(P.p, new Runnable() {
+										@Override
+										public void run() {
+											interacted.remove(id);
+										}
+									});
+								} else if (event.getHand() == EquipmentSlot.OFF_HAND) {
+									if (!interacted.remove(player.getUniqueId())) {
+										item = player.getInventory().getItemInMainHand();
+										if (item != null && item.getType() != Material.AIR) {
+											materialInHand = item.getType();
+											handSwap = true;
+										} else {
+											item = event.getItem();
+										}
+									}
+								}
+							}
+							if (item == null) return;
+
 							// add ingredient to cauldron that meet the previous conditions
 							if (BIngredients.possibleIngredients.contains(materialInHand)) {
 
@@ -115,20 +133,21 @@ public class PlayerListener implements Listener {
 											}
 										} else {
 											if (isBucket) {
-												P.p.setHand(player, new ItemStack(Material.BUCKET));
+												setItemInHand(event, Material.BUCKET, handSwap);
 											} else {
-												P.p.setHand(player, new ItemStack(Material.AIR));
+												setItemInHand(event, Material.AIR, handSwap);
 											}
 										}
 									}
 								} else {
 									P.p.msg(player, P.p.languageReader.get("Perms_NoCauldronInsert"));
 								}
-								event.setCancelled(true);
-							} else {
-								event.setCancelled(true);
 							}
 						}
+						return;
+					}
+
+					if (P.use1_9 && event.getHand() != EquipmentSlot.HAND) {
 						return;
 					}
 
@@ -163,17 +182,32 @@ public class PlayerListener implements Listener {
 				}
 			}
 		}
+	}
+
+	@SuppressWarnings("deprecation")
+	public void setItemInHand(PlayerInteractEvent event, Material mat, boolean swapped) {
+		if (P.use1_9) {
+			if ((event.getHand() == EquipmentSlot.OFF_HAND) != swapped) {
+				event.getPlayer().getInventory().setItemInOffHand(new ItemStack(mat));
+			} else {
+				event.getPlayer().getInventory().setItemInMainHand(new ItemStack(mat));
+			}
+		} else {
+			event.getPlayer().setItemInHand(new ItemStack(mat));
+		}
+	}
+
+	@EventHandler
+	public void onClickAir(PlayerInteractEvent event) {
+		if (Wakeup.checkPlayer == null) return;
 
 		if (event.getAction() == Action.LEFT_CLICK_AIR) {
 			if (!event.hasItem()) {
-				if (Wakeup.checkPlayer != null) {
-					if (event.getPlayer() == Wakeup.checkPlayer) {
-						Wakeup.tpNext();
-					}
+				if (event.getPlayer() == Wakeup.checkPlayer) {
+					Wakeup.tpNext();
 				}
 			}
 		}
-
 	}
 
 	// player drinks a custom potion

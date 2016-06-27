@@ -615,7 +615,7 @@ public class P extends JavaPlugin {
 
 		File languages = new File(getDataFolder(), "languages");
 		if (!languages.exists()) {
-			String lang[] = new String[] {"de", "en", "fr", "no"};
+			String lang[] = new String[] {"de", "en", "fr"};
 			for (String l : lang) {
 				try {
 					saveFile(getResource("languages/" + l + ".yml"), languages, l + ".yml", false);

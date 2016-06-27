@@ -48,14 +48,14 @@ Etc_Page: Page
 Etc_Usage: 'Utilise:'
 
 # Aide
-Help_Copy: '&6/brew copy <Quanitiy>&9 Copie la potion qui est dans votre main'
-Help_Create: '&6/brew create <Recipe> <Quality> &9Crée une boisson avec une qualité optionelle (1-10)'
+Help_Copy: '&6/brew copy [Quantity]&9 Copie la potion qui est dans votre main'
+Help_Create: '&6/brew create <Recipe> [Quality] [Player] &9Crée une boisson avec une qualité optionelle (1-10)'
 Help_Delete: '&6/brew delete &9Supprime la potion qui est dans votre main'
-Help_Help: '&6/brew help <Page> &9Affiche une page spécifique de l´aide'
+Help_Help: '&6/brew help [Page] &9Affiche une page spécifique de l´aide'
 Help_Info: '&6/brew info&9 Affiche votre ivresse actuelle ainsi que sa qualité'
-Help_InfoOther: '&6/brew info <Player>&9 Affiche l´ivresse actuelle de <PLAYER>, cette commande affiche aussi sa qualité.<Player>'
+Help_InfoOther: '&6/brew info [Player]&9 Affiche l´ivresse actuelle de <PLAYER>, cette commande affiche aussi sa qualité.<Player>'
 Help_Persist: '&6/brew persist &9Crée une boisson persistante -> peut être copiée par n´importe quel plugin et technique'
-Help_Player: '&6/brew <Player> <%Drunkeness> <Quality>&9 Définit l´ivresse (et la qualité) du joueur'
+Help_Player: '&6/brew <Player> <%Drunkeness> [Quality]&9 Définit l´ivresse (et la qualité) du joueur'
 Help_Reload: '&6/brew reload &9Reload la config'
 Help_Static: '&6/brew static &9Rend une boisson statique -> Plus affectée par l´âge ou la distillation'
 Help_UnLabel: '&6/brew unlabel &9Supprime l´étiquette détaillée d´une potion'
@@ -63,7 +63,7 @@ Help_Wakeup: '&6/brew wakeup list <Page>&9 Affiche une liste de tous les points 
 Help_WakeupAdd: '&6/brew wakeup add &9Ajoute un point de réveil à votre position'
 Help_WakeupCheck: '&6/brew wakeup check &9Téléportation vers tous les points de réveil'
 Help_WakeupCheckSpecific: '&6/brew wakeup check <id> &9Téléportation vers le point de réveil avec l´ID <id>'
-Help_WakeupList: '&6/brew wakeup list <Page> <World>&9 Affiche une liste de tous les points de réveil de <world>'
+Help_WakeupList: '&6/brew wakeup list <Page> [World]&9 Affiche une liste de tous les points de réveil de [world]'
 Help_WakeupRemove: '&6/brew wakeup remove <id> &9Enlève le point de réveil avec l´ID <id>'
 
 # Permissions

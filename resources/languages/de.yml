@@ -55,23 +55,23 @@ Etc_Usage: 'Benutzung:'
 Etc_Barrel: Fass
 
 # Help
-Help_Copy: '&6/brew Copy <Anzahl>&9 Kopiert den Trank in deiner Hand'
+Help_Copy: '&6/brew Copy [Anzahl]&9 Kopiert den Trank in deiner Hand'
 Help_Delete: '&6/brew Delete &9Entfernt den Trank in deiner Hand'
-Help_Help: '&6/brew help <Seite> &9Zeigt eine bestimmte Hilfeseite an'
+Help_Help: '&6/brew help [Seite] &9Zeigt eine bestimmte Hilfeseite an'
 Help_Info: '&6/brew Info&9 Zeigt deine aktuelle Trunkenheit und Qualität an'
-Help_InfoOther: '&6/brew Info <Spieler>&9 Zeigt die aktuelle Trunkenheit und Qualität von <Spieler> an'
-Help_Player: '&6/brew <Spieler> <%Trunkenheit> <Qualität>&9 Setzt Trunkenheit (und Qualität) eines Spielers'
+Help_InfoOther: '&6/brew Info [Spieler]&9 Zeigt die aktuelle Trunkenheit und Qualität von [Spieler] an'
+Help_Player: '&6/brew <Spieler> <%Trunkenheit> [Qualität]&9 Setzt Trunkenheit (und Qualität) eines Spielers'
 Help_Reload: '&6/brew reload &9Config neuladen'
 Help_UnLabel: '&6/brew UnLabel &9Entfernt die genaue Beschriftung des Trankes'
 Help_Wakeup: '&6/brew Wakeup List <Seite>&9 Listet alle Aufwachpunkte auf'
 Help_WakeupAdd: '&6/brew Wakeup Add &9Setzt einen Aufwachpunkt and deiner Position'
 Help_WakeupCheck: '&6/brew Wakeup Check &9Teleportiert zu allen Aufwachpunkten'
 Help_WakeupCheckSpecific: '&6/brew Wakeup Check <id> &9Teleportiert zu einem Aufwachpunkt'
-Help_WakeupList: '&6/brew Wakeup List <Seite> <Welt>&9 Listet die Aufwachpunkte einer Welt auf'
+Help_WakeupList: '&6/brew Wakeup List <Seite> [Welt]&9 Listet die Aufwachpunkte einer Welt auf'
 Help_WakeupRemove: '&6/brew Wakeup Remove <id> &9Entfernt einen Aufwachpunkt'
 Help_Persist: '&6/brew Persist &9Trankdaten permanent machen -> Kopierbar durch andere Plugins'
 Help_Static: '&6/brew Static &9Trank unveränderlich machen -> Kein weiteres reifen oder destillieren möglich'
-Help_Create: '&6/brew Create <Rezept> <Qualität> &9Erstellt einen Trank mit optionaler Qualität (1-10)'
+Help_Create: '&6/brew Create <Rezept> [Qualität] [Spieler] &9Erstellt einen Trank mit optionaler Qualität (1-10)'
 
 # Player
 Player_BarrelCreated: Fass erfolgreich erstellt

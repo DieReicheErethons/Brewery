@@ -681,7 +681,7 @@ public class Brew {
 		BLACK(8, PotionType.WEAKNESS),
 		RED(9, PotionType.STRENGTH),
 		GREY(10, PotionType.SLOWNESS),
-		WATER(11, PotionType.WATER_BREATHING),
+		WATER(11, P.use1_9 ? PotionType.WATER_BREATHING : null),
 		DARK_RED(12, PotionType.INSTANT_DAMAGE),
 		BRIGHT_GREY(14, PotionType.INVISIBILITY);
 

@@ -143,6 +143,7 @@ public class P extends JavaPlugin {
 		Brew.potions.clear();
 		Wakeup.wakeups.clear();
 		Words.words.clear();
+		Words.ignoreText.clear();
 
 		this.log(this.getDescription().getName() + " disabled!");
 	}

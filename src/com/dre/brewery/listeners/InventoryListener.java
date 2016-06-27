@@ -30,11 +30,6 @@ import java.util.UUID;
  *  set of ingredients in the brewer can be distilled.
  * Nothing here should interfere with vanilla brewing.
  *
- * Note in testing I did discover a few ways to "hack" brewing to distill your brews alongside
- * potions; put fuel and at least one "valid" water bottle w/ a brewing component. You can distill
- * two brews this way, just remove them before the "final" distillation or you will actually
- * brew the potion as well.
- *
  * @author ProgrammerDan (1.9 distillation update only)
  */
 public class InventoryListener implements Listener {
@@ -101,7 +96,9 @@ public class InventoryListener implements Listener {
 		Integer curTask = trackedBrewers.get(brewery);
 		if (curTask != null) {
 			Bukkit.getScheduler().cancelTask(curTask); // cancel prior
+			brewer.getHolder().setBrewingTime(0); // Fixes brewing continuing without fuel for normal potions
 		}
+		final int fuel = brewer.getHolder().getFuelLevel();
 
 		// Now check if we should bother to track it.
 		trackedBrewers.put(brewery, new BukkitRunnable() {
@@ -112,11 +109,24 @@ public class InventoryListener implements Listener {
 				if (now instanceof BrewingStand) {
 					BrewingStand stand = (BrewingStand) now;
 					if (brewTime == DISTILLTIME) { // only check at the beginning (and end) for distillables
-						if (!isCustom(stand.getInventory(), true)) {
-							this.cancel();
-							trackedBrewers.remove(brewery);
-							P.p.debugLog("nothing to distill");
-							return;
+						switch (hasCustom(stand.getInventory())) {
+							case 1:
+								// Custom potion but not for distilling. Stop any brewing and cancel this task
+								if (stand.getBrewingTime() > 0) {
+									// Brewing time is sent and stored as short
+									// This sends a negative short value to the Client
+									// In the client the Brewer will look like it is not doing anything
+									stand.setBrewingTime(Short.MAX_VALUE << 1);
+									stand.setFuelLevel(fuel);
+								}
+							case 0:
+								// No custom potion, cancel and ignore
+								this.cancel();
+								trackedBrewers.remove(brewery);
+								P.p.debugLog("nothing to distill");
+								return;
+							default:
+
 						}
 					}
 
@@ -124,9 +134,6 @@ public class InventoryListener implements Listener {
 					stand.setBrewingTime(brewTime); // arbitrary for now
 
 					if (brewTime <= 1) { // Done!
-						//BrewEvent doBrew = new BrewEvent(brewery, brewer);
-						//Bukkit.getServer().getPluginManager().callEvent(doBrew);
-
 						BrewerInventory brewer = stand.getInventory();
 						if (!runDistill(brewer)) {
 							this.cancel();
@@ -147,9 +154,10 @@ public class InventoryListener implements Listener {
 		}.runTaskTimer(P.p, 2L, 1L).getTaskId());
 	}
 
-	private boolean isCustom(BrewerInventory brewer, boolean distill) {
+	private byte hasCustom(BrewerInventory brewer) {
 		ItemStack item = brewer.getItem(3); // ingredient
-		if (item == null || Material.GLOWSTONE_DUST != item.getType()) return false; // need dust in the top slot.
+		boolean glowstone = (item != null && Material.GLOWSTONE_DUST == item.getType()); // need dust in the top slot.
+		byte customFound = 0;
 		for (int slot = 0; slot < 3; slot++) {
 			item = brewer.getItem(slot);
 			if (item != null) {
@@ -157,20 +165,27 @@ public class InventoryListener implements Listener {
 					if (item.hasItemMeta()) {
 						int uid = Brew.getUID(item);
 						Brew pot = Brew.potions.get(uid);
-						if (pot != null && (!distill || pot.canDistill())) { // need at least one distillable potion.
-							return true;
+						if (pot != null) {
+							if (!glowstone) {
+								return 1;
+							}
+							if (pot.canDistill()) {
+								return 2;
+							} else {
+								customFound = 1;
+							}
 						}
 					}
 				}
 			}
 		}
-		return false;
+		return customFound;
 	}
 
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onBrew(BrewEvent event) {
 		if (P.use1_9) {
-			if (isCustom(event.getContents(), false)) {
+			if (hasCustom(event.getContents()) != 0) {
 				event.setCancelled(true);
 			}
 			return;

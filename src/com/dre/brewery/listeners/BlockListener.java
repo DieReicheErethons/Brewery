@@ -22,7 +22,7 @@ public class BlockListener implements Listener {
 	public void onSignChange(SignChangeEvent event) {
 		String[] lines = event.getLines();
 
-		if (lines[0].equalsIgnoreCase(P.p.languageReader.get("Etc_Barrel"))) {
+		if (lines[0].equalsIgnoreCase("Barrel") || lines[0].equalsIgnoreCase(P.p.languageReader.get("Etc_Barrel"))) {
 			Player player = event.getPlayer();
 			if (!player.hasPermission("brewery.createbarrel.small") && !player.hasPermission("brewery.createbarrel.big")) {
 				P.p.msg(player, P.p.languageReader.get("Perms_NoBarrelCreate"));

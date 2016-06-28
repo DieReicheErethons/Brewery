@@ -37,7 +37,7 @@ public class InventoryListener implements Listener {
 	/* === Recreating manually the prior BrewEvent behavior. === */
 	private HashSet<UUID> trackedBrewmen = new HashSet<>();
 	private HashMap<Block, Integer> trackedBrewers = new HashMap<>();
-	private static final int DISTILLTIME = 401;
+	private static final int DISTILLTIME = 400;
 
 	/**
 	 * Start tracking distillation for a person when they open the brewer window.
@@ -67,6 +67,15 @@ public class InventoryListener implements Listener {
 
 		P.p.debugLog("Stopping brew inventory tracking");
 		trackedBrewmen.remove(player.getUniqueId());
+	}
+
+	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+	public void onBrewerDrag(InventoryDragEvent event) {
+		if (!P.use1_9) return;
+		// Workaround the Drag event when only clicking a slot
+		if (event.getInventory() instanceof BrewerInventory) {
+			onBrewerClick(new InventoryClickEvent(event.getView(), InventoryType.SlotType.CONTAINER, 0, ClickType.LEFT, InventoryAction.PLACE_ALL));
+		}
 	}
 
 	/**
@@ -102,13 +111,14 @@ public class InventoryListener implements Listener {
 
 		// Now check if we should bother to track it.
 		trackedBrewers.put(brewery, new BukkitRunnable() {
-			private int brewTime = DISTILLTIME;
+			private int runTime = -1;
+			private int brewTime = -1;
 			@Override
 			public void run() {
 				BlockState now = brewery.getState();
 				if (now instanceof BrewingStand) {
 					BrewingStand stand = (BrewingStand) now;
-					if (brewTime == DISTILLTIME) { // only check at the beginning (and end) for distillables
+					if (brewTime == -1) { // only check at the beginning (and end) for distillables
 						switch (hasCustom(stand.getInventory())) {
 							case 1:
 								// Custom potion but not for distilling. Stop any brewing and cancel this task
@@ -126,12 +136,15 @@ public class InventoryListener implements Listener {
 								P.p.debugLog("nothing to distill");
 								return;
 							default:
+								runTime = getLongestDistillTime(stand.getInventory());
+								brewTime = runTime;
+								P.p.log("using brewtime: " + runTime);
 
 						}
 					}
 
 					brewTime--; // count down.
-					stand.setBrewingTime(brewTime); // arbitrary for now
+					stand.setBrewingTime((int) ((float) brewTime / ((float) runTime / (float) DISTILLTIME)) + 1);
 
 					if (brewTime <= 1) { // Done!
 						BrewerInventory brewer = stand.getInventory();
@@ -141,7 +154,8 @@ public class InventoryListener implements Listener {
 							stand.setBrewingTime(0);
 							P.p.debugLog("All done distilling");
 						} else {
-							brewTime = DISTILLTIME; // go again.
+							brewTime = -1; // go again.
+							stand.setBrewingTime(0);
 							P.p.debugLog("Can distill more! Continuing.");
 						}
 					}
@@ -154,35 +168,39 @@ public class InventoryListener implements Listener {
 		}.runTaskTimer(P.p, 2L, 1L).getTaskId());
 	}
 
+	// Returns a Brew or null for every Slot in the BrewerInventory
+	private Brew[] getDistillContents(BrewerInventory inv) {
+		ItemStack item;
+		Brew[] contents = new Brew[3];
+		for (int slot = 0; slot < 3; slot++) {
+			item = inv.getItem(slot);
+			if (item != null) {
+				contents[slot] = Brew.get(item);
+			}
+		}
+		return contents;
+	}
+
 	private byte hasCustom(BrewerInventory brewer) {
 		ItemStack item = brewer.getItem(3); // ingredient
 		boolean glowstone = (item != null && Material.GLOWSTONE_DUST == item.getType()); // need dust in the top slot.
 		byte customFound = 0;
-		for (int slot = 0; slot < 3; slot++) {
-			item = brewer.getItem(slot);
-			if (item != null) {
-				if (item.getType() == Material.POTION) {
-					if (item.hasItemMeta()) {
-						int uid = Brew.getUID(item);
-						Brew pot = Brew.potions.get(uid);
-						if (pot != null) {
-							if (!glowstone) {
-								return 1;
-							}
-							if (pot.canDistill()) {
-								return 2;
-							} else {
-								customFound = 1;
-							}
-						}
-					}
+		for (Brew brew : getDistillContents(brewer)) {
+			if (brew != null) {
+				if (!glowstone) {
+					return 1;
+				}
+				if (brew.canDistill()) {
+					return 2;
+				} else {
+					customFound = 1;
 				}
 			}
 		}
 		return customFound;
 	}
 
-	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onBrew(BrewEvent event) {
 		if (P.use1_9) {
 			if (hasCustom(event.getContents()) != 0) {
@@ -196,35 +214,43 @@ public class InventoryListener implements Listener {
 	}
 
 	private boolean runDistill(BrewerInventory inv) {
-		int slot = 0;
-		ItemStack item;
 		boolean custom = false;
-		Boolean[] contents = new Boolean[3];
-		while (slot < 3) {
-			item = inv.getItem(slot);
-			contents[slot] = false;
-			if (item != null) {
-				if (item.getType() == Material.POTION) {
-					if (item.hasItemMeta()) {
-						int uid = Brew.getUID(item);
-						if (Brew.potions.containsKey(uid)) {
-							// has custom potion in "slot"
-							if (Brew.get(uid).canDistill()) {
-								// is further distillable
-								contents[slot] = true;
-								custom = true;
-							}
-						}
-					}
-				}
+		Brew[] contents = getDistillContents(inv);
+		for (int slot = 0; slot < 3; slot++) {
+			if (contents[slot] == null) continue;
+			if (contents[slot].canDistill()) {
+				// is further distillable
+				custom = true;
+			} else {
+				contents[slot] = null;
 			}
-			slot++;
 		}
 		if (custom) {
 			Brew.distillAll(inv, contents);
 			return true;
 		}
 		return false;
+	}
+
+	private int getLongestDistillTime(BrewerInventory inv) {
+		int bestTime = 0;
+		int time = 0;
+		Brew[] contents = getDistillContents(inv);
+		for (int slot = 0; slot < 3; slot++) {
+			if (contents[slot] == null) continue;
+			time = contents[slot].getDistillTimeNextRun();
+			if (time == 0) {
+				// Undefined Potion needs 40 seconds
+				time = 800;
+			}
+			if (time > bestTime) {
+				bestTime = time;
+			}
+		}
+		if (bestTime > 0) {
+			return bestTime;
+		}
+		return 800;
 	}
 
 	// Clicked a Brew somewhere, do some updating

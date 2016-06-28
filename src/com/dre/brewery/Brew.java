@@ -329,16 +329,13 @@ public class Brew {
 	// Distilling section ---------------
 
 	// distill all custom potions in the brewer
-	public static void distillAll(BrewerInventory inv, Boolean[] contents) {
-		int slot = 0;
-		while (slot < 3) {
-			if (contents[slot]) {
+	public static void distillAll(BrewerInventory inv, Brew[] contents) {
+		for (int slot = 0; slot < 3; slot++) {
+			if (contents[slot] != null) {
 				ItemStack slotItem = inv.getItem(slot);
 				PotionMeta potionMeta = (PotionMeta) slotItem.getItemMeta();
-				Brew brew = get(potionMeta);
-				brew.distillSlot(slotItem, potionMeta);
+				contents[slot].distillSlot(slotItem, potionMeta);
 			}
-			slot++;
 		}
 	}
 
@@ -380,6 +377,22 @@ public class Brew {
 		touch();
 
 		slotItem.setItemMeta(potionMeta);
+	}
+
+	public int getDistillTimeNextRun() {
+		if (!canDistill()) {
+			return -1;
+		}
+
+		if (currentRecipe != null) {
+			return currentRecipe.getDistillTime();
+		}
+
+		BRecipe recipe = ingredients.getdistillRecipe(wood, ageTime);
+		if (recipe != null) {
+			return recipe.getDistillTime();
+		}
+		return 0;
 	}
 
 	// Ageing Section ------------------

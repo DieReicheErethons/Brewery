@@ -950,6 +950,35 @@ public class ConfigUpdater {
 				addLines(index, lines);
 			}
 		}
+
+		lines = new String[] {"# distilltime: Wie lange (in sekunden) ein Destillations-Durchlauf braucht (0=Standard Zeit von 40 sek) MC Standard wäre 20 sek"};
+
+		index = indexOfStart("# distillruns:");
+		if (index == -1) {
+			index = indexOfStart("# wood:") - 1;
+			if (index == -2) {
+				index = indexOfStart("# -- Rezepte") + 1;
+				if (index == 0) {
+					index = -1;
+				}
+			}
+		}
+		if (index != -1) {
+			addLines(index + 1, lines);
+		}
+
+		index = indexOfStart("      name: Schlechtes Beispiel/Beispiel/Gutes Beispiel");
+		if (index != -1) {
+			addLines(index + 1, "      distilltime: 60");
+		}
+		index = indexOfStart("      name: Bitterer Rum/Würziger Rum/&6Goldener Rum");
+		if (index != -1) {
+			addLines(index + 1, "      distilltime: 30");
+		}
+		index = indexOfStart("      name: minderwertiger Absinth/Absinth/Starker Absinth");
+		if (index != -1) {
+			addLines(index + 1, "      distilltime: 80");
+		}
 	}
 
 	// Update de from 1.4 to 1.5
@@ -992,6 +1021,35 @@ public class ConfigUpdater {
 			if (index != -1) {
 				addLines(index, lines);
 			}
+		}
+
+		lines = new String[] {"# distilltime: How long (in seconds) one distill-run takes (0=Default time of 40 sec) MC Default would be 20 sec"};
+
+		index = indexOfStart("# distillruns:");
+		if (index == -1) {
+			index = indexOfStart("# wood:") - 1;
+			if (index == -2) {
+				index = indexOfStart("# -- Recipes") + 1;
+				if (index == 0) {
+					index = -1;
+				}
+			}
+		}
+		if (index != -1) {
+			addLines(index + 1, lines);
+		}
+
+		index = indexOfStart("      name: Bad Example/Example/Good Example");
+		if (index != -1) {
+			addLines(index + 1, "      distilltime: 60");
+		}
+		index = indexOfStart("      name: Bitter Rum/Spicy Rum/&6Golden Rum");
+		if (index != -1) {
+			addLines(index + 1, "      distilltime: 30");
+		}
+		index = indexOfStart("      name: Poor Absinthe/Absinthe/Strong Absinthe");
+		if (index != -1) {
+			addLines(index + 1, "      distilltime: 80");
 		}
 	}
 

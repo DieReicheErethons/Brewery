@@ -76,6 +76,7 @@ version: '1.5'
 #   Vault riconoscerà cose come "Jungle Leaves" invece di "LEAVES,3".
 # cookingtime: Tempo in minuti richiesto dagli ingredienti per bollire
 # distillruns: Quanto spesso deve essere distillato per ottenere la versione perfetta con il volume alcolico impostato (0=non serve distillare).
+# distilltime: How long (in seconds) one distill-run takes (0=Default time of 40 sec) MC Default would be 20 sec
 # wood: Legno del barile 0=qualiasi 1=Betulla 2=Quercia 3=Mogano 4=Abete 5=Acacia 6=Quercia nera
 # age: Tempo in giorni di Minecraft per cui la pozione deve essere invecchiata in un barile (0=nessun invecchiamento).
 # color: Colore della pozione dopo essere stata distillata/invecchiata
@@ -104,6 +105,7 @@ recipes:
 #     - Green Dye/6       # Solo con Vault
       cookingtime: 3
       distillruns: 2
+      distilltime: 60
       wood: 4
       age: 11
       color: DARK_RED
@@ -178,6 +180,7 @@ recipes:
       - SUGAR_CANE/14
       cookingtime: 5
       distillruns: 2
+      distilltime: 30
       wood: 2
       age: 14
       color: DARK_RED
@@ -205,6 +208,7 @@ recipes:
       - LONG_GRASS/15
       cookingtime: 3
       distillruns: 6
+      distilltime: 80
       color: GREEN
       difficulty: 8
       alcohol: 45

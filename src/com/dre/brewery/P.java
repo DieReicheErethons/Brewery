@@ -102,6 +102,9 @@ public class P extends JavaPlugin {
 		p.getServer().getPluginManager().registerEvents(entityListener, p);
 		p.getServer().getPluginManager().registerEvents(inventoryListener, p);
 		p.getServer().getPluginManager().registerEvents(worldListener, p);
+		if (use1_9) {
+			p.getServer().getPluginManager().registerEvents(new CauldronListener(), p);
+		}
 
 		// Heartbeat
 		p.getServer().getScheduler().runTaskTimer(p, new BreweryRunnable(), 650, 1200);

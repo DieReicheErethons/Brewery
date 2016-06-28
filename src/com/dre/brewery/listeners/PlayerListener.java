@@ -39,7 +39,7 @@ public class PlayerListener implements Listener {
 						Material materialInHand = event.getMaterial();
 						ItemStack item = event.getItem();
 
-						if (materialInHand == null) {
+						if (materialInHand == null || materialInHand == Material.BUCKET) {
 							return;
 
 						} else if (materialInHand == Material.WATCH) {
@@ -64,22 +64,16 @@ public class PlayerListener implements Listener {
 							}
 							return;
 
-							// reset cauldron when refilling to prevent
-							// unlimited source of potions
+							// reset cauldron when refilling to prevent unlimited source of potions
 						} else if (materialInHand == Material.WATER_BUCKET) {
-							if (BCauldron.getFillLevel(clickedBlock) != 0 && BCauldron.getFillLevel(clickedBlock) < 2) {
-								// will only remove when existing
-								BCauldron.remove(clickedBlock);
+							if (!P.use1_9) {
+								if (BCauldron.getFillLevel(clickedBlock) != 0 && BCauldron.getFillLevel(clickedBlock) < 2) {
+									// will only remove when existing
+									BCauldron.remove(clickedBlock);
+								}
 							}
 							return;
 
-							// Its possible to empty a Cauldron with a Bucket in 1.9
-						} else if (P.use1_9 && materialInHand == Material.BUCKET) {
-							if (BCauldron.getFillLevel(clickedBlock) == 2) {
-								// will only remove when existing
-								BCauldron.remove(clickedBlock);
-							}
-							return;
 						}
 
 						// Check if fire alive below cauldron when adding ingredients

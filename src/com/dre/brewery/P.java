@@ -612,31 +612,19 @@ public class P extends JavaPlugin {
 		}
 
 		copyDefaultConfigs(false);
-
-		File languages = new File(getDataFolder(), "languages");
-		if (!languages.exists()) {
-			String lang[] = new String[] {"de", "en", "fr"};
-			for (String l : lang) {
-				try {
-					saveFile(getResource("languages/" + l + ".yml"), languages, l + ".yml", false);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
 		return true;
 	}
 
 	private void copyDefaultConfigs(boolean overwrite) {
 		File configs = new File(getDataFolder(), "configs");
-		if (overwrite || !configs.exists()) {
-			for (String l : new String[] {"de", "en", "fr"}) {
-				File lfold = new File(configs, l);
-				try {
-					saveFile(getResource("config/" + l + "/config.yml"), lfold, "config.yml", overwrite);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+		File languages = new File(getDataFolder(), "languages");
+		for (String l : new String[] {"de", "en", "fr", "it"}) {
+			File lfold = new File(configs, l);
+			try {
+				saveFile(getResource("config/" + l + "/config.yml"), lfold, "config.yml", overwrite);
+				saveFile(getResource("languages/" + l + ".yml"), languages, l + ".yml", false); // Never overwrite languages for now
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 		}
 	}

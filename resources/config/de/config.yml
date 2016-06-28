@@ -65,7 +65,7 @@ updateCheck: true
 autosave: 3
 
 # Config Version
-version: '1.4'
+version: '1.5'
 
 
 # -- Rezepte für Getränke --
@@ -268,6 +268,12 @@ useLogBlock: true
 
 # -- Chat Veränderungs Einstellungen --
 
+# Ob geschriebener Chat bei großer Trunkenheit abgefälscht werden soll,
+# so dass es etwas betrunken aussieht was geschrieben wird.
+# Wie stark der Chat verändert wird hängt davon ab wie betrunken der Spieler ist
+# Unten kann noch eingestellt werden wie und was verändert wird
+enableChatDistortion: true
+
 # Text nach den angegebenen Kommandos wird bei Trunkenheit ebenfalls Verändert (Liste) [- /gl]
 distortCommands:
 - /gl
@@ -293,6 +299,7 @@ distortCommands:
 distortSignText: false
 
 # Im Chat geschriebener Text, der zwischen diesen Buchstaben steht, wird nicht verändert ("," als Trennung verwenden) (Liste) [- '[,]']
+# Also zum Beispiel im Chat: Hallo ich bin betrunken *Ich teste Brewery*
 distortBypass:
 - '*,*'
 - '[,]'

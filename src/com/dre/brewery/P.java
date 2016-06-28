@@ -35,7 +35,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class P extends JavaPlugin {
 	public static P p;
-	public static final String configVersion = "1.4";
+	public static final String configVersion = "1.5";
 	public static boolean debug;
 	public static boolean useUUID;
 	public static boolean use1_9;
@@ -144,6 +144,7 @@ public class P extends JavaPlugin {
 		Wakeup.wakeups.clear();
 		Words.words.clear();
 		Words.ignoreText.clear();
+		Words.commands = null;
 
 		this.log(this.getDescription().getName() + " disabled!");
 	}
@@ -164,6 +165,8 @@ public class P extends JavaPlugin {
 		BIngredients.recipes.clear();
 		BIngredients.cookedNames.clear();
 		Words.words.clear();
+		Words.ignoreText.clear();
+		Words.commands = null;
 		BPlayer.drainItems.clear();
 		if (useLB) {
 			try {
@@ -289,12 +292,6 @@ public class P extends JavaPlugin {
 		Brew.colorInBarrels = config.getBoolean("colorInBarrels", false);
 		Brew.colorInBrewer = config.getBoolean("colorInBrewer", false);
 		PlayerListener.openEverywhere = config.getBoolean("openLargeBarrelEverywhere", false);
-		Words.log = config.getBoolean("logRealChat", false);
-		Words.commands = config.getStringList("distortCommands");
-		Words.doSigns = config.getBoolean("distortSignText", false);
-		for (String bypass : config.getStringList("distortBypass")) {
-			Words.ignoreText.add(bypass.split(","));
-		}
 
 		// loading recipes
 		ConfigurationSection configSection = config.getConfigurationSection("recipes");
@@ -360,8 +357,18 @@ public class P extends JavaPlugin {
 			}
 		}
 
-		// telling Words the path, it will load it when needed
-		Words.config = config;
+		// Loading Words
+		if (config.getBoolean("enableChatDistortion", false)) {
+			for (Map<?, ?> map : config.getMapList("words")) {
+				new Words(map);
+			}
+			for (String bypass : config.getStringList("distortBypass")) {
+				Words.ignoreText.add(bypass.split(","));
+			}
+			Words.commands = config.getStringList("distortCommands");
+		}
+		Words.log = config.getBoolean("logRealChat", false);
+		Words.doSigns = config.getBoolean("distortSignText", false);
 
 		return true;
 	}

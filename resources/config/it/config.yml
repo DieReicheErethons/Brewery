@@ -62,7 +62,7 @@ updateCheck: true
 autosave: 3
 
 # Versione del config
-version: '1.4'
+version: '1.5'
 
 
 # -- Ricette per pozioni --
@@ -266,6 +266,12 @@ useLogBlock: true
 
 # -- Imostazioni di distorsione della chat --
 
+# If written Chat is distorted when the Player is Drunk,
+# so that it looks like drunk writing
+# How much the chat is distorted depends on how drunk the Player is
+# Below are settings for what and how changes in chat occur
+enableChatDistortion: true
+
 # Salva nel log del server quello che il giocatore ha realmente scritto, prima che le sue parole venissero alterate [false]
 logRealChat: false
 
@@ -294,6 +300,7 @@ distortCommands:
 distortSignText: false
 
 # Definisci dei caratteri fra cui inserire le parole per evitare la distorsione della chat (usa "," come separatore) (list) [- '[,]']
+# Chat Example: Hello i am drunk *I am testing Brewery*
 distortBypass:
 - '*,*'
 - '[,]'

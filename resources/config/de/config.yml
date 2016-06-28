@@ -65,7 +65,7 @@ updateCheck: true
 autosave: 3
 
 # Config Version
-version: '1.4'
+version: '1.5'
 
 
 # -- Rezepte für Getränke --
@@ -79,6 +79,7 @@ version: '1.4'
 #   Vault erkennt Namen wie "Jungle Leaves" anstatt "LEAVES,3". Dies macht es viel einfacher!
 # cookingtime: Zeit in Echtminuten die die Zutaten kochen müssen
 # distillruns: Wie oft destilliert werden muss für vollen Alkoholgehalt (0=ohne Destillieren)
+# distilltime: Wie lange (in sekunden) ein Destillations-Durchlauf braucht (0=Standard Zeit von 40 sek) MC Standard wäre 20 sek
 # wood: Holz des Fasses 0=alle Holzsorten 1=Birke 2=Eiche 3=Jungel 4=Fichte 5=Akazie 6=Schwarzeiche
 # age: Zeit in Minecraft-Tagen, die das Getränk im Fass reifen muss 0= kein reifen
 # color: Farbe des Getränks nach destillieren/reifen.
@@ -107,6 +108,7 @@ recipes:
 #     - Green Dye/6       # Nur mit Vault
       cookingtime: 3
       distillruns: 2
+      distilltime: 60
       wood: 4
       age: 11
       color: DARK_RED
@@ -181,6 +183,7 @@ recipes:
       - SUGAR_CANE/14
       cookingtime: 5
       distillruns: 2
+      distilltime: 30
       wood: 2
       age: 14
       color: DARK_RED
@@ -208,6 +211,7 @@ recipes:
       - LONG_GRASS/15
       cookingtime: 3
       distillruns: 6
+      distilltime: 80
       color: GREEN
       difficulty: 8
       alcohol: 45
@@ -268,6 +272,12 @@ useLogBlock: true
 
 # -- Chat Veränderungs Einstellungen --
 
+# Ob geschriebener Chat bei großer Trunkenheit abgefälscht werden soll,
+# so dass es etwas betrunken aussieht was geschrieben wird.
+# Wie stark der Chat verändert wird hängt davon ab wie betrunken der Spieler ist
+# Unten kann noch eingestellt werden wie und was verändert wird
+enableChatDistortion: true
+
 # Text nach den angegebenen Kommandos wird bei Trunkenheit ebenfalls Verändert (Liste) [- /gl]
 distortCommands:
 - /gl
@@ -293,6 +303,7 @@ distortCommands:
 distortSignText: false
 
 # Im Chat geschriebener Text, der zwischen diesen Buchstaben steht, wird nicht verändert ("," als Trennung verwenden) (Liste) [- '[,]']
+# Also zum Beispiel im Chat: Hallo ich bin betrunken *Ich teste Brewery*
 distortBypass:
 - '*,*'
 - '[,]'

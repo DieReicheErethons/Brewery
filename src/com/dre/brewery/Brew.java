@@ -407,16 +407,13 @@ public class Brew {
 	// Distilling section ---------------
 
 	// distill all custom potions in the brewer
-	public static void distillAll(BrewerInventory inv, Boolean[] contents) {
-		int slot = 0;
-		while (slot < 3) {
-			if (contents[slot]) {
+	public static void distillAll(BrewerInventory inv, Brew[] contents) {
+		for (int slot = 0; slot < 3; slot++) {
+			if (contents[slot] != null) {
 				ItemStack slotItem = inv.getItem(slot);
 				PotionMeta potionMeta = (PotionMeta) slotItem.getItemMeta();
-				Brew brew = get(potionMeta);
-				brew.distillSlot(slotItem, potionMeta);
+				contents[slot].distillSlot(slotItem, potionMeta);
 			}
-			slot++;
 		}
 	}
 
@@ -457,6 +454,22 @@ public class Brew {
 		save(potionMeta);
 
 		slotItem.setItemMeta(potionMeta);
+	}
+
+	public int getDistillTimeNextRun() {
+		if (!canDistill()) {
+			return -1;
+		}
+
+		if (currentRecipe != null) {
+			return currentRecipe.getDistillTime();
+		}
+
+		BRecipe recipe = ingredients.getdistillRecipe(wood, ageTime);
+		if (recipe != null) {
+			return recipe.getDistillTime();
+		}
+		return 0;
 	}
 
 	// Ageing Section ------------------
@@ -654,7 +667,7 @@ public class Brew {
 
 	// Adds the Effect names to the Items description
 	public static void addOrReplaceEffects(PotionMeta meta, ArrayList<BEffect> effects, int quality) {
-		if (effects != null) {
+		if (!P.use1_9 && effects != null) {
 			for (BEffect effect : effects) {
 				if (!effect.isHidden()) {
 					effect.writeInto(meta, quality);
@@ -888,7 +901,7 @@ public class Brew {
 		BLACK(8, PotionType.WEAKNESS),
 		RED(9, PotionType.STRENGTH),
 		GREY(10, PotionType.SLOWNESS),
-		WATER(11, PotionType.WATER_BREATHING),
+		WATER(11, P.use1_9 ? PotionType.WATER_BREATHING : null),
 		DARK_RED(12, PotionType.INSTANT_DAMAGE),
 		BRIGHT_GREY(14, PotionType.INVISIBILITY);
 

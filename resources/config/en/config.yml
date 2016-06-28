@@ -62,7 +62,7 @@ updateCheck: true
 autosave: 3
 
 # Config Version
-version: '1.4'
+version: '1.5'
 
 
 # -- Recipes for Potions --
@@ -76,6 +76,7 @@ version: '1.4'
 #   Vault will recognize things like "Jungle Leaves" instead of "LEAVES,3"
 # cookingtime: Time in real minutes ingredients have to boil
 # distillruns: How often it has to be distilled for full alcohol (0=without distilling)
+# distilltime: How long (in seconds) one distill-run takes (0=Default time of 40 sec) MC Default would be 20 sec
 # wood: Wood of the barrel 0=any 1=Birch 2=Oak 3=Jungle 4=Spruce 5=Acacia 6=Dark Oak
 # age: Time in Minecraft-days, the potion has to age in a barrel 0=no aging
 # color: Color of the potion after distilling/aging.
@@ -104,6 +105,7 @@ recipes:
 #     - Green Dye/6       # Only with Vault
       cookingtime: 3
       distillruns: 2
+      distilltime: 60
       wood: 4
       age: 11
       color: DARK_RED
@@ -178,6 +180,7 @@ recipes:
       - SUGAR_CANE/14
       cookingtime: 5
       distillruns: 2
+      distilltime: 30
       wood: 2
       age: 14
       color: DARK_RED
@@ -205,6 +208,7 @@ recipes:
       - LONG_GRASS/15
       cookingtime: 3
       distillruns: 6
+      distilltime: 80
       color: GREEN
       difficulty: 8
       alcohol: 45
@@ -266,6 +270,12 @@ useLogBlock: true
 
 # -- Chat Distortion Settings --
 
+# If written Chat is distorted when the Player is Drunk,
+# so that it looks like drunk writing
+# How much the chat is distorted depends on how drunk the Player is
+# Below are settings for what and how changes in chat occur
+enableChatDistortion: true
+
 # Log to the Serverlog what the player actually wrote, before his words were altered [false]
 logRealChat: false
 
@@ -294,6 +304,7 @@ distortCommands:
 distortSignText: false
 
 # Enclose a Chat text with these Letters to bypass Chat Distortion (Use "," as Separator) (list) [- '[,]']
+# Chat Example: Hello i am drunk *I am testing Brewery*
 distortBypass:
 - '*,*'
 - '[,]'

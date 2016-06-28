@@ -23,7 +23,7 @@ import java.util.*;
 
 public class P extends JavaPlugin {
 	public static P p;
-	public static final String configVersion = "1.4";
+	public static final String configVersion = "1.5";
 	public static boolean debug;
 	public static boolean useUUID;
 	public static boolean use1_9;
@@ -43,7 +43,6 @@ public class P extends JavaPlugin {
 	public EntityListener entityListener;
 	public InventoryListener inventoryListener;
 	public WorldListener worldListener;
-	public DrinkListener1_9 drinkListener1_9;
 
 	// Language
 	public String language;
@@ -199,7 +198,6 @@ public class P extends JavaPlugin {
 		entityListener = new EntityListener();
 		inventoryListener = new InventoryListener();
 		worldListener = new WorldListener();
-		drinkListener1_9 = new DrinkListener1_9();
 		getCommand("Brewery").setExecutor(new CommandListener());
 
 		p.getServer().getPluginManager().registerEvents(blockListener, p);
@@ -208,7 +206,7 @@ public class P extends JavaPlugin {
 		p.getServer().getPluginManager().registerEvents(inventoryListener, p);
 		p.getServer().getPluginManager().registerEvents(worldListener, p);
 		if (use1_9) {
-			p.getServer().getPluginManager().registerEvents(drinkListener1_9, p);
+			p.getServer().getPluginManager().registerEvents(new CauldronListener(), p);
 		}
 
 		// Heartbeat
@@ -251,6 +249,8 @@ public class P extends JavaPlugin {
 		Brew.legacyPotions.clear();
 		Wakeup.wakeups.clear();
 		Words.words.clear();
+		Words.ignoreText.clear();
+		Words.commands = null;
 
 		this.log(this.getDescription().getName() + " disabled!");
 	}
@@ -271,6 +271,8 @@ public class P extends JavaPlugin {
 		BIngredients.recipes.clear();
 		BIngredients.cookedNames.clear();
 		Words.words.clear();
+		Words.ignoreText.clear();
+		Words.commands = null;
 		BPlayer.drainItems.clear();
 		if (useLB) {
 			try {
@@ -349,6 +351,7 @@ public class P extends JavaPlugin {
 		String version = config.getString("version", null);
 		if (version != null) {
 			if (!version.equals(configVersion)) {
+				copyDefaultConfigs(true);
 				new ConfigUpdater(file).update(version, language);
 				P.p.log("Config Updated to version: " + configVersion);
 				config = YamlConfiguration.loadConfiguration(file);
@@ -395,12 +398,6 @@ public class P extends JavaPlugin {
 		Brew.colorInBarrels = config.getBoolean("colorInBarrels", false);
 		Brew.colorInBrewer = config.getBoolean("colorInBrewer", false);
 		PlayerListener.openEverywhere = config.getBoolean("openLargeBarrelEverywhere", false);
-		Words.log = config.getBoolean("logRealChat", false);
-		Words.commands = config.getStringList("distortCommands");
-		Words.doSigns = config.getBoolean("distortSignText", false);
-		for (String bypass : config.getStringList("distortBypass")) {
-			Words.ignoreText.add(bypass.split(","));
-		}
 
 		// loading recipes
 		ConfigurationSection configSection = config.getConfigurationSection("recipes");
@@ -466,8 +463,18 @@ public class P extends JavaPlugin {
 			}
 		}
 
-		// telling Words the path, it will load it when needed
-		Words.config = config;
+		// Loading Words
+		if (config.getBoolean("enableChatDistortion", false)) {
+			for (Map<?, ?> map : config.getMapList("words")) {
+				new Words(map);
+			}
+			for (String bypass : config.getStringList("distortBypass")) {
+				Words.ignoreText.add(bypass.split(","));
+			}
+			Words.commands = config.getStringList("distortCommands");
+		}
+		Words.log = config.getBoolean("logRealChat", false);
+		Words.doSigns = config.getBoolean("distortSignText", false);
 
 		return true;
 	}
@@ -699,13 +706,14 @@ public class P extends JavaPlugin {
 		File cfg = new File(p.getDataFolder(), "config.yml");
 		if (!cfg.exists()) {
 			errorLog("No config.yml found, creating default file! You may want to choose a config according to your language!");
+			errorLog("You can find them in plugins/Brewery/configs/");
 			InputStream defconf = getResource("config/en/config.yml");
 			if (defconf == null) {
 				errorLog("default config file not found, your jarfile may be corrupt. Disabling Brewery!");
 				return false;
 			}
 			try {
-				saveFile(defconf, getDataFolder(), "config.yml");
+				saveFile(defconf, getDataFolder(), "config.yml", false);
 			} catch (IOException e) {
 				e.printStackTrace();
 				return false;
@@ -716,31 +724,22 @@ public class P extends JavaPlugin {
 			return false;
 		}
 
-		File configs = new File(getDataFolder(), "configs");
-		if (!configs.exists()) {
-			String lang[] = new String[] {"de", "en", "fr"};
-			for (String l : lang) {
-				File lfold = new File(configs, l);
-				try {
-					saveFile(getResource("config/" + l + "/config.yml"), lfold, "config.yml");
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-
-		File languages = new File(getDataFolder(), "languages");
-		if (!languages.exists()) {
-			String lang[] = new String[] {"de", "en", "fr", "no"};
-			for (String l : lang) {
-				try {
-					saveFile(getResource("languages/" + l + ".yml"), languages, l + ".yml");
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
+		copyDefaultConfigs(false);
 		return true;
+	}
+
+	private void copyDefaultConfigs(boolean overwrite) {
+		File configs = new File(getDataFolder(), "configs");
+		File languages = new File(getDataFolder(), "languages");
+		for (String l : new String[] {"de", "en", "fr", "it"}) {
+			File lfold = new File(configs, l);
+			try {
+				saveFile(getResource("config/" + l + "/config.yml"), lfold, "config.yml", overwrite);
+				saveFile(getResource("languages/" + l + ".yml"), languages, l + ".yml", false); // Never overwrite languages for now
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	// Utility
@@ -869,14 +868,18 @@ public class P extends JavaPlugin {
 	}
 
 	@SuppressWarnings("ResultOfMethodCallIgnored")
-	public static void saveFile(InputStream in, File dest, String name) throws IOException {
+	public static void saveFile(InputStream in, File dest, String name, boolean overwrite) throws IOException {
 		if (in == null) return;
 		if (!dest.exists()) {
 			dest.mkdirs();
 		}
 		File result = new File(dest, name);
 		if (result.exists()) {
-			return;
+			if (overwrite) {
+				result.delete();
+			} else {
+				return;
+			}
 		}
 
 		OutputStream out = new FileOutputStream(result);

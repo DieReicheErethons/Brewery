@@ -11,14 +11,15 @@ import java.util.List;
 public class BRecipe {
 
 	private String[] name;
-	private ArrayList<ItemStack> ingredients = new ArrayList<>();// material and amount
-	private int cookingTime;// time to cook in cauldron
-	private byte distillruns;// runs through the brewer
-	private byte wood;// type of wood the barrel has to consist of
-	private int age;// time in minecraft days for the potions to age in barrels
-	private String color;// color of the destilled/finished potion
-	private int difficulty;// difficulty to brew the potion, how exact the instruction has to be followed
-	private int alcohol;// Alcohol in perfect potion
+	private ArrayList<ItemStack> ingredients = new ArrayList<>(); // material and amount
+	private int cookingTime; // time to cook in cauldron
+	private byte distillruns; // runs through the brewer
+	private int distillTime; // time for one distill run in seconds
+	private byte wood; // type of wood the barrel has to consist of
+	private int age; // time in minecraft days for the potions to age in barrels
+	private String color; // color of the destilled/finished potion
+	private int difficulty; // difficulty to brew the potion, how exact the instruction has to be followed
+	private int alcohol; // Alcohol in perfect potion
 	private ArrayList<BEffect> effects = new ArrayList<>(); // Special Effects when drinking
 
 	public BRecipe(ConfigurationSection configSectionRecipes, String recipeId) {
@@ -87,18 +88,19 @@ public class BRecipe {
 				}
 			}
 		}
-		this.cookingTime = configSectionRecipes.getInt(recipeId + ".cookingtime");
-		int dis = configSectionRecipes.getInt(recipeId + ".distillruns");
+		this.cookingTime = configSectionRecipes.getInt(recipeId + ".cookingtime", 1);
+		int dis = configSectionRecipes.getInt(recipeId + ".distillruns", 0);
 		if (dis > Byte.MAX_VALUE) {
 			this.distillruns = Byte.MAX_VALUE;
 		} else {
 			this.distillruns = (byte) dis;
 		}
-		this.wood = (byte) configSectionRecipes.getInt(recipeId + ".wood");
-		this.age = configSectionRecipes.getInt(recipeId + ".age");
+		this.distillTime = configSectionRecipes.getInt(recipeId + ".distilltime", 0) * 20;
+		this.wood = (byte) configSectionRecipes.getInt(recipeId + ".wood", 0);
+		this.age = configSectionRecipes.getInt(recipeId + ".age", 0);
 		this.color = configSectionRecipes.getString(recipeId + ".color");
-		this.difficulty = configSectionRecipes.getInt(recipeId + ".difficulty");
-		this.alcohol = configSectionRecipes.getInt(recipeId + ".alcohol");
+		this.difficulty = configSectionRecipes.getInt(recipeId + ".difficulty", 0);
+		this.alcohol = configSectionRecipes.getInt(recipeId + ".alcohol", 0);
 
 		List<String> effectStringList = configSectionRecipes.getStringList(recipeId + ".effects");
 		if (effectStringList != null) {
@@ -133,6 +135,10 @@ public class BRecipe {
 		}
 		if (distillruns < 0) {
 			P.p.errorLog("Invalid distillruns '" + distillruns + "' in Recipe: " + getName(5));
+			return false;
+		}
+		if (distillTime < 0) {
+			P.p.errorLog("Invalid distilltime '" + distillTime + "' in Recipe: " + getName(5));
 			return false;
 		}
 		if (wood < 0 || wood > 6) {
@@ -317,6 +323,10 @@ public class BRecipe {
 
 	public byte getDistillRuns() {
 		return distillruns;
+	}
+
+	public int getDistillTime() {
+		return distillTime;
 	}
 
 	public String getColor() {

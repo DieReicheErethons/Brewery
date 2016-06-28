@@ -110,15 +110,15 @@ public class LanguageReader {
 		defaults.put("Perms_NoCauldronFill", "&cYou don't have permissions to fill bottles from this cauldron!");
 		
 		/* Help */
-		defaults.put("Help_Help", "&6/brew help <Page> &9Shows a specific help-page");
-		defaults.put("Help_Player", "&6/brew <Player> <%Drunkeness> <Quality>&9 Sets Drunkeness (and Quality) of a Player");
+		defaults.put("Help_Help", "&6/brew help [Page] &9Shows a specific help-page");
+		defaults.put("Help_Player", "&6/brew <Player> <%Drunkeness> [Quality]&9 Sets Drunkeness (and Quality) of a Player");
 		defaults.put("Help_Info", "&6/brew info&9 Displays your current Drunkeness and Quality");
 		defaults.put("Help_UnLabel", "&6/brew unlabel &9Removes the detailled label of a potion");
-		defaults.put("Help_Copy", "&6/brew copy <Quanitiy>&9 Copies the potion in your hand");
+		defaults.put("Help_Copy", "&6/brew copy [Quantity]>&9 Copies the potion in your hand");
 		defaults.put("Help_Delete", "&6/brew delete &9Deletes the potion in your hand");
-		defaults.put("Help_InfoOther", "&6/brew info <Player>&9 Displays the current Drunkeness and Quality of <Player>");
+		defaults.put("Help_InfoOther", "&6/brew info [Player]&9 Displays the current Drunkeness and Quality of [Player]");
 		defaults.put("Help_Wakeup", "&6/brew wakeup list <Page>&9 Lists all wakeup points");
-		defaults.put("Help_WakeupList", "&6/brew wakeup list <Page> <World>&9 Lists all wakeup points of <world>");
+		defaults.put("Help_WakeupList", "&6/brew wakeup list <Page> [World]&9 Lists all wakeup points of [world]");
 		defaults.put("Help_WakeupCheck", "&6/brew wakeup check &9Teleports to all wakeup points");
 		defaults.put("Help_WakeupCheckSpecific", "&6/brew wakeup check <id> &9Teleports to the wakeup point with <id>");
 		defaults.put("Help_WakeupAdd", "&6/brew wakeup add &9Adds a wakeup point at your current position");
@@ -126,7 +126,7 @@ public class LanguageReader {
 		defaults.put("Help_Reload", "&6/brew reload &9Reload config");
 		defaults.put("Help_Persist", "&6/brew persist &9Make Brew persistent -> copyable by any plugin and technique");
 		defaults.put("Help_Static", "&6/brew static &9Make Brew static -> No further ageing or distilling");
-		defaults.put("Help_Create", "&6/brew create <Recipe> <Quality> &9Create a Brew with optional quality (1-10)");
+		defaults.put("Help_Create", "&6/brew create <Recipe> [Quality] [Player] &9Create a Brew with optional quality (1-10)");
 		
 		/* Etc. */
 		defaults.put("Etc_Usage", "Usage:");

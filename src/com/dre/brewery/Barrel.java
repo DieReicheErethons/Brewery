@@ -18,6 +18,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.material.MaterialData;
 import org.bukkit.material.Stairs;
 import org.bukkit.material.Tree;
+import org.bukkit.material.Wood;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -623,61 +624,72 @@ public class Barrel implements InventoryHolder {
 
 	// woodtype of the block the spigot is attached to
 	public byte getWood() {
-		int direction = getDirection(this.spigot);// 1=x+ 2=x- 3=z+ 4=z-
 		Block wood;
-		if (direction == 0) {
-			return 0;
-		} else if (direction == 1) {
-			wood = this.spigot.getRelative(1, 0, 0);
-		} else if (direction == 2) {
-			wood = this.spigot.getRelative(-1, 0, 0);
-		} else if (direction == 3) {
-			wood = this.spigot.getRelative(0, 0, 1);
-		} else {
-			wood = this.spigot.getRelative(0, 0, -1);
-		}
-		if (wood.getType() == Material.WOOD) {
-			MaterialData data = wood.getState().getData();
-			if (data instanceof Tree) {
-				TreeSpecies woodType = ((Tree) data).getSpecies();
-				if (woodType == TreeSpecies.GENERIC){
-					return 2;
-				} else if (woodType == TreeSpecies.REDWOOD) {
-					return 4;
-				} else if (woodType == TreeSpecies.BIRCH) {
-					return 1;
-				} else if (woodType == TreeSpecies.JUNGLE) {
-					return 3;
-				} else if (woodType == TreeSpecies.ACACIA) {
-					return 5;
-				} else if (woodType == TreeSpecies.DARK_OAK) {
-					return 6;
-				}
-			}
-		}
-		if (wood.getType() == Material.WOOD_STAIRS) {
-			return 2;
-		}
-		if (wood.getType() == Material.SPRUCE_WOOD_STAIRS) {
-			return 4;
-		}
-		if (wood.getType() == Material.BIRCH_WOOD_STAIRS) {
-			return 1;
-		}
-		if (wood.getType() == Material.JUNGLE_WOOD_STAIRS) {
-			return 3;
+		switch (getDirection(spigot)) { // 1=x+ 2=x- 3=z+ 4=z-
+			case 0:
+				return 0;
+			case 1:
+				wood = spigot.getRelative(1, 0, 0);
+				break;
+			case 2:
+				wood = spigot.getRelative(-1, 0, 0);
+				break;
+			case 3:
+				wood = spigot.getRelative(0, 0, 1);
+				break;
+			default:
+				wood = spigot.getRelative(0, 0, -1);
 		}
 		try {
-			if (wood.getType() == Material.ACACIA_STAIRS) {
-				return 5;
+			switch (wood.getType()) {
+				case WOOD:
+					MaterialData data = wood.getState().getData();
+					TreeSpecies woodType;
+					if (data instanceof Tree) {
+						woodType = ((Tree) data).getSpecies();
+					} else if (data instanceof Wood) {
+						woodType = ((Wood) data).getSpecies();
+					} else {
+						return 0;
+					}
+
+					switch (woodType) {
+						case GENERIC:
+							return 2;
+						case REDWOOD:
+							return 4;
+						case BIRCH:
+							return 1;
+						case JUNGLE:
+							return 3;
+						case ACACIA:
+							return 5;
+						case DARK_OAK:
+							return 6;
+						default:
+							return 0;
+					}
+
+				case WOOD_STAIRS:
+					return 2;
+				case SPRUCE_WOOD_STAIRS:
+					return 4;
+				case BIRCH_WOOD_STAIRS:
+					return 1;
+				case JUNGLE_WOOD_STAIRS:
+					return 3;
+				case ACACIA_STAIRS:
+					return 5;
+				case DARK_OAK_STAIRS:
+					return 6;
+				default:
+					return 0;
 			}
-			if (wood.getType() == Material.DARK_OAK_STAIRS) {
-				return 6;
-			}
-		} catch (NoSuchFieldError e) {
+
+		} catch (NoSuchFieldError | NoClassDefFoundError e) {
+			// Using older minecraft versions some fields and classes do not exist
 			return 0;
 		}
-		return 0;
 	}
 
 	// returns the Sign of a large barrel, the spigot if there is none

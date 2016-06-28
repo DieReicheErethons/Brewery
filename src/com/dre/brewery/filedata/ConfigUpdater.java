@@ -89,9 +89,10 @@ public class ConfigUpdater {
 				lang = "de";
 			}
 		}
+		boolean de = lang.equals("de");
 
 		if (fromVersion.equals("0.5") || fromVersion.equals("1.0")) {
-			if (lang.equals("de")) {
+			if (de) {
 				update05de();
 			} else {
 				update10en();
@@ -99,7 +100,7 @@ public class ConfigUpdater {
 			fromVersion = "1.1";
 		}
 		if (fromVersion.equals("1.1") || fromVersion.equals("1.1.1")) {
-			if (lang.equals("de")) {
+			if (de) {
 				update11de();
 			} else {
 				update11en();
@@ -108,7 +109,7 @@ public class ConfigUpdater {
 		}
 
 		if (fromVersion.equals("1.2")) {
-			if (lang.equals("de")) {
+			if (de) {
 				update12de();
 			} else {
 				update12en();
@@ -117,7 +118,7 @@ public class ConfigUpdater {
 		}
 
 		if (fromVersion.equals("1.3")) {
-			if (lang.equals("de")) {
+			if (de) {
 				update13de();
 			} else {
 				update13en();
@@ -126,7 +127,7 @@ public class ConfigUpdater {
 		}
 
 		if (fromVersion.equals("1.3.1")) {
-			if (lang.equals("de")) {
+			if (de) {
 				update131de();
 			} else {
 				update131en();
@@ -134,7 +135,16 @@ public class ConfigUpdater {
 			fromVersion = "1.4";
 		}
 
-		if (!fromVersion.equals("1.4")) {
+		if (fromVersion.equals("1.4")) {
+			if (de) {
+				update14de();
+			} else {
+				update14en();
+			}
+			fromVersion = "1.5";
+		}
+
+		if (!fromVersion.equals("1.5")) {
 			P.p.log(P.p.languageReader.get("Error_ConfigUpdate", fromVersion));
 			return;
 		}
@@ -897,6 +907,150 @@ public class ConfigUpdater {
 			setLine(index, "# Enclose a Chat text with these Letters to bypass Chat Distortion (Use \",\" as Separator) (list) [- '[,]']");
 		}
 
+	}
+
+	// Update de from 1.4 to 1.5
+	private void update14de() {
+		updateVersion("1.5");
+
+		String[] lines = new String[] {"",
+				"# Ob geschriebener Chat bei großer Trunkenheit abgefälscht werden soll,",
+				"# so dass es etwas betrunken aussieht was geschrieben wird.",
+				"# Wie stark der Chat verändert wird hängt davon ab wie betrunken der Spieler ist",
+				"# Unten kann noch eingestellt werden wie und was verändert wird",
+				"enableChatDistortion: true"};
+
+		int index = indexOfStart("# -- Chat") + 2;
+		if (index == 1) {
+			index = indexOfStart("distortCommands:") - 1;
+			if (index == -2) {
+				index = indexOfStart("distortSignText:") - 1;
+				if (index == -2) {
+					index = indexOfStart("# words:");
+					if (index == -1) {
+						index = indexOfStart("words:");
+					}
+				}
+			}
+		}
+		if (index == -1) {
+			appendLines(lines);
+		} else {
+			addLines(index - 1, lines);
+		}
+
+		lines = new String[] {"# Also zum Beispiel im Chat: Hallo ich bin betrunken *Ich teste Brewery*"};
+
+		index = indexOfStart("# Im Chat geschriebener Text, der zwischen");
+		if (index != -1) {
+			addLines(index + 1, lines);
+		} else {
+			index = indexOfStart("distortBypass:");
+			if (index != -1) {
+				addLines(index, lines);
+			}
+		}
+
+		lines = new String[] {"# distilltime: Wie lange (in sekunden) ein Destillations-Durchlauf braucht (0=Standard Zeit von 40 sek) MC Standard wäre 20 sek"};
+
+		index = indexOfStart("# distillruns:");
+		if (index == -1) {
+			index = indexOfStart("# wood:") - 1;
+			if (index == -2) {
+				index = indexOfStart("# -- Rezepte") + 1;
+				if (index == 0) {
+					index = -1;
+				}
+			}
+		}
+		if (index != -1) {
+			addLines(index + 1, lines);
+		}
+
+		index = indexOfStart("      name: Schlechtes Beispiel/Beispiel/Gutes Beispiel");
+		if (index != -1) {
+			addLines(index + 1, "      distilltime: 60");
+		}
+		index = indexOfStart("      name: Bitterer Rum/Würziger Rum/&6Goldener Rum");
+		if (index != -1) {
+			addLines(index + 1, "      distilltime: 30");
+		}
+		index = indexOfStart("      name: minderwertiger Absinth/Absinth/Starker Absinth");
+		if (index != -1) {
+			addLines(index + 1, "      distilltime: 80");
+		}
+	}
+
+	// Update de from 1.4 to 1.5
+	private void update14en() {
+		updateVersion("1.5");
+
+		String[] lines = new String[] {"",
+				"# If written Chat is distorted when the Player is Drunk,",
+				"# so that it looks like drunk writing",
+				"# How much the chat is distorted depends on how drunk the Player is",
+				"# Below are settings for what and how changes in chat occur",
+				"enableChatDistortion: true"};
+
+		int index = indexOfStart("# -- Chat") + 2;
+		if (index == 1) {
+			index = indexOfStart("distortCommands:") - 1;
+			if (index == -2) {
+				index = indexOfStart("distortSignText:") - 1;
+				if (index == -2) {
+					index = indexOfStart("# words:");
+					if (index == -1) {
+						index = indexOfStart("words:");
+					}
+				}
+			}
+		}
+		if (index == -1) {
+			appendLines(lines);
+		} else {
+			addLines(index - 1, lines);
+		}
+
+		lines = new String[] {"# Chat Example: Hello i am drunk *I am testing Brewery*"};
+
+		index = indexOfStart("# Enclose a Chat text with these Letters");
+		if (index != -1) {
+			addLines(index + 1, lines);
+		} else {
+			index = indexOfStart("distortBypass:");
+			if (index != -1) {
+				addLines(index, lines);
+			}
+		}
+
+		lines = new String[] {"# distilltime: How long (in seconds) one distill-run takes (0=Default time of 40 sec) MC Default would be 20 sec"};
+
+		index = indexOfStart("# distillruns:");
+		if (index == -1) {
+			index = indexOfStart("# wood:") - 1;
+			if (index == -2) {
+				index = indexOfStart("# -- Recipes") + 1;
+				if (index == 0) {
+					index = -1;
+				}
+			}
+		}
+		if (index != -1) {
+			addLines(index + 1, lines);
+		}
+
+		index = indexOfStart("      name: Bad Example/Example/Good Example");
+		if (index != -1) {
+			addLines(index + 1, "      distilltime: 60");
+		}
+		index = indexOfStart("      name: Bitter Rum/Spicy Rum/&6Golden Rum");
+		if (index != -1) {
+			addLines(index + 1, "      distilltime: 30");
+		}
+		index = indexOfStart("      name: Poor Absinthe/Absinthe/Strong Absinthe");
+		if (index != -1) {
+			addLines(index + 1, "      distilltime: 80");
+		}
 	}
 
 

@@ -1,0 +1,97 @@
+# Miscele
+Brew_-times: -times
+Brew_BadPotion: Pozione rovinata
+Brew_BarrelRiped: Invecchiata in barile
+Brew_DistillUndefined: Distillato indefinito
+Brew_Distilled: Distillato
+Brew_HundredsOfYears: Centinaia di anni
+Brew_Ingredients: Ingredienti
+Brew_MinutePluralPostfix: /i
+Brew_OneYear: Un Anno
+Brew_ThickBrew: Miscela fangosa
+Brew_Undefined: Mescela indefinibile
+Brew_Woodtype: Tipo di legno
+Brew_Years: Anni
+Brew_fermented: fermentata
+Brew_minute: minuto
+
+# Comandi
+CMD_CopyNotPersistent: '&eLe copie di questa miscela non saranno né persistenti né statiche!'
+CMD_Copy_Error: '&6&v1 &cLe copie di questa pozione non stavano nell''inventario.'
+CMD_Info_Drunk: '&v1 è &6&v2% &fsbronzo, con una qualità di &6&v3'
+CMD_Info_NotDrunk: '&v1 non è sbronzo'
+CMD_NonStatic: '&eLa pozione non è più statica ed invecchierà normalmente nei barili'
+CMD_PersistRemove: '&cLe miscele persistenti non possono essere rimosse dal Database. Renderebbe le loro copie inutili!'
+CMD_Persistent: '&aLa pozione è ora persistente e statica e può essere copiata come qualunque altro oggetto. Puoi rimuovere la persistenza con lo stesso comando.'
+CMD_Player: '&a&v1 è ora &6&v2% &asbronzo, con una qualità di &6&v3'
+CMD_Player_Error: '&cLa qualità deve essere fra 1 e 10!'
+CMD_Reload: '&aLa configurazione è stata ricaricata con successo'
+CMD_Static: '&aLa pozione è ora statica e non cambierà né nei barili né negli alambicchi.'
+CMD_UnLabel: '&aEtichetta rimossa!'
+CMD_UnPersist: '&aPersistenza e staticità rimosse. &eOgni copia non fatta con ''/brew copy'' potrebbe diventare inutile ora!'
+
+# Errori
+Error_ConfigUpdate: 'Versione della configurazione di Brewery sconosciuta: v&v1, la configurazione non è stato aggiornata!'
+Error_ItemNotPotion: '&cL''oggetto nella tua mano non è una pozione!'
+Error_NoBarrelAccess: '&cNon hai il permesso di aprire questo barile!'
+Error_NoBrewName: '&cNon è stata trovata nessuna ricetta chiamata ''&v1&c''!'
+Error_NoPermissions: '&cNon hai il permesso di farlo!'
+Error_PersistStatic: '&cLe pozioni persistenti sono sempre statiche!'
+Error_PlayerCommand: '&cQuesto comando può essere eseguito solo da un giocatore!'
+Error_Recipeload: '&cNon è stato possibile recuperare tutte le ricette: ulteriori informazioni nel file log!'
+Error_ShowHelp: Usa &6/brew help &fper visualizzare l''aiuto
+Error_UnknownCommand: Comando sconosciuto
+
+# Varie
+Etc_Barrel: Barile
+Etc_Page: Pagina
+Etc_Usage: 'Utilizzo:'
+
+# Aiuto
+Help_Copy: '&6/brew copy [Quantità]&9 Copia la pozione che tieni in mano'
+Help_Create: '&6/brew create <icetta> [Qualità] [Giocatore] &9Crea una miscela con una qualità data (1-10)'
+Help_Delete: '&6/brew delete &9Elimina la pozione nella tua mano'
+Help_Help: '&6/brew help <Pagina> &9Mostra una specifica pagina dell''aiuto'
+Help_Info: '&6/brew info&9 Mostra il tuo livello di sbronza attuale e la qualità'
+Help_InfoOther: '&6/brew info [Giocatore]&9 Mostra l''attuale livello di sbronza e la qualità di [Giocatore]'
+Help_Persist: '&6/brew persist &9Rendi una miscela persistente quindi copiabile normalmente in ogni modo e da ogni plugin.'
+Help_Player: '&6/brew <Giocatore> <%Sbronza> [Qualità]&9 Imposta livello di sbronza (e qualità) di un giocatore.'
+Help_Reload: '&6/brew reload &9Ricarica la configurazione'
+Help_Static: '&6/brew static &9Rende la miscela statica quindi non distillabile e invecchiabile ulteriormente.'
+Help_UnLabel: '&6/brew unlabel &9Rimuove la descrizione dettagliata di una pozione.'
+Help_Wakeup: '&6/brew wakeup list <Pagina>&9 Mostra tutti i punti di risveglio.'
+Help_WakeupAdd: '&6/brew wakeup add &9Crea un punto di risveglio alla tua posizione corrente.'
+Help_WakeupCheck: '&6/brew wakeup check &9Ti teletrasporta nei punti di risveglio uno alla volta'
+Help_WakeupCheckSpecific: '&6/brew wakeup check <ID> &9Ti teletrasporta al punto di risveglio con id <id>'
+Help_WakeupList: '&6/brew wakeup list <Pagina> <Mondo>&9 Elenca tutti i punti di risveglio di <Mondo>'
+Help_WakeupRemove: '&6/brew wakeup remove <ID> &9Rimuove il punto di risveglio con id <id>'
+
+# Permessi
+Perms_NoBarrelCreate: '&cNon hai il permesso di costruire barili!'
+Perms_NoBigBarrelCreate: '&cNon hai il permesso di costruire barili grandi!'
+Perms_NoCauldronFill: '&cNon hai il permesso di mettere bottiglie in questo barile!'
+Perms_NoCauldronInsert: '&cNon hai il permesso di inserire gli ingredienti in un calderone!'
+Perms_NoSmallBarrelCreate: '&cNon hai il permesso di costruire piccoli barili!'
+
+# Giocatore
+Player_BarrelCreated: Barile creato
+Player_CantDrink: Non puoi bere dell''altro.
+Player_CauldronInfo1: Questo calderone sta bollendo da &v1 minuti.
+Player_CauldronInfo2: Questo calderone ha appena iniziato a bollire.
+Player_DrunkPassOut: Hai bevuto troppo e sei svenuto.
+Player_LoginDeny: Il tuo personaggio sta provando a loggare, ma è troppo sbronzo per trovare il server. Prova di nuovo!
+Player_LoginDenyLong: Il tuo personaggio è molto sbronzo ed è svenuto. Riprova tra dieci minuti!
+Player_TriedToSay: '&v1 ha provato a dire: &0&v2'
+Player_Wake: Uhhhh... Che ci faccio qui? Come ci sono arrivato?
+Player_WakeAlreadyDeleted: '&cIl punto di risveglio con id &6&v1 &cè già stato rimosso!'
+Player_WakeCancel: '&6Il controllo dei punti di risveglio è stato annullato'
+Player_WakeCreated: '&aIl punto di risveglio con id &6&v1 &aè stato creato con successo!'
+Player_WakeDeleted: '&aIl punto di risveglio con id &6&v1 &aè stato rimosso con successo!'
+Player_WakeFilled: '&cIl punto di risveglio con id  &6&v1&c alla posizione &6&v2 &v3, &v4, &v5&c è stato coperto da dei blocchi!'
+Player_WakeHint1: 'Per andare al prossimo punto di risveglio dai un pugno nell''aria o ripeti il comando'
+Player_WakeHint2: 'Per rimuoverlo: &9/br wakeup cancel'
+Player_WakeLast: '&aQuesto era l''ultimo punto di risveglio.'
+Player_WakeNoCheck: '&cNessun punto di risveglio attivo al momento.'
+Player_WakeNoPoints: '&cNon ci sono punti di risveglio!'
+Player_WakeNotExist: '&cIl punto di risveglio con id &6&v1 &cnon esiste!'
+Player_WakeTeleport: 'Teletrasportato al punto di risveglio di id &6&v1&f alla posizione &6&v2 &v3, &v4, &v5'

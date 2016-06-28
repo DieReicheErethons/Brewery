@@ -578,7 +578,7 @@ public class Brew {
 
 	// Adds the Effect names to the Items description
 	public static void addOrReplaceEffects(PotionMeta meta, ArrayList<BEffect> effects, int quality) {
-		if (effects != null) {
+		if (!P.use1_9 && effects != null) {
 			for (BEffect effect : effects) {
 				if (!effect.isHidden()) {
 					effect.writeInto(meta, quality);

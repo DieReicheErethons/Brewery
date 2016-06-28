@@ -240,6 +240,7 @@ public class InventoryListener implements Listener {
 					if (P.use1_9 && !potion.hasItemFlag(ItemFlag.HIDE_POTION_EFFECTS)) {
 						BRecipe recipe = brew.getCurrentRecipe();
 						if (recipe != null) {
+							Brew.removeEffects(potion);
 							Brew.PotionColor.valueOf(recipe.getColor()).colorBrew(potion, item, brew.canDistill());
 							item.setItemMeta(potion);
 						}

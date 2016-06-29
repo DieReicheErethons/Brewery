@@ -59,6 +59,136 @@ public class P extends JavaPlugin {
 		useUUID = !v.matches("(^|.*[^\\.\\d])1\\.[0-6]([^\\d].*|$)") && !v.matches("(^|.*[^\\.\\d])1\\.7\\.[0-5]([^\\d].*|$)");
 		use1_9 = !v.matches("(^|.*[^\\.\\d])1\\.[0-8]([^\\d].*|$)");
 
+		/*long master = new SecureRandom().nextLong();
+		ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+		XORScrambleStream scramble = new XORScrambleStream(new Base91EncoderStream(byteStream), master);
+		DataOutputStream data = new DataOutputStream(scramble);
+		DataInputStream dataIn = null;
+		try {
+			scramble.start();
+			data.writeLong(12345L);
+			scramble.stop();
+			data.writeInt(1);
+			data.writeInt(1);
+			scramble.start();
+			data.writeDouble(0.55555D);
+			data.writeInt(234323);
+			//data.writeUTF("Hallo Peter");
+			data.writeLong(5419L); // Skip
+			data.writeDouble(0.55555D);
+
+			data.close();
+
+			XORUnscrambleStream unscramble = new XORUnscrambleStream(new Base91DecoderStream(new ByteArrayInputStream(byteStream.toByteArray())), master);
+			dataIn = new DataInputStream(unscramble);
+			unscramble.start();
+			P.p.log(dataIn.readLong() + "");
+			unscramble.stop();
+			P.p.log(dataIn.readInt() + "");
+			P.p.log(dataIn.readInt() + "");
+			unscramble.start();
+			P.p.log(dataIn.readDouble() + "");
+			dataIn.mark(1000);
+			P.p.log(dataIn.readInt() + "");
+			//P.p.log(dataIn.readUTF());
+			dataIn.skip(8);
+			P.p.log(dataIn.readDouble() + "");
+			P.p.log("reset");
+			dataIn.reset();
+			P.p.log(dataIn.readInt() + "");
+			//P.p.log(dataIn.readUTF());
+			dataIn.skip(8);
+			P.p.log(dataIn.readDouble() + "");
+
+			dataIn.close();
+
+			*//*for (int i = 0; i < 10; i++) {
+				byteStream = new ByteArrayOutputStream();
+				scramble = new XORScrambleStream(new Base91EncoderStream(byteStream));
+				data = new DataOutputStream(scramble);
+				data.writeInt(i);
+				scramble.start();
+				data.writeLong(12345L);
+				data.writeLong(12345L);
+				scramble.stop();
+				data.writeInt(1);
+				data.writeInt(1);
+				scramble.start();
+				data.writeInt(234323);
+				data.writeDouble(0.55555D);
+
+				P.p.log(byteStream.toString());
+				data.close();
+			}*//*
+
+
+			long time = System.currentTimeMillis();
+			for (int i = 0; i < 100000; i++) {
+				unscramble = new XORUnscrambleStream(new Base91DecoderStream(new ByteArrayInputStream(byteStream.toByteArray())), master);
+				dataIn = new DataInputStream(unscramble);
+				unscramble.start();
+				dataIn.readLong();
+				unscramble.stop();
+				dataIn.readInt();
+				dataIn.readInt();
+				unscramble.start();
+				dataIn.readDouble();
+				dataIn.mark(1000);
+				dataIn.readInt();
+				//dataIn.readUTF();
+				dataIn.skip(8);
+				dataIn.readDouble();
+				dataIn.reset();
+				dataIn.readInt();
+				//dataIn.readUTF();
+				dataIn.skip(8);
+				dataIn.readDouble();
+
+				dataIn.close();
+			}
+			long time2 = System.currentTimeMillis();
+
+			for (int i = 0; i < 100000; i++) {
+				unscramble = new XORUnscrambleStream(new ByteArrayInputStream(byteStream.toByteArray()), master);
+				dataIn = new DataInputStream(unscramble);
+				unscramble.start();
+				dataIn.skip(2);
+				dataIn.readLong();
+				unscramble.stop();
+				dataIn.readInt();
+				dataIn.readInt();
+				unscramble.start();
+				dataIn.readDouble();
+				dataIn.mark(1000);
+				dataIn.readInt();
+				//dataIn.readUTF();
+				dataIn.skip(8);
+				dataIn.readDouble();
+				dataIn.reset();
+				dataIn.readInt();
+				//dataIn.readUTF();
+				dataIn.skip(8);
+				dataIn.readDouble();
+
+				dataIn.close();
+			}
+			long time3 = System.currentTimeMillis();
+
+			P.p.log("Time with base91: " + (time2 - time));
+			P.p.log("Time without base91: " + (time3 - time2));
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				data.close();
+				if (dataIn != null) {
+					dataIn.close();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}*/
 
 		/*try {
 			ItemMeta meta = new ItemStack(Material.POTION).getItemMeta();
@@ -487,6 +617,7 @@ public class P extends JavaPlugin {
 			FileConfiguration data = YamlConfiguration.loadConfiguration(file);
 
 			Brew.installTime = data.getLong("installTime", System.currentTimeMillis());
+			Brew.loadSeed(data);
 
 			// Check if data is the newest version
 			String version = data.getString("Version", null);

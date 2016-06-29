@@ -60,6 +60,7 @@ public class DataSave extends BukkitRunnable {
 		FileConfiguration configFile = new YamlConfiguration();
 
 		configFile.set("installTime", Brew.installTime);
+		Brew.writeSeed(configFile);
 
 		if (!Brew.legacyPotions.isEmpty()) {
 			Brew.save(configFile.createSection("Brew"));

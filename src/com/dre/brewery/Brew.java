@@ -1,9 +1,6 @@
 package com.dre.brewery;
 
-import com.dre.brewery.lore.Base91DecoderStream;
-import com.dre.brewery.lore.Base91EncoderStream;
-import com.dre.brewery.lore.LoreLoadStream;
-import com.dre.brewery.lore.LoreSaveStream;
+import com.dre.brewery.lore.*;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.BrewerInventory;
@@ -19,6 +16,7 @@ import org.bukkit.potion.PotionType;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,7 +25,7 @@ import java.util.Map;
 public class Brew {
 
 	// represents the liquid in the brewed Potions
-
+	private static long saveSeed;
 	public static Map<Integer, Brew> legacyPotions = new HashMap<>();
 	public static long installTime = System.currentTimeMillis(); // plugin install time in millis after epoch
 	public static Boolean colorInBarrels; // color the Lore while in Barrels
@@ -728,18 +726,26 @@ public class Brew {
 		} catch (IllegalArgumentException ignored) {
 			return null;
 		}
-		try (DataInputStream in = new DataInputStream(new Base91DecoderStream(loreStream))) {
+		XORUnscrambleStream unscrambler = new XORUnscrambleStream(new Base91DecoderStream(loreStream), saveSeed);
+		try (DataInputStream in = new DataInputStream(unscrambler)) {
+			boolean parityFailed = false;
 			if (in.readByte() != 86) {
-				P.p.errorLog("parity check failed on Brew while loading, trying to load anyways!");
+				P.p.errorLog("Parity check failed on Brew while loading, trying to load anyways!");
+				parityFailed = true;
 			}
 			Brew brew = new Brew();
 			byte ver = in.readByte();
 			switch (ver) {
 				case 1:
+					unscrambler.start();
 					brew.loadFromStream(in);
 					break;
 				default:
-					P.p.errorLog("Brew has data stored in v" + ver + " this version supports up to v1");
+					if (parityFailed) {
+						P.p.errorLog("Failed to load Brew. Maybe something corrupted the Lore of the Item?");
+					} else {
+						P.p.errorLog("Brew has data stored in v" + ver + " this Plugin version supports up to v1");
+					}
 					return null;
 			}
 			return brew;
@@ -775,7 +781,11 @@ public class Brew {
 
 	// Save brew data into meta/lore
 	public void save(ItemMeta meta) {
-		try (DataOutputStream out = new DataOutputStream(new Base91EncoderStream(new LoreSaveStream(meta, 0)))) {
+		XORScrambleStream scrambler = new XORScrambleStream(new Base91EncoderStream(new LoreSaveStream(meta, 0)), saveSeed);
+		try (DataOutputStream out = new DataOutputStream(scrambler)) {
+			out.writeByte(86); // Parity/sanity
+			out.writeByte(1); // Version
+			scrambler.start();
 			saveToStream(out);
 		} catch (IOException e) {
 			P.p.errorLog("IO Error while saving Brew");
@@ -797,8 +807,6 @@ public class Brew {
 	}
 
 	public void saveToStream(DataOutputStream out) throws IOException {
-		out.writeByte(86); // Parity/sanity
-		out.writeByte(1); // Version
 		if (quality > 10) {
 			quality = 10;
 		}
@@ -825,6 +833,20 @@ public class Brew {
 			out.writeUTF(currentRecipe.getName(5));
 		}
 		ingredients.save(out);
+	}
+
+	public static void writeSeed(ConfigurationSection section) {
+		section.set("seed", saveSeed);
+	}
+
+	public static void loadSeed(ConfigurationSection section) {
+		if (section.contains("seed")) {
+			saveSeed = section.getLong("seed");
+		} else {
+			while (saveSeed == 0) {
+				saveSeed = new SecureRandom().nextLong();
+			}
+		}
 	}
 
 	// Load potion data from data file for backwards compatibility

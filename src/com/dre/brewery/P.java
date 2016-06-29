@@ -179,6 +179,8 @@ public class P extends JavaPlugin {
 
 		} catch (IOException e) {
 			e.printStackTrace();
+		} catch (InvalidKeyException e) {
+			e.printStackTrace();
 		} finally {
 			try {
 				data.close();

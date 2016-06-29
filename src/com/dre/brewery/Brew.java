@@ -17,6 +17,7 @@ import org.bukkit.potion.PotionType;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.security.InvalidKeyException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -756,6 +757,9 @@ public class Brew {
 		} catch (IOException e) {
 			P.p.errorLog("IO Error while loading Brew");
 			e.printStackTrace();
+		} catch (InvalidKeyException e) {
+			P.p.errorLog("Failed to load Brew, has the data key 'BrewDataSeed' in the data.yml been changed?");
+			e.printStackTrace();
 		}
 		return null;
 	}
@@ -840,12 +844,12 @@ public class Brew {
 	}
 
 	public static void writeSeed(ConfigurationSection section) {
-		section.set("seed", saveSeed);
+		section.set("BrewDataSeed", saveSeed);
 	}
 
 	public static void loadSeed(ConfigurationSection section) {
-		if (section.contains("seed")) {
-			saveSeed = section.getLong("seed");
+		if (section.contains("BrewDataSeed")) {
+			saveSeed = section.getLong("BrewDataSeed");
 		} else {
 			while (saveSeed == 0) {
 				saveSeed = new SecureRandom().nextLong();

@@ -3,6 +3,7 @@ package com.dre.brewery.lore;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.InvalidKeyException;
 
 public class XORUnscrambleStream extends FilterInputStream {
 
@@ -17,7 +18,7 @@ public class XORUnscrambleStream extends FilterInputStream {
 		this.seed = seed;
 	}
 
-	public void start() throws IOException {
+	public void start() throws IOException, InvalidKeyException {
 		running = true;
 		if (xorStream == null) {
 			short id = (short) (in.read() << 8 | in.read());
@@ -26,6 +27,9 @@ public class XORUnscrambleStream extends FilterInputStream {
 				return;
 			}
 			xorStream = new SeedInputStream(seed ^ id);
+			if (read() != 209) { // Parity/Sanity
+				throw new InvalidKeyException("Could not read scrambled data, is the seed wrong?");
+			}
 		}
 	}
 

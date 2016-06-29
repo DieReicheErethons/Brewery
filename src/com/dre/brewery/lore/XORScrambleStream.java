@@ -1,6 +1,5 @@
 package com.dre.brewery.lore;
 
-
 import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -27,6 +26,7 @@ public class XORScrambleStream extends FilterOutputStream {
 			xorStream = new SeedInputStream(seed ^ id);
 			out.write((byte) (id >> 8));
 			out.write((byte) id);
+			write(209); // parity/sanity
 		}
 	}
 

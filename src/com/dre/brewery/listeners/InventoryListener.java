@@ -138,7 +138,7 @@ public class InventoryListener implements Listener {
 							default:
 								runTime = getLongestDistillTime(stand.getInventory());
 								brewTime = runTime;
-								P.p.log("using brewtime: " + runTime);
+								P.p.debugLog("using brewtime: " + runTime);
 
 						}
 					}
@@ -234,7 +234,7 @@ public class InventoryListener implements Listener {
 
 	private int getLongestDistillTime(BrewerInventory inv) {
 		int bestTime = 0;
-		int time = 0;
+		int time;
 		Brew[] contents = getDistillContents(inv);
 		for (int slot = 0; slot < 3; slot++) {
 			if (contents[slot] == null) continue;

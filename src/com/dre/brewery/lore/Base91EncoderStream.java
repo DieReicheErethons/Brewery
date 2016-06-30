@@ -8,8 +8,8 @@ import java.io.OutputStream;
 public class Base91EncoderStream extends FilterOutputStream {
 
 	private final basE91 encoder = new basE91();
-	private byte[] buf = new byte[16];
-	private byte[] encBuf = new byte[24];
+	private byte[] buf = new byte[32];
+	private byte[] encBuf = new byte[48];
 	private int writer = 0;
 	private int encoded = 0;
 

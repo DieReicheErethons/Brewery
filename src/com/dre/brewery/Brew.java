@@ -217,6 +217,20 @@ public class Brew {
 		return copy;
 	}*/
 
+	public boolean isSimilar(Brew brew) {
+		if (brew == null) return false;
+		if (equals(brew)) return true;
+		return quality == brew.quality &&
+				distillRuns == brew.distillRuns &&
+				Float.compare(brew.ageTime, ageTime) == 0 &&
+				Float.compare(brew.wood, wood) == 0 &&
+				unlabeled == brew.unlabeled &&
+				persistent == brew.persistent &&
+				immutable == brew.immutable &&
+				ingredients.equals(brew.ingredients) &&
+				currentRecipe != null ? currentRecipe.equals(brew.currentRecipe) : brew.currentRecipe == null;
+	}
+
 	// Clones this instance
 	@Override
 	public Brew clone() throws CloneNotSupportedException {

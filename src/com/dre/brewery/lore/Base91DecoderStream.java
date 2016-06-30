@@ -7,8 +7,8 @@ import java.io.InputStream;
 public class Base91DecoderStream extends FilterInputStream {
 
 	private final basE91 decoder = new basE91();
-	private byte[] decbuf = new byte[18];
-	private byte[] buf = new byte[18];
+	private byte[] decbuf = new byte[32];
+	private byte[] buf = new byte[32];
 	private int reader = 0;
 	private int count = 0;
 	private byte[] markBuf = null;
@@ -62,6 +62,7 @@ public class Base91DecoderStream extends FilterInputStream {
 		int out = 0;
 		int writeSize;
 		while (count > 0) {
+			// Not enough data in buffer, write all out, decode and repeat
 			writeSize = Math.min(len, count - reader);
 			System.arraycopy(buf, reader, b, off + out, writeSize);
 			out += writeSize;
@@ -99,7 +100,8 @@ public class Base91DecoderStream extends FilterInputStream {
 
 	@Override
 	public int available() throws IOException {
-		return (int) (in.available() * 0.813F); // Ratio encoded to decoded with random data
+		if (count == -1) return 0;
+		return (int) (in.available() * 0.813F) + count - reader; // Ratio encoded to decoded with random data
 	}
 
 	@Override

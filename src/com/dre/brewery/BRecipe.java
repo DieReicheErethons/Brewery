@@ -6,6 +6,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class BRecipe {
@@ -252,18 +253,7 @@ public class BRecipe {
 		ItemStack potion = new ItemStack(Material.POTION);
 		PotionMeta potionMeta = (PotionMeta) potion.getItemMeta();
 
-		ArrayList<ItemStack> list = new ArrayList<>(ingredients.size());
-		for (ItemStack item : ingredients) {
-			if (item.getDurability() == -1) {
-				list.add(new ItemStack(item.getType(), item.getAmount()));
-			} else {
-				list.add(item.clone());
-			}
-		}
-
-		BIngredients bIngredients = new BIngredients(list, cookingTime);
-
-		Brew brew = new Brew(bIngredients, quality, distillruns, getAge(), wood, getName(5), false, true);
+		Brew brew = createBrew(quality);
 
 		Brew.PotionColor.valueOf(getColor()).colorBrew(potionMeta, potion, false);
 		potionMeta.setDisplayName(P.p.color("&f" + getName(quality)));
@@ -277,6 +267,21 @@ public class BRecipe {
 
 		potion.setItemMeta(potionMeta);
 		return potion;
+	}
+
+	public Brew createBrew(int quality) {
+		ArrayList<ItemStack> list = new ArrayList<>(ingredients.size());
+		for (ItemStack item : ingredients) {
+			if (item.getDurability() == -1) {
+				list.add(new ItemStack(item.getType(), item.getAmount()));
+			} else {
+				list.add(item.clone());
+			}
+		}
+
+		BIngredients bIngredients = new BIngredients(list, cookingTime);
+
+		return new Brew(bIngredients, quality, distillruns, getAge(), wood, getName(5), false, true);
 	}
 
 
@@ -360,5 +365,14 @@ public class BRecipe {
 	@Override
 	public String toString() {
 		return "BRecipe{" + getName(5) + '}';
+	}
+
+	public static BRecipe get(String name) {
+		for (BRecipe recipe : BIngredients.recipes) {
+			if (recipe.getName(5).equalsIgnoreCase(name)) {
+				return recipe;
+			}
+		}
+		return null;
 	}
 }

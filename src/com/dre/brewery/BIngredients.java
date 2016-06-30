@@ -328,6 +328,16 @@ public class BIngredients {
 		return 0;
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (!(obj instanceof BIngredients)) return false;
+		BIngredients other = ((BIngredients) obj);
+		return cookedTime == other.cookedTime &&
+				ingredients.equals(other.ingredients) &&
+				materials.equals(other.materials);
+	}
+
 	// Creates a copy ingredients
 	@Override
 	public BIngredients clone() {

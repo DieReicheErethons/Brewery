@@ -27,7 +27,7 @@ public class XORUnscrambleStream extends FilterInputStream {
 				return;
 			}
 			xorStream = new SeedInputStream(seed ^ id);
-			if (read() != 209) { // Parity/Sanity
+			if (read() != ((int) (seed >> 48) & 0xFF)) { // Parity/Sanity
 				throw new InvalidKeyException("Could not read scrambled data, is the seed wrong?");
 			}
 		}

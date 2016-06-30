@@ -26,7 +26,7 @@ public class XORScrambleStream extends FilterOutputStream {
 			xorStream = new SeedInputStream(seed ^ id);
 			out.write((byte) (id >> 8));
 			out.write((byte) id);
-			write(209); // parity/sanity
+			write((int) (seed >> 48) & 0xFF); // parity/sanity
 		}
 	}
 

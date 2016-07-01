@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.Map;
 
+import com.dre.brewery.lore.BrewLore;
 import org.bukkit.Material;
 import org.bukkit.TreeSpecies;
 import org.bukkit.entity.HumanEntity;
@@ -473,8 +474,10 @@ public class Barrel implements InventoryHolder {
 						// Brew before throwing
 						brew.age(item, time, getWood());
 						PotionMeta meta = (PotionMeta) item.getItemMeta();
-						if (Brew.hasColorLore(meta)) {
-							brew.convertLore(meta, false);
+						if (BrewLore.hasColorLore(meta)) {
+							BrewLore lore = new BrewLore(brew, meta);
+							lore.convertLore(false);
+							lore.write();
 							item.setItemMeta(meta);
 						}
 					}

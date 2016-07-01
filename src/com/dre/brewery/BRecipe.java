@@ -1,5 +1,6 @@
 package com.dre.brewery;
 
+import com.dre.brewery.lore.BrewLore;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
@@ -260,8 +261,10 @@ public class BRecipe {
 		// This effect stores the UID in its Duration
 		//potionMeta.addCustomEffect((PotionEffectType.REGENERATION).createEffect((uid * 4), 0), true);
 
-		brew.convertLore(potionMeta, false);
-		Brew.addOrReplaceEffects(potionMeta, effects, quality);
+		BrewLore lore = new BrewLore(brew, potionMeta);
+		lore.convertLore(false);
+		lore.addOrReplaceEffects(effects, quality);
+		lore.write();
 		brew.touch();
 		brew.save(potionMeta);
 

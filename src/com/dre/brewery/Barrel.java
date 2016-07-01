@@ -5,6 +5,7 @@ import com.dre.brewery.integration.GriefPreventionBarrel;
 import com.dre.brewery.integration.LWCBarrel;
 import com.dre.brewery.integration.LogBlockBarrel;
 import org.apache.commons.lang.ArrayUtils;
+import com.dre.brewery.lore.BrewLore;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
@@ -494,8 +495,10 @@ public class Barrel implements InventoryHolder {
 						// Brew before throwing
 						brew.age(item, time, getWood());
 						PotionMeta meta = (PotionMeta) item.getItemMeta();
-						if (Brew.hasColorLore(meta)) {
-							brew.convertLore(meta, false);
+						if (BrewLore.hasColorLore(meta)) {
+							BrewLore lore = new BrewLore(brew, meta);
+							lore.convertLore(false);
+							lore.write();
 							item.setItemMeta(meta);
 						}
 					}

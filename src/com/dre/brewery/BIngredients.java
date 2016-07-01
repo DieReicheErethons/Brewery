@@ -1,5 +1,6 @@
 package com.dre.brewery;
 
+import com.dre.brewery.lore.BrewLore;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
@@ -89,7 +90,8 @@ public class BIngredients {
 			int quality = (int) Math.round((getIngredientQuality(cookRecipe) + getCookingQuality(cookRecipe, false)) / 2.0);
 			P.p.debugLog("cooked potion has Quality: " + quality);
 			brew = new Brew(quality, cookRecipe, this);
-			Brew.addOrReplaceEffects(potionMeta, brew.getEffects(), brew.getQuality());
+			BrewLore lore = new BrewLore(brew, potionMeta);
+			lore.addOrReplaceEffects(brew.getEffects(), brew.getQuality());
 
 			cookedName = cookRecipe.getName(quality);
 			Brew.PotionColor.fromString(cookRecipe.getColor()).colorBrew(potionMeta, potion, false);

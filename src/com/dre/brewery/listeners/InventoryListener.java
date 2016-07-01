@@ -7,6 +7,7 @@ import com.dre.brewery.Brew;
 import com.dre.brewery.MCBarrel;
 import com.dre.brewery.P;
 import com.dre.brewery.integration.LogBlockBarrel;
+import com.dre.brewery.lore.BrewLore;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -285,17 +286,15 @@ public class InventoryListener implements Listener {
 			ItemStack item = event.getCurrentItem();
 			if (item.hasItemMeta()) {
 				PotionMeta potion = ((PotionMeta) item.getItemMeta());
-				Brew brew = Brew.get(potion);
-				if (brew != null) {
-					// convert potions from 1.8 to 1.9 for color and to remove effect descriptions
-					if (P.use1_9 && !potion.hasItemFlag(ItemFlag.HIDE_POTION_EFFECTS)) {
-						BRecipe recipe = brew.getCurrentRecipe();
-						if (recipe != null) {
-							Brew.removeEffects(potion);
-							Brew.PotionColor.fromString(recipe.getColor()).colorBrew(potion, item, brew.canDistill());
-							item.setItemMeta(potion);
-						}
+				// convert potions from 1.8 to 1.9 for color and to remove effect descriptions
+				if (P.use1_9 && !potion.hasItemFlag(ItemFlag.HIDE_POTION_EFFECTS)) {
+					Brew brew = Brew.get(potion);
+					if (brew != null) {
+						brew.convertLegacy(item);
 					}
+				}
+				Brew brew = Brew.get(item);
+				if (brew != null) {
 					P.p.log(brew.toString());
 					P.p.log(potion.getLore().get(0).replaceAll("§", ""));
 					P.p.log("similar to beispiel? " + BRecipe.get("Beispiel").createBrew(10).isSimilar(brew));
@@ -386,8 +385,10 @@ public class InventoryListener implements Listener {
 					PotionMeta meta = (PotionMeta) item.getItemMeta();
 					Brew brew = Brew.get(meta);
 					if (brew != null) {
-						if (Brew.hasColorLore(meta)) {
-							brew.convertLore(meta, false);
+						if (BrewLore.hasColorLore(meta)) {
+							BrewLore lore = new BrewLore(brew, meta);
+							lore.convertLore(false);
+							lore.write();
 							item.setItemMeta(meta);
 						}
 					}

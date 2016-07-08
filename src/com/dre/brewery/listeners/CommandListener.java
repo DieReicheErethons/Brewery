@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import com.dre.brewery.Util;
+import com.dre.brewery.api.events.brew.BrewModifyEvent;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -484,6 +485,11 @@ public class CommandListener implements CommandExecutor {
 			if (hand != null) {
 				Brew brew = Brew.get(hand);
 				if (brew != null) {
+					BrewModifyEvent modifyEvent = new BrewModifyEvent(brew, BrewModifyEvent.Type.STATIC);
+					P.p.getServer().getPluginManager().callEvent(modifyEvent);
+					if (modifyEvent.isCancelled()) {
+						return;
+					}
 					if (brew.isStatic()) {
 						if (!brew.isPersistent()) {
 							brew.setStatic(false, hand);
@@ -516,6 +522,11 @@ public class CommandListener implements CommandExecutor {
 			if (hand != null) {
 				Brew brew = Brew.get(hand);
 				if (brew != null) {
+					BrewModifyEvent modifyEvent = new BrewModifyEvent(brew, BrewModifyEvent.Type.UNLABEL);
+					P.p.getServer().getPluginManager().callEvent(modifyEvent);
+					if (modifyEvent.isCancelled()) {
+						return;
+					}
 					brew.unLabel(hand);
 					brew.touch();
 					brew.save(hand);

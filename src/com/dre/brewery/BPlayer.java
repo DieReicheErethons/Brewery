@@ -1,5 +1,10 @@
 package com.dre.brewery;
 
+import com.dre.brewery.api.events.PlayerAlcEffectEvent;
+import com.dre.brewery.api.events.PlayerDrinkEffectEvent;
+import com.dre.brewery.api.events.PlayerPukeEvent;
+import com.dre.brewery.api.events.PlayerPushEvent;
+import com.dre.brewery.api.events.brew.BrewDrinkEvent;
 import org.apache.commons.lang.mutable.MutableInt;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -10,13 +15,20 @@ import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
 
 public class BPlayer {
 	private static Map<String, BPlayer> players = new HashMap<>();// Players name/uuid and BPlayer
@@ -124,9 +136,10 @@ public class BPlayer {
 	}
 
 	public void remove() {
-		for (Map.Entry<String, BPlayer> entry : players.entrySet()) {
+		for (Iterator<Map.Entry<String, BPlayer>> iterator = players.entrySet().iterator(); iterator.hasNext(); ) {
+			Map.Entry<String, BPlayer> entry = iterator.next();
 			if (entry.getValue() == this) {
-				players.remove(entry.getKey());
+				iterator.remove();
 				return;
 			}
 		}
@@ -137,32 +150,46 @@ public class BPlayer {
 	}
 
 	// Drink a brew and apply effects, etc.
-	public static void drink(Brew brew, Player player) {
-		int brewAlc = brew.calcAlcohol();
-		if (brewAlc == 0) {
-			//no alcohol so we dont need to add a BPlayer
-			addBrewEffects(brew, player);
-			return;
-		}
+	public static boolean drink(Brew brew, Player player) {
 		BPlayer bPlayer = get(player);
 		if (bPlayer == null) {
 			bPlayer = addPlayer(player);
 		}
+		BrewDrinkEvent drinkEvent = new BrewDrinkEvent(brew, player, bPlayer);
+		P.p.getServer().getPluginManager().callEvent(drinkEvent);
+		if (drinkEvent.isCancelled()) {
+			if (bPlayer.drunkeness <= 0) {
+				bPlayer.remove();
+			}
+			return false;
+		}
+
+		int brewAlc = drinkEvent.getAddedAlcohol();
+		int quality = drinkEvent.getQuality();
+		List<PotionEffect> effects = getBrewEffects(brew.getEffects(), quality);
+
+		if (brewAlc < 1) {
+			//no alcohol so we dont need to add a BPlayer
+			applyDrinkEffects(effects, player);
+			if (bPlayer.drunkeness <= 0) {
+				bPlayer.remove();
+			}
+			return true;
+		}
+
+		effects.addAll(getQualityEffects(drinkEvent.getQuality(), brewAlc));
 		bPlayer.drunkeness += brewAlc;
-		if (brew.getQuality() > 0) {
-			bPlayer.quality += brew.getQuality() * brewAlc;
+		if (quality > 0) {
+			bPlayer.quality += quality * brewAlc;
 		} else {
 			bPlayer.quality += brewAlc;
 		}
+		applyDrinkEffects(effects, player);
 
-		if (bPlayer.drunkeness <= 100) {
-
-			addBrewEffects(brew, player);
-			addQualityEffects(brew.getQuality(), brewAlc, player);
-
-		} else {
+		if (bPlayer.drunkeness > 100) {
 			bPlayer.drinkCap(player);
 		}
+		return true;
 	}
 
 	// Player has drunken too much
@@ -243,6 +270,13 @@ public class BPlayer {
 								} else {
 									push.setX(Math.random() - 0.5);
 									push.setZ(Math.random() - 0.5);
+								}
+								PlayerPushEvent pushEvent = new PlayerPushEvent(player, push, this);
+								P.p.getServer().getPluginManager().callEvent(pushEvent);
+								push = pushEvent.getPush();
+								if (pushEvent.isCancelled() || push.lengthSquared() <= 0) {
+									time = -10;
+									return;
 								}
 								player.setVelocity(push);
 							} else if (time < 0 && time > -10) {
@@ -382,6 +416,12 @@ public class BPlayer {
 			return;
 		}
 
+		PlayerPukeEvent event = new PlayerPukeEvent(player, count);
+		P.p.getServer().getPluginManager().callEvent(event);
+		if (event.isCancelled() || event.getCount() < 1) {
+			return;
+		}
+
 		if (pTasks.isEmpty()) {
 			taskId = P.p.getServer().getScheduler().scheduleSyncRepeatingTask(P.p, new Runnable() {
 				public void run() {
@@ -389,7 +429,7 @@ public class BPlayer {
 				}
 			}, 1L, 1L);
 		}
-		pTasks.put(player, new MutableInt(count));
+		pTasks.put(player, new MutableInt(event.getCount()));
 	}
 
 	public static void pukeTask() {
@@ -466,6 +506,18 @@ public class BPlayer {
 
 	// #### Effects ####
 
+	public static void applyDrinkEffects(List<PotionEffect> effects, Player player) {
+		PlayerDrinkEffectEvent event = new PlayerDrinkEffectEvent(player, effects);
+		P.p.getServer().getPluginManager().callEvent(event);
+		effects = event.getEffects();
+		if (event.isCancelled() || effects == null) {
+			return;
+		}
+		for (PotionEffect effect : effects) {
+			Util.reapplyPotionEffect(player, effect, true);
+		}
+	}
+
 	public void drunkEffects(Player player) {
 		int duration = 10 - getQuality();
 		duration += drunkeness / 2;
@@ -478,10 +530,22 @@ public class BPlayer {
 		if (!P.use1_14) {
 			duration *= 4;
 		}
-		PotionEffectType.CONFUSION.createEffect(duration, 0).apply(player);
+		List<PotionEffect> l = new ArrayList<>(1);
+		l.add(PotionEffectType.CONFUSION.createEffect(duration, 0));
+
+		PlayerAlcEffectEvent event = new PlayerAlcEffectEvent(player, l);
+		P.p.getServer().getPluginManager().callEvent(event);
+		l = event.getEffects();
+		if (event.isCancelled() || l == null) {
+			return;
+		}
+		for (PotionEffect effect : l) {
+			effect.apply(player);
+		}
 	}
 
-	public static void addQualityEffects(int quality, int brewAlc, Player player) {
+	public static List<PotionEffect> getQualityEffects(int quality, int brewAlc) {
+		List<PotionEffect> out = new ArrayList<>(2);
 		int duration = 7 - quality;
 		if (quality == 0) {
 			duration *= 125;
@@ -497,7 +561,7 @@ public class BPlayer {
 			duration *= 4;
 		}
 		if (duration > 0) {
-			Util.reapplyPotionEffect(player, PotionEffectType.POISON.createEffect(duration, 0), true);
+			out.add(PotionEffectType.POISON.createEffect(duration, 0));
 		}
 
 		if (brewAlc > 10) {
@@ -511,8 +575,28 @@ public class BPlayer {
 			if (!P.use1_14) {
 				duration *= 4;
 			}
-			Util.reapplyPotionEffect(player, PotionEffectType.BLINDNESS.createEffect(duration, 0), true);
+			out.add(PotionEffectType.BLINDNESS.createEffect(duration, 0));
 		}
+		return out;
+	}
+
+	public static void addQualityEffects(int quality, int brewAlc, Player player) {
+		for (PotionEffect effect : getQualityEffects(quality, brewAlc)) {
+			Util.reapplyPotionEffect(player, effect, true);
+		}
+	}
+
+	public static List<PotionEffect> getBrewEffects(List<BEffect> effects, int quality) {
+		List<PotionEffect> out = new ArrayList<>();
+		if (effects != null) {
+			for (BEffect effect : effects) {
+				PotionEffect e = effect.generateEffect(quality);
+				if (e != null) {
+					out.add(e);
+				}
+			}
+		}
+		return out;
 	}
 
 	public static void addBrewEffects(Brew brew, Player player) {

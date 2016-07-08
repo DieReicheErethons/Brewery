@@ -1,12 +1,17 @@
 package com.dre.brewery;
 
+import com.dre.brewery.api.events.barrel.BarrelAccessEvent;
+import com.dre.brewery.api.events.barrel.BarrelCreateEvent;
+import com.dre.brewery.api.events.barrel.BarrelDestroyEvent;
+import com.dre.brewery.api.events.barrel.BarrelRemoveEvent;
 import com.dre.brewery.integration.CitadelBarrel;
 import com.dre.brewery.integration.GriefPreventionBarrel;
 import com.dre.brewery.integration.LWCBarrel;
 import com.dre.brewery.integration.LogBlockBarrel;
-import org.apache.commons.lang.ArrayUtils;
 import com.dre.brewery.lore.BrewLore;
+import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Material;
+import org.bukkit.TreeSpecies;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.HumanEntity;
@@ -16,6 +21,10 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
+import org.bukkit.material.MaterialData;
+import org.bukkit.material.Stairs;
+import org.bukkit.material.Tree;
+import org.bukkit.material.Wood;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -26,7 +35,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Barrel implements InventoryHolder {
 
-	public static CopyOnWriteArrayList<Barrel> barrels = new CopyOnWriteArrayList<>();
+	public static CopyOnWriteArrayList<Barrel> barrels = new CopyOnWriteArrayList<>(); // TODO find best collection
 	private static int check = 0;
 
 	private Block spigot;
@@ -47,9 +56,9 @@ public class Barrel implements InventoryHolder {
 		this.spigot = spigot;
 		this.signoffset = sign;
 		if (isLarge()) {
-			this.inventory = org.bukkit.Bukkit.createInventory(this, 27, P.p.languageReader.get("Etc_Barrel"));
+			this.inventory = P.p.getServer().createInventory(this, 27, P.p.languageReader.get("Etc_Barrel"));
 		} else {
-			this.inventory = org.bukkit.Bukkit.createInventory(this, 9, P.p.languageReader.get("Etc_Barrel"));
+			this.inventory = P.p.getServer().createInventory(this, 9, P.p.languageReader.get("Etc_Barrel"));
 		}
 		if (items != null) {
 			for (String slot : items.keySet()) {
@@ -119,49 +128,13 @@ public class Barrel implements InventoryHolder {
 			}
 		}
 
-		if (P.p.useWG) {
-			Plugin plugin = P.p.getServer().getPluginManager().getPlugin("WorldGuard");
-			if (plugin != null) {
-				try {
-					if (!P.p.wg.checkAccess(player, spigot, plugin)) {
-						return false;
-					}
-				} catch (Throwable e) {
-					P.p.errorLog("Failed to Check WorldGuard for Barrel Open Permissions!");
-					P.p.errorLog("Brewery was tested with version 5.8, 6.1 to 7.0 of WorldGuard!");
-					P.p.errorLog("Disable the WorldGuard support in the config and do /brew reload");
-					e.printStackTrace();
-					if (player.hasPermission("brewery.admin") || player.hasPermission("brewery.mod")) {
-						P.p.msg(player, "&cWorldGuard check Error, Brewery was tested with up to v7.0 of Worldguard");
-						P.p.msg(player, "&cSet &7useWorldGuard: false &cin the config and /brew reload");
-					} else {
-						P.p.msg(player, "&cError opening Barrel, please report to an Admin!");
-					}
-					return false;
-				}
-			}
-		}
-
-		if (P.p.useGP) {
-			if (P.p.getServer().getPluginManager().isPluginEnabled("GriefPrevention")) {
-				try {
-					if (!GriefPreventionBarrel.checkAccess(player, spigot)) {
-						return false;
-					}
-				} catch (Throwable e) {
-					P.p.errorLog("Failed to Check GriefPrevention for Barrel Open Permissions!");
-					P.p.errorLog("Brewery was tested with GriefPrevention v14.5 - v16.9");
-					P.p.errorLog("Disable the GriefPrevention support in the config and do /brew reload");
-					e.printStackTrace();
-					if (player.hasPermission("brewery.admin") || player.hasPermission("brewery.mod")) {
-						P.p.msg(player, "&cGriefPrevention check Error, Brewery was tested with up to v16.9 of GriefPrevention");
-						P.p.msg(player, "&cSet &7useGriefPrevention: false &cin the config and /brew reload");
-					} else {
-						P.p.msg(player, "&cError opening Barrel, please report to an Admin!");
-					}
-					return false;
-				}
-			}
+		// Call event
+		BarrelAccessEvent accessEvent = new BarrelAccessEvent(this, player, event.getClickedBlock());
+		// Listened to by WGBarrelNew, WGBarrelOld, GriefPreventionBarrel (IntegrationListener)
+		P.p.getServer().getPluginManager().callEvent(accessEvent);
+		if (accessEvent.isCancelled()) {
+			P.p.msg(player, P.p.languageReader.get("Error_NoBarrelAccess"));
+			return false;
 		}
 
 		if (event != null && P.p.useLWC) {
@@ -169,7 +142,7 @@ public class Barrel implements InventoryHolder {
 			if (plugin != null) {
 
 				// If the Clicked Block was the Sign, LWC already knows and we dont need to do anything here
-				if (!LegacyUtil.isSign(event.getClickedBlock().getType())) {
+				if (!isSign(event.getClickedBlock())) {
 					Block sign = getSignOfSpigot();
 					// If the Barrel does not have a Sign, it cannot be locked
 					if (!sign.equals(event.getClickedBlock())) {
@@ -184,7 +157,7 @@ public class Barrel implements InventoryHolder {
 								P.p.msg(player, "&cLWC check Error, Brewery was tested with up to v4.5.0 of LWC");
 								P.p.msg(player, "&cSet &7useLWC: false &cin the config and /brew reload");
 							} else {
-								P.p.msg(player, "&cError opening Barrel, please report to an Admin!");
+								P.p.msg(player, "&cError breaking Barrel, please report to an Admin!");
 							}
 							return false;
 						}
@@ -193,80 +166,24 @@ public class Barrel implements InventoryHolder {
 			}
 		}
 
-		if (event != null && P.p.useCitadel) {
-			Plugin plugin = P.p.getServer().getPluginManager().getPlugin("Citadel");
-			if (plugin != null) {
-				try {
-					if (LegacyUtil.isSign(event.getClickedBlock().getType())) {
-						return CitadelBarrel.checkAccess(player, getSignOfSpigot());
-					} else {
-						return CitadelBarrel.checkAccess(player, spigot);
-					}
-				} catch (Throwable e) {
-					P.p.errorLog("Failed to Check Citadel for Container Access Permissions!");
-					P.p.errorLog("Brewery was tested with version 3.9.1 of Citadel!");
-					P.p.errorLog("Disable Citadel support in the config and do /brew reload");
-					e.printStackTrace();
-					if (player.hasPermission("brewery.admin") || player.hasPermission("brewery.mod")) {
-						P.p.msg(player, "&cCitadel check Error, Brewery was tested with up to v3.9.1 of Citadel");
-					} else {
-						P.p.msg(player, "&cError opening Barrel, please report to an Admin!");
-					}
-					return false;
-				}
-			}
-		}
-
 		return true;
 	}
 
-	// Ask for permission to destroy barrel, remove protection if has
-	public boolean hasPermsDestroy(Player player) {
-		if (player == null) {
-			willDestroy();
-			return true;
-		}
-		if (P.p.useLWC) {
-			try {
-				return LWCBarrel.checkDestroy(player, this);
-			} catch (Throwable e) {
-				P.p.errorLog("Failed to Check LWC for Barrel Break Permissions!");
-				P.p.errorLog("Brewery was tested with version 4.5.0 of LWC!");
-				P.p.errorLog("Disable the LWC support in the config and do /brew reload");
-				e.printStackTrace();
-				if (player.hasPermission("brewery.admin") || player.hasPermission("brewery.mod")) {
-					P.p.msg(player, "&cLWC check Error, Brewery was tested with up to v4.5.0 of LWC");
-					P.p.msg(player, "&cSet &7useLWC: false &cin the config and /brew reload");
-				} else {
-					P.p.msg(player, "&cError breaking Barrel, please report to an Admin!");
-				}
-				return false;
-			}
-		}
-
-		return true;
-	}
-
-	// If something other than the Player is destroying the barrel, inform protection plugins
-	public void willDestroy() {
-		if (P.p.useLWC) {
-			try {
-				LWCBarrel.remove(this);
-			} catch (Throwable e) {
-				P.p.errorLog("Failed to Remove LWC Lock from Barrel!");
-				P.p.errorLog("Brewery was tested with version 4.5.0 of LWC!");
-				e.printStackTrace();
-			}
-		}
+	// Ask for permission to destroy barrel
+	public boolean hasPermsDestroy(Player player, Block block, BarrelDestroyEvent.Reason reason) {
+		// Listened to by LWCBarrel (IntegrationListener)
+		BarrelDestroyEvent destroyEvent = new BarrelDestroyEvent(this, block, reason, player);
+		P.p.getServer().getPluginManager().callEvent(destroyEvent);
+		return !destroyEvent.isCancelled();
 	}
 
 	// player opens the barrel
 	public void open(Player player) {
 		if (inventory == null) {
 			if (isLarge()) {
-				inventory = org.bukkit.Bukkit.createInventory(this, 27, P.p.languageReader.get("Etc_Barrel"));
+				inventory = P.p.getServer().createInventory(this, 27, P.p.languageReader.get("Etc_Barrel"));
 			} else {
-				inventory = org.bukkit.Bukkit.createInventory(this, 9, P.p.languageReader.get("Etc_Barrel"));
+				inventory = P.p.getServer().createInventory(this, 9, P.p.languageReader.get("Etc_Barrel"));
 			}
 		} else {
 			if (time > 0) {
@@ -313,6 +230,10 @@ public class Barrel implements InventoryHolder {
 
 	public Block getSpigot() {
 		return spigot;
+	}
+
+	public float getTime() {
+		return time;
 	}
 
 	// Returns true if this Block is part of this Barrel
@@ -457,8 +378,12 @@ public class Barrel implements InventoryHolder {
 						return false;
 					}
 				}
-				barrels.add(barrel);
-				return true;
+				BarrelCreateEvent createEvent = new BarrelCreateEvent(barrel, player);
+				P.p.getServer().getPluginManager().callEvent(createEvent);
+				if (!createEvent.isCancelled()) {
+					barrels.add(barrel);
+					return true;
+				}
 			}
 		} else {
 			if (barrel.signoffset == 0 && signoffset != 0) {
@@ -471,6 +396,10 @@ public class Barrel implements InventoryHolder {
 
 	// removes a barrel, throwing included potions to the ground
 	public void remove(Block broken, Player breaker) {
+		BarrelRemoveEvent event = new BarrelRemoveEvent(this);
+		// Listened to by LWCBarrel (IntegrationListener)
+		P.p.getServer().getPluginManager().callEvent(event);
+
 		if (inventory != null) {
 			List<HumanEntity> viewers = new ArrayList(inventory.getViewers());
 			// Copy List to fix ConcModExc
@@ -481,32 +410,34 @@ public class Barrel implements InventoryHolder {
 			inventory.clear();
 			if (P.p.useLB && breaker != null) {
 				try {
-					LogBlockBarrel.breakBarrel(breaker, items, spigot.getLocation());
+					LogBlockBarrel.breakBarrel(breaker.getName(), items, spigot.getLocation());
 				} catch (Throwable e) {
 					P.p.errorLog("Failed to Log Barrel-break to LogBlock!");
 					P.p.errorLog("Brewery was tested with version 1.94 of LogBlock!");
 					e.printStackTrace();
 				}
 			}
-			for (ItemStack item : items) {
-				if (item != null) {
-					Brew brew = Brew.get(item);
-					if (brew != null) {
-						// Brew before throwing
-						brew.age(item, time, getWood());
-						PotionMeta meta = (PotionMeta) item.getItemMeta();
-						if (BrewLore.hasColorLore(meta)) {
-							BrewLore lore = new BrewLore(brew, meta);
-							lore.convertLore(false);
-							lore.write();
-							item.setItemMeta(meta);
+			if (event.shouldItemsDrop()) {
+				for (ItemStack item : items) {
+					if (item != null) {
+						Brew brew = Brew.get(item);
+						if (brew != null) {
+							// Brew before throwing
+							brew.age(item, time, getWood());
+							PotionMeta meta = (PotionMeta) item.getItemMeta();
+							if (BrewLore.hasColorLore(meta)) {
+								BrewLore lore = new BrewLore(brew, meta);
+								lore.convertLore(false);
+								lore.write();
+								item.setItemMeta(meta);
+							}
 						}
-					}
-					// "broken" is the block that destroyed, throw them there!
-					if (broken != null) {
-						broken.getWorld().dropItem(broken.getLocation(), item);
-					} else {
-						spigot.getWorld().dropItem(spigot.getLocation(), item);
+						// "broken" is the block that destroyed, throw them there!
+						if (broken != null) {
+							broken.getWorld().dropItem(broken.getLocation(), item);
+						} else {
+							spigot.getWorld().dropItem(spigot.getLocation(), item);
+						}
 					}
 				}
 			}
@@ -638,6 +569,11 @@ public class Barrel implements InventoryHolder {
 
 	// is this a Large barrel?
 	public boolean isLarge() {
+		return !isSmall();
+	}
+
+	// is this a Small barrel?
+	public boolean isSmall() {
 		return !LegacyUtil.isSign(spigot.getType());
 	}
 
@@ -889,7 +825,7 @@ public class Barrel implements InventoryHolder {
 							P.p.debugLog("Barrel at " + broken.getWorld().getName() + "/" + broken.getX() + "/" + broken.getY() + "/" + broken.getZ()
 									+ " has been destroyed unexpectedly, contents will drop");
 							// remove the barrel if it was destroyed
-							barrel.willDestroy();
+							barrel.willDestroy(); // TODO Check if still needed
 							barrel.remove(broken, null);
 						} else {
 							// Dont check this barrel again, its enough to check it once after every restart

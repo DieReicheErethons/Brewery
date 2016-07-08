@@ -4,6 +4,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Levelled;
+import com.dre.brewery.api.events.IngedientAddEvent;
 import org.bukkit.entity.Player;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -12,16 +13,15 @@ import org.bukkit.Effect;
 import org.bukkit.configuration.ConfigurationSection;
 
 public class BCauldron {
-	public static CopyOnWriteArrayList<BCauldron> bcauldrons = new CopyOnWriteArrayList<>();
+	public static CopyOnWriteArrayList<BCauldron> bcauldrons = new CopyOnWriteArrayList<>(); // TODO find best Collection
 
 	private BIngredients ingredients = new BIngredients();
-	private Block block;
+	private final Block block;
 	private int state = 1;
 	private boolean someRemoved = false;
 
-	public BCauldron(Block block, ItemStack ingredient) {
+	public BCauldron(Block block) {
 		this.block = block;
-		add(ingredient);
 		bcauldrons.add(this);
 	}
 
@@ -47,7 +47,8 @@ public class BCauldron {
 
 	// add an ingredient to the cauldron
 	public void add(ItemStack ingredient) {
-		if (someRemoved) {
+		if (ingredient == null || ingredient.getType() == Material.AIR) return;
+		if (someRemoved) { // TODO no need to clone
 			ingredients = ingredients.clone();
 			someRemoved = false;
 		}
@@ -70,16 +71,22 @@ public class BCauldron {
 	}
 
 	// get cauldron from block and add given ingredient
-	public static boolean ingredientAdd(Block block, ItemStack ingredient) {
+	// Calls the IngredientAddEvent and may be cancelled or changed
+	public static boolean ingredientAdd(Block block, ItemStack ingredient, Player player) {
 		// if not empty
 		if (LegacyUtil.getFillLevel(block) != 0) {
 			BCauldron bcauldron = get(block);
-			if (bcauldron != null) {
-				bcauldron.add(ingredient);
-				return true;
+			if (bcauldron == null) {
+				bcauldron = new BCauldron(block);
+			}
+
+			IngedientAddEvent event = new IngedientAddEvent(player, block, bcauldron, ingredient);
+			P.p.getServer().getPluginManager().callEvent(event);
+			if (!event.isCancelled()) {
+				bcauldron.add(event.getIngredient());
+				return event.shouldTakeItem();
 			} else {
-				new BCauldron(block, ingredient);
-				return true;
+				return false;
 			}
 		}
 		return false;
@@ -161,13 +168,15 @@ public class BCauldron {
 	}
 
 	// reset to normal cauldron
-	public static void remove(Block block) {
+	public static boolean remove(Block block) {
 		if (LegacyUtil.getFillLevel(block) != 0) {
 			BCauldron bcauldron = get(block);
 			if (bcauldron != null) {
 				bcauldrons.remove(bcauldron);
+				return true;
 			}
 		}
+		return false;
 	}
 
 	// unloads cauldrons that are in a unloading world

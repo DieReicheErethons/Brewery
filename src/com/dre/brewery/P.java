@@ -5,12 +5,19 @@ import com.dre.brewery.filedata.DataSave;
 import com.dre.brewery.filedata.DataUpdater;
 import com.dre.brewery.filedata.LanguageReader;
 import com.dre.brewery.filedata.UpdateChecker;
+import com.dre.brewery.integration.IntegrationListener;
 import com.dre.brewery.integration.LogBlockBarrel;
 import com.dre.brewery.integration.WGBarrel;
 import com.dre.brewery.integration.WGBarrel7;
 import com.dre.brewery.integration.WGBarrelNew;
 import com.dre.brewery.integration.WGBarrelOld;
-import com.dre.brewery.listeners.*;
+import com.dre.brewery.listeners.BlockListener;
+import com.dre.brewery.listeners.CauldronListener;
+import com.dre.brewery.listeners.CommandListener;
+import com.dre.brewery.listeners.EntityListener;
+import com.dre.brewery.listeners.InventoryListener;
+import com.dre.brewery.listeners.PlayerListener;
+import com.dre.brewery.listeners.WorldListener;
 import org.apache.commons.lang.math.NumberUtils;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
@@ -31,11 +38,14 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.UUID;
 
@@ -65,6 +75,7 @@ public class P extends JavaPlugin {
 	public EntityListener entityListener;
 	public InventoryListener inventoryListener;
 	public WorldListener worldListener;
+	public IntegrationListener integrationListener;
 
 	// Language
 	public String language;
@@ -413,6 +424,7 @@ public class P extends JavaPlugin {
 		entityListener = new EntityListener();
 		inventoryListener = new InventoryListener();
 		worldListener = new WorldListener();
+		integrationListener = new IntegrationListener();
 		getCommand("Brewery").setExecutor(new CommandListener());
 		getCommand("Brewery").setTabCompleter(new TabListener());
 
@@ -421,6 +433,7 @@ public class P extends JavaPlugin {
 		p.getServer().getPluginManager().registerEvents(entityListener, p);
 		p.getServer().getPluginManager().registerEvents(inventoryListener, p);
 		p.getServer().getPluginManager().registerEvents(worldListener, p);
+		p.getServer().getPluginManager().registerEvents(integrationListener, p);
 		if (use1_9) {
 			p.getServer().getPluginManager().registerEvents(new CauldronListener(), p);
 		}
@@ -579,6 +592,11 @@ public class P extends JavaPlugin {
 
 		// Third-Party
 		useWG = config.getBoolean("useWorldGuard", true) && getServer().getPluginManager().isPluginEnabled("WorldGuard");
+		useLWC = config.getBoolean("useLWC", true) && getServer().getPluginManager().isPluginEnabled("LWC");
+		useGP = config.getBoolean("useGriefPrevention", true) && getServer().getPluginManager().isPluginEnabled("GriefPrevention");
+		useLB = config.getBoolean("useLogBlock", false) && getServer().getPluginManager().isPluginEnabled("LogBlock");
+		hasVault = getServer().getPluginManager().isPluginEnabled("Vault");
+
 		if (useWG) {
 			Plugin plugin = Bukkit.getPluginManager().getPlugin("WorldEdit");
 			if (plugin != null) {

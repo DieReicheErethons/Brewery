@@ -2,6 +2,7 @@ package com.dre.brewery;
 
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.PotionMeta;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 public class BEffect {
@@ -81,19 +82,26 @@ public class BEffect {
 		}
 	}
 
-	public void apply(int quality, Player player) {
+	public PotionEffect generateEffect(int quality) {
 		int duration = calcDuration(quality);
 		int lvl = calcLvl(quality);
 
 		if (lvl < 1 || (duration < 1 && !type.isInstant())) {
-			return;
+			return null;
 		}
 
 		duration *= 20;
 		if (!P.use1_14) {
 			duration /= type.getDurationModifier();
 		}
-		Util.reapplyPotionEffect(player, type.createEffect(duration, lvl - 1), true);
+		return type.createEffect(duration, lvl - 1);
+	}
+
+	public void apply(int quality, Player player) {
+		PotionEffect effect = generateEffect(quality);
+		if (effect != null) {
+			Util.reapplyPotionEffect(player, effect, true);
+		}
 	}
 
 	public int calcDuration(float quality) {

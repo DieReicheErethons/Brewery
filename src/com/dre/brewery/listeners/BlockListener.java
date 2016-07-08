@@ -1,20 +1,21 @@
 package com.dre.brewery.listeners;
 
+import com.dre.brewery.BPlayer;
+import com.dre.brewery.BUtil;
+import com.dre.brewery.Barrel;
+import com.dre.brewery.P;
+import com.dre.brewery.Words;
+import com.dre.brewery.api.events.barrel.BarrelDestroyEvent;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.SignChangeEvent;
-import org.bukkit.event.block.BlockBreakEvent;
-
-import com.dre.brewery.Barrel;
-import com.dre.brewery.BPlayer;
-import com.dre.brewery.Words;
-import com.dre.brewery.P;
 
 public class BlockListener implements Listener {
 
@@ -45,14 +46,14 @@ public class BlockListener implements Listener {
 
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onBlockBreak(BlockBreakEvent event) {
-		if (!P.p.blockDestroy(event.getBlock(), event.getPlayer())) {
+		if (!BUtil.blockDestroy(event.getBlock(), event.getPlayer(), BarrelDestroyEvent.Reason.PLAYER)) {
 			event.setCancelled(true);
 		}
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onBlockBurn(BlockBurnEvent event) {
-		P.p.blockDestroy(event.getBlock(), null);
+		BUtil.blockDestroy(event.getBlock(), null, BarrelDestroyEvent.Reason.BURNED);
 	}
 
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)

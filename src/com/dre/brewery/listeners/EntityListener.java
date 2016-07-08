@@ -1,25 +1,26 @@
 package com.dre.brewery.listeners;
 
-import java.util.ListIterator;
-
+import com.dre.brewery.Barrel;
+import com.dre.brewery.Brew;
+import com.dre.brewery.P;
+import com.dre.brewery.api.events.barrel.BarrelDestroyEvent;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Item;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
+import org.bukkit.event.entity.EntityCombustEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.ItemDespawnEvent;
-import org.bukkit.event.entity.EntityCombustEvent;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
 
-import com.dre.brewery.Barrel;
-import com.dre.brewery.Brew;
-import com.dre.brewery.P;
-import com.dre.brewery.integration.LWCBarrel;
+import java.util.HashSet;
+import java.util.ListIterator;
+import java.util.Set;
 
 public class EntityListener implements Listener {
 
@@ -50,29 +51,31 @@ public class EntityListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onExplode(EntityExplodeEvent event) {
 		ListIterator<Block> iter = event.blockList().listIterator();
-		Barrel barrel = null;
-		boolean removedBarrel = false;
-		while (iter.hasNext()) {
-			Block block = iter.next();
-			if (barrel == null || !barrel.hasBlock(block)) {
-				barrel = Barrel.get(block);
-				removedBarrel = false;
-			}
-			if (!removedBarrel) {
-				if (barrel != null) {
-					if (P.p.useLWC) {
-						try {
-							if (LWCBarrel.blockExplosion(barrel, block)) {
-								iter.remove();
-							} else {
-								removedBarrel = true;
-							}
-						} catch (Exception e) {
-							P.p.errorLog("Failed to Check LWC on Barrel Explosion!");
-							e.printStackTrace();
-							removedBarrel = true;
+		if (!iter.hasNext()) return;
+		Set<BarrelDestroyEvent> breakEvents = new HashSet<>(6);
+		Block block;
+		blocks: while (iter.hasNext()) {
+			block = iter.next();
+			if (!breakEvents.isEmpty()) {
+				for (BarrelDestroyEvent breakEvent : breakEvents) {
+					if (breakEvent.getBarrel().hasBlock(block)) {
+						if (breakEvent.isCancelled()) {
+							iter.remove();
 						}
+						continue blocks;
 					}
+				}
+			}
+			Barrel barrel = Barrel.get(block);
+			if (barrel != null) {
+				BarrelDestroyEvent breakEvent = new BarrelDestroyEvent(barrel, block, BarrelDestroyEvent.Reason.EXPLODED, null);
+				// Listened to by LWCBarrel (IntegrationListener)
+				P.p.getServer().getPluginManager().callEvent(breakEvent);
+				breakEvents.add(breakEvent);
+				if (breakEvent.isCancelled()) {
+					iter.remove();
+				} else {
+					barrel.remove(block, null);
 				}
 			}
 		}

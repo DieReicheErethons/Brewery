@@ -1,13 +1,28 @@
 package com.dre.brewery;
 
-import com.dre.brewery.filedata.*;
+import com.dre.brewery.filedata.ConfigUpdater;
+import com.dre.brewery.filedata.DataSave;
+import com.dre.brewery.filedata.DataUpdater;
+import com.dre.brewery.filedata.LanguageReader;
+import com.dre.brewery.filedata.UpdateChecker;
+import com.dre.brewery.integration.IntegrationListener;
 import com.dre.brewery.integration.LogBlockBarrel;
 import com.dre.brewery.integration.WGBarrel;
 import com.dre.brewery.integration.WGBarrelNew;
 import com.dre.brewery.integration.WGBarrelOld;
-import com.dre.brewery.listeners.*;
+import com.dre.brewery.listeners.BlockListener;
+import com.dre.brewery.listeners.CauldronListener;
+import com.dre.brewery.listeners.CommandListener;
+import com.dre.brewery.listeners.EntityListener;
+import com.dre.brewery.listeners.InventoryListener;
+import com.dre.brewery.listeners.PlayerListener;
+import com.dre.brewery.listeners.WorldListener;
 import org.apache.commons.lang.math.NumberUtils;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
@@ -18,8 +33,17 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.UUID;
 
 public class P extends JavaPlugin {
 	public static P p;
@@ -43,6 +67,7 @@ public class P extends JavaPlugin {
 	public EntityListener entityListener;
 	public InventoryListener inventoryListener;
 	public WorldListener worldListener;
+	public IntegrationListener integrationListener;
 
 	// Language
 	public String language;
@@ -330,6 +355,7 @@ public class P extends JavaPlugin {
 		entityListener = new EntityListener();
 		inventoryListener = new InventoryListener();
 		worldListener = new WorldListener();
+		integrationListener = new IntegrationListener();
 		getCommand("Brewery").setExecutor(new CommandListener());
 
 		p.getServer().getPluginManager().registerEvents(blockListener, p);
@@ -337,6 +363,7 @@ public class P extends JavaPlugin {
 		p.getServer().getPluginManager().registerEvents(entityListener, p);
 		p.getServer().getPluginManager().registerEvents(inventoryListener, p);
 		p.getServer().getPluginManager().registerEvents(worldListener, p);
+		p.getServer().getPluginManager().registerEvents(integrationListener, p);
 		if (use1_9) {
 			p.getServer().getPluginManager().registerEvents(new CauldronListener(), p);
 		}
@@ -495,6 +522,11 @@ public class P extends JavaPlugin {
 
 		// Third-Party
 		useWG = config.getBoolean("useWorldGuard", true) && getServer().getPluginManager().isPluginEnabled("WorldGuard");
+		useLWC = config.getBoolean("useLWC", true) && getServer().getPluginManager().isPluginEnabled("LWC");
+		useGP = config.getBoolean("useGriefPrevention", true) && getServer().getPluginManager().isPluginEnabled("GriefPrevention");
+		useLB = config.getBoolean("useLogBlock", false) && getServer().getPluginManager().isPluginEnabled("LogBlock");
+		hasVault = getServer().getPluginManager().isPluginEnabled("Vault");
+
 		if (useWG) {
 			try {
 				try {
@@ -511,10 +543,6 @@ public class P extends JavaPlugin {
 				e.printStackTrace();
 			}
 		}
-		useLWC = config.getBoolean("useLWC", true) && getServer().getPluginManager().isPluginEnabled("LWC");
-		useGP = config.getBoolean("useGriefPrevention", true) && getServer().getPluginManager().isPluginEnabled("GriefPrevention");
-		useLB = config.getBoolean("useLogBlock", false) && getServer().getPluginManager().isPluginEnabled("LogBlock");
-		hasVault = getServer().getPluginManager().isPluginEnabled("Vault");
 
 		// various Settings
 		DataSave.autosave = config.getInt("autosave", 3);
@@ -927,70 +955,6 @@ public class P extends JavaPlugin {
 				break;
 			}
 		}
-	}
-
-	// Returns true if the Block can be destroyed by the Player or something else (null)
-	public boolean blockDestroy(Block block, Player player) {
-		switch (block.getType()) {
-		case CAULDRON:
-			// will only remove when existing
-			BCauldron.remove(block);
-			return true;
-		case FENCE:
-		case NETHER_FENCE:
-		case ACACIA_FENCE:
-		case BIRCH_FENCE:
-		case DARK_OAK_FENCE:
-		case IRON_FENCE:
-		case JUNGLE_FENCE:
-		case SPRUCE_FENCE:
-			// remove barrel and throw potions on the ground
-			Barrel barrel = Barrel.getBySpigot(block);
-			if (barrel != null) {
-				if (barrel.hasPermsDestroy(player)) {
-					barrel.remove(null, player);
-					return true;
-				} else {
-					return false;
-				}
-			}
-			return true;
-		case SIGN_POST:
-		case WALL_SIGN:
-			// remove small Barrels
-			Barrel barrel2 = Barrel.getBySpigot(block);
-			if (barrel2 != null) {
-				if (!barrel2.isLarge()) {
-					if (barrel2.hasPermsDestroy(player)) {
-						barrel2.remove(null, player);
-						return true;
-					} else {
-						return false;
-					}
-				} else {
-					barrel2.destroySign();
-				}
-			}
-			return true;
-		case WOOD:
-		case WOOD_STAIRS:
-		case BIRCH_WOOD_STAIRS:
-		case JUNGLE_WOOD_STAIRS:
-		case SPRUCE_WOOD_STAIRS:
-		case ACACIA_STAIRS:
-		case DARK_OAK_STAIRS:
-			Barrel barrel3 = Barrel.getByWood(block);
-			if (barrel3 != null) {
-				if (barrel3.hasPermsDestroy(player)) {
-					barrel3.remove(block, player);
-				} else {
-					return false;
-				}
-			}
-		default:
-			break;
-		}
-		return true;
 	}
 
 	public String color(String msg) {

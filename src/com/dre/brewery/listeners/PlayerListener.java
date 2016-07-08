@@ -1,6 +1,13 @@
 package com.dre.brewery.listeners;
 
-import com.dre.brewery.*;
+import com.dre.brewery.BCauldron;
+import com.dre.brewery.BIngredients;
+import com.dre.brewery.BPlayer;
+import com.dre.brewery.Barrel;
+import com.dre.brewery.Brew;
+import com.dre.brewery.P;
+import com.dre.brewery.Wakeup;
+import com.dre.brewery.Words;
 import com.dre.brewery.filedata.UpdateChecker;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -115,7 +122,7 @@ public class PlayerListener implements Listener {
 							if (BIngredients.possibleIngredients.contains(materialInHand)) {
 
 								if (player.hasPermission("brewery.cauldron.insert")) {
-									if (BCauldron.ingredientAdd(clickedBlock, item)) {
+									if (BCauldron.ingredientAdd(clickedBlock, item, player)) {
 										boolean isBucket = item.getType().equals(Material.WATER_BUCKET)
 												|| item.getType().equals(Material.LAVA_BUCKET)
 												|| item.getType().equals(Material.MILK_BUCKET);
@@ -213,10 +220,10 @@ public class PlayerListener implements Listener {
 			if (item.getType() == Material.POTION) {
 				Brew brew = Brew.get(item);
 				if (brew != null) {
-					BPlayer.drink(brew, player);
-					/*if (player.getGameMode() != GameMode.CREATIVE) {
-						brew.remove(item);
-					}*/
+					if (!BPlayer.drink(brew, player)) {
+						event.setCancelled(true);
+						return;
+					}
 					if (P.use1_9) {
 						if (player.getGameMode() != GameMode.CREATIVE) {
 							// replace the potion with an empty potion to avoid effects

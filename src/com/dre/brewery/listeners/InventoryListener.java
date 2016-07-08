@@ -1,7 +1,10 @@
 package com.dre.brewery.listeners;
 
-import com.dre.brewery.*;
-import com.dre.brewery.integration.LogBlockBarrel;
+import com.dre.brewery.BPlayer;
+import com.dre.brewery.BRecipe;
+import com.dre.brewery.Barrel;
+import com.dre.brewery.Brew;
+import com.dre.brewery.P;
 import com.dre.brewery.lore.BrewLore;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -12,7 +15,15 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.*;
+import org.bukkit.event.inventory.BrewEvent;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryAction;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.inventory.InventoryPickupItemEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.BrewerInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
@@ -377,21 +388,6 @@ public class InventoryListener implements Listener {
 	public void onInventoryPickupItem(InventoryPickupItemEvent event){
 		if (event.getItem().getPickupDelay() > 1000 && event.getItem().getItemStack().getType() == BPlayer.pukeItem) {
 			event.setCancelled(true);
-		}
-	}
-
-	@EventHandler
-	public void onInventoryClose(InventoryCloseEvent event) {
-		if (P.p.useLB) {
-			if (event.getInventory().getHolder() instanceof Barrel) {
-				try {
-					LogBlockBarrel.closeBarrel(event.getPlayer(), event.getInventory());
-				} catch (Exception e) {
-					P.p.errorLog("Failed to Log Barrel to LogBlock!");
-					P.p.errorLog("Brewery was tested with version 1.94 of LogBlock!");
-					e.printStackTrace();
-				}
-			}
 		}
 	}
 }

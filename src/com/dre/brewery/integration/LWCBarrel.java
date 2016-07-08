@@ -1,5 +1,12 @@
 package com.dre.brewery.integration;
 
+import com.dre.brewery.Barrel;
+import com.dre.brewery.P;
+import com.griefcraft.listeners.LWCPlayerListener;
+import com.griefcraft.lwc.LWC;
+import com.griefcraft.model.Flag;
+import com.griefcraft.model.Protection;
+import com.griefcraft.scripting.event.LWCProtectionDestroyEvent;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventException;
@@ -8,18 +15,10 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredListener;
 
-import com.dre.brewery.Barrel;
-import com.dre.brewery.P;
-import com.griefcraft.listeners.LWCPlayerListener;
-import com.griefcraft.lwc.LWC;
-import com.griefcraft.model.Flag;
-import com.griefcraft.model.Protection;
-import com.griefcraft.scripting.event.LWCProtectionDestroyEvent;
-
 public class LWCBarrel {
 
 
-	public static boolean checkDestroy(Player player, Barrel barrel) {
+	public static boolean denyDestroy(Player player, Barrel barrel) {
 		LWC lwc = LWC.getInstance();
 		Block sign = barrel.getSignOfSpigot();
 		//if (!Boolean.parseBoolean(lwc.resolveProtectionConfiguration(sign, "ignoreBlockDestruction"))) {
@@ -33,18 +32,18 @@ public class LWCBarrel {
 					lwc.getModuleLoader().dispatchEvent(evt);
 
 					if (evt.isCancelled()) {
-						return false;
+						return true;
 					}
 				} catch (Exception e) {
 					lwc.sendLocale(player, "protection.internalerror", "id", "BLOCK_BREAK");
 					P.p.errorLog("Failed to dispatch LWCProtectionDestroyEvent");
 					e.printStackTrace();
-					return false;
+					return true;
 				}
 			}
 		//}
 
-		return true;
+		return false;
 	}
 
 	public static boolean checkAccess(Player player, Block sign, PlayerInteractEvent event, Plugin plugin) {
@@ -86,19 +85,14 @@ public class LWCBarrel {
 	}
 
 	// Returns true if the block that exploded should not be removed
-	public static boolean blockExplosion(Barrel barrel, Block block) {
+	public static boolean denyExplosion(Barrel barrel) {
 		Protection protection = LWC.getInstance().findProtection(barrel.getSignOfSpigot());
 
-		if (protection == null) {
-			barrel.remove(block, null);
-			return false;
-		}
+		return protection != null && !protection.hasFlag(Flag.Type.ALLOWEXPLOSIONS);
+	}
 
-		if (protection.hasFlag(Flag.Type.ALLOWEXPLOSIONS)) {
-			protection.remove();
-			barrel.remove(block, null);
-			return false;
-		}
-		return true;
+	// Returns true if the block that was destroyed should not be removed
+	public static boolean denyDestroyOther(Barrel barrel) {
+		return LWC.getInstance().findProtection(barrel.getSignOfSpigot()) != null;
 	}
 }

@@ -1,5 +1,6 @@
 package com.dre.brewery;
 
+import com.dre.brewery.api.events.brew.BrewModifyEvent;
 import com.dre.brewery.lore.*;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -454,6 +455,9 @@ public class Brew {
 	// distill custom potion in given slot
 	public void distillSlot(ItemStack slotItem, PotionMeta potionMeta) {
 		if (immutable) return;
+		BrewModifyEvent modifyEvent = new BrewModifyEvent(this, BrewModifyEvent.Type.DISTILL);
+		P.p.getServer().getPluginManager().callEvent(modifyEvent);
+		if (modifyEvent.isCancelled()) return;
 
 		distillRuns += 1;
 		BrewLore lore = new BrewLore(this, potionMeta);
@@ -508,6 +512,9 @@ public class Brew {
 
 	public void age(ItemStack item, float time, byte woodType) {
 		if (immutable) return;
+		BrewModifyEvent modifyEvent = new BrewModifyEvent(this, BrewModifyEvent.Type.AGE);
+		P.p.getServer().getPluginManager().callEvent(modifyEvent);
+		if (modifyEvent.isCancelled()) return;
 
 		PotionMeta potionMeta = (PotionMeta) item.getItemMeta();
 		BrewLore lore = new BrewLore(this, potionMeta);

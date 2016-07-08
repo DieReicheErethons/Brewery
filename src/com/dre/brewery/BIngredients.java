@@ -1,5 +1,6 @@
 package com.dre.brewery;
 
+import com.dre.brewery.api.events.brew.BrewModifyEvent;
 import com.dre.brewery.lore.BrewLore;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -119,6 +120,11 @@ public class BIngredients {
 			// if no name could be found
 			cookedName = P.p.languageReader.get("Brew_Undefined");
 			Brew.PotionColor.CYAN.colorBrew(potionMeta, potion, true);
+		}
+		BrewModifyEvent modifyEvent = new BrewModifyEvent(brew, BrewModifyEvent.Type.FILL);
+		P.p.getServer().getPluginManager().callEvent(modifyEvent);
+		if (modifyEvent.isCancelled()) {
+			return null;
 		}
 
 		potionMeta.setDisplayName(P.p.color("&f" + cookedName));

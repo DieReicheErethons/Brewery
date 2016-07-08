@@ -44,7 +44,6 @@ public class WGBarrelOld implements WGBarrel {
 
 					if (!(Boolean) allows.invoke(region, DefaultFlag.CHEST_ACCESS, localPlayer)) {
 						if (!(Boolean) canBuild.invoke(region, localPlayer)) {
-							P.p.msg(player, P.p.languageReader.get("Error_NoBarrelAccess"));
 							return false;
 						}
 					}

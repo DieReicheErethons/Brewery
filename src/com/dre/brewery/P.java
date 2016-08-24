@@ -35,7 +35,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class P extends JavaPlugin {
 	public static P p;
-	public static final String configVersion = "1.3.1";
+	public static final String configVersion = "1.5";
 	public static boolean debug;
 	public static boolean useUUID;
 	public static boolean use1_9;
@@ -55,11 +55,12 @@ public class P extends JavaPlugin {
 	public EntityListener entityListener;
 	public InventoryListener inventoryListener;
 	public WorldListener worldListener;
-	public DrinkListener1_9 drinkListener1_9;
 
 	// Language
 	public String language;
 	public LanguageReader languageReader;
+
+	private CommandSender reloader;
 
 	@Override
 	public void onEnable() {
@@ -67,8 +68,8 @@ public class P extends JavaPlugin {
 
 		// Version check
 		String v = Bukkit.getBukkitVersion();
-		useUUID = !v.matches(".*1\\.[0-6].*") && !v.matches(".*1\\.7\\.[0-5].*");
-		use1_9 = !v.matches(".*1\\.[0-8].*");
+		useUUID = !v.matches("(^|.*[^\\.\\d])1\\.[0-6]([^\\d].*|$)") && !v.matches("(^|.*[^\\.\\d])1\\.7\\.[0-5]([^\\d].*|$)");
+		use1_9 = !v.matches("(^|.*[^\\.\\d])1\\.[0-8]([^\\d].*|$)");
 
 		// load the Config
 		try {
@@ -94,7 +95,6 @@ public class P extends JavaPlugin {
 		entityListener = new EntityListener();
 		inventoryListener = new InventoryListener();
 		worldListener = new WorldListener();
-		drinkListener1_9 = new DrinkListener1_9();
 		getCommand("Brewery").setExecutor(new CommandListener());
 
 		p.getServer().getPluginManager().registerEvents(blockListener, p);
@@ -103,7 +103,7 @@ public class P extends JavaPlugin {
 		p.getServer().getPluginManager().registerEvents(inventoryListener, p);
 		p.getServer().getPluginManager().registerEvents(worldListener, p);
 		if (use1_9) {
-			p.getServer().getPluginManager().registerEvents(drinkListener1_9, p);
+			p.getServer().getPluginManager().registerEvents(new CauldronListener(), p);
 		}
 
 		// Heartbeat
@@ -146,6 +146,8 @@ public class P extends JavaPlugin {
 		Brew.potions.clear();
 		Wakeup.wakeups.clear();
 		Words.words.clear();
+		Words.ignoreText.clear();
+		Words.commands = null;
 
 		this.log(this.getDescription().getName() + " disabled!");
 	}
@@ -158,11 +160,16 @@ public class P extends JavaPlugin {
 	}
 
 	public void reload(CommandSender sender) {
+		if (sender != null && !sender.equals(getServer().getConsoleSender())) {
+			reloader = sender;
+		}
 		// clear all existent config Data
 		BIngredients.possibleIngredients.clear();
 		BIngredients.recipes.clear();
 		BIngredients.cookedNames.clear();
 		Words.words.clear();
+		Words.ignoreText.clear();
+		Words.commands = null;
 		BPlayer.drainItems.clear();
 		if (useLB) {
 			try {
@@ -200,6 +207,7 @@ public class P extends JavaPlugin {
 		if (!successful) {
 			msg(sender, p.languageReader.get("Error_Recipeload"));
 		}
+		reloader = null;
 	}
 
 	public void msg(CommandSender sender, String msg) {
@@ -218,6 +226,9 @@ public class P extends JavaPlugin {
 
 	public void errorLog(String msg) {
 		Bukkit.getConsoleSender().sendMessage(ChatColor.DARK_GREEN + "[Brewery] " + ChatColor.DARK_RED + "ERROR: " + ChatColor.RED + msg);
+		if (reloader != null) {
+			reloader.sendMessage(ChatColor.DARK_GREEN + "[Brewery] " + ChatColor.DARK_RED + "ERROR: " + ChatColor.RED + msg);
+		}
 	}
 
 	public boolean readConfig() {
@@ -237,6 +248,7 @@ public class P extends JavaPlugin {
 		String version = config.getString("version", null);
 		if (version != null) {
 			if (!version.equals(configVersion)) {
+				copyDefaultConfigs(true);
 				new ConfigUpdater(file).update(version, language);
 				P.p.log("Config Updated to version: " + configVersion);
 				config = YamlConfiguration.loadConfiguration(file);
@@ -278,16 +290,11 @@ public class P extends JavaPlugin {
 		BPlayer.enableHome = config.getBoolean("enableHome", false);
 		BPlayer.enableLoginDisallow = config.getBoolean("enableLoginDisallow", false);
 		BPlayer.enablePuke = config.getBoolean("enablePuke", false);
+		BPlayer.pukeDespawntime = config.getInt("pukeDespawntime", 60) * 20;
 		BPlayer.homeType = config.getString("homeType", null);
 		Brew.colorInBarrels = config.getBoolean("colorInBarrels", false);
 		Brew.colorInBrewer = config.getBoolean("colorInBrewer", false);
 		PlayerListener.openEverywhere = config.getBoolean("openLargeBarrelEverywhere", false);
-		Words.log = config.getBoolean("logRealChat", false);
-		Words.commands = config.getStringList("distortCommands");
-		Words.doSigns = config.getBoolean("distortSignText", false);
-		for (String bypass : config.getStringList("distortBypass")) {
-			Words.ignoreText.add(bypass.split(","));
-		}
 
 		// loading recipes
 		ConfigurationSection configSection = config.getConfigurationSection("recipes");
@@ -353,8 +360,18 @@ public class P extends JavaPlugin {
 			}
 		}
 
-		// telling Words the path, it will load it when needed
-		Words.config = config;
+		// Loading Words
+		if (config.getBoolean("enableChatDistortion", false)) {
+			for (Map<?, ?> map : config.getMapList("words")) {
+				new Words(map);
+			}
+			for (String bypass : config.getStringList("distortBypass")) {
+				Words.ignoreText.add(bypass.split(","));
+			}
+			Words.commands = config.getStringList("distortCommands");
+		}
+		Words.log = config.getBoolean("logRealChat", false);
+		Words.doSigns = config.getBoolean("distortSignText", false);
 
 		return true;
 	}
@@ -380,7 +397,7 @@ public class P extends JavaPlugin {
 			}
 
 			// loading Ingredients into ingMap
-			Map<String, BIngredients> ingMap = new HashMap<String, BIngredients>();
+			Map<String, BIngredients> ingMap = new HashMap<>();
 			ConfigurationSection section = data.getConfigurationSection("Ingredients");
 			if (section != null) {
 				for (String id : section.getKeys(false)) {
@@ -421,6 +438,7 @@ public class P extends JavaPlugin {
 				// keys have players name
 				for (String name : section.getKeys(false)) {
 					try {
+						//noinspection ResultOfMethodCallIgnored
 						UUID.fromString(name);
 						if (!useUUID) {
 							continue;
@@ -434,9 +452,8 @@ public class P extends JavaPlugin {
 					int quality = section.getInt(name + ".quality");
 					int drunk = section.getInt(name + ".drunk");
 					int offDrunk = section.getInt(name + ".offDrunk", 0);
-					boolean passedOut = section.getBoolean(name + ".passedOut", false);
 
-					new BPlayer(name, quality, drunk, offDrunk, passedOut);
+					new BPlayer(name, quality, drunk, offDrunk);
 				}
 			}
 
@@ -454,7 +471,7 @@ public class P extends JavaPlugin {
 	}
 
 	public ArrayList<ItemStack> deserializeIngredients(ConfigurationSection matSection) {
-		ArrayList<ItemStack> ingredients = new ArrayList<ItemStack>();
+		ArrayList<ItemStack> ingredients = new ArrayList<>();
 		for (String mat : matSection.getKeys(false)) {
 			String[] matSplit = mat.split(",");
 			ItemStack item = new ItemStack(Material.getMaterial(matSplit[0]), matSection.getInt(mat));
@@ -586,13 +603,14 @@ public class P extends JavaPlugin {
 		File cfg = new File(p.getDataFolder(), "config.yml");
 		if (!cfg.exists()) {
 			errorLog("No config.yml found, creating default file! You may want to choose a config according to your language!");
+			errorLog("You can find them in plugins/Brewery/configs/");
 			InputStream defconf = getResource("config/en/config.yml");
 			if (defconf == null) {
 				errorLog("default config file not found, your jarfile may be corrupt. Disabling Brewery!");
 				return false;
 			}
 			try {
-				saveFile(defconf, getDataFolder(), "config.yml");
+				saveFile(defconf, getDataFolder(), "config.yml", false);
 			} catch (IOException e) {
 				e.printStackTrace();
 				return false;
@@ -603,31 +621,22 @@ public class P extends JavaPlugin {
 			return false;
 		}
 
-		File configs = new File(getDataFolder(), "configs");
-		if (!configs.exists()) {
-			String lang[] = new String[] {"de", "en", "fr"};
-			for (String l : lang) {
-				File lfold = new File(configs, l);
-				try {
-					saveFile(getResource("config/" + l + "/config.yml"), lfold, "config.yml");
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-
-		File languages = new File(getDataFolder(), "languages");
-		if (!languages.exists()) {
-			String lang[] = new String[] {"de", "en", "fr", "no"};
-			for (String l : lang) {
-				try {
-					saveFile(getResource("languages/" + l + ".yml"), languages, l + ".yml");
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
+		copyDefaultConfigs(false);
 		return true;
+	}
+
+	private void copyDefaultConfigs(boolean overwrite) {
+		File configs = new File(getDataFolder(), "configs");
+		File languages = new File(getDataFolder(), "languages");
+		for (String l : new String[] {"de", "en", "fr", "it"}) {
+			File lfold = new File(configs, l);
+			try {
+				saveFile(getResource("config/" + l + "/config.yml"), lfold, "config.yml", overwrite);
+				saveFile(getResource("languages/" + l + ".yml"), languages, l + ".yml", false); // Never overwrite languages for now
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	// Utility
@@ -755,14 +764,19 @@ public class P extends JavaPlugin {
 		return msg;
 	}
 
-	public static void saveFile(InputStream in, File dest, String name) throws IOException {
+	@SuppressWarnings("ResultOfMethodCallIgnored")
+	public static void saveFile(InputStream in, File dest, String name, boolean overwrite) throws IOException {
 		if (in == null) return;
 		if (!dest.exists()) {
 			dest.mkdirs();
 		}
 		File result = new File(dest, name);
 		if (result.exists()) {
-			return;
+			if (overwrite) {
+				result.delete();
+			} else {
+				return;
+			}
 		}
 
 		OutputStream out = new FileOutputStream(result);
@@ -813,6 +827,7 @@ public class P extends JavaPlugin {
 	public class BreweryRunnable implements Runnable {
 		@Override
 		public void run() {
+			reloader = null;
 			for (BCauldron cauldron : BCauldron.bcauldrons) {
 				cauldron.onUpdate();// runs every min to update cooking time
 			}

@@ -13,7 +13,7 @@ import com.dre.brewery.P;
 
 public class ConfigUpdater {
 
-	private ArrayList<String> config = new ArrayList<String>();
+	private ArrayList<String> config = new ArrayList<>();
 	private File file;
 
 	public ConfigUpdater(File file) {
@@ -89,9 +89,10 @@ public class ConfigUpdater {
 				lang = "de";
 			}
 		}
+		boolean de = lang.equals("de");
 
 		if (fromVersion.equals("0.5") || fromVersion.equals("1.0")) {
-			if (lang.equals("de")) {
+			if (de) {
 				update05de();
 			} else {
 				update10en();
@@ -99,7 +100,7 @@ public class ConfigUpdater {
 			fromVersion = "1.1";
 		}
 		if (fromVersion.equals("1.1") || fromVersion.equals("1.1.1")) {
-			if (lang.equals("de")) {
+			if (de) {
 				update11de();
 			} else {
 				update11en();
@@ -108,7 +109,7 @@ public class ConfigUpdater {
 		}
 
 		if (fromVersion.equals("1.2")) {
-			if (lang.equals("de")) {
+			if (de) {
 				update12de();
 			} else {
 				update12en();
@@ -117,7 +118,7 @@ public class ConfigUpdater {
 		}
 
 		if (fromVersion.equals("1.3")) {
-			if (lang.equals("de")) {
+			if (de) {
 				update13de();
 			} else {
 				update13en();
@@ -125,7 +126,25 @@ public class ConfigUpdater {
 			fromVersion = "1.3.1";
 		}
 
-		if (!fromVersion.equals("1.3.1")) {
+		if (fromVersion.equals("1.3.1")) {
+			if (de) {
+				update131de();
+			} else {
+				update131en();
+			}
+			fromVersion = "1.4";
+		}
+
+		if (fromVersion.equals("1.4")) {
+			if (de) {
+				update14de();
+			} else {
+				update14en();
+			}
+			fromVersion = "1.5";
+		}
+
+		if (!fromVersion.equals("1.5")) {
 			P.p.log(P.p.languageReader.get("Error_ConfigUpdate", fromVersion));
 			return;
 		}
@@ -593,6 +612,7 @@ public class ConfigUpdater {
 
 	}
 
+	// Update de from 1.3 to 1.3.1
 	private void update13de() {
 		updateVersion("1.3.1");
 
@@ -617,6 +637,8 @@ public class ConfigUpdater {
 			addLines(index, lines);
 		}
 	}
+
+	// Update en from 1.3 to 1.3.1
 	private void update13en() {
 		updateVersion("1.3.1");
 
@@ -639,6 +661,395 @@ public class ConfigUpdater {
 			appendLines(lines);
 		} else {
 			addLines(index, lines);
+		}
+	}
+
+	// Update de from 1.3.1 to 1.4
+	private void update131de() {
+		updateVersion("1.4");
+
+		int index = indexOfStart("# SamplePlugin = installiertes home plugin. Unterstützt: ManagerXL.");
+		if (index != -1) {
+			config.remove(index);
+		}
+
+		index = indexOfStart("# Ob der Spieler nach etwas kürzerem Ausloggen an einem zufälligen Ort \"aufwacht\" (diese müssen durch '/br Wakeup add");
+		if (index != -1) {
+			setLine(index, "# Ob der Spieler nach etwas kürzerem Ausloggen an einem zufälligen Ort \"aufwacht\" (diese müssen durch '/brew Wakeup add' von einem Admin festgelegt werden)");
+		}
+
+		index = indexOfStart("# Ob der Spieler sich bei großer Trunkenheit teilweise nicht einloggen kann und kurz warten muss, da sein Charakter nicht reagiert");
+		if (index != -1) {
+			setLine(index, "# Ob der Spieler bei großer Trunkenheit mehrmals probieren muss sich einzuloggen, da sein Charakter kurz nicht reagiert [true]");
+		}
+
+		index = indexOfStart("# Ob der Spieler sich übertrinken kann und dann in Ohnmacht fällt (gekickt wird)");
+		if (index != -1) {
+			setLine(index, "# Ob der Spieler kurz in Ohnmacht fällt (vom Server gekickt wird) wenn er die maximale Trunkenheit erreicht [false]");
+		}
+
+		index = indexOfStart("# Das Item kann nicht aufgesammelt werden und bleibt bis zum Despawnen liegen. (Achtung:");
+		if (index != -1) {
+			setLine(index, "# Das Item kann nicht aufgesammelt werden und bleibt bis zum Despawnen liegen.");
+		}
+
+		String[] lines = new String[] { "",
+				"# Zeit in Sekunden bis die pukeitems despawnen, (mc standard wäre 300 = 5 min) [60]",
+				"# Wurde die item Despawnzeit in der spigot.yml verändert, verändert sich auch die pukeDespawnzeit in Abhängigkeit.",
+				"pukeDespawntime: 60" };
+
+		index = indexOfStart("pukeItem:");
+		if (index == -1) {
+			index = indexOfStart("enablePuke:");
+			if (index == -1) {
+				index = indexOfStart("# Konsumierbares Item") - 1;
+				if (index == -2) {
+					index = indexOfStart("enableKickOnOverdrink:");
+					if (index == -1) {
+						index = indexOfStart("language:");
+					}
+				}
+			}
+		}
+		if (index == -1) {
+			appendLines(lines);
+		} else {
+			addLines(index + 1, lines);
+		}
+
+		index = indexOfStart("# Färben der Iteminformationen je nach Qualität während sie sich 1. im Fass und/oder 2. im Braustand befinden [true, false]");
+		if (index != -1) {
+			setLine(index, "# Färben der Iteminformationen je nach Qualität während sie sich 1. im Fass und/oder 2. im Braustand befinden [true, true]");
+		}
+
+		index = indexOfStart("# Wenn ein Update gefunden wurde, wird dies bei Serverstart im log angezeigt, sowie ops benachrichtigt");
+		if (index != -1) {
+			setLine(index, "# Wenn ein Update gefunden wurde, wird dies bei Serverstart im log angezeigt, sowie OPs benachrichtigt");
+		}
+
+		index = indexOfStart("#   Eine Liste von allen Materialien kann hier gefunden werden: http://jd.bukkit.org");
+		if (index != -1) {
+			setLine(index, "#   Eine Liste von allen Materialien kann hier gefunden werden: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html");
+		}
+
+		lines = new String[] { "#   Wenn Vault installiert ist können normale englische Item Namen verwendet werden, anstatt Material, ID und Data!",
+				"#   Vault erkennt Namen wie \"Jungle Leaves\" anstatt \"LEAVES,3\". Dies macht es viel einfacher!" };
+
+		index = indexOfStart("#   Es kann ein Data-Wert angegeben werden, weglassen");
+		if (index != -1) {
+			setLine(index, "#   Es kann ein Data-Wert (durability) angegeben werden, weglassen ignoriert diesen beim hinzufügen einer Zutat");
+			addLines(index + 1, lines);
+		} else {
+			index = indexOfStart("#   Eine Liste von allen Materialien kann hier");
+			if (index == -1) {
+				index = indexOfStart("# cookingtime: ") - 1;
+				if (index == -2) {
+					index = indexOfStart("# ingredients: Auflistung von");
+					if (index == -1) {
+						index = indexOfStart("# -- Rezepte für Getränke --") + 1;
+						if (index == 0) {
+							index = indexOfStart("# -- Verschiedene Einstellungen --");
+						}
+					}
+				}
+			}
+			if (index == -1) {
+				appendLines(lines);
+			} else {
+				addLines(index + 1, lines);
+			}
+		}
+
+		lines = new String[] { "#   Effekte sind ab der 1.9 immer verborgen, wegen Änderungen an den Tränken." };
+		index = indexOfStart("#   Mögliche Effekte: http://jd.bukkit.org");
+		if (index != -1) {
+			setLine(index, "#   Mögliche Effekte: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/potion/PotionEffectType.html");
+			addLines(index, lines);
+		} else {
+			index = indexOfStart("#   Ein 'X' an den Namen anhängen, um");
+			if (index == -1) {
+				index = indexOfStart("# effects: ");
+				if (index == -1) {
+					index = indexOfStart("# -- Rezepte für Getränke --") + 1;
+				}
+			}
+			if (index == 0) {
+				appendLines(lines);
+			} else {
+				addLines(index + 1, lines);
+			}
+		}
+
+		index = indexOfStart("# Text, der zwischen diesen Buchstaben");
+		if (index != -1) {
+			setLine(index, "# Im Chat geschriebener Text, der zwischen diesen Buchstaben steht, wird nicht verändert (\",\" als Trennung verwenden) (Liste) [- '[,]']");
+		}
+	}
+
+	// Update en from 1.3.1 to 1.4
+	private void update131en() {
+		updateVersion("1.4");
+
+		int index = indexOfStart("# SamplePlugin = installed home plugin. Supports: ManagerXL.");
+		if (index != -1) {
+			config.remove(index);
+		}
+
+		index = indexOfStart("# If the player \"wakes up\" at a random place when offline for some time while drinking (the places have to be defined with '/br Wakeup add'");
+		if (index != -1) {
+			setLine(index, "# If the player \"wakes up\" at a random place when offline for some time while drinking (the places have to be defined with '/brew Wakeup add' through an admin)");
+		}
+
+		index = indexOfStart("# If the Player may get some logins denied, when his character is drunk");
+		if (index != -1) {
+			setLine(index, "# If the Player may have to try multiple times when logging in while extremely drunk [true]");
+		}
+
+		index = indexOfStart("# If the Player faints (gets kicked) for some minutes if he overdrinks");
+		if (index != -1) {
+			setLine(index, "# If the Player faints shortly (gets kicked from the server) if he drinks the max amount of alcohol possible [false]");
+		}
+
+		index = indexOfStart("# The item can not be collected and stays on the ground until it despawns. (Warning:");
+		if (index != -1) {
+			setLine(index, "# The item can not be collected and stays on the ground until it despawns.");
+		}
+
+		String[] lines = new String[] { "",
+				"# Time in seconds until the pukeitems despawn, (mc default is 300 = 5 min) [60]",
+				"# If the item despawn time was changed in the spigot.yml, the pukeDespawntime changes as well.",
+				"pukeDespawntime: 60" };
+
+		index = indexOfStart("pukeItem:");
+		if (index == -1) {
+			index = indexOfStart("enablePuke:");
+			if (index == -1) {
+				index = indexOfStart("# Consumable Item") - 1;
+				if (index == -2) {
+					index = indexOfStart("enableKickOnOverdrink:");
+					if (index == -1) {
+						index = indexOfStart("language:");
+					}
+				}
+			}
+		}
+		if (index == -1) {
+			appendLines(lines);
+		} else {
+			addLines(index + 1, lines);
+		}
+
+		index = indexOfStart("# Color the Item information (lore) depending on quality while it is 1. in a barrel and/or 2. in a brewing stand [true, false]");
+		if (index != -1) {
+			setLine(index, "# Color the Item information (lore) depending on quality while it is 1. in a barrel and/or 2. in a brewing stand [true, true]");
+		}
+
+		index = indexOfStart("# If an Update is found a Message is logged on Server-start and displayed to ops joining the game");
+		if (index != -1) {
+			setLine(index, "# If an Update is found a Message is logged on Server-start and displayed to OPs joining the game");
+		}
+
+		index = indexOfStart("#   A list of materials can be found here: http://jd.bukkit.org");
+		if (index != -1) {
+			setLine(index, "#   A list of materials can be found here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html");
+		}
+
+		lines = new String[] { "#   If Vault is installed normal names can be used instead of material or id, so using Vault is highly recommended.",
+				"#   Vault will recognize things like \"Jungle Leaves\" instead of \"LEAVES,3\"" };
+
+		index = indexOfStart("#   You can specify a data value, omitting");
+		if (index != -1) {
+			setLine(index, "#   You can specify a data (durability) value, omitting it will ignore the data value of the added ingredient");
+			addLines(index + 1, lines);
+		} else {
+			index = indexOfStart("#   A list of materials can be found");
+			if (index == -1) {
+				index = indexOfStart("# cookingtime: Time in real minutes") - 1;
+				if (index == -2) {
+					index = indexOfStart("# ingredients: ");
+					if (index == -1) {
+						index = indexOfStart("# -- Recipes for Potions --") + 1;
+						if (index == 0) {
+							index = indexOfStart("# -- Settings --");
+						}
+					}
+				}
+			}
+			if (index == -1) {
+				appendLines(lines);
+			} else {
+				addLines(index + 1, lines);
+			}
+		}
+
+		lines = new String[] { "#   Effects are always hidden in 1.9 and newer, because of changes in the potion mechanics." };
+		index = indexOfStart("#   Possible Effects: http://jd.bukkit.org");
+		if (index != -1) {
+			setLine(index, "#   Possible Effects: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/potion/PotionEffectType.html");
+			addLines(index, lines);
+		} else {
+			index = indexOfStart("#   Suffix name with");
+			if (index == -1) {
+				index = indexOfStart("# effects: ");
+				if (index == -1) {
+					index = indexOfStart("# -- Recipes for Potions --") + 1;
+				}
+			}
+			if (index == 0) {
+				appendLines(lines);
+			} else {
+				addLines(index + 1, lines);
+			}
+		}
+
+		index = indexOfStart("# Enclose a text with these Letters to bypass Chat Distortion");
+		if (index != -1) {
+			setLine(index, "# Enclose a Chat text with these Letters to bypass Chat Distortion (Use \",\" as Separator) (list) [- '[,]']");
+		}
+
+	}
+
+	// Update de from 1.4 to 1.5
+	private void update14de() {
+		updateVersion("1.5");
+
+		String[] lines = new String[] {"",
+				"# Ob geschriebener Chat bei großer Trunkenheit abgefälscht werden soll,",
+				"# so dass es etwas betrunken aussieht was geschrieben wird.",
+				"# Wie stark der Chat verändert wird hängt davon ab wie betrunken der Spieler ist",
+				"# Unten kann noch eingestellt werden wie und was verändert wird",
+				"enableChatDistortion: true"};
+
+		int index = indexOfStart("# -- Chat") + 2;
+		if (index == 1) {
+			index = indexOfStart("distortCommands:") - 1;
+			if (index == -2) {
+				index = indexOfStart("distortSignText:") - 1;
+				if (index == -2) {
+					index = indexOfStart("# words:");
+					if (index == -1) {
+						index = indexOfStart("words:");
+					}
+				}
+			}
+		}
+		if (index == -1) {
+			appendLines(lines);
+		} else {
+			addLines(index - 1, lines);
+		}
+
+		lines = new String[] {"# Also zum Beispiel im Chat: Hallo ich bin betrunken *Ich teste Brewery*"};
+
+		index = indexOfStart("# Im Chat geschriebener Text, der zwischen");
+		if (index != -1) {
+			addLines(index + 1, lines);
+		} else {
+			index = indexOfStart("distortBypass:");
+			if (index != -1) {
+				addLines(index, lines);
+			}
+		}
+
+		lines = new String[] {"# distilltime: Wie lange (in sekunden) ein Destillations-Durchlauf braucht (0=Standard Zeit von 40 sek) MC Standard wäre 20 sek"};
+
+		index = indexOfStart("# distillruns:");
+		if (index == -1) {
+			index = indexOfStart("# wood:") - 1;
+			if (index == -2) {
+				index = indexOfStart("# -- Rezepte") + 1;
+				if (index == 0) {
+					index = -1;
+				}
+			}
+		}
+		if (index != -1) {
+			addLines(index + 1, lines);
+		}
+
+		index = indexOfStart("      name: Schlechtes Beispiel/Beispiel/Gutes Beispiel");
+		if (index != -1) {
+			addLines(index + 1, "      distilltime: 60");
+		}
+		index = indexOfStart("      name: Bitterer Rum/Würziger Rum/&6Goldener Rum");
+		if (index != -1) {
+			addLines(index + 1, "      distilltime: 30");
+		}
+		index = indexOfStart("      name: minderwertiger Absinth/Absinth/Starker Absinth");
+		if (index != -1) {
+			addLines(index + 1, "      distilltime: 80");
+		}
+	}
+
+	// Update de from 1.4 to 1.5
+	private void update14en() {
+		updateVersion("1.5");
+
+		String[] lines = new String[] {"",
+				"# If written Chat is distorted when the Player is Drunk,",
+				"# so that it looks like drunk writing",
+				"# How much the chat is distorted depends on how drunk the Player is",
+				"# Below are settings for what and how changes in chat occur",
+				"enableChatDistortion: true"};
+
+		int index = indexOfStart("# -- Chat") + 2;
+		if (index == 1) {
+			index = indexOfStart("distortCommands:") - 1;
+			if (index == -2) {
+				index = indexOfStart("distortSignText:") - 1;
+				if (index == -2) {
+					index = indexOfStart("# words:");
+					if (index == -1) {
+						index = indexOfStart("words:");
+					}
+				}
+			}
+		}
+		if (index == -1) {
+			appendLines(lines);
+		} else {
+			addLines(index - 1, lines);
+		}
+
+		lines = new String[] {"# Chat Example: Hello i am drunk *I am testing Brewery*"};
+
+		index = indexOfStart("# Enclose a Chat text with these Letters");
+		if (index != -1) {
+			addLines(index + 1, lines);
+		} else {
+			index = indexOfStart("distortBypass:");
+			if (index != -1) {
+				addLines(index, lines);
+			}
+		}
+
+		lines = new String[] {"# distilltime: How long (in seconds) one distill-run takes (0=Default time of 40 sec) MC Default would be 20 sec"};
+
+		index = indexOfStart("# distillruns:");
+		if (index == -1) {
+			index = indexOfStart("# wood:") - 1;
+			if (index == -2) {
+				index = indexOfStart("# -- Recipes") + 1;
+				if (index == 0) {
+					index = -1;
+				}
+			}
+		}
+		if (index != -1) {
+			addLines(index + 1, lines);
+		}
+
+		index = indexOfStart("      name: Bad Example/Example/Good Example");
+		if (index != -1) {
+			addLines(index + 1, "      distilltime: 60");
+		}
+		index = indexOfStart("      name: Bitter Rum/Spicy Rum/&6Golden Rum");
+		if (index != -1) {
+			addLines(index + 1, "      distilltime: 30");
+		}
+		index = indexOfStart("      name: Poor Absinthe/Absinthe/Strong Absinthe");
+		if (index != -1) {
+			addLines(index + 1, "      distilltime: 80");
 		}
 	}
 

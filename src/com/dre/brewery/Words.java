@@ -1,27 +1,24 @@
 package com.dre.brewery;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.lang.Character;
-
-import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.block.SignChangeEvent;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Words {
 
 	// represends Words and letters, that are replaced in drunk players messages
 
-	public static ArrayList<Words> words = new ArrayList<Words>();
+	public static ArrayList<Words> words = new ArrayList<>();
 	public static List<String> commands;
-	public static List<String[]> ignoreText = new ArrayList<String[]>();
-	public static FileConfiguration config;
+	public static List<String[]> ignoreText = new ArrayList<>();
 	public static Boolean doSigns;
 	public static Boolean log;
-	private static Map<String, Long> waitPlayers = new HashMap<String, Long>();
+	private static Map<String, Long> waitPlayers = new HashMap<>();
 
 	private String from;
 	private String to;
@@ -66,19 +63,11 @@ public class Words {
 		}
 	}
 
-	private static boolean loadWords() {
-		if (words.isEmpty()) {
-			// load when first drunk player talks
-			load();
-		}
-		return !words.isEmpty();
-	}
-
 	// Distort players words when he uses a command
 	public static void playerCommand(PlayerCommandPreprocessEvent event) {
 		BPlayer bPlayer = BPlayer.get(event.getPlayer());
 		if (bPlayer != null) {
-			if (!commands.isEmpty() && loadWords()) {
+			if (commands != null && !commands.isEmpty() && !words.isEmpty()) {
 				String name = event.getPlayer().getName();
 				if (!waitPlayers.containsKey(name) || waitPlayers.get(name) + 500 < System.currentTimeMillis()) {
 					String chat = event.getMessage();
@@ -108,7 +97,7 @@ public class Words {
 	public static void signWrite(SignChangeEvent event) {
 		BPlayer bPlayer = BPlayer.get(event.getPlayer());
 		if (bPlayer != null) {
-			if (loadWords()) {
+			if (!words.isEmpty()) {
 				int index = 0;
 				for (String message : event.getLines()) {
 					if (message.length() > 1) {
@@ -129,7 +118,7 @@ public class Words {
 	public static void playerChat(AsyncPlayerChatEvent event) {
 		BPlayer bPlayer = BPlayer.get(event.getPlayer());
 		if (bPlayer != null) {
-			if (loadWords()) {
+			if (!words.isEmpty()) {
 				String message = event.getMessage();
 				if (log) {
 					P.p.log(P.p.languageReader.get("Player_TriedToSay", event.getPlayer().getName(), message));
@@ -270,33 +259,16 @@ public class Words {
 		boolean isBefore = !match;
 		if (pre != null) {
 			for (String pr : pre) {
-				if (match) {
-					// if one is correct, it is enough
-					if (part.endsWith(pr) == match) {
-						isBefore = true;
-						break;
-					}
-				} else {
-					// if one is wrong, its over
-					if (part.endsWith(pr) != match) {
-						isBefore = false;
-						break;
-					}
+				if (part.endsWith(pr)) {
+					// If a match is wanted set isBefore to true, else to false
+					isBefore = match;
+					break;
 				}
 			}
 		} else {
 			isBefore = true;
 		}
 		return isBefore;
-	}
-
-	// load from config file
-	public static void load() {
-		if (config != null) {
-			for (Map<?, ?> map : config.getMapList("words")) {
-				new Words(map);
-			}
-		}
 	}
 
 }

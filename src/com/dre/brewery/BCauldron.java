@@ -13,7 +13,7 @@ import org.bukkit.material.Cauldron;
 import org.bukkit.material.MaterialData;
 
 public class BCauldron {
-	public static CopyOnWriteArrayList<BCauldron> bcauldrons = new CopyOnWriteArrayList<BCauldron>();
+	public static CopyOnWriteArrayList<BCauldron> bcauldrons = new CopyOnWriteArrayList<>();
 
 	private BIngredients ingredients = new BIngredients();
 	private Block block;

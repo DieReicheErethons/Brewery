@@ -13,28 +13,31 @@ enableHome: true
 
 # Art des Nachhause-teleports: ['cmd: home']
 # bed = Spieler wird zu seinem Spawn Bett teleportiert
-# SamplePlugin = installiertes home plugin. Unterstützt: ManagerXL. Wenn dies nicht geht:
 # 'cmd: home' = /home wird vom Spieler ausgelöst. Es sollte kein Verzögerungs, etc. plugin installiert sein!
 # 'cmd: spawn' = /spawn wird vom Spieler ausgelöst
 # 'cmd: whatever' = /whatever wird vom Spieler ausgelöst
 homeType: 'cmd: home'
 
-# Ob der Spieler nach etwas kürzerem Ausloggen an einem zufälligen Ort "aufwacht" (diese müssen durch '/br Wakeup add' von einem Admin festgelegt werden)
+# Ob der Spieler nach etwas kürzerem Ausloggen an einem zufälligen Ort "aufwacht" (diese müssen durch '/brew Wakeup add' von einem Admin festgelegt werden)
 # Der Spieler wacht an dem nähesten zweier zufälliger Orte aus seiner Welt auf. [true]
 enableWake: true
 
-# Ob der Spieler sich bei großer Trunkenheit teilweise nicht einloggen kann und kurz warten muss, da sein Charakter nicht reagiert [true]
+# Ob der Spieler bei großer Trunkenheit mehrmals probieren muss sich einzuloggen, da sein Charakter kurz nicht reagiert [true]
 enableLoginDisallow: true
 
-# Ob der Spieler sich übertrinken kann und dann in Ohnmacht fällt (gekickt wird) und sich für einige Minuten nicht einloggen kann [true]
-enableKickOnOverdrink: true
+# Ob der Spieler kurz in Ohnmacht fällt (vom Server gekickt wird) wenn er die maximale Trunkenheit erreicht [false]
+enableKickOnOverdrink: false
 
 # Ob der Spieler sich bei großer Trunkenheit übergibt (unten definiertes Item aus dem Mund fallen lässt) [true]
-# Das Item kann nicht aufgesammelt werden und bleibt bis zum Despawnen liegen. (Achtung: Kann nach Serverrestart aufgesammelt werden!)
+# Das Item kann nicht aufgesammelt werden und bleibt bis zum Despawnen liegen.
 enablePuke: true
 
 # Item das beim Erbrechen mehrfach unaufsammelbar fallen gelassen wird [SOUL_SAND]
 pukeItem: SOUL_SAND
+
+# Zeit in Sekunden bis die pukeitems despawnen, (mc standard wäre 300 = 5 min) [60]
+# Wurde die item Despawnzeit in der spigot.yml verändert, verändert sich auch die pukeDespawnzeit in Abhängigkeit.
+pukeDespawntime: 60
 
 # Konsumierbares Item/Stärke. Senkt den Alkoholpegel um <Stärke> wenn konsumiert.
 drainItems:
@@ -44,9 +47,9 @@ drainItems:
 # Zeit (in Tagen) die Trunkenheitsdaten nach offlinegehen eines Spielers im Speicher verbleiben, um z.B. Kater-Effekte anzuwenden. [7]
 hangoverDays: 7
 
-# Färben der Iteminformationen je nach Qualität während sie sich 1. im Fass und/oder 2. im Braustand befinden [true, false]
+# Färben der Iteminformationen je nach Qualität während sie sich 1. im Fass und/oder 2. im Braustand befinden [true, true]
 colorInBarrels: true
-colorInBrewer: false
+colorInBrewer: true
 
 # Ob große Fässer an jedem Block geöffnet werden können, nicht nur an Zapfhahn und Schild. Bei kleinen Fässern geht dies immer. [true]
 openLargeBarrelEverywhere: true
@@ -55,14 +58,14 @@ openLargeBarrelEverywhere: true
 logRealChat: false
 
 # Aktiviert das Suchen nach Updates für Brewery mit der curseforge api [true]
-# Wenn ein Update gefunden wurde, wird dies bei Serverstart im log angezeigt, sowie ops benachrichtigt
+# Wenn ein Update gefunden wurde, wird dies bei Serverstart im log angezeigt, sowie OPs benachrichtigt
 updateCheck: true
 
 # Autosave Intervall in Minuten [3]
 autosave: 3
 
 # Config Version
-version: '1.3.1'
+version: '1.5'
 
 
 # -- Rezepte für Getränke --
@@ -70,10 +73,13 @@ version: '1.3.1'
 # name: Verschiedene Namen für schlecht/mittel/gut (Farbcodes möglich: z.b. &6)
 # ingredients: Auflistung von 'Material oder ID,Data/Anzahl'
 #   (Item-ids anstatt Material werden von Bukkit nicht mehr unterstützt und funktionieren möglicherweise in Zukunft nicht mehr!)
-#   Eine Liste von allen Materialien kann hier gefunden werden: http://jd.bukkit.org/beta/apidocs/org/bukkit/Material.html
-#   Es kann ein Data-Wert angegeben werden, weglassen ignoriert diesen beim hinzufügen einer Zutat
+#   Eine Liste von allen Materialien kann hier gefunden werden: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
+#   Es kann ein Data-Wert (durability) angegeben werden, weglassen ignoriert diesen beim hinzufügen einer Zutat
+#   Wenn Vault installiert ist können normale englische Item Namen verwendet werden, anstatt Material, ID und Data!
+#   Vault erkennt Namen wie "Jungle Leaves" anstatt "LEAVES,3". Dies macht es viel einfacher!
 # cookingtime: Zeit in Echtminuten die die Zutaten kochen müssen
 # distillruns: Wie oft destilliert werden muss für vollen Alkoholgehalt (0=ohne Destillieren)
+# distilltime: Wie lange (in sekunden) ein Destillations-Durchlauf braucht (0=Standard Zeit von 40 sek) MC Standard wäre 20 sek
 # wood: Holz des Fasses 0=alle Holzsorten 1=Birke 2=Eiche 3=Jungel 4=Fichte 5=Akazie 6=Schwarzeiche
 # age: Zeit in Minecraft-Tagen, die das Getränk im Fass reifen muss 0= kein reifen
 # color: Farbe des Getränks nach destillieren/reifen.
@@ -82,7 +88,8 @@ version: '1.3.1'
 # alcohol: Alkoholgehalt 0-100 in absoluter Menge bei perfektem Getränk (wird dem Spieler hinzugefügt, bei 100 = tot)
 # effects: Auflistung Effekt/Level/Dauer  Besonderere Trank-Effekte beim Trinken, Dauer in sek.
 #   Ein 'X' an den Namen anhängen, um ihn zu verbergen. Bsp: 'POISONX/2/10' (WEAKNESS, INCREASE_DAMAGE, SLOW und SPEED sind immer verborgen.)
-#   Mögliche Effekte: http://jd.bukkit.org/rb/apidocs/org/bukkit/potion/PotionEffectType.html
+#   Effekte sind ab der 1.9 immer verborgen, wegen Änderungen an den Tränken.
+#   Mögliche Effekte: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/potion/PotionEffectType.html
 #   Minimale und Maximale Level/Dauer können durch "-" festgelegt werden, Bsp: 'SPEED/1-2/30-40' = Level 1 und 30 sek minimal, Level 2 und 40 sek maximal
 #   Diese Bereiche funktionieren auch umgekehrt, Bsp: 'POISON/3-1/20-5' für abschwächende Effekte bei guter Qualität
 #   Längste mögliche Effektdauer: 1638 sek. Es muss keine Dauer für Effekte mit sofortiger Wirkung angegeben werden.
@@ -96,8 +103,12 @@ recipes:
       - 264/1
       - INK_SACK,3/20
       - 5,1/8
+      - BEDROCK/1
+#     - Jungle Leaves/64  # Nur mit Vault
+#     - Green Dye/6       # Nur mit Vault
       cookingtime: 3
       distillruns: 2
+      distilltime: 60
       wood: 4
       age: 11
       color: DARK_RED
@@ -172,6 +183,7 @@ recipes:
       - SUGAR_CANE/14
       cookingtime: 5
       distillruns: 2
+      distilltime: 30
       wood: 2
       age: 14
       color: DARK_RED
@@ -199,6 +211,7 @@ recipes:
       - LONG_GRASS/15
       cookingtime: 3
       distillruns: 6
+      distilltime: 80
       color: GREEN
       difficulty: 8
       alcohol: 45
@@ -259,6 +272,12 @@ useLogBlock: true
 
 # -- Chat Veränderungs Einstellungen --
 
+# Ob geschriebener Chat bei großer Trunkenheit abgefälscht werden soll,
+# so dass es etwas betrunken aussieht was geschrieben wird.
+# Wie stark der Chat verändert wird hängt davon ab wie betrunken der Spieler ist
+# Unten kann noch eingestellt werden wie und was verändert wird
+enableChatDistortion: true
+
 # Text nach den angegebenen Kommandos wird bei Trunkenheit ebenfalls Verändert (Liste) [- /gl]
 distortCommands:
 - /gl
@@ -277,11 +296,14 @@ distortCommands:
 - /whisper
 - /reply
 - /r
+- /t
+- /tell
 
 # Geschriebenen Text auf Schildern bei Trunkenheit verändern [false]
 distortSignText: false
 
-# Text, der zwischen diesen Buchstaben steht, wird nicht verändert ("," als Trennung verwenden) (Liste) [- '[,]']
+# Im Chat geschriebener Text, der zwischen diesen Buchstaben steht, wird nicht verändert ("," als Trennung verwenden) (Liste) [- '[,]']
+# Also zum Beispiel im Chat: Hallo ich bin betrunken *Ich teste Brewery*
 distortBypass:
 - '*,*'
 - '[,]'

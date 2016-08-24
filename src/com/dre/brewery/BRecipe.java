@@ -12,15 +12,16 @@ import java.util.List;
 public class BRecipe {
 
 	private String[] name;
-	private ArrayList<ItemStack> ingredients = new ArrayList<ItemStack>();// material and amount
-	private int cookingTime;// time to cook in cauldron
-	private int distillruns;// runs through the brewer
-	private byte wood;// type of wood the barrel has to consist of
-	private int age;// time in minecraft days for the potions to age in barrels
-	private String color;// color of the destilled/finished potion
-	private int difficulty;// difficulty to brew the potion, how exact the instruction has to be followed
-	private int alcohol;// Alcohol in perfect potion
-	private ArrayList<BEffect> effects = new ArrayList<BEffect>(); // Special Effects when drinking
+	private ArrayList<ItemStack> ingredients = new ArrayList<>(); // material and amount
+	private int cookingTime; // time to cook in cauldron
+	private int distillruns; // runs through the brewer
+	private int distillTime; // time for one distill run in seconds
+	private byte wood; // type of wood the barrel has to consist of
+	private int age; // time in minecraft days for the potions to age in barrels
+	private String color; // color of the destilled/finished potion
+	private int difficulty; // difficulty to brew the potion, how exact the instruction has to be followed
+	private int alcohol; // Alcohol in perfect potion
+	private ArrayList<BEffect> effects = new ArrayList<>(); // Special Effects when drinking
 
 	public BRecipe(ConfigurationSection configSectionRecipes, String recipeId) {
 		String nameList = configSectionRecipes.getString(recipeId + ".name");
@@ -63,6 +64,11 @@ public class BRecipe {
 								if (durability == -1 && vaultItem.getSubTypeId() != 0) {
 									durability = vaultItem.getSubTypeId();
 								}
+								if (mat == Material.LEAVES) {
+									if (durability > 3) {
+										durability -= 4; // Vault has leaves with higher durability
+									}
+								}
 							}
 						} catch (Exception e) {
 							P.p.errorLog("Could not check vault for Item Name");
@@ -83,13 +89,14 @@ public class BRecipe {
 				}
 			}
 		}
-		this.cookingTime = configSectionRecipes.getInt(recipeId + ".cookingtime");
-		this.distillruns = configSectionRecipes.getInt(recipeId + ".distillruns");
-		this.wood = (byte) configSectionRecipes.getInt(recipeId + ".wood");
-		this.age = configSectionRecipes.getInt(recipeId + ".age");
+		this.cookingTime = configSectionRecipes.getInt(recipeId + ".cookingtime", 1);
+		this.distillruns = configSectionRecipes.getInt(recipeId + ".distillruns", 0);
+		this.distillTime = configSectionRecipes.getInt(recipeId + ".distilltime", 0) * 20;
+		this.wood = (byte) configSectionRecipes.getInt(recipeId + ".wood", 0);
+		this.age = configSectionRecipes.getInt(recipeId + ".age", 0);
 		this.color = configSectionRecipes.getString(recipeId + ".color");
-		this.difficulty = configSectionRecipes.getInt(recipeId + ".difficulty");
-		this.alcohol = configSectionRecipes.getInt(recipeId + ".alcohol");
+		this.difficulty = configSectionRecipes.getInt(recipeId + ".difficulty", 0);
+		this.alcohol = configSectionRecipes.getInt(recipeId + ".alcohol", 0);
 
 		List<String> effectStringList = configSectionRecipes.getStringList(recipeId + ".effects");
 		if (effectStringList != null) {
@@ -102,6 +109,57 @@ public class BRecipe {
 				}
 			}
 		}
+	}
+
+	// check every part of the recipe for validity
+	public boolean isValid() {
+		if (name == null || name.length < 1) {
+			P.p.errorLog("Recipe Name missing or invalid!");
+			return false;
+		}
+		if (getName(5) == null || getName(5).length() < 1) {
+			P.p.errorLog("Recipe Name invalid");
+			return false;
+		}
+		if (ingredients == null || ingredients.isEmpty()) {
+			P.p.errorLog("No ingredients could be loaded for Recipe: " + getName(5));
+			return false;
+		}
+		if (cookingTime < 1) {
+			P.p.errorLog("Invalid cooking time '" + cookingTime + "' in Recipe: " + getName(5));
+			return false;
+		}
+		if (distillruns < 0) {
+			P.p.errorLog("Invalid distillruns '" + distillruns + "' in Recipe: " + getName(5));
+			return false;
+		}
+		if (distillTime < 0) {
+			P.p.errorLog("Invalid distilltime '" + distillTime + "' in Recipe: " + getName(5));
+			return false;
+		}
+		if (wood < 0 || wood > 6) {
+			P.p.errorLog("Invalid wood type '" + wood + "' in Recipe: " + getName(5));
+			return false;
+		}
+		if (age < 0) {
+			P.p.errorLog("Invalid age time '" + age + "' in Recipe: " + getName(5));
+			return false;
+		}
+		try {
+			Brew.PotionColor.valueOf(getColor());
+		} catch (IllegalArgumentException e) {
+			P.p.errorLog("Invalid Color '" + color + "' in Recipe: " + getName(5));
+			return false;
+		}
+		if (difficulty < 0 || difficulty > 10) {
+			P.p.errorLog("Invalid difficulty '" + difficulty + "' in Recipe: " + getName(5));
+			return false;
+		}
+		if (alcohol < 0) {
+			P.p.errorLog("Invalid alcohol '" + alcohol + "' in Recipe: " + getName(5));
+			return false;
+		}
+		return true;
 	}
 
 	// allowed deviation to the recipes count of ingredients at the given difficulty
@@ -192,7 +250,7 @@ public class BRecipe {
 
 		int uid = Brew.generateUID();
 
-		ArrayList<ItemStack> list = new ArrayList<ItemStack>(ingredients.size());
+		ArrayList<ItemStack> list = new ArrayList<>(ingredients.size());
 		for (ItemStack item : ingredients) {
 			if (item.getDurability() == -1) {
 				list.add(new ItemStack(item.getType(), item.getAmount()));
@@ -216,11 +274,6 @@ public class BRecipe {
 
 		potion.setItemMeta(potionMeta);
 		return potion;
-	}
-
-	// true if name and ingredients are correct
-	public boolean isValid() {
-		return (name != null && ingredients != null && !ingredients.isEmpty());
 	}
 
 
@@ -267,6 +320,10 @@ public class BRecipe {
 
 	public int getDistillRuns() {
 		return distillruns;
+	}
+
+	public int getDistillTime() {
+		return distillTime;
 	}
 
 	public String getColor() {

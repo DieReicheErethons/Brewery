@@ -13,28 +13,31 @@ enableHome: true
 
 # Type of the home-teleport: ['cmd: home']
 # bed = Player will be teleported to his spawn bed
-# SamplePlugin = installed home plugin. Supports: ManagerXL. If not available:
 # 'cmd: home' = /home will be executed by the player. He has to have permissions for it without any delay!
 # 'cmd: spawn' = /spawn will be executed by the player.
 # 'cmd: whatever' = /whatever will be executed by the player.
 homeType: 'cmd: home'
 
-# If the player "wakes up" at a random place when offline for some time while drinking (the places have to be defined with '/br Wakeup add' through an admin)
+# If the player "wakes up" at a random place when offline for some time while drinking (the places have to be defined with '/brew Wakeup add' through an admin)
 # The Player wakes at the nearest of two random places of his world [true]
 enableWake: true
 
-# If the Player may get some logins denied, when his character is drunk [true]
+# If the Player may have to try multiple times when logging in while extremely drunk [true]
 enableLoginDisallow: true
 
-# If the Player faints (gets kicked) for some minutes if he overdrinks [true]
-enableKickOnOverdrink: true
+# If the Player faints shortly (gets kicked from the server) if he drinks the max amount of alcohol possible [false]
+enableKickOnOverdrink: false
 
 # If the Player vomits on high drunkeness (drops item defined below) [true]
-# The item can not be collected and stays on the ground until it despawns. (Warning: May be collected after Server restart!)
+# The item can not be collected and stays on the ground until it despawns.
 enablePuke: true
 
 # Item that is dropped multiple times uncollectable when puking [SOUL_SAND]
 pukeItem: SOUL_SAND
+
+# Time in seconds until the pukeitems despawn, (mc default is 300 = 5 min) [60]
+# If the item despawn time was changed in the spigot.yml, the pukeDespawntime changes as well.
+pukeDespawntime: 60
 
 # Consumable Item/strength. Decreases the alcohol level by <strength> when consumed. (list)
 drainItems:
@@ -44,22 +47,22 @@ drainItems:
 # Time (in days) that drunkeness-data stays in memory after a player goes offline, to apply hangover etc. [7]
 hangoverDays: 7
 
-# Color the Item information (lore) depending on quality while it is 1. in a barrel and/or 2. in a brewing stand [true, false]
+# Color the Item information (lore) depending on quality while it is 1. in a barrel and/or 2. in a brewing stand [true, true]
 colorInBarrels: true
-colorInBrewer: false
+colorInBrewer: true
 
 # If a Large Barrel can be opened by clicking on any of its blocks, not just Spigot or Sign. This is always true for Small Barrels. [true]
 openLargeBarrelEverywhere: true
 
 # Enable checking for Updates, Checks the curseforge api for updates to Brewery [true]
-# If an Update is found a Message is logged on Server-start and displayed to ops joining the game
+# If an Update is found a Message is logged on Server-start and displayed to OPs joining the game
 updateCheck: true
 
 # Autosave interval in minutes [3]
 autosave: 3
 
 # Config Version
-version: '1.3.1'
+version: '1.5'
 
 
 # -- Recipes for Potions --
@@ -67,10 +70,13 @@ version: '1.3.1'
 # name: Different names for bad/normal/good (Formatting codes possible: such as &6)
 # ingredients: List of 'material or id,data/amount'
 #   (Item-ids instead of material are deprecated by bukkit and may not work in the future!)
-#   A list of materials can be found here: http://jd.bukkit.org/beta/apidocs/org/bukkit/Material.html
-#   You can specify a data value, omitting it will ignore the data value of the added ingredient
+#   A list of materials can be found here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
+#   You can specify a data (durability) value, omitting it will ignore the data value of the added ingredient
+#   If Vault is installed normal names can be used instead of material or id, so using Vault is highly recommended.
+#   Vault will recognize things like "Jungle Leaves" instead of "LEAVES,3"
 # cookingtime: Time in real minutes ingredients have to boil
 # distillruns: How often it has to be distilled for full alcohol (0=without distilling)
+# distilltime: How long (in seconds) one distill-run takes (0=Default time of 40 sec) MC Default would be 20 sec
 # wood: Wood of the barrel 0=any 1=Birch 2=Oak 3=Jungle 4=Spruce 5=Acacia 6=Dark Oak
 # age: Time in Minecraft-days, the potion has to age in a barrel 0=no aging
 # color: Color of the potion after distilling/aging.
@@ -79,7 +85,8 @@ version: '1.3.1'
 # alcohol: Absolute amount of alcohol 0-100 in a perfect potion (will be added directly to the player, where 100 means fainting)
 # effects: List of effect/level/duration  Special potion-effect when drinking, duration in sek.
 #   Suffix name with 'X' to hide effect from label. Sample: 'POISONX/2/10' (WEAKNESS, INCREASE_DAMAGE, SLOW and SPEED are always hidden.)
-#   Possible Effects: http://jd.bukkit.org/rb/apidocs/org/bukkit/potion/PotionEffectType.html
+#   Effects are always hidden in 1.9 and newer, because of changes in the potion mechanics.
+#   Possible Effects: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/potion/PotionEffectType.html
 #   Level or Duration ranges may be specified with a "-", ex. 'SPEED/1-2/30-40' = lvl 1 and 30 sec at worst and lvl 2 and 40 sec at best
 #   Ranges also work high-low, ex. 'POISON/3-1/20-5' for weaker effects at good quality.
 #   Highest possible Duration: 1638 sec. Instant Effects dont need any duration specified.
@@ -93,8 +100,12 @@ recipes:
       - 264/1
       - INK_SACK,3/20
       - 5,1/8
+      - BEDROCK/1
+#     - Jungle Leaves/64  # Only with Vault
+#     - Green Dye/6       # Only with Vault
       cookingtime: 3
       distillruns: 2
+      distilltime: 60
       wood: 4
       age: 11
       color: DARK_RED
@@ -169,6 +180,7 @@ recipes:
       - SUGAR_CANE/14
       cookingtime: 5
       distillruns: 2
+      distilltime: 30
       wood: 2
       age: 14
       color: DARK_RED
@@ -196,6 +208,7 @@ recipes:
       - LONG_GRASS/15
       cookingtime: 3
       distillruns: 6
+      distilltime: 80
       color: GREEN
       difficulty: 8
       alcohol: 45
@@ -257,6 +270,12 @@ useLogBlock: true
 
 # -- Chat Distortion Settings --
 
+# If written Chat is distorted when the Player is Drunk,
+# so that it looks like drunk writing
+# How much the chat is distorted depends on how drunk the Player is
+# Below are settings for what and how changes in chat occur
+enableChatDistortion: true
+
 # Log to the Serverlog what the player actually wrote, before his words were altered [false]
 logRealChat: false
 
@@ -278,11 +297,14 @@ distortCommands:
 - /whisper
 - /reply
 - /r
+- /t
+- /tell
 
 # Distort the Text written on a Sign while drunk [false]
 distortSignText: false
 
-# Enclose a text with these Letters to bypass Chat Distortion (Use "," as Separator) (list) [- '[,]']
+# Enclose a Chat text with these Letters to bypass Chat Distortion (Use "," as Separator) (list) [- '[,]']
+# Chat Example: Hello i am drunk *I am testing Brewery*
 distortBypass:
 - '*,*'
 - '[,]'

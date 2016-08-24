@@ -51,7 +51,7 @@ public class DataUpdater {
 					ConfigurationSection matSection = section.getConfigurationSection(id + ".mats");
 					if (matSection != null) {
 						// matSection has all the materials + amount as Integers
-						Map<String, Integer> ingredients = new HashMap<String, Integer>();
+						Map<String, Integer> ingredients = new HashMap<>();
 						for (String ingredient : matSection.getKeys(false)) {
 							// convert to Material
 							Material mat = Material.getMaterial(P.p.parseInt(ingredient));
@@ -81,7 +81,7 @@ public class DataUpdater {
 							ConfigurationSection ingredientSection = cauldrons.getConfigurationSection(id + ".ingredients");
 							if (ingredientSection != null) {
 								// has all the materials + amount as Integers
-								Map<String, Integer> ingredients = new HashMap<String, Integer>();
+								Map<String, Integer> ingredients = new HashMap<>();
 								for (String ingredient : ingredientSection.getKeys(false)) {
 									// convert to Material
 									Material mat = Material.getMaterial(P.p.parseInt(ingredient));

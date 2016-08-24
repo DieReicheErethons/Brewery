@@ -163,7 +163,7 @@ public class CommandListener implements CommandExecutor {
 
 	public ArrayList<String> getCommands(CommandSender sender) {
 
-		ArrayList<String> cmds = new ArrayList<String>();
+		ArrayList<String> cmds = new ArrayList<>();
 		cmds.add(p.languageReader.get("Help_Help"));
 
 		if (sender.hasPermission("brewery.cmd.player")) {
@@ -353,6 +353,7 @@ public class CommandListener implements CommandExecutor {
 
 	}
 
+	@SuppressWarnings("deprecation")
 	public void cmdCopy(CommandSender sender, int count) {
 
 		if (sender instanceof Player) {
@@ -389,6 +390,7 @@ public class CommandListener implements CommandExecutor {
 
 	}
 
+	@SuppressWarnings("deprecation")
 	public void cmdDelete(CommandSender sender) {
 
 		if (sender instanceof Player) {
@@ -413,6 +415,7 @@ public class CommandListener implements CommandExecutor {
 
 	}
 
+	@SuppressWarnings("deprecation")
 	public void cmdPersist(CommandSender sender) {
 
 		if (sender instanceof Player) {
@@ -441,6 +444,7 @@ public class CommandListener implements CommandExecutor {
 
 	}
 
+	@SuppressWarnings("deprecation")
 	public void cmdStatic(CommandSender sender) {
 
 		if (sender instanceof Player) {
@@ -471,6 +475,7 @@ public class CommandListener implements CommandExecutor {
 
 	}
 
+	@SuppressWarnings("deprecation")
 	public void cmdUnlabel(CommandSender sender) {
 
 		if (sender instanceof Player) {
@@ -494,29 +499,45 @@ public class CommandListener implements CommandExecutor {
 
 	public void cmdCreate(CommandSender sender, String[] args) {
 
-		if (sender instanceof Player) {
-			if (args.length < 2) {
-				p.msg(sender, p.languageReader.get("Etc_Usage"));
-				p.msg(sender, p.languageReader.get("Help_Create"));
-				return;
-			}
+		if (args.length < 2) {
+			p.msg(sender, p.languageReader.get("Etc_Usage"));
+			p.msg(sender, p.languageReader.get("Help_Create"));
+			return;
+		}
 
-			int quality = 10;
-			boolean hasQuality = false;
-			if (args.length > 2) {
-				quality = p.parseInt(args[args.length - 1]);
-				if (quality > 0 && quality <= 10) {
-					hasQuality = true;
-				} else {
-					quality = 10;
+		int quality = 10;
+		boolean hasQuality = false;
+		String pName = null;
+		if (args.length > 2) {
+			quality = p.parseInt(args[args.length - 1]);
+
+			if (quality <= 0 || quality > 10) {
+				pName = args[args.length - 1];
+				if (args.length > 3) {
+					quality = p.parseInt(args[args.length - 2]);
 				}
 			}
-
-			int stringLength;
-			if (hasQuality) {
-				stringLength = args.length - 2;
+			if (quality > 0 && quality <= 10) {
+				hasQuality = true;
 			} else {
-				stringLength = args.length - 1;
+				quality = 10;
+			}
+		}
+		Player player = null;
+		if (pName != null) {
+			player = p.getServer().getPlayer(pName);
+		}
+
+		if (sender instanceof Player || player != null) {
+			if (player == null) {
+				player = ((Player) sender);
+			}
+			int stringLength = args.length - 1;
+			if (pName != null) {
+				stringLength--;
+			}
+			if (hasQuality) {
+				stringLength--;
 			}
 
 			String name;
@@ -530,9 +551,6 @@ public class CommandListener implements CommandExecutor {
 			} else {
 				name = args[1];
 			}
-
-
-			Player player = (Player) sender;
 
 			if (player.getInventory().firstEmpty() == -1) {
 				p.msg(sender, p.languageReader.get("CMD_Copy_Error", "1"));

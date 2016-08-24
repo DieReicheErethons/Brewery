@@ -20,7 +20,7 @@ public class Brew {
 
 	// represents the liquid in the brewed Potions
 
-	public static Map<Integer, Brew> potions = new HashMap<Integer, Brew>();
+	public static Map<Integer, Brew> potions = new HashMap<>();
 	public static long installTime = System.currentTimeMillis(); // plugin install time in millis after epoch
 	public static Boolean colorInBarrels; // color the Lore while in Barrels
 	public static Boolean colorInBrewer; // color the Lore while in Brewer
@@ -150,10 +150,7 @@ public class Brew {
 	}
 
 	public boolean reloadRecipe() {
-		if (currentRecipe != null) {
-			return setRecipeFromString(currentRecipe.getName(5));
-		}
-		return true;
+		return currentRecipe == null || setRecipeFromString(currentRecipe.getName(5));
 	}
 
 	// Copy a Brew with a new unique ID and return its item
@@ -280,7 +277,7 @@ public class Brew {
 
 	// Do some regular updates
 	public void touch() {
-		lastUpdate = (int) ((float) (System.currentTimeMillis() - installTime) / 3600000F);
+		lastUpdate = (int) ((double) (System.currentTimeMillis() - installTime) / 3600000D);
 	}
 
 	public int getDistillRuns() {
@@ -332,16 +329,13 @@ public class Brew {
 	// Distilling section ---------------
 
 	// distill all custom potions in the brewer
-	public static void distillAll(BrewerInventory inv, Boolean[] contents) {
-		int slot = 0;
-		while (slot < 3) {
-			if (contents[slot]) {
+	public static void distillAll(BrewerInventory inv, Brew[] contents) {
+		for (int slot = 0; slot < 3; slot++) {
+			if (contents[slot] != null) {
 				ItemStack slotItem = inv.getItem(slot);
 				PotionMeta potionMeta = (PotionMeta) slotItem.getItemMeta();
-				Brew brew = get(potionMeta);
-				brew.distillSlot(slotItem, potionMeta);
+				contents[slot].distillSlot(slotItem, potionMeta);
 			}
-			slot++;
 		}
 	}
 
@@ -383,6 +377,22 @@ public class Brew {
 		touch();
 
 		slotItem.setItemMeta(potionMeta);
+	}
+
+	public int getDistillTimeNextRun() {
+		if (!canDistill()) {
+			return -1;
+		}
+
+		if (currentRecipe != null) {
+			return currentRecipe.getDistillTime();
+		}
+
+		BRecipe recipe = ingredients.getdistillRecipe(wood, ageTime);
+		if (recipe != null) {
+			return recipe.getDistillTime();
+		}
+		return 0;
 	}
 
 	// Ageing Section ------------------
@@ -573,7 +583,7 @@ public class Brew {
 			meta.setLore(existingLore);
 			return;
 		}
-		List<String> newLore = new ArrayList<String>();
+		List<String> newLore = new ArrayList<>();
 		newLore.add("");
 		newLore.add(prefix + lore);
 		meta.setLore(newLore);
@@ -581,7 +591,7 @@ public class Brew {
 
 	// Adds the Effect names to the Items description
 	public static void addOrReplaceEffects(PotionMeta meta, ArrayList<BEffect> effects, int quality) {
-		if (effects != null) {
+		if (!P.use1_9 && effects != null) {
 			for (BEffect effect : effects) {
 				if (!effect.isHidden()) {
 					effect.writeInto(meta, quality);
@@ -674,7 +684,7 @@ public class Brew {
 		}
 	}
 
-	public static enum PotionColor {
+	public enum PotionColor {
 		PINK(1, PotionType.REGEN),
 		CYAN(2, PotionType.SPEED),
 		ORANGE(3, PotionType.FIRE_RESISTANCE),
@@ -684,14 +694,14 @@ public class Brew {
 		BLACK(8, PotionType.WEAKNESS),
 		RED(9, PotionType.STRENGTH),
 		GREY(10, PotionType.SLOWNESS),
-		WATER(11, PotionType.WATER_BREATHING),
+		WATER(11, P.use1_9 ? PotionType.WATER_BREATHING : null),
 		DARK_RED(12, PotionType.INSTANT_DAMAGE),
 		BRIGHT_GREY(14, PotionType.INVISIBILITY);
 
 		private final int colorId;
 		private final PotionType type;
 
-		private PotionColor(int colorId, PotionType type) {
+		PotionColor(int colorId, PotionType type) {
 			this.colorId = colorId;
 			this.type = type;
 		}

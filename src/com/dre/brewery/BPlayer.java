@@ -1,10 +1,6 @@
 package com.dre.brewery;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.UUID;
+import org.apache.commons.lang.mutable.MutableInt;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -17,14 +13,24 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.*;
+
 public class BPlayer {
-	private static Map<String, BPlayer> players = new HashMap<String, BPlayer>();// Players name/uuid and BPlayer
-	private static Map<Player, Integer> pTasks = new HashMap<Player, Integer>();// Player and count
+	private static Map<String, BPlayer> players = new HashMap<>();// Players name/uuid and BPlayer
+	private static Map<Player, MutableInt> pTasks = new HashMap<>();// Player and count
 	private static int taskId;
+	private static boolean modAge = true;
+	private static Random pukeRand;
+	private static Method gh;
+	private static Field age;
 
 	// Settings
-	public static Map<Material, Integer> drainItems = new HashMap<Material, Integer>();// DrainItem Material and Strength
+	public static Map<Material, Integer> drainItems = new HashMap<>();// DrainItem Material and Strength
 	public static Material pukeItem;
+	public static int pukeDespawntime;
 	public static int hangoverTime;
 	public static boolean overdrinkKick;
 	public static boolean enableHome;
@@ -34,7 +40,6 @@ public class BPlayer {
 
 	private int quality = 0;// = quality of drunkeness * drunkeness
 	private int drunkeness = 0;// = amount of drunkeness
-	private boolean passedOut = false;// if kicked because of drunkeness
 	private int offlineDrunk = 0;// drunkeness when gone offline
 	private Vector push = new Vector(0, 0, 0);
 	private int time = 20;
@@ -43,11 +48,10 @@ public class BPlayer {
 	}
 
 	// reading from file
-	public BPlayer(String name, int quality, int drunkeness, int offlineDrunk, Boolean passedOut) {
+	public BPlayer(String name, int quality, int drunkeness, int offlineDrunk) {
 		this.quality = quality;
 		this.drunkeness = drunkeness;
 		this.offlineDrunk = offlineDrunk;
-		this.passedOut = passedOut;
 		players.put(name, this);
 	}
 
@@ -159,11 +163,11 @@ public class BPlayer {
 
 	// Player has drunken too much
 	public void drinkCap(Player player) {
+		quality = getQuality() * 100;
+		drunkeness = 100;
 		if (overdrinkKick && !player.hasPermission("brewery.bypass.overdrink")) {
 			passOut(player);
 		} else {
-			quality = getQuality() * 100;
-			drunkeness = 100;
 			addPuke(player, 60 + (int) (Math.random() * 60.0));
 			P.p.msg(player, P.p.languageReader.get("Player_CantDrink"));
 		}
@@ -254,7 +258,6 @@ public class BPlayer {
 	public void passOut(Player player) {
 		player.kickPlayer(P.p.languageReader.get("Player_DrunkPassOut"));
 		offlineDrunk = drunkeness;
-		passedOut = true;
 	}
 
 
@@ -272,11 +275,7 @@ public class BPlayer {
 				return 3;
 			}
 		}
-		if (drunkeness <= 80) {
-			if (passedOut) {
-				// he has suffered enough. Let him through
-				return 0;
-			}
+		if (drunkeness <= 90) {
 			if (Math.random() > 0.4) {
 				return 0;
 			} else {
@@ -284,12 +283,10 @@ public class BPlayer {
 			}
 		}
 		if (drunkeness <= 100) {
-			if (!passedOut) {
-				if (Math.random() > 0.6) {
-					return 0;
-				} else {
-					return 2;
-				}
+			if (Math.random() > 0.6) {
+				return 0;
+			} else {
+				return 2;
 			}
 		}
 		return 3;
@@ -331,7 +328,6 @@ public class BPlayer {
 		}
 
 		offlineDrunk = 0;
-		passedOut = false;
 	}
 
 	public void disconnecting() {
@@ -389,17 +385,21 @@ public class BPlayer {
 				}
 			}, 1L, 1L);
 		}
-		pTasks.put(player, count);
+		pTasks.put(player, new MutableInt(count));
 	}
 
 	public static void pukeTask() {
-		for (Player player : pTasks.keySet()) {
+		for (Iterator<Map.Entry<Player, MutableInt>> iter = pTasks.entrySet().iterator(); iter.hasNext(); ) {
+			Map.Entry<Player, MutableInt> entry = iter.next();
+			Player player = entry.getKey();
+			MutableInt count = entry.getValue();
+			if (!player.isValid() || !player.isOnline()) {
+				iter.remove();
+			}
 			puke(player);
-			int newCount = pTasks.get(player) - 1;
-			if (newCount == 0) {
-				pTasks.remove(player);
-			} else {
-				pTasks.put(player, newCount);
+			count.decrement();
+			if (count.intValue() <= 0) {
+				iter.remove();
 			}
 		}
 		if (pTasks.isEmpty()) {
@@ -408,15 +408,55 @@ public class BPlayer {
 	}
 
 	public static void puke(Player player) {
+		if (pukeRand == null) {
+			pukeRand = new Random();
+		}
+		if (pukeItem == null || pukeItem == Material.AIR) {
+			pukeItem = Material.SOUL_SAND;
+		}
 		Location loc = player.getLocation();
+		loc.setY(loc.getY() + 1.1);
+		loc.setPitch(loc.getPitch() - 10 + pukeRand.nextInt(20));
+		loc.setYaw(loc.getYaw() - 10 + pukeRand.nextInt(20));
 		Vector direction = loc.getDirection();
 		direction.multiply(0.5);
-		loc.setY(loc.getY() + 1.5);
-		loc.setPitch(loc.getPitch() + 10);
 		loc.add(direction);
 		Item item = player.getWorld().dropItem(loc, new ItemStack(pukeItem));
 		item.setVelocity(direction);
-		item.setPickupDelay(Integer.MAX_VALUE);
+		item.setPickupDelay(32767); // Item can never be picked up when pickup delay is 32767
+		//item.setTicksLived(6000 - pukeDespawntime); // Well this does not work...
+		if (modAge) {
+			if (pukeDespawntime >= 5800) {
+				return;
+			}
+			try {
+				if (gh == null) {
+					gh = Class.forName(P.p.getServer().getClass().getPackage().getName() + ".entity.CraftItem").getMethod("getHandle", (Class<?>[]) null);
+				}
+				Object entityItem = gh.invoke(item, (Object[]) null);
+				if (age == null) {
+					age = entityItem.getClass().getDeclaredField("age");
+					age.setAccessible(true);
+				}
+
+				// Setting the age determines when an item is despawned. At age 6000 it is removed.
+				if (pukeDespawntime <= 0) {
+					// Just show the item for a tick
+					age.setInt(entityItem, 5999);
+				} else if (pukeDespawntime <= 120) {
+					// it should despawn in less than 6 sec. Add up to half of that randomly
+					age.setInt(entityItem, 6000 - pukeDespawntime + pukeRand.nextInt((int) (pukeDespawntime / 2F)));
+				} else {
+					// Add up to 5 sec randomly
+					age.setInt(entityItem, 6000 - pukeDespawntime + pukeRand.nextInt(100));
+				}
+				return;
+			} catch (InvocationTargetException | ClassNotFoundException | NoSuchFieldException | IllegalAccessException | NoSuchMethodException e) {
+				e.printStackTrace();
+			}
+			modAge = false;
+			P.p.errorLog("Failed to set Despawn Time on item " + pukeItem.name());
+		}
 	}
 
 
@@ -533,9 +573,6 @@ public class BPlayer {
 			section.set("drunk", bPlayer.drunkeness);
 			if (bPlayer.offlineDrunk != 0) {
 				section.set("offDrunk", bPlayer.offlineDrunk);
-			}
-			if (bPlayer.passedOut) {
-				section.set("passedOut", true);
 			}
 		}
 	}

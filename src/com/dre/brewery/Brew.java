@@ -625,7 +625,7 @@ public class Brew {
 
 	// True if the PotionMeta has colored Lore
 	public static Boolean hasColorLore(PotionMeta meta) {
-		return meta.hasLore() && (meta.getLore().size() > 0 && !meta.getLore().get(1).startsWith(P.p.color("&7")));
+		return meta.hasLore() && (meta.getLore().size() > 1 && !meta.getLore().get(1).startsWith(P.p.color("&7")));
 	}
 
 	// gets the Color that represents a quality in Lore

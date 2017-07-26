@@ -22,6 +22,7 @@ import org.bukkit.material.Wood;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.dre.brewery.integration.CitadelBarrel;
 import com.dre.brewery.integration.GriefPreventionBarrel;
 import com.dre.brewery.integration.LWCBarrel;
 import com.dre.brewery.integration.LogBlockBarrel;
@@ -176,6 +177,26 @@ public class Barrel implements InventoryHolder {
 							return false;
 						}
 					}
+				}
+			}
+		}
+		
+		if (event != null && P.p.useCitadel) {
+			Plugin plugin = P.p.getServer().getPluginManager().getPlugin("Citadel");
+			if (plugin != null) {
+				try {
+					if (isSign(event.getClickedBlock())) {
+						return CitadelBarrel.checkAccess(player, getSignOfSpigot());
+					} else {
+						return CitadelBarrel.checkAccess(player, spigot);
+					}
+				} catch (Throwable e) {
+					P.p.errorLog("Failed to Check Citadel for Container Access Permissions!");
+					P.p.errorLog("Brewery was tested with version 3.9.1 of Citadel!");
+					P.p.errorLog("Disable Citadel support in the config and do /brew reload");
+					e.printStackTrace();
+					P.p.msg(player, "&cError opening Barrel, please report to an admin!");
+					return false;
 				}
 			}
 		}

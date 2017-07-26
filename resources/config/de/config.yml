@@ -265,6 +265,7 @@ cooked:
 useWorldGuard: true
 useLWC: true
 useGriefPrevention: true
+useCitadel: true
 
 # Änderungen an Fassinventaren mit LogBlock aufzeichen [true]
 useLogBlock: true

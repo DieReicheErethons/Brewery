@@ -39,6 +39,7 @@ public class P extends JavaPlugin {
 	public static boolean debug;
 	public static boolean useUUID;
 	public static boolean use1_9;
+	public static boolean use1_12;
 	public static boolean updateCheck;
 
 	// Third Party Enabled
@@ -47,7 +48,8 @@ public class P extends JavaPlugin {
 	public boolean useLWC; //LWC
 	public boolean useLB; //LogBlock
 	public boolean useGP; //GriefPrevention
-	public boolean hasVault;
+	public boolean hasVault; // Vault
+	public boolean useCitadel; // CivCraft/DevotedMC Citadel
 
 	// Listeners
 	public BlockListener blockListener;
@@ -70,6 +72,7 @@ public class P extends JavaPlugin {
 		String v = Bukkit.getBukkitVersion();
 		useUUID = !v.matches("(^|.*[^\\.\\d])1\\.[0-6]([^\\d].*|$)") && !v.matches("(^|.*[^\\.\\d])1\\.7\\.[0-5]([^\\d].*|$)");
 		use1_9 = !v.matches("(^|.*[^\\.\\d])1\\.[0-8]([^\\d].*|$)");
+		use1_12 = !v.matches("(^|.*[^\\.\\d])1\\.[0-11]([^\\d].*|$)");
 
 		// load the Config
 		try {
@@ -280,6 +283,8 @@ public class P extends JavaPlugin {
 		useGP = config.getBoolean("useGriefPrevention", true) && getServer().getPluginManager().isPluginEnabled("GriefPrevention");
 		useLB = config.getBoolean("useLogBlock", false) && getServer().getPluginManager().isPluginEnabled("LogBlock");
 		hasVault = getServer().getPluginManager().isPluginEnabled("Vault");
+		
+		useCitadel = config.getBoolean("useCitadel", false) && getServer().getPluginManager().isPluginEnabled("Citadel");
 
 		// various Settings
 		DataSave.autosave = config.getInt("autosave", 3);

@@ -36,7 +36,7 @@ public class BCauldron {
 
 	public void onUpdate() {
 		// Check if fire still alive
-		if (!block.getChunk().isLoaded() || block.getRelative(BlockFace.DOWN).getType() == Material.FIRE || block.getRelative(BlockFace.DOWN).getType() == Material.STATIONARY_LAVA
+		if (!block.getChunk().isLoaded() || block.getRelative(BlockFace.DOWN).getType() == Material.FIRE || block.getRelative(BlockFace.DOWN).getType() == LegacyUtil.LAVA
 				|| block.getRelative(BlockFace.DOWN).getType() == Material.LAVA) {
 			// add a minute to cooking time
 			state++;

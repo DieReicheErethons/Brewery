@@ -42,7 +42,7 @@ public class PlayerListener implements Listener {
 						if (materialInHand == null || materialInHand == Material.BUCKET) {
 							return;
 
-						} else if (materialInHand == Material.WATCH) {
+						} else if (materialInHand == LegacyUtil.CLOCK) {
 							BCauldron.printTime(player, clickedBlock);
 							return;
 
@@ -78,7 +78,7 @@ public class PlayerListener implements Listener {
 
 						// Check if fire alive below cauldron when adding ingredients
 						Block down = clickedBlock.getRelative(BlockFace.DOWN);
-						if (down.getType() == Material.FIRE || down.getType() == Material.STATIONARY_LAVA || down.getType() == Material.LAVA) {
+						if (down.getType() == Material.FIRE || down.getType() == LegacyUtil.LAVA || down.getType() == LegacyUtil.FLOWING_LAVA) {
 
 							event.setCancelled(true);
 							boolean handSwap = false;
@@ -147,7 +147,7 @@ public class PlayerListener implements Listener {
 
 					// Access a Barrel
 					Barrel barrel = null;
-					if (type == Material.WOOD) {
+					if (LegacyUtil.isWoodPlanks(type)) {
 						if (openEverywhere) {
 							barrel = Barrel.get(clickedBlock);
 						}
@@ -160,7 +160,7 @@ public class PlayerListener implements Listener {
 								break;
 							}
 						}
-					} else if (Barrel.isFence(type) || type == Material.SIGN_POST || type == Material.WALL_SIGN) {
+					} else if (Barrel.isFence(type) || LegacyUtil.isSign(type)) {
 						barrel = Barrel.getBySpigot(clickedBlock);
 					}
 

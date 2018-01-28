@@ -64,7 +64,7 @@ public class BRecipe {
 								if (durability == -1 && vaultItem.getSubTypeId() != 0) {
 									durability = vaultItem.getSubTypeId();
 								}
-								if (mat == Material.LEAVES) {
+								if (mat.name().contains("LEAVES")) {
 									if (durability > 3) {
 										durability -= 4; // Vault has leaves with higher durability
 									}

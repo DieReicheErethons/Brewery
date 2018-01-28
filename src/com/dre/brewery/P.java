@@ -39,6 +39,7 @@ public class P extends JavaPlugin {
 	public static boolean debug;
 	public static boolean useUUID;
 	public static boolean use1_9;
+	public static boolean use1_13;
 	public static boolean updateCheck;
 
 	// Third Party Enabled
@@ -70,6 +71,7 @@ public class P extends JavaPlugin {
 		String v = Bukkit.getBukkitVersion();
 		useUUID = !v.matches("(^|.*[^\\.\\d])1\\.[0-6]([^\\d].*|$)") && !v.matches("(^|.*[^\\.\\d])1\\.7\\.[0-5]([^\\d].*|$)");
 		use1_9 = !v.matches("(^|.*[^\\.\\d])1\\.[0-8]([^\\d].*|$)");
+		use1_13 = !v.matches("(^|.*[^\\.\\d])1\\.1[0-2]([^\\d].*|$)") && !v.matches("(^|.*[^\\.\\d])1\\.[0-9]([^\\d].*|$)");
 
 		// load the Config
 		try {

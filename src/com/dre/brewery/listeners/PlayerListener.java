@@ -151,7 +151,7 @@ public class PlayerListener implements Listener {
 						if (openEverywhere) {
 							barrel = Barrel.get(clickedBlock);
 						}
-					} else if (Barrel.isStairs(type)) {
+					} else if (LegacyUtil.isWoodStairs(type)) {
 						for (Barrel barrel2 : Barrel.barrels) {
 							if (barrel2.hasStairsBlock(clickedBlock)) {
 								if (openEverywhere || !barrel2.isLarge()) {
@@ -160,7 +160,7 @@ public class PlayerListener implements Listener {
 								break;
 							}
 						}
-					} else if (Barrel.isFence(type) || LegacyUtil.isSign(type)) {
+					} else if (LegacyUtil.isFence(type) || LegacyUtil.isSign(type)) {
 						barrel = Barrel.getBySpigot(clickedBlock);
 					}
 

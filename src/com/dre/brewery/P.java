@@ -697,19 +697,13 @@ public class P extends JavaPlugin {
 
 	// Returns true if the Block can be destroyed by the Player or something else (null)
 	public boolean blockDestroy(Block block, Player player) {
-		switch (block.getType()) {
-		case CAULDRON:
+		Material type = block.getType();
+		if (type == Material.CAULDRON) {
 			// will only remove when existing
 			BCauldron.remove(block);
 			return true;
-		case FENCE:
-		case NETHER_FENCE:
-		case ACACIA_FENCE:
-		case BIRCH_FENCE:
-		case DARK_OAK_FENCE:
-		case IRON_FENCE:
-		case JUNGLE_FENCE:
-		case SPRUCE_FENCE:
+
+                } else if (LegacyUtil.isFence(type)) {
 			// remove barrel and throw potions on the ground
 			Barrel barrel = Barrel.getBySpigot(block);
 			if (barrel != null) {
@@ -721,8 +715,8 @@ public class P extends JavaPlugin {
 				}
 			}
 			return true;
-		case SIGN_POST:
-		case WALL_SIGN:
+
+                } else if (LegacyUtil.isSign(type)) {
 			// remove small Barrels
 			Barrel barrel2 = Barrel.getBySpigot(block);
 			if (barrel2 != null) {
@@ -738,13 +732,8 @@ public class P extends JavaPlugin {
 				}
 			}
 			return true;
-		case WOOD:
-		case WOOD_STAIRS:
-		case BIRCH_WOOD_STAIRS:
-		case JUNGLE_WOOD_STAIRS:
-		case SPRUCE_WOOD_STAIRS:
-		case ACACIA_STAIRS:
-		case DARK_OAK_STAIRS:
+
+                } else if (LegacyUtil.isWoodPlanks(type) || LegacyUtil.isWoodStairs(type)){
 			Barrel barrel3 = Barrel.getByWood(block);
 			if (barrel3 != null) {
 				if (barrel3.hasPermsDestroy(player)) {
@@ -753,9 +742,7 @@ public class P extends JavaPlugin {
 					return false;
 				}
 			}
-		default:
-			break;
-		}
+                }
 		return true;
 	}
 

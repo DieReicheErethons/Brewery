@@ -1,5 +1,6 @@
 package com.dre.brewery.filedata;
 
+import com.dre.brewery.LegacyUtil;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -54,7 +55,7 @@ public class DataUpdater {
 						Map<String, Integer> ingredients = new HashMap<>();
 						for (String ingredient : matSection.getKeys(false)) {
 							// convert to Material
-							Material mat = Material.getMaterial(P.p.parseInt(ingredient));
+							Material mat = LegacyUtil.getMaterial(P.p.parseInt(ingredient));
 							if (mat != null) {
 								ingredients.put(mat.name(), matSection.getInt(ingredient));
 							}
@@ -84,7 +85,7 @@ public class DataUpdater {
 								Map<String, Integer> ingredients = new HashMap<>();
 								for (String ingredient : ingredientSection.getKeys(false)) {
 									// convert to Material
-									Material mat = Material.getMaterial(P.p.parseInt(ingredient));
+									Material mat = LegacyUtil.getMaterial(P.p.parseInt(ingredient));
 									if (mat != null) {
 										ingredients.put(mat.name(), ingredientSection.getInt(ingredient));
 									}

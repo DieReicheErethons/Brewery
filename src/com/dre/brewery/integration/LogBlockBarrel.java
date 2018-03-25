@@ -1,5 +1,8 @@
 package com.dre.brewery.integration;
 
+import com.dre.brewery.LegacyUtil;
+import com.dre.brewery.P;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,7 +40,11 @@ public class LogBlockBarrel {
 		}
 		final ItemStack[] diff = compareInventories(items, after);
 		for (final ItemStack item : diff) {
-			consumer.queueChestAccess(player.getName(), loc, loc.getWorld().getBlockTypeIdAt(loc), (short) item.getTypeId(), (short) item.getAmount(), rawData(item));
+			if (P.use1_13) {
+				consumer.queueChestAccess(player.getName(), loc, LegacyUtil.getBlockTypeIdAt(loc), (short) item.getType().getId(), (short) item.getAmount(), rawData(item));
+			} else {
+				// TODO: New method for LogBlock for 1.13+
+			}
 		}
 	}
 
@@ -71,7 +78,11 @@ public class LogBlockBarrel {
 		if (!isLogging(spigotLoc.getWorld(), Logging.CHESTACCESS)) return;
 		final ItemStack[] items = compressInventory(contents);
 		for (final ItemStack item : items) {
-			consumer.queueChestAccess(playerName, spigotLoc, spigotLoc.getWorld().getBlockTypeIdAt(spigotLoc), (short) item.getTypeId(), (short) (item.getAmount() * -1), rawData(item));
+			if (P.use1_13) {
+				consumer.queueChestAccess(playerName, spigotLoc, LegacyUtil.getBlockTypeIdAt(spigotLoc), (short) item.getType().getId(), (short) (item.getAmount() * -1), rawData(item));
+			} else {
+				// TODO: New method for LogBlock for 1.13+
+			}
 		}
 	}
 

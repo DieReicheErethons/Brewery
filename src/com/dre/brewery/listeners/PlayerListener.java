@@ -67,18 +67,17 @@ public class PlayerListener implements Listener {
 							// reset cauldron when refilling to prevent unlimited source of potions
 						} else if (materialInHand == Material.WATER_BUCKET) {
 							if (!P.use1_9) {
-								if (BCauldron.getFillLevel(clickedBlock) != 0 && BCauldron.getFillLevel(clickedBlock) < 2) {
+								if (LegacyUtil.getFillLevel(clickedBlock) == 1) {
 									// will only remove when existing
 									BCauldron.remove(clickedBlock);
 								}
 							}
 							return;
-
 						}
 
 						// Check if fire alive below cauldron when adding ingredients
 						Block down = clickedBlock.getRelative(BlockFace.DOWN);
-						if (down.getType() == Material.FIRE || down.getType() == LegacyUtil.LAVA || down.getType() == LegacyUtil.FLOWING_LAVA) {
+						if (down.getType() == Material.FIRE || LegacyUtil.isLava(down.getType())) {
 
 							event.setCancelled(true);
 							boolean handSwap = false;

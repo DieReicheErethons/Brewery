@@ -1,8 +1,9 @@
 name: ${project.name}
 version: ${project.version}
 main: com.dre.brewery.P
-authors: [Milan Albrecht, Frank Baumann, ProgrammerDan]
+authors: [Milan Albrecht, Frank Baumann, ProgrammerDan, Daniel Saukel]
 softdepend: [LWC, LogBlock, WorldGuard, GriefPrevention, Vault]
+#api-version: 1.13
 commands:
   brewery:
     description: Command for Administration

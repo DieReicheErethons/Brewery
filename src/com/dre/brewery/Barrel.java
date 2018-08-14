@@ -5,7 +5,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.Map;
 
 import org.bukkit.Material;
-import org.bukkit.TreeSpecies;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.block.Block;
@@ -15,10 +14,6 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.material.MaterialData;
-import org.bukkit.material.Stairs;
-import org.bukkit.material.Tree;
-import org.bukkit.material.Wood;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -612,50 +607,7 @@ public class Barrel implements InventoryHolder {
 			default:
 				wood = spigot.getRelative(0, 0, -1);
 		}
-
-		Material type = wood.getType();
-		if (LegacyUtil.isWoodPlanks(type)) {
-			MaterialData data = wood.getState().getData();
-			TreeSpecies woodType;
-			if (data instanceof Tree) {
-				woodType = ((Tree) data).getSpecies();
-			} else if (data instanceof Wood) {
-				woodType = ((Wood) data).getSpecies();
-			} else {
-				return 0;
-			}
-
-                        switch (woodType) {
-				case GENERIC:
-					return 2;
-				case REDWOOD:
-					return 4;
-				case BIRCH:
-					return 1;
-				case JUNGLE:
-					return 3;
-				case ACACIA:
-					return 5;
-				case DARK_OAK:
-					return 6;
-				default:
-					return 0;
-			}
-		} else if (type == LegacyUtil.OAK_STAIRS) {
-			return 2;
-		} else if (type == LegacyUtil.SPRUCE_STAIRS) {
-			return 4;
-		} else if (type == LegacyUtil.BIRCH_STAIRS) {
-			return 1;
-		} else if (type == LegacyUtil.JUNGLE_STAIRS) {
-			return 3;
-		} else if (type == LegacyUtil.ACACIA_STAIRS) {
-			return 5;
-		} else if (type == LegacyUtil.DARK_OAK_STAIRS) {
-			return 6;
-		} else {
-			return 0;
-		}
+		return LegacyUtil.getWoodType(wood);
 	}
 
 	// returns the Sign of a large barrel, the spigot if there is none
@@ -751,11 +703,8 @@ public class Barrel implements InventoryHolder {
 					if (LegacyUtil.isWoodStairs(type)) {
 						if (y == 0) {
 							// stairs have to be upside down
-							MaterialData data = block.getState().getData();
-							if (data instanceof Stairs) {
-								if (!((Stairs) data).isInverted()) {
-									return block;
-								}
+							if (!LegacyUtil.areStairsInverted(block)) {
+								return block;
 							}
 						}
 						stairs.add(block.getX());

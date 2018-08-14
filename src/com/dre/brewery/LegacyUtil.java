@@ -22,11 +22,16 @@ public class LegacyUtil {
     private static Method SET_DATA;
 
     static {
+        // -1.12.2 methods
         try {
             GET_MATERIAL = Material.class.getDeclaredMethod("getMaterial", int.class);
             GET_BLOCK_TYPE_ID_AT = World.class.getDeclaredMethod("getBlockTypeIdAt", Location.class);
+        } catch (NoSuchMethodException | SecurityException e) {
+        }
+        // 1.13+ methods
+        try {
             SET_DATA = Class.forName(Bukkit.getServer().getClass().getPackage().getName() + ".block.CraftBlock").getDeclaredMethod("setData", byte.class);
-        } catch (NoSuchMethodException | SecurityException | ClassNotFoundException ex) {
+        } catch (ClassNotFoundException | NoSuchMethodException | SecurityException e) {
         }
     }
 
@@ -41,7 +46,7 @@ public class LegacyUtil {
     private static Material get(String name) {
         try {
             return Material.valueOf(name);
-        } catch (IllegalArgumentException exception) {
+        } catch (IllegalArgumentException e) {
             return null;
         }
     }
@@ -49,7 +54,7 @@ public class LegacyUtil {
     private static Material get(String oldName, String newName) {
         try {
             return Material.valueOf(P.use1_13 ? newName : oldName);
-        } catch (IllegalArgumentException exception) {
+        } catch (IllegalArgumentException e) {
             return null;
         }
     }
@@ -103,6 +108,8 @@ public class LegacyUtil {
                 woodType = TreeSpecies.ACACIA;
             } else if (material.startsWith("DARK_OAK")) {
                 woodType = TreeSpecies.DARK_OAK;
+            } else {
+                return 0;
             }
 
         } else {
@@ -141,7 +148,7 @@ public class LegacyUtil {
         }
 
         if (P.use1_13) {
-            Levelled cauldron = ((Levelled) block);
+            Levelled cauldron = ((Levelled) block.getBlockData());
             if (cauldron.getLevel() == 0) {
                 return 0;
             } else if (cauldron.getLevel() == cauldron.getMaximumLevel()) {
@@ -165,7 +172,7 @@ public class LegacyUtil {
     public static Material getMaterial(int id) {
         try {
             return GET_MATERIAL != null ? (Material) GET_MATERIAL.invoke(null, id) : null;
-        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException exception) {
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
             return null;
         }
     }
@@ -173,7 +180,7 @@ public class LegacyUtil {
     public static int getBlockTypeIdAt(Location location) {
         try {
             return GET_BLOCK_TYPE_ID_AT != null ? (int) GET_BLOCK_TYPE_ID_AT.invoke(location.getWorld(), location) : 0;
-        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException exception) {
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
             return 0;
         }
     }
@@ -182,7 +189,7 @@ public class LegacyUtil {
     public static void setData(Block block, byte data) {
         try {
             SET_DATA.invoke(block, data);
-        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
         }
     }
 

@@ -2,6 +2,7 @@ package com.dre.brewery;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.TreeSpecies;
@@ -18,12 +19,14 @@ public class LegacyUtil {
 
     private static Method GET_MATERIAL;
     private static Method GET_BLOCK_TYPE_ID_AT;
+    private static Method SET_DATA;
 
     static {
         try {
             GET_MATERIAL = Material.class.getDeclaredMethod("getMaterial", int.class);
             GET_BLOCK_TYPE_ID_AT = World.class.getDeclaredMethod("getBlockTypeIdAt", Location.class);
-        } catch (NoSuchMethodException | SecurityException ex) {
+            SET_DATA = Class.forName(Bukkit.getServer().getClass().getPackage().getName() + ".block.CraftBlock").getDeclaredMethod("setData", byte.class);
+        } catch (NoSuchMethodException | SecurityException | ClassNotFoundException ex) {
         }
     }
 
@@ -172,6 +175,14 @@ public class LegacyUtil {
             return GET_BLOCK_TYPE_ID_AT != null ? (int) GET_BLOCK_TYPE_ID_AT.invoke(location.getWorld(), location) : 0;
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException exception) {
             return 0;
+        }
+    }
+
+    // Setting byte data to blocks works in 1.13, but isn't part of the API anymore
+    public static void setData(Block block, byte data) {
+        try {
+            SET_DATA.invoke(block, data);
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
         }
     }
 

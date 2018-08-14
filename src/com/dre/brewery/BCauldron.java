@@ -97,13 +97,13 @@ public class BCauldron {
 				byte data = block.getData();
 				if (data > 3) {
 					data = 3;
-					block.setData(data);
+					LegacyUtil.setData(block, data);
 				} else if (data <= 0) {
 					bcauldrons.remove(bcauldron);
 					return false;
 				}
 				data -= 1;
-				block.setData(data);
+				LegacyUtil.setData(block, data);
 
 				if (data == 0) {
 					bcauldrons.remove(bcauldron);

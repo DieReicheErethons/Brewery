@@ -51,7 +51,7 @@ public class LegacyUtil {
         }
     }
 
-    private static Material get(String oldName, String newName) {
+    private static Material get(String newName, String oldName) {
         try {
             return Material.valueOf(P.use1_13 ? newName : oldName);
         } catch (IllegalArgumentException e) {
@@ -82,7 +82,7 @@ public class LegacyUtil {
     }
 
     public static boolean areStairsInverted(Block block) {
-        if (P.use1_13) {
+        if (!P.use1_13) {
             MaterialData data = block.getState().getData();
             return data instanceof org.bukkit.material.Stairs && (((org.bukkit.material.Stairs) data).isInverted());
         } else {

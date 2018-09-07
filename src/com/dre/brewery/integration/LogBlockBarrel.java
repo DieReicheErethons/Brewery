@@ -2,6 +2,7 @@ package com.dre.brewery.integration;
 
 import com.dre.brewery.LegacyUtil;
 import com.dre.brewery.P;
+import de.diddiz.LogBlock.Actor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,13 +16,31 @@ import de.diddiz.LogBlock.Consumer;
 import de.diddiz.LogBlock.LogBlock;
 import de.diddiz.LogBlock.Logging;
 import static de.diddiz.LogBlock.config.Config.isLogging;
+import de.diddiz.util.BukkitUtils;
 import static de.diddiz.util.BukkitUtils.compareInventories;
 import static de.diddiz.util.BukkitUtils.compressInventory;
-import static de.diddiz.util.BukkitUtils.rawData;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 public class LogBlockBarrel {
 	private static final List<LogBlockBarrel> opened = new ArrayList<>();
 	public static Consumer consumer = LogBlock.getInstance().getConsumer();
+	private static Method rawData;
+	private static Method queueChestAccess;
+
+	static {
+		if (P.use1_13) {
+			try {
+				rawData = BukkitUtils.class.getDeclaredMethod("rawData", ItemStack.class);
+				queueChestAccess = Consumer.class.getDeclaredMethod("queueChestAccess", String.class, Location.class, int.class, short.class, short.class);
+             	   } catch (NoSuchMethodException e) {
+				P.p.errorLog("Failed to hook into LogBlock to log barrels. Logging barrel contents is not going to work.");
+				P.p.errorLog("Brewery was tested with version 1.12 to 1.13.1 of LogBlock.");
+				P.p.errorLog("Disable LogBlock support in the configuration file and type /brew reload.");
+				e.printStackTrace();
+			}
+                }
+	}
 
 	private HumanEntity player;
 	private ItemStack[] items;
@@ -41,9 +60,13 @@ public class LogBlockBarrel {
 		final ItemStack[] diff = compareInventories(items, after);
 		for (final ItemStack item : diff) {
 			if (P.use1_13) {
-				consumer.queueChestAccess(player.getName(), loc, LegacyUtil.getBlockTypeIdAt(loc), (short) item.getType().getId(), (short) item.getAmount(), rawData(item));
+				try {
+					queueChestAccess.invoke(consumer, player.getName(), loc, LegacyUtil.getBlockTypeIdAt(loc), (short) item.getType().getId(), (short) item.getAmount(), (short) rawData.invoke(null, item));
+                                } catch(IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+					e.printStackTrace();
+				}
 			} else {
-				// TODO: New method for LogBlock for 1.13+
+				consumer.queueChestAccess(Actor.actorFromEntity(player), loc, loc.getBlock().getBlockData(), item, false);
 			}
 		}
 	}
@@ -79,9 +102,13 @@ public class LogBlockBarrel {
 		final ItemStack[] items = compressInventory(contents);
 		for (final ItemStack item : items) {
 			if (P.use1_13) {
-				consumer.queueChestAccess(playerName, spigotLoc, LegacyUtil.getBlockTypeIdAt(spigotLoc), (short) item.getType().getId(), (short) (item.getAmount() * -1), rawData(item));
+				try {
+					queueChestAccess.invoke(consumer, playerName, spigotLoc, LegacyUtil.getBlockTypeIdAt(spigotLoc), (short) item.getType().getId(), (short) (item.getAmount() * -1), rawData.invoke(null, item));
+                                } catch(IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+					e.printStackTrace();
+				}
 			} else {
-				// TODO: New method for LogBlock for 1.13+
+				consumer.queueChestAccess(Actor.actorFromString(playerName), spigotLoc, spigotLoc.getBlock().getBlockData(), item, false);
 			}
 		}
 	}

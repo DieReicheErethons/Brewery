@@ -3,6 +3,7 @@ package com.dre.brewery;
 import com.dre.brewery.filedata.*;
 import com.dre.brewery.integration.LogBlockBarrel;
 import com.dre.brewery.integration.WGBarrel;
+import com.dre.brewery.integration.WGBarrel7;
 import com.dre.brewery.integration.WGBarrelNew;
 import com.dre.brewery.integration.WGBarrelOld;
 import com.dre.brewery.listeners.*;
@@ -31,6 +32,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class P extends JavaPlugin {
@@ -263,19 +265,17 @@ public class P extends JavaPlugin {
 		// Third-Party
 		useWG = config.getBoolean("useWorldGuard", true) && getServer().getPluginManager().isPluginEnabled("WorldGuard");
 		if (useWG) {
-			try {
-				try {
-					Class.forName("com.sk89q.worldguard.bukkit.RegionContainer");
-					wg = new WGBarrelNew();
-				} catch (ClassNotFoundException e) {
-					wg = new WGBarrelOld();
-				}
-			} catch (Throwable e) {
-				wg = null;
+			Plugin plugin = Bukkit.getPluginManager().getPlugin("WorldEdit");
+			if (plugin != null) {
+				String wgv = plugin.getDescription().getVersion();
+				if (wgv.startsWith("7.")) wg = new WGBarrel7();
+				else if (wgv.startsWith("6.")) wg = new WGBarrelNew();
+				else if (wgv.startsWith("5.")) wg = new WGBarrelOld();
+			}
+			if (wg == null) {
 				P.p.errorLog("Failed loading WorldGuard Integration! Opening Barrels will NOT work!");
-				P.p.errorLog("Brewery was tested with version 5.8 to 6.1 of WorldGuard!");
+				P.p.errorLog("Brewery was tested with version 5.8, 6.1 and 7.0 of WorldGuard!");
 				P.p.errorLog("Disable the WorldGuard support in the config and do /brew reload");
-				e.printStackTrace();
 			}
 		}
 		useLWC = config.getBoolean("useLWC", true) && getServer().getPluginManager().isPluginEnabled("LWC");

@@ -19,6 +19,7 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.UUID;
 import org.apache.commons.lang.math.NumberUtils;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -91,7 +92,7 @@ public class P extends JavaPlugin {
 		readData();
 
 		// Setup Metrics
-		setupMetrics();
+		new Metrics(this);
 
 		// Listeners
 		blockListener = new BlockListener();
@@ -154,13 +155,6 @@ public class P extends JavaPlugin {
 		Words.commands = null;
 
 		this.log(this.getDescription().getName() + " disabled!");
-	}
-
-	public void setupMetrics() {
-		try {
-			new com.dre.brewery.integration.Metrics(this).start();
-		} catch (Exception ignored) {
-		}
 	}
 
 	public void reload(CommandSender sender) {

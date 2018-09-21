@@ -37,7 +37,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class P extends JavaPlugin {
 	public static P p;
-	public static final String configVersion = "1.5";
+	public static final String configVersion = "1.6";
 	public static boolean debug;
 	public static boolean useUUID;
 	public static boolean use1_9;
@@ -606,7 +606,7 @@ public class P extends JavaPlugin {
 		if (!cfg.exists()) {
 			errorLog("No config.yml found, creating default file! You may want to choose a config according to your language!");
 			errorLog("You can find them in plugins/Brewery/configs/");
-			InputStream defconf = getResource("config/en/config.yml");
+			InputStream defconf = getResource("config/" + (use1_13 ? "v13/" : "v12/") + "en/config.yml");
 			if (defconf == null) {
 				errorLog("default config file not found, your jarfile may be corrupt. Disabling Brewery!");
 				return false;
@@ -633,7 +633,7 @@ public class P extends JavaPlugin {
 		for (String l : new String[] {"de", "en", "fr", "it"}) {
 			File lfold = new File(configs, l);
 			try {
-				saveFile(getResource("config/" + l + "/config.yml"), lfold, "config.yml", overwrite);
+				saveFile(getResource("config/" + (use1_13 ? "v13/" : "v12/") + l + "/config.yml"), lfold, "config.yml", overwrite);
 				saveFile(getResource("languages/" + l + ".yml"), languages, l + ".yml", false); // Never overwrite languages for now
 			} catch (IOException e) {
 				e.printStackTrace();

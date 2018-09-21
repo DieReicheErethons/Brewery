@@ -62,7 +62,7 @@ updateCheck: true
 autosave: 3
 
 # Versione del config
-version: '1.5'
+version: '1.6'
 
 
 # -- Ricette per pozioni --

@@ -62,7 +62,7 @@ updateCheck: true
 autosave: 3
 
 # Version de configuration
-version: '1.5'
+version: '1.6'
 
 
 # -- Recette pour les boissons --

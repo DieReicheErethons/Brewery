@@ -275,7 +275,9 @@ public class P extends JavaPlugin {
 		useLWC = config.getBoolean("useLWC", true) && getServer().getPluginManager().isPluginEnabled("LWC");
 		useGP = config.getBoolean("useGriefPrevention", true) && getServer().getPluginManager().isPluginEnabled("GriefPrevention");
 		useLB = config.getBoolean("useLogBlock", false) && getServer().getPluginManager().isPluginEnabled("LogBlock");
-		hasVault = getServer().getPluginManager().isPluginEnabled("Vault");
+		// The item util has been removed in Vault 1.7+
+		hasVault = getServer().getPluginManager().isPluginEnabled("Vault")
+			&& Integer.parseInt(getServer().getPluginManager().getPlugin("Vault").getDescription().getVersion().split("\\.")[1]) <= 6;
 
 		// various Settings
 		DataSave.autosave = config.getInt("autosave", 3);

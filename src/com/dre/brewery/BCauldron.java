@@ -9,8 +9,6 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.Effect;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.material.Cauldron;
-import org.bukkit.material.MaterialData;
 
 public class BCauldron {
 	public static CopyOnWriteArrayList<BCauldron> bcauldrons = new CopyOnWriteArrayList<>();
@@ -36,8 +34,7 @@ public class BCauldron {
 
 	public void onUpdate() {
 		// Check if fire still alive
-		if (!block.getChunk().isLoaded() || block.getRelative(BlockFace.DOWN).getType() == Material.FIRE || block.getRelative(BlockFace.DOWN).getType() == Material.STATIONARY_LAVA
-				|| block.getRelative(BlockFace.DOWN).getType() == Material.LAVA) {
+		if (!block.getChunk().isLoaded() || block.getRelative(BlockFace.DOWN).getType() == Material.FIRE || LegacyUtil.isLava(block.getRelative(BlockFace.DOWN).getType())) {
 			// add a minute to cooking time
 			state++;
 			if (someRemoved) {
@@ -74,7 +71,7 @@ public class BCauldron {
 	// get cauldron from block and add given ingredient
 	public static boolean ingredientAdd(Block block, ItemStack ingredient) {
 		// if not empty
-		if (getFillLevel(block) != 0) {
+		if (LegacyUtil.getFillLevel(block) != 0) {
 			BCauldron bcauldron = get(block);
 			if (bcauldron != null) {
 				bcauldron.add(ingredient);
@@ -100,13 +97,13 @@ public class BCauldron {
 				byte data = block.getData();
 				if (data > 3) {
 					data = 3;
-					block.setData(data);
+					LegacyUtil.setData(block, data);
 				} else if (data <= 0) {
 					bcauldrons.remove(bcauldron);
 					return false;
 				}
 				data -= 1;
-				block.setData(data);
+				LegacyUtil.setData(block, data);
 
 				if (data == 0) {
 					bcauldrons.remove(bcauldron);
@@ -123,24 +120,6 @@ public class BCauldron {
 			}
 		}
 		return false;
-	}
-
-	// 0 = empty, 1 = something in, 2 = full
-	public static byte getFillLevel(Block block) {
-		if (block.getType() == Material.CAULDRON) {
-			MaterialData data = block.getState().getData();
-			if (data instanceof Cauldron) {
-				Cauldron cauldron = (Cauldron) data;
-				if (cauldron.isEmpty()) {
-					return 0;
-				} else if (cauldron.isFull()) {
-					return 2;
-				} else {
-					return 1;
-				}
-			}
-		}
-		return 0;
 	}
 
 	// prints the current cooking time to the player
@@ -161,7 +140,7 @@ public class BCauldron {
 
 	// reset to normal cauldron
 	public static void remove(Block block) {
-		if (getFillLevel(block) != 0) {
+		if (LegacyUtil.getFillLevel(block) != 0) {
 			BCauldron bcauldron = get(block);
 			if (bcauldron != null) {
 				bcauldrons.remove(bcauldron);

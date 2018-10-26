@@ -62,7 +62,7 @@ updateCheck: true
 autosave: 3
 
 # Version de configuration
-version: '1.5'
+version: '1.6'
 
 
 # -- Recette pour les boissons --
@@ -102,9 +102,9 @@ recipes:
       name: Mauvais Exemple/Exemple/Bonne Exemple
       ingredients:
       - SUGAR_CANE/5
-      - 264/1
-      - INK_SACK,3/20
-      - 5,1/8
+      - diamond/1
+      - Cocoa_Beans/20
+      - spruce_planks/8
       - BEDROCK/1
 #     - Jungle Leaves/64  # Only with Vault
 #     - Green Dye/6       # Only with Vault
@@ -197,7 +197,7 @@ recipes:
    7:
       name: Vodka Sale/Vodka/Vodka Russe
       ingredients: 
-      - POTATO_ITEM/10
+      - POTATO/10
       cookingtime: 15
       distillruns: 3
       age: 0
@@ -210,7 +210,7 @@ recipes:
    8:
       name: Absinthe pauvre/Absinthe/Absinthe forte
       ingredients:
-      - LONG_GRASS/15
+      - GRASS/15
       cookingtime: 3
       distillruns: 6
       distilltime: 80
@@ -222,8 +222,8 @@ recipes:
    9:
       name: Potato soup
       ingredients:
-      - POTATO_ITEM/5
-      - LONG_GRASS/3
+      - POTATO/5
+      - GRASS/3
       cookingtime: 3
       color: PINK
       difficulty: 1
@@ -232,7 +232,7 @@ recipes:
    10:
       name: Café fétide/Café/Café fort
       ingredients:
-      - INK_SACK,3/12
+      - Cocoa_Beans/12
       - MILK_BUCKET/2
       cookingtime: 2
       color: BLACK
@@ -254,10 +254,10 @@ cooked:
    WHEAT: Blé fermenté
    SUGAR_CANE: Sucre fermenté
    APPLE: Cidre de pommes
-   POTATO_ITEM: Purée de Pommes de Terre
-   LONG_GRASS: Herbes bouillies
+   POTATO: Purée de Pommes de Terre
+   GRASS: Herbes bouillies
    RED_MUSHROOM: Champignons fermentés
-   INK_SACK: Fermentation colorée
+   Cocoa_Beans: Fermentation colorée
    MILK_BUCKET: Eau laiteuse
 
 
@@ -268,7 +268,6 @@ cooked:
 useWorldGuard: true
 useLWC: true
 useGriefPrevention: true
-useCitadel: true
 
 # Activer l'historique du contenu des tonneaux avec LogBlock [true]
 useLogBlock: true

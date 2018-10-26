@@ -62,7 +62,7 @@ updateCheck: true
 autosave: 3
 
 # Versione del config
-version: '1.5'
+version: '1.6'
 
 
 # -- Ricette per pozioni --
@@ -97,9 +97,9 @@ recipes:
       name: Cattivo esempio/Esempio/Buon esempio
       ingredients:
       - SUGAR_CANE/5
-      - 264/1
-      - INK_SACK,3/20
-      - 5,1/8
+      - diamond/1
+      - Cocoa_Beans/20
+      - spruce_planks/8
       - BEDROCK/1
 #     - Jungle Leaves/64  # Solo con Vault
 #     - Green Dye/6       # Solo con Vault
@@ -192,7 +192,7 @@ recipes:
    7:
       name: Vodka schifosa/Vodka/Vodka russa
       ingredients: 
-      - POTATO_ITEM/10
+      - POTATO/10
       cookingtime: 15
       distillruns: 3
       age: 0
@@ -205,7 +205,7 @@ recipes:
    8:
       name: Assenzio scarso/Assenzio/Assenzio forte
       ingredients:
-      - LONG_GRASS/15
+      - GRASS/15
       cookingtime: 3
       distillruns: 6
       distilltime: 80
@@ -217,8 +217,8 @@ recipes:
    9:
       name: Zuppa di patate
       ingredients:
-      - POTATO_ITEM/5
-      - LONG_GRASS/3
+      - POTATO/5
+      - GRASS/3
       cookingtime: 3
       color: PINK
       difficulty: 1
@@ -227,7 +227,7 @@ recipes:
    10:
       name: Caffè stantio/Caffè/Caffè forte
       ingredients:
-      - INK_SACK,3/12
+      - Cocoa_Beans,3/12
       - MILK_BUCKET/2
       cookingtime: 2
       color: BLACK
@@ -249,10 +249,10 @@ cooked:
    WHEAT: Frumento fermentato
    SUGAR_CANE: Miscela zuccherata
    APPLE: Sidro di mele
-   POTATO_ITEM: Purè di patate
-   LONG_GRASS: Erbe bollite
+   POTATO: Purè di patate
+   GRASS: Erbe bollite
    RED_MUSHROOM: Miscela ai funghi
-   INK_SACK: Miscela colorata
+   Cocoa_Beans: Miscela colorata
    MILK_BUCKET: Acqua lattea
 
 
@@ -263,7 +263,6 @@ cooked:
 useWorldGuard: true
 useLWC: true
 useGriefPrevention: true
-useCitadel: true
 
 # Abilita il logging degli inventari dei barili [true]
 useLogBlock: true

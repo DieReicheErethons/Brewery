@@ -144,7 +144,11 @@ public class ConfigUpdater {
 			fromVersion = "1.5";
 		}
 
-		if (!fromVersion.equals("1.5")) {
+		if (fromVersion.equals("1.5")) {
+			fromVersion = "1.6";
+		}
+
+		if (!fromVersion.equals("1.6")) {
 			P.p.log(P.p.languageReader.get("Error_ConfigUpdate", fromVersion));
 			return;
 		}

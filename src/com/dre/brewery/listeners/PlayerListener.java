@@ -42,7 +42,7 @@ public class PlayerListener implements Listener {
 						if (materialInHand == null || materialInHand == Material.BUCKET) {
 							return;
 
-						} else if (materialInHand == Material.WATCH) {
+						} else if (materialInHand == LegacyUtil.CLOCK) {
 							BCauldron.printTime(player, clickedBlock);
 							return;
 
@@ -67,18 +67,17 @@ public class PlayerListener implements Listener {
 							// reset cauldron when refilling to prevent unlimited source of potions
 						} else if (materialInHand == Material.WATER_BUCKET) {
 							if (!P.use1_9) {
-								if (BCauldron.getFillLevel(clickedBlock) != 0 && BCauldron.getFillLevel(clickedBlock) < 2) {
+								if (LegacyUtil.getFillLevel(clickedBlock) == 1) {
 									// will only remove when existing
 									BCauldron.remove(clickedBlock);
 								}
 							}
 							return;
-
 						}
 
 						// Check if fire alive below cauldron when adding ingredients
 						Block down = clickedBlock.getRelative(BlockFace.DOWN);
-						if (down.getType() == Material.FIRE || down.getType() == Material.STATIONARY_LAVA || down.getType() == Material.LAVA) {
+						if (down.getType() == Material.FIRE || LegacyUtil.isLava(down.getType())) {
 
 							event.setCancelled(true);
 							boolean handSwap = false;
@@ -147,11 +146,11 @@ public class PlayerListener implements Listener {
 
 					// Access a Barrel
 					Barrel barrel = null;
-					if (type == Material.WOOD) {
+					if (LegacyUtil.isWoodPlanks(type)) {
 						if (openEverywhere) {
 							barrel = Barrel.get(clickedBlock);
 						}
-					} else if (Barrel.isStairs(type)) {
+					} else if (LegacyUtil.isWoodStairs(type)) {
 						for (Barrel barrel2 : Barrel.barrels) {
 							if (barrel2.hasStairsBlock(clickedBlock)) {
 								if (openEverywhere || !barrel2.isLarge()) {
@@ -160,7 +159,7 @@ public class PlayerListener implements Listener {
 								break;
 							}
 						}
-					} else if (Barrel.isFence(type) || type == Material.SIGN_POST || type == Material.WALL_SIGN) {
+					} else if (LegacyUtil.isFence(type) || LegacyUtil.isSign(type)) {
 						barrel = Barrel.getBySpigot(clickedBlock);
 					}
 

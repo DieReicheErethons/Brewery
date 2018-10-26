@@ -4,7 +4,7 @@
 
 	<groupId>com.dre</groupId>
 	<artifactId>brewery</artifactId>
-	<version>1.6.1</version>
+	<version>1.7</version>
 	<name>Brewery</name>
 
 	<properties>
@@ -33,20 +33,46 @@
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.5.1</version>
+				<version>3.7.0</version>
 				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
+					<source>1.7</source>
+					<target>1.7</target>
 					<encoding>UTF-8</encoding>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>3.1.1</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<artifactSet>
+								<includes>
+									<include>org.bstats:bstats-bukkit</include>
+								</includes>
+							</artifactSet>
+							<relocations>
+								<relocation>
+									<pattern>org.bstats.bukkit</pattern>
+									<shadedPattern>com.dre.brewery.integration</shadedPattern>
+								</relocation>
+							</relocations>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
 
 	<repositories>
 		<repository>
-			<id>md_5-releases</id>
-			<url>http://repo.md-5.net/content/repositories/releases/</url>
+			<id>md_5-public</id>
+			<url>http://repo.md-5.net/content/groups/public/</url>
 		</repository>
 		<repository>
 			<id>spigot-repo</id>
@@ -57,20 +83,24 @@
 			<url>http://nexus.hc.to/content/repositories/pub_releases</url>
 		</repository>
 		<repository>
-			<id>mcstats-repo</id>
-			<url>http://repo.mcstats.org/content/repositories/public/</url>
-		</repository>
-		<repository>
 			<id>sk89q-repo</id>
 			<url>http://maven.sk89q.com/repo/</url>
 		</repository>
 		<repository>
+			<id>jitpack.io</id>
+			<url>https://jitpack.io</url>
+		</repository>
+		<repository>
 			<id>dre2n-rpo</id>
-			<url>http://feuerstern.bplaced.net/repo/</url>
+			<url>http://erethon.de/repo/</url>
 		</repository>
 		<repository>
 			<id>devoted-repo</id>
 			<url>https://build.devotedmc.com/plugin/repository/everything/</url>
+		</repository>
+		<repository>
+			<id>bstats-repo</id>
+			<url>http://repo.bstats.org/content/repositories/releases/</url>
 		</repository>
 	</repositories>
 
@@ -78,7 +108,7 @@
 		<dependency>
 			<groupId>org.bukkit</groupId>
 			<artifactId>bukkit</artifactId>
-			<version>1.12-R0.1-SNAPSHOT</version>
+			<version>1.13.1-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -91,13 +121,13 @@
 			<groupId>vg.civcraft.mc.citadel</groupId>
 			<artifactId>Citadel</artifactId>
 			<version>3.9.1</version>
-			<scope>compile</scope>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>vg.civcraft.mc.civmodcore</groupId>
 			<artifactId>CivModCore</artifactId>
 			<version>1.6.0</version>
-			<scope>compile</scope>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.sk89q</groupId>
@@ -106,28 +136,46 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.griefcraft.lwc</groupId>
-			<artifactId>LWCPlugin</artifactId>
-			<version>4.5.0-SNAPSHOT</version>
+			<groupId>com.sk89q.worldedit</groupId>
+			<artifactId>worldedit-bukkit</artifactId>
+			<version>7.0.0-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>me.ryanhamshire</groupId>
+			<groupId>com.sk89q.worldguard</groupId>
+			<artifactId>worldguard-legacy</artifactId>
+			<version>7.0.0-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.griefcraft</groupId>
+			<artifactId>entitylwc</artifactId>
+			<version>2.1</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.github.TechFortress</groupId>
 			<artifactId>GriefPrevention</artifactId>
-			<version>14.5.4</version>
+			<version>16.9</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.diddiz</groupId>
 			<artifactId>logblock</artifactId>
-			<version>1.94</version>
+			<version>1.13.1-SNAPSHOT</version>
 			<scope>provided</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>de.diddiz</groupId>
+					<artifactId>questioner</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>de.diddiz</groupId>
-			<artifactId>questioner</artifactId>
-			<version>1.94</version>
-			<scope>provided</scope>
+			<groupId>org.bstats</groupId>
+			<artifactId>bstats-bukkit</artifactId>
+			<version>1.2</version>
+			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 </project>

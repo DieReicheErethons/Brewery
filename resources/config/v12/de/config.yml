@@ -65,7 +65,7 @@ updateCheck: true
 autosave: 3
 
 # Config Version
-version: '1.5'
+version: '1.6'
 
 
 # -- Rezepte für Getränke --

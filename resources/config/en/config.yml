@@ -263,6 +263,7 @@ cooked:
 useWorldGuard: true
 useLWC: true
 useGriefPrevention: true
+useCitadel: true
 
 # Enable the Logging of Barrel Inventories to LogBlock [true]
 useLogBlock: true

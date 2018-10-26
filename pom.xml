@@ -4,7 +4,7 @@
 
 	<groupId>com.dre</groupId>
 	<artifactId>brewery</artifactId>
-	<version>1.5</version>
+	<version>1.6.1</version>
 	<name>Brewery</name>
 
 	<properties>
@@ -35,8 +35,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.5.1</version>
 				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
+					<source>1.8</source>
+					<target>1.8</target>
 					<encoding>UTF-8</encoding>
 				</configuration>
 			</plugin>
@@ -54,7 +54,7 @@
 		</repository>
 		<repository>
 			<id>vault-repo</id>
-			<url>http://nexus.theyeticave.net/content/repositories/pub_releases</url>
+			<url>http://nexus.hc.to/content/repositories/pub_releases</url>
 		</repository>
 		<repository>
 			<id>mcstats-repo</id>
@@ -68,20 +68,36 @@
 			<id>dre2n-rpo</id>
 			<url>http://feuerstern.bplaced.net/repo/</url>
 		</repository>
+		<repository>
+			<id>devoted-repo</id>
+			<url>https://build.devotedmc.com/plugin/repository/everything/</url>
+		</repository>
 	</repositories>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.bukkit</groupId>
 			<artifactId>bukkit</artifactId>
-			<version>1.10.2-R0.1-SNAPSHOT</version>
+			<version>1.12-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>net.milkbowl.vault</groupId>
 			<artifactId>VaultAPI</artifactId>
-			<version>1.5</version>
+			<version>1.6</version>
 			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>vg.civcraft.mc.citadel</groupId>
+			<artifactId>Citadel</artifactId>
+			<version>3.9.1</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>vg.civcraft.mc.civmodcore</groupId>
+			<artifactId>CivModCore</artifactId>
+			<version>1.6.0</version>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.sk89q</groupId>

@@ -12,6 +12,7 @@
 
 # IntelliJ
 /.idea
+/*.iml
 
 # various other potential build files
 /build

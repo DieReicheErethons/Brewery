@@ -24,7 +24,7 @@ public class WGBarrel7 implements WGBarrel {
 		WorldGuardPlugin wg = (WorldGuardPlugin) plugin;
 		WorldGuardPlatform platform = WorldGuard.getInstance().getPlatform();
 
-                World world = platform.getWorldByName(spigot.getWorld().getName());
+		World world = platform.getWorldByName(spigot.getWorld().getName());
 		if (!platform.getGlobalStateManager().get(world).useRegions) return true; // Region support disabled
 		WorldEditPlugin we = JavaPlugin.getPlugin(WorldEditPlugin.class);
 		if (new RegionPermissionModel((Actor) we.wrapPlayer(player)).mayIgnoreRegionProtection(world)) return true; // Whitelisted cause

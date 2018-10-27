@@ -2,6 +2,7 @@ package com.dre.brewery;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.bukkit.block.data.Levelled;
 import org.bukkit.entity.Player;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -9,6 +10,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.Effect;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.material.Cauldron;
 
 public class BCauldron {
 	public static CopyOnWriteArrayList<BCauldron> bcauldrons = new CopyOnWriteArrayList<>();
@@ -94,21 +96,37 @@ public class BCauldron {
 			}
 			ItemStack potion = bcauldron.ingredients.cook(bcauldron.state);
 			if (potion != null) {
-				byte data = block.getData();
-				if (data > 3) {
-					data = 3;
-					LegacyUtil.setData(block, data);
-				} else if (data <= 0) {
-					bcauldrons.remove(bcauldron);
-					return false;
-				}
-				data -= 1;
-				LegacyUtil.setData(block, data);
 
-				if (data == 0) {
-					bcauldrons.remove(bcauldron);
+				if (P.use1_13) {
+					Levelled cauldron = ((Levelled) block.getBlockData());
+					if (cauldron.getLevel() <= 0) {
+						bcauldrons.remove(bcauldron);
+						return false;
+					}
+					cauldron.setLevel(cauldron.getLevel() - 1);
+
+					if (cauldron.getLevel() <= 0) {
+						bcauldrons.remove(bcauldron);
+					} else {
+						bcauldron.someRemoved = true;
+					}
+
 				} else {
-					bcauldron.someRemoved = true;
+					byte data = block.getData();
+					if (data > 3) {
+						data = 3;
+					} else if (data <= 0) {
+						bcauldrons.remove(bcauldron);
+						return false;
+					}
+					data -= 1;
+					LegacyUtil.setData(block, data);
+
+					if (data == 0) {
+						bcauldrons.remove(bcauldron);
+					} else {
+						bcauldron.someRemoved = true;
+					}
 				}
 				// Bukkit Bug, inventory not updating while in event so this
 				// will delay the give

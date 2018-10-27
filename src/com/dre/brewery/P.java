@@ -203,7 +203,7 @@ public class P extends JavaPlugin {
 		languageReader = new LanguageReader(new File(p.getDataFolder(), "languages/" + language + ".yml"));
 
 		// Reload Recipes
-		Boolean successful = true;
+		boolean successful = true;
 		for (Brew brew : Brew.potions.values()) {
 			if (!brew.reloadRecipe()) {
 				successful = false;

@@ -108,8 +108,22 @@
 		<dependency>
 			<groupId>org.bukkit</groupId>
 			<artifactId>bukkit</artifactId>
-			<version>1.13.1-R0.1-SNAPSHOT</version>
+			<version>1.13.2-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
+			<exclusions>
+				<exclusion>
+					<artifactId>guava</artifactId>
+					<groupId>com.google.guava</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>gson</artifactId>
+					<groupId>com.google.code.gson</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>snakeyaml</artifactId>
+					<groupId>org.yaml</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>net.milkbowl.vault</groupId>
@@ -122,30 +136,72 @@
 			<artifactId>Citadel</artifactId>
 			<version>3.9.1</version>
 			<scope>provided</scope>
+			<exclusions>
+				<exclusion>
+					<artifactId>*</artifactId>
+					<groupId>*</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>vg.civcraft.mc.civmodcore</groupId>
 			<artifactId>CivModCore</artifactId>
 			<version>1.6.0</version>
 			<scope>provided</scope>
+			<exclusions>
+				<exclusion>
+					<artifactId>*</artifactId>
+					<groupId>*</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.sk89q</groupId>
 			<artifactId>worldguard</artifactId>
 			<version>6.1</version>
 			<scope>provided</scope>
+			<exclusions>
+				<exclusion>
+					<artifactId>*</artifactId>
+					<groupId>*</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.sk89q.worldedit</groupId>
 			<artifactId>worldedit-bukkit</artifactId>
 			<version>7.0.0-SNAPSHOT</version>
 			<scope>provided</scope>
+			<exclusions>
+				<exclusion>
+					<artifactId>*</artifactId>
+					<groupId>*</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>com.sk89q.worldedit</groupId>
+			<artifactId>worldedit-core</artifactId>
+			<version>7.0.0-SNAPSHOT</version>
+			<scope>provided</scope>
+			<exclusions>
+				<exclusion>
+					<artifactId>*</artifactId>
+					<groupId>*</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.sk89q.worldguard</groupId>
-			<artifactId>worldguard-legacy</artifactId>
+			<artifactId>worldguard-core</artifactId>
 			<version>7.0.0-SNAPSHOT</version>
 			<scope>provided</scope>
+			<exclusions>
+				<exclusion>
+					<artifactId>*</artifactId>
+					<groupId>*</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.griefcraft</groupId>
@@ -166,8 +222,8 @@
 			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
-					<groupId>de.diddiz</groupId>
-					<artifactId>questioner</artifactId>
+					<artifactId>*</artifactId>
+					<groupId>*</groupId>
 				</exclusion>
 			</exclusions>
 		</dependency>

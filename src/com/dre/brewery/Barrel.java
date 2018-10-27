@@ -628,7 +628,12 @@ public class Barrel implements InventoryHolder {
 			default:
 				wood = spigot.getRelative(0, 0, -1);
 		}
-		return LegacyUtil.getWoodType(wood);
+		try {
+			return LegacyUtil.getWoodType(wood);
+		} catch (NoSuchFieldError | NoClassDefFoundError noSuchFieldError) {
+			// Using older minecraft versions some fields and classes do not exist
+			return 0;
+		}
 	}
 
 	// returns the Sign of a large barrel, the spigot if there is none

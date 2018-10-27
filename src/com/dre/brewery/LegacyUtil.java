@@ -1,7 +1,5 @@
 package com.dre.brewery;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -12,10 +10,13 @@ import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Levelled;
 import org.bukkit.material.Cauldron;
 import org.bukkit.material.MaterialData;
-import org.bukkit.material.Stairs;
 import org.bukkit.material.Tree;
 import org.bukkit.material.Wood;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+@SuppressWarnings("JavaReflectionMemberAccess")
 public class LegacyUtil {
 
 	private static Method GET_MATERIAL;
@@ -24,14 +25,12 @@ public class LegacyUtil {
 
 	static {
 		// <= 1.12.2 methods
+		// These will be rarely used
 		try {
 			GET_MATERIAL = Material.class.getDeclaredMethod("getMaterial", int.class);
 			GET_BLOCK_TYPE_ID_AT = World.class.getDeclaredMethod("getBlockTypeIdAt", Location.class);
-		} catch (NoSuchMethodException | SecurityException e) {
-		}
-		try {
 			SET_DATA = Class.forName(Bukkit.getServer().getClass().getPackage().getName() + ".block.CraftBlock").getDeclaredMethod("setData", byte.class);
-		} catch (ClassNotFoundException | NoSuchMethodException | SecurityException e) {
+		} catch (ClassNotFoundException | NoSuchMethodException | SecurityException ignored) {
 		}
 	}
 
@@ -42,6 +41,11 @@ public class LegacyUtil {
 	public static final Material JUNGLE_STAIRS = get("JUNGLE_STAIRS", "JUNGLE_WOOD_STAIRS");
 	public static final Material ACACIA_STAIRS = get("ACACIA_STAIRS");
 	public static final Material DARK_OAK_STAIRS = get("DARK_OAK_STAIRS");
+
+	// Materials removed in 1.13
+	public static final Material STATIONARY_LAVA = get("STATIONARY_LAVA");
+	public static final Material SIGN_POST = get("SIGN_POST");
+	public static final Material WOOD = get("WOOD");
 
 	private static Material get(String name) {
 		try {
@@ -60,7 +64,7 @@ public class LegacyUtil {
 	}
 
 	public static boolean isWoodPlanks(Material type) {
-		return type.name().endsWith("PLANKS") || type.name().equals("WOOD");
+		return type.name().endsWith("PLANKS") || (WOOD != null && type == WOOD);
 	}
 
 	public static boolean isWoodStairs(Material type) {
@@ -73,16 +77,17 @@ public class LegacyUtil {
 	}
 
 	public static boolean isSign(Material type) {
-		return type == Material.SIGN || type == Material.WALL_SIGN || (!P.use1_13 && type.name().equals("SIGN_POST"));
+		return type == Material.SIGN || type == Material.WALL_SIGN || (!P.use1_13 && type == SIGN_POST);
 	}
 
 	// LAVA and STATIONARY_LAVA are merged as of 1.13
 	public static boolean isLava(Material type) {
-		return type == Material.LAVA || (!P.use1_13 && type.name().equals("STATIONARY_LAVA"));
+		return type == Material.LAVA || (!P.use1_13 && type == STATIONARY_LAVA);
 	}
 
 	public static boolean areStairsInverted(Block block) {
 		if (!P.use1_13) {
+			@SuppressWarnings("deprecation")
 			MaterialData data = block.getState().getData();
 			return data instanceof org.bukkit.material.Stairs && (((org.bukkit.material.Stairs) data).isInverted());
 		} else {
@@ -91,8 +96,8 @@ public class LegacyUtil {
 		}
 	}
 
-	public static byte getWoodType(Block wood) {
-		TreeSpecies woodType = null;
+	public static byte getWoodType(Block wood) throws NoSuchFieldError, NoClassDefFoundError {
+		TreeSpecies woodType;
 
 		if (P.use1_13 || isWoodStairs(wood.getType())) {
 			String material = wood.getType().name();
@@ -113,6 +118,7 @@ public class LegacyUtil {
 			}
 
 		} else {
+			@SuppressWarnings("deprecation")
 			MaterialData data = wood.getState().getData();
 			if (data instanceof Tree) {
 				woodType = ((Tree) data).getSpecies();
@@ -169,6 +175,9 @@ public class LegacyUtil {
 		}
 	}
 
+	/*
+	 * only used in a very rare case to convert a very old Datafile from a very old version
+	 */
 	public static Material getMaterial(int id) {
 		try {
 			return GET_MATERIAL != null ? (Material) GET_MATERIAL.invoke(null, id) : null;
@@ -190,7 +199,7 @@ public class LegacyUtil {
 	public static void setData(Block block, byte data) {
 		try {
 			SET_DATA.invoke(block, data);
-		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ignored) {
 		}
 	}
 

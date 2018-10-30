@@ -483,7 +483,17 @@ public class P extends JavaPlugin {
 		ArrayList<ItemStack> ingredients = new ArrayList<>();
 		for (String mat : matSection.getKeys(false)) {
 			String[] matSplit = mat.split(",");
-			ItemStack item = new ItemStack(Material.getMaterial(matSplit[0]), matSection.getInt(mat));
+			Material m = Material.getMaterial(matSplit[0]);
+			if (m == null && use1_13) {
+				if (matSplit[0].equals("LONG_GRASS")) {
+					m = Material.GRASS;
+				} else {
+					m = Material.matchMaterial(matSplit[0], true);
+				}
+				debugLog("converting Data Material from " + matSplit[0] + " to " + m);
+			}
+			if (m == null) continue;
+			ItemStack item = new ItemStack(m, matSection.getInt(mat));
 			if (matSplit.length == 2) {
 				item.setDurability((short) P.p.parseInt(matSplit[1]));
 			}

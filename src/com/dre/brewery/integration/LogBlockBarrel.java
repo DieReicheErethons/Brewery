@@ -69,7 +69,12 @@ public class LogBlockBarrel {
 					e.printStackTrace();
 				}
 			} else {
-				consumer.queueChestAccess(Actor.actorFromEntity(player), loc, loc.getBlock().getBlockData(), item, false);
+				ItemStack i2 = item;
+				if (item.getAmount() < 0) {
+					i2 = item.clone();
+					i2.setAmount(Math.abs(item.getAmount()));
+				}
+				consumer.queueChestAccess(Actor.actorFromEntity(player), loc, loc.getBlock().getBlockData(), i2, item.getAmount() < 0);
 			}
 		}
 	}

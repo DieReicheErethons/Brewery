@@ -108,6 +108,7 @@ public class P extends JavaPlugin {
 		inventoryListener = new InventoryListener();
 		worldListener = new WorldListener();
 		getCommand("Brewery").setExecutor(new CommandListener());
+		getCommand("Brewery").setTabCompleter(new TabListener());
 
 		p.getServer().getPluginManager().registerEvents(blockListener, p);
 		p.getServer().getPluginManager().registerEvents(playerListener, p);

@@ -249,7 +249,7 @@ public class BIngredients {
 				badStuff++;
 				if (badStuff < ingredients.size()) {
 					// when there are other ingredients
-					quality -= count * (recipe.getDifficulty() / 2);
+					quality -= count * (recipe.getDifficulty() / 2.0);
 					continue;
 				} else {
 					// ingredients dont fit at all

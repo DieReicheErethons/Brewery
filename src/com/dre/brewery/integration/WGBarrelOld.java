@@ -32,6 +32,7 @@ public class WGBarrelOld implements WGBarrel {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	public boolean checkAccess(Player player, Block spigot, Plugin plugin) {
 		WorldGuardPlugin wg = (WorldGuardPlugin) plugin;
 		if (!wg.getGlobalRegionManager().hasBypass(player, player.getWorld())) {
@@ -49,10 +50,7 @@ public class WGBarrelOld implements WGBarrel {
 						}
 					}
 
-				} catch (IllegalAccessException e) {
-					e.printStackTrace();
-					return false;
-				} catch (InvocationTargetException e) {
+				} catch (IllegalAccessException | InvocationTargetException e) {
 					e.printStackTrace();
 					return false;
 				}

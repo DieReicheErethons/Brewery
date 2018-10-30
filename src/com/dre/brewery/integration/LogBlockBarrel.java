@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.bukkit.Location;
 import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -22,6 +23,7 @@ import static de.diddiz.util.BukkitUtils.compressInventory;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+@SuppressWarnings("JavaReflectionMemberAccess")
 public class LogBlockBarrel {
 	private static final List<LogBlockBarrel> opened = new ArrayList<>();
 	public static Consumer consumer = LogBlock.getInstance().getConsumer();
@@ -61,7 +63,8 @@ public class LogBlockBarrel {
 		for (final ItemStack item : diff) {
 			if (!P.use1_13) {
 				try {
-					queueChestAccess.invoke(consumer, player.getName(), loc, LegacyUtil.getBlockTypeIdAt(loc), (short) item.getType().getId(), (short) item.getAmount(), (short) rawData.invoke(null, item));
+					//noinspection deprecation
+					queueChestAccess.invoke(consumer, player.getName(), loc, LegacyUtil.getBlockTypeIdAt(loc), (short) item.getType().getId(), (short) item.getAmount(), rawData.invoke(null, item));
 				} catch(IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 					e.printStackTrace();
 				}
@@ -94,7 +97,7 @@ public class LogBlockBarrel {
 		}
 	}
 
-	public static void breakBarrel(String playerName, ItemStack[] contents, Location spigotLoc) {
+	public static void breakBarrel(Player player, ItemStack[] contents, Location spigotLoc) {
 		if (consumer == null) {
 			return;
 		}
@@ -103,12 +106,13 @@ public class LogBlockBarrel {
 		for (final ItemStack item : items) {
 			if (!P.use1_13) {
 				try {
-					queueChestAccess.invoke(consumer, playerName, spigotLoc, LegacyUtil.getBlockTypeIdAt(spigotLoc), (short) item.getType().getId(), (short) (item.getAmount() * -1), rawData.invoke(null, item));
+					//noinspection deprecation
+					queueChestAccess.invoke(consumer, player.getName(), spigotLoc, LegacyUtil.getBlockTypeIdAt(spigotLoc), (short) item.getType().getId(), (short) (item.getAmount() * -1), rawData.invoke(null, item));
 				} catch(IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 					e.printStackTrace();
 				}
 			} else {
-				consumer.queueChestAccess(Actor.actorFromString(playerName), spigotLoc, spigotLoc.getBlock().getBlockData(), item, false);
+				consumer.queueChestAccess(Actor.actorFromEntity(player), spigotLoc, spigotLoc.getBlock().getBlockData(), item, false);
 			}
 		}
 	}

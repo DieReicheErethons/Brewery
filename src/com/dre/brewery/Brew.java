@@ -247,10 +247,9 @@ public class Brew {
 		if (stat) return false;
 		if (currentRecipe != null) {
 			return currentRecipe.getDistillRuns() > distillRuns;
-		} else if (distillRuns >= 6) {
-			return false;
+		} else {
+			return distillRuns < 6;
 		}
-		return true;
 	}
 
 	// return special effect

@@ -448,7 +448,7 @@ public class Barrel implements InventoryHolder {
 			ItemStack[] items = inventory.getContents();
 			if (P.p.useLB && breaker != null) {
 				try {
-					LogBlockBarrel.breakBarrel(breaker.getName(), items, spigot.getLocation());
+					LogBlockBarrel.breakBarrel(breaker, items, spigot.getLocation());
 				} catch (Throwable e) {
 					P.p.errorLog("Failed to Log Barrel-break to LogBlock!");
 					P.p.errorLog("Brewery was tested with version 1.94 of LogBlock!");

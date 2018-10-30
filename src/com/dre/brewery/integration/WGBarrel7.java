@@ -8,7 +8,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.dre.brewery.P;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
-import com.sk89q.worldedit.extension.platform.Actor;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldguard.WorldGuard;
@@ -27,7 +26,7 @@ public class WGBarrel7 implements WGBarrel {
 		World world = platform.getWorldByName(spigot.getWorld().getName());
 		if (!platform.getGlobalStateManager().get(world).useRegions) return true; // Region support disabled
 		WorldEditPlugin we = JavaPlugin.getPlugin(WorldEditPlugin.class);
-		if (new RegionPermissionModel((Actor) we.wrapPlayer(player)).mayIgnoreRegionProtection(world)) return true; // Whitelisted cause
+		if (new RegionPermissionModel(we.wrapPlayer(player)).mayIgnoreRegionProtection(world)) return true; // Whitelisted cause
 
 		RegionQuery query = platform.getRegionContainer().createQuery();
 

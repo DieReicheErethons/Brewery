@@ -207,9 +207,7 @@ public class BPlayer {
 			}
 			quality = getQuality();
 			if (drunkeness <= -offlineDrunk) {
-				if (drunkeness <= -hangoverTime) {
-					return true;
-				}
+				return drunkeness <= -hangoverTime;
 			}
 		}
 		return false;
@@ -226,6 +224,8 @@ public class BPlayer {
 					// Is he moving
 					if (event.getFrom().getX() != event.getTo().getX() || event.getFrom().getZ() != event.getTo().getZ()) {
 						Player player = event.getPlayer();
+						// We have to cast here because it had issues otherwise on previous versions of Minecraft
+						// Dont know if thats still the case, but we better leave it
 						Entity entity = (Entity) player;
 						// not in midair
 						if (entity.isOnGround()) {
@@ -605,7 +605,7 @@ public class BPlayer {
 		if (drunkeness < 0) {
 			return quality;
 		}
-		return Math.round(quality / drunkeness);
+		return Math.round((float) quality / (float) drunkeness);
 	}
 
 	// opposite of quality

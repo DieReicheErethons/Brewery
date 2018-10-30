@@ -289,13 +289,9 @@ public class Barrel implements InventoryHolder {
 	public boolean hasBlock(Block block) {
 		if (block != null) {
 			if (LegacyUtil.isWoodPlanks(block.getType())) {
-				if (hasWoodBlock(block)) {
-					return true;
-				}
+				return hasWoodBlock(block);
 			} else if (LegacyUtil.isWoodStairs(block.getType())) {
-				if (hasStairsBlock(block)) {
-					return true;
-				}
+				return hasStairsBlock(block);
 			}
 		}
 		return false;
@@ -748,7 +744,7 @@ public class Barrel implements InventoryHolder {
 			x = startX;
 			y++;
 		}
-		stairsloc = ArrayUtils.toPrimitive(stairs.toArray(new Integer[stairs.size()]));
+		stairsloc = ArrayUtils.toPrimitive(stairs.toArray(new Integer[0]));
 		return null;
 	}
 
@@ -839,8 +835,8 @@ public class Barrel implements InventoryHolder {
 			x = startX;
 			y++;
 		}
-		stairsloc = ArrayUtils.toPrimitive(stairs.toArray(new Integer[stairs.size()]));
-		woodsloc = ArrayUtils.toPrimitive(woods.toArray(new Integer[woods.size()]));
+		stairsloc = ArrayUtils.toPrimitive(stairs.toArray(new Integer[0]));
+		woodsloc = ArrayUtils.toPrimitive(woods.toArray(new Integer[0]));
 
 		return null;
 	}

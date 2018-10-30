@@ -1,5 +1,9 @@
 package com.dre.brewery.filedata;
 
+import com.dre.brewery.LegacyUtil;
+import com.dre.brewery.P;
+import org.bukkit.Material;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -8,8 +12,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-
-import com.dre.brewery.P;
 
 public class ConfigUpdater {
 
@@ -47,7 +49,7 @@ public class ConfigUpdater {
 	}
 
 	public void saveConfig() {
-		StringBuilder stringBuilder = new StringBuilder("");
+		StringBuilder stringBuilder = new StringBuilder();
 		for (String line : config) {
 			stringBuilder.append(line).append("\n");
 		}
@@ -82,7 +84,7 @@ public class ConfigUpdater {
 	// ---- Updating to newer Versions ----
 
 	// Update from a specified Config version and language to the newest version
-	public void update(String fromVersion, String lang) {
+	public void update(String fromVersion, boolean oldMat, String lang) {
 		if (fromVersion.equals("0.5")) {
 			// Version 0.5 was only released for de, but with en as setting, so default to de
 			if (!lang.equals("de")) {
@@ -144,11 +146,17 @@ public class ConfigUpdater {
 			fromVersion = "1.5";
 		}
 
-		if (fromVersion.equals("1.5")) {
-			fromVersion = "1.6";
+		if (fromVersion.equals("1.5") || fromVersion.equals("1.6")) {
+			update15(P.use1_13, de);
+			fromVersion = "1.7";
+			oldMat = false;
 		}
 
-		if (!fromVersion.equals("1.6")) {
+		if (P.use1_13 && oldMat) {
+			updateMaterials(true);
+		}
+
+		if (!fromVersion.equals("1.7")) {
 			P.p.log(P.p.languageReader.get("Error_ConfigUpdate", fromVersion));
 			return;
 		}
@@ -1054,6 +1062,155 @@ public class ConfigUpdater {
 		index = indexOfStart("      name: Poor Absinthe/Absinthe/Strong Absinthe");
 		if (index != -1) {
 			addLines(index + 1, "      distilltime: 80");
+		}
+	}
+
+
+	//update from 1.5 to 1.7/mc 1.13
+	private void update15(boolean mc113, boolean langDE) {
+		updateVersion("1.7");
+		updateMaterials(mc113);
+
+		if (langDE) {
+
+			int index = indexOfStart("# ingredients: Auflistung von 'Material oder ID");
+			if (index != -1) {
+				setLine(index, "# ingredients: Auflistung von 'Material,Data/Anzahl'");
+			}
+
+			index = indexOfStart("#   (Item-ids anstatt Material");
+			if (index != -1) {
+				setLine(index, "#   (Item-ids anstatt Material können in Bukkit nicht mehr benutzt werden)");
+			}
+
+			index = indexOfStart("# [Beispiel] MATERIAL_oder_id: Name");
+			if (index != -1) {
+				setLine(index, "# [Beispiel] MATERIAL: Name nach Gähren");
+			}
+
+		} else {
+
+			int index = indexOfStart("# ingredients: List of 'material or id");
+			if (index != -1) {
+				setLine(index, "# ingredients: List of 'material,data/amount'");
+			}
+
+			index = indexOfStart("#   (Item-ids instead of material are deprecated");
+			if (index != -1) {
+				setLine(index, "#   (Item-ids instead of material are not supported by bukkit anymore and will not work)");
+			}
+
+			index = indexOfStart("# [Example] MATERIAL_or_id: Name");
+			if (index != -1) {
+				setLine(index, "# [Example] MATERIAL: Name after cooking");
+			}
+
+		}
+	}
+
+	// Update all Materials to Minecraft 1.13
+	private void updateMaterials(boolean toMC113) {
+		int index;
+		if (toMC113) {
+			index = indexOfStart("oldMat:");
+			if (index != -1) {
+				config.remove(index);
+			}
+		} else {
+			index = indexOfStart("version:");
+			if (index != -1) {
+				addLines(index + 1, "oldMat: true");
+			}
+		}
+
+		index = indexOfStart("pukeItem: ");
+		String line;
+		if (index != -1) {
+			line = config.get(index);
+			if (line.length() > 10) {
+				setLine(index, convertMaterial(line, "pukeItem: ", "", toMC113));
+			}
+		}
+
+		index = indexOfStart("drainItems:");
+		if (index != -1) {
+			index++;
+			while (config.get(index).startsWith("-")) {
+				setLine(index, convertMaterial(config.get(index), "- ", "(,.*|)/.*", toMC113));
+				index++;
+			}
+		}
+
+		index = indexOfStart("recipes:");
+		if (index != -1) {
+			index++;
+			int endIndex = indexOfStart("useWorldGuard:");
+			if (endIndex < index) {
+				endIndex = indexOfStart("enableChatDistortion:");
+			}
+			if (endIndex < index) {
+				endIndex = indexOfStart("words:");
+			}
+			if (endIndex < index) {
+				endIndex = config.size();
+			}
+			while (index < endIndex) {
+				if (config.get(index).matches("^\\s+ingredients:.*")) {
+					index++;
+					while (config.get(index).matches("^\\s+- .+")) {
+						line = config.get(index);
+						setLine(index, convertMaterial(line, "^\\s+- ", "(,.*|)/.*", toMC113));
+						index++;
+					}
+				} else if (config.get(index).startsWith("cooked:")) {
+					index++;
+					while (config.get(index).matches("^\\s\\s+.+")) {
+						line = config.get(index);
+						setLine(index, convertMaterial(line, "^\\s\\s+", ":.*", toMC113));
+						index++;
+					}
+				}
+				index++;
+			}
+		}
+	}
+
+	private String convertMaterial(String line, String regexPrefix, String regexPostfix, boolean toMC113) {
+		if (!toMC113) {
+			return convertIdtoMaterial(line, regexPrefix, regexPostfix);
+		}
+		String mat = line.replaceFirst(regexPrefix, "").replaceFirst(regexPostfix, "");
+		Material material;
+		if (mat.equalsIgnoreCase("LONG_GRASS")) {
+			material = Material.GRASS;
+		} else {
+			material = Material.matchMaterial(mat, true);
+		}
+
+		if (material == null) {
+			return line;
+		}
+		String matnew = material.name();
+		if (!mat.equalsIgnoreCase(matnew)) {
+			return line.replaceAll(mat, matnew);
+		} else {
+			return line;
+		}
+	}
+
+	private String convertIdtoMaterial(String line, String regexPrefix, String regexPostfix) {
+		String idString = line.replaceFirst(regexPrefix, "").replaceFirst(regexPostfix, "");
+		int id = P.p.parseInt(idString);
+		if (id > 0) {
+			Material material = LegacyUtil.getMaterial(id);
+			if (material == null) {
+				P.p.errorLog("Could not find Material with id: " + line);
+				return line;
+			} else {
+				return line.replaceAll(idString, material.name());
+			}
+		} else {
+			return line;
 		}
 	}
 

@@ -32,8 +32,8 @@ enableKickOnOverdrink: false
 # L'objet ne peut pas être collecté et reste sur le sol jusqu'à ce qu'il disparaisse
 enablePuke: true
 
-# L'objet utilisé pour représenter le vomit [SOUL_SAND]
-pukeItem: SOUL_SAND
+# L'objet utilisé pour représenter le vomit [Soul_Sand]
+pukeItem: Soul_Sand
 
 # Time in seconds until the pukeitems despawn, (mc default is 300 = 5 min) [60]
 # If the item despawn time was changed in the spigot.yml, the pukeDespawntime changes as well.
@@ -41,8 +41,8 @@ pukeDespawntime: 60
 
 # Consommables Objet/Force. Réduit le montant d'alcool par <Force> lors de la consommation. (list)
 drainItems:
-- BREAD/4
-- MILK_BUCKET/2
+- Bread/4
+- Milk_Bucket/2
 
 # Temps (en jours) pour que les données d'ivresse restent sauvergardées lorsque le joueur est déconnecté, pour appliquer les effets. [7]
 hangoverDays: 7
@@ -62,15 +62,15 @@ updateCheck: true
 autosave: 3
 
 # Version de configuration
-version: '1.6'
+version: '1.7'
 
 
 # -- Recette pour les boissons --
 
 # name: Différents noms pour la mauvaise/moyen/bonne qualité (Les codes de mise en forme sont pris en charge: comme par exemple &6 pour la couleur Or.)
-# ingredients: Liste des 'matériaux ou id,data/montant'
-#   (Les id d'objets à la place des matériaux sont obsolètes pour bukkit et pourraient ne pas fonctionner dans le futur!)
-#     Ex: 'SUGAR_CANE' 
+# ingredients: Liste des 'matériaux,data/montant'
+#   (Les id d'objets à la place des matériaux sont obsolètes pour bukkit)
+#     Ex: 'Sugar_Cane' 
 #   Une liste des matériaux peuvent-être trouvés ici: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
 #   Vous pouvez spécifier une data (Ex: 5,3 -> Planche de bois de jungle), si vous ne le faites pas la data ne sera pas prise en compte (Ex : 5 -> Bois en général)
 #   If Vault is installed normal names can be used instead of material or id, so using Vault is highly recommended.
@@ -101,11 +101,11 @@ recipes:
    0:
       name: Mauvais Exemple/Exemple/Bonne Exemple
       ingredients:
-      - SUGAR_CANE/5
-      - diamond/1
+      - Sugar_Cane/5
+      - Diamond/1
       - Cocoa_Beans/20
-      - spruce_planks/8
-      - BEDROCK/1
+      - Spruce_Planks/8
+      - Bedrock/1
 #     - Jungle Leaves/64  # Only with Vault
 #     - Green Dye/6       # Only with Vault
       cookingtime: 3
@@ -124,7 +124,7 @@ recipes:
    1:
       name: Bière Blanche Fade/Bière Blanche/Bonne Bière Blanche
       ingredients: 
-      - WHEAT/3
+      - Wheat/3
       cookingtime: 8
       distillruns: 0
       wood: 1
@@ -135,7 +135,7 @@ recipes:
    2:
       name: Bière Fade/Bière/Bonne Bière
       ingredients: 
-      - WHEAT/6
+      - Wheat/6
       cookingtime: 8
       distillruns: 0
       wood: 0
@@ -146,7 +146,7 @@ recipes:
    3:
       name: Bière Brune Fade/Bière Brune/Bonne Bière Brune
       ingredients: 
-      - WHEAT/6
+      - Wheat/6
       cookingtime: 8
       distillruns: 0
       wood: 4
@@ -157,7 +157,7 @@ recipes:
    4:
       name: Hydromel Bizarre/Hydromel/&6Hydromel Doré
       ingredients: 
-      - SUGAR_CANE/6
+      - Sugar_Cane/6
       cookingtime: 3
       distillruns: 0
       wood: 2
@@ -168,8 +168,8 @@ recipes:
    5:
       name: Hydromel de Pommes/Doux Hydromel de Pommes/&6Doux Hydromel de Pommes Dorées
       ingredients: 
-      - SUGAR_CANE/6
-      - APPLE/2
+      - Sugar_Cane/6
+      - Apple/2
       cookingtime: 4
       distillruns: 0
       wood: 2
@@ -182,7 +182,7 @@ recipes:
    6:
       name: Rhum Amer/Rhum Epicé/&6Rhum Doré
       ingredients: 
-      - SUGAR_CANE/14
+      - Sugar_Cane/14
       cookingtime: 5
       distillruns: 2
       distilltime: 30
@@ -197,7 +197,7 @@ recipes:
    7:
       name: Vodka Sale/Vodka/Vodka Russe
       ingredients: 
-      - POTATO/10
+      - Potato/10
       cookingtime: 15
       distillruns: 3
       age: 0
@@ -210,7 +210,7 @@ recipes:
    8:
       name: Absinthe pauvre/Absinthe/Absinthe forte
       ingredients:
-      - GRASS/15
+      - Grass/15
       cookingtime: 3
       distillruns: 6
       distilltime: 80
@@ -222,8 +222,8 @@ recipes:
    9:
       name: Potato soup
       ingredients:
-      - POTATO/5
-      - GRASS/3
+      - Potato/5
+      - Grass/3
       cookingtime: 3
       color: PINK
       difficulty: 1
@@ -233,7 +233,7 @@ recipes:
       name: Café fétide/Café/Café fort
       ingredients:
       - Cocoa_Beans/12
-      - MILK_BUCKET/2
+      - Milk_Bucket/2
       cookingtime: 2
       color: BLACK
       difficulty: 3
@@ -248,17 +248,17 @@ recipes:
 
 
 # cooked: CHAQUE ingrédient possible avec le nom donné après la fermentation (la cuisson):
-# [Exemple] MATERIEL_ou_id: Nom après la cuisson
+# [Exemple] MATERIEL: Nom après la cuisson
 
 cooked:
-   WHEAT: Blé fermenté
-   SUGAR_CANE: Sucre fermenté
-   APPLE: Cidre de pommes
-   POTATO: Purée de Pommes de Terre
-   GRASS: Herbes bouillies
-   RED_MUSHROOM: Champignons fermentés
+   Wheat: Blé fermenté
+   Sugar_Cane: Sucre fermenté
+   Apple: Cidre de pommes
+   Potato: Purée de Pommes de Terre
+   Grass: Herbes bouillies
+   Red_Mushroom: Champignons fermentés
    Cocoa_Beans: Fermentation colorée
-   MILK_BUCKET: Eau laiteuse
+   Milk_Bucket: Eau laiteuse
 
 
 

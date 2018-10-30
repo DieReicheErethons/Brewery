@@ -62,13 +62,14 @@ updateCheck: true
 autosave: 3
 
 # Versione del config
-version: '1.6'
+version: '1.7'
+oldMat: true
 
 
 # -- Ricette per pozioni --
 
 # name: Tre nomi diversi per diverse qualità (cattivo/normale/buono). I codici come &6 possono essere usati.
-# ingredients: Lista degli ingredienti nel formato materiale o id,dati/quantità
+# ingredients: Lista degli ingredienti nel formato materiale,dati/quantità
 #   (Gli id invece dei materiali sono "disapprovati" da Bukkit e potrebbero non funzionare in futuro!)
 #   Una lista di materiali può essere trovata qui: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
 #   Puoi specificare dei dati dell'oggetto, ma se omesso sarà semplicemente ignorato.
@@ -243,7 +244,7 @@ recipes:
 
 
 # cooked: OGNI possibile ingrediente e i nomi per la pozione originatasi dopo la fermentazione.
-# (Esempio) MATERIALE_o_id: Nome dopo la cottura
+# (Esempio) MATERIALE: Nome dopo la cottura
 
 cooked:
    WHEAT: Frumento fermentato

@@ -67,6 +67,7 @@ public class PlayerListener implements Listener {
 							// reset cauldron when refilling to prevent unlimited source of potions
 						} else if (materialInHand == Material.WATER_BUCKET) {
 							if (!P.use1_9) {
+								// We catch >=1.9 cases in the Cauldron Listener
 								if (LegacyUtil.getFillLevel(clickedBlock) == 1) {
 									// will only remove when existing
 									BCauldron.remove(clickedBlock);

@@ -32,8 +32,8 @@ enableKickOnOverdrink: false
 # Das Item kann nicht aufgesammelt werden und bleibt bis zum Despawnen liegen.
 enablePuke: true
 
-# Item das beim Erbrechen mehrfach unaufsammelbar fallen gelassen wird [SOUL_SAND]
-pukeItem: SOUL_SAND
+# Item das beim Erbrechen mehrfach unaufsammelbar fallen gelassen wird [Soul_Sand]
+pukeItem: Soul_Sand
 
 # Zeit in Sekunden bis die pukeitems despawnen, (mc standard wäre 300 = 5 min) [60]
 # Wurde die item Despawnzeit in der spigot.yml verändert, verändert sich auch die pukeDespawnzeit in Abhängigkeit.
@@ -41,8 +41,8 @@ pukeDespawntime: 60
 
 # Konsumierbares Item/Stärke. Senkt den Alkoholpegel um <Stärke> wenn konsumiert.
 drainItems:
-- BREAD/4
-- MILK_BUCKET/2
+- Bread/4
+- Milk_Bucket/2
 
 # Zeit (in Tagen) die Trunkenheitsdaten nach offlinegehen eines Spielers im Speicher verbleiben, um z.B. Kater-Effekte anzuwenden. [7]
 hangoverDays: 7
@@ -65,14 +65,14 @@ updateCheck: true
 autosave: 3
 
 # Config Version
-version: '1.6'
+version: '1.7'
 
 
 # -- Rezepte für Getränke --
 
 # name: Verschiedene Namen für schlecht/mittel/gut (Farbcodes möglich: z.b. &6)
-# ingredients: Auflistung von 'Material oder ID,Data/Anzahl'
-#   (Item-ids anstatt Material werden von Bukkit nicht mehr unterstützt und funktionieren möglicherweise in Zukunft nicht mehr!)
+# ingredients: Auflistung von 'Material,Data/Anzahl'
+#   (Item-ids anstatt Material können in Bukkit nicht mehr benutzt werden)
 #   Eine Liste von allen Materialien kann hier gefunden werden: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
 #   Es kann ein Data-Wert (durability) angegeben werden, weglassen ignoriert diesen beim hinzufügen einer Zutat
 #   Wenn Vault installiert ist können normale englische Item Namen verwendet werden, anstatt Material, ID und Data!
@@ -99,11 +99,11 @@ recipes:
    0:
       name: Schlechtes Beispiel/Beispiel/Gutes Beispiel
       ingredients:
-      - SUGAR_CANE/5
-      - diamond/1
+      - Sugar_Cane/5
+      - Diamond/1
       - Cocoa_Beans/20
-      - spruce_planks/8
-      - BEDROCK/1
+      - Spruce_Planks/8
+      - Bedrock/1
 #     - Jungle Leaves/64  # Nur mit Vault
 #     - Green Dye/6       # Nur mit Vault
       cookingtime: 3
@@ -122,7 +122,7 @@ recipes:
    1:
       name: Ranziges Weißbier/Weißbier/Feines Weißbier
       ingredients: 
-      - WHEAT/3
+      - Wheat/3
       cookingtime: 8
       distillruns: 0
       wood: 1
@@ -133,7 +133,7 @@ recipes:
    2:
       name: Ranziges Bier/Bier/Feines Bier
       ingredients: 
-      - WHEAT/6
+      - Wheat/6
       cookingtime: 8
       distillruns: 0
       wood: 0
@@ -144,7 +144,7 @@ recipes:
    3:
       name: Ranziges Dunkelbier/Dunkelbier/Feines Dunkelbier
       ingredients: 
-      - WHEAT/6
+      - Wheat/6
       cookingtime: 8
       distillruns: 0
       wood: 4
@@ -155,7 +155,7 @@ recipes:
    4:
       name: Scheußlicher Met/Met/&6Goldener Met
       ingredients: 
-      - SUGAR_CANE/6
+      - Sugar_Cane/6
       cookingtime: 3
       distillruns: 0
       wood: 2
@@ -166,8 +166,8 @@ recipes:
    5:
       name: Apfelmet/Süßer Apfelmet/&6Goldensüßer Apfelmet
       ingredients: 
-      - SUGAR_CANE/6
-      - APPLE/2
+      - Sugar_Cane/6
+      - Apple/2
       cookingtime: 4
       distillruns: 0
       wood: 2
@@ -180,7 +180,7 @@ recipes:
    6:
       name: Bitterer Rum/Würziger Rum/&6Goldener Rum
       ingredients: 
-      - SUGAR_CANE/14
+      - Sugar_Cane/14
       cookingtime: 5
       distillruns: 2
       distilltime: 30
@@ -195,7 +195,7 @@ recipes:
    7:
       name: Abgeranzter Vodka/Vodka/Russischer Vodka
       ingredients: 
-      - POTATO/10
+      - Potato/10
       cookingtime: 15
       distillruns: 3
       age: 0
@@ -208,7 +208,7 @@ recipes:
    8:
       name: minderwertiger Absinth/Absinth/Starker Absinth
       ingredients:
-      - GRASS/15
+      - Grass/15
       cookingtime: 3
       distillruns: 6
       distilltime: 80
@@ -220,8 +220,8 @@ recipes:
    9:
       name: Kartoffelsuppe
       ingredients:
-      - POTATO_ITEM/5
-      - LONG_GRASS/3
+      - Potato/5
+      - Grass/3
       cookingtime: 3
       color: PINK
       difficulty: 1
@@ -230,8 +230,8 @@ recipes:
    10:
       name: Fader Kaffee/Kaffee/Starker Kaffee
       ingredients:
-      - INK_SACK,3/12
-      - MILK_BUCKET/2
+      - Ink_Sac,3/12
+      - Milk_Bucket/2
       cookingtime: 2
       color: BLACK
       difficulty: 3
@@ -245,17 +245,17 @@ recipes:
 
 
 # cooked: ALLE möglichen Zutaten und die nach dem Gähren daraus entstehenden Tranknamen:
-# [Beispiel] MATERIAL_oder_id: Name nach Gähren
+# [Beispiel] MATERIAL: Name nach Gähren
 
 cooked:
-   WHEAT: Getreideferment
-   SUGAR_CANE: Zuckersud
-   APPLE: Apfelmost
-   POTATO: Kartoffelmaische
-   GRASS: Kräuterbrühe
-   RED_MUSHROOM: Pilzsud
+   Wheat: Getreideferment
+   Sugar_Cane: Zuckersud
+   Apple: Apfelmost
+   Potato: Kartoffelmaische
+   Grass: Kräuterbrühe
+   Red_Mushroom: Pilzsud
    Cocoa_Beans: Farbige Brühe
-   MILK_BUCKET: Milchiges Wasser
+   Milk_Bucket: Milchiges Wasser
 
 
 

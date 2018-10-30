@@ -32,8 +32,8 @@ enableKickOnOverdrink: false
 # The item can not be collected and stays on the ground until it despawns.
 enablePuke: true
 
-# Item that is dropped multiple times uncollectable when puking [SOUL_SAND]
-pukeItem: SOUL_SAND
+# Item that is dropped multiple times uncollectable when puking [Soul_Sand]
+pukeItem: Soul_Sand
 
 # Time in seconds until the pukeitems despawn, (mc default is 300 = 5 min) [60]
 # If the item despawn time was changed in the spigot.yml, the pukeDespawntime changes as well.
@@ -41,8 +41,8 @@ pukeDespawntime: 60
 
 # Consumable Item/strength. Decreases the alcohol level by <strength> when consumed. (list)
 drainItems:
-- BREAD/4
-- MILK_BUCKET/2
+- Bread/4
+- Milk_Bucket/2
 
 # Time (in days) that drunkeness-data stays in memory after a player goes offline, to apply hangover etc. [7]
 hangoverDays: 7
@@ -62,14 +62,14 @@ updateCheck: true
 autosave: 3
 
 # Config Version
-version: '1.6'
+version: '1.7'
 
 
 # -- Recipes for Potions --
 
 # name: Different names for bad/normal/good (Formatting codes possible: such as &6)
-# ingredients: List of 'material or id,data/amount'
-#   (Item-ids instead of material are deprecated by bukkit and may not work in the future!)
+# ingredients: List of 'material,data/amount'
+#   (Item-ids instead of material are not supported by bukkit anymore and will not work)
 #   A list of materials can be found here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
 #   You can specify a data (durability) value, omitting it will ignore the data value of the added ingredient
 #   If Vault is installed normal names can be used instead of material or id, so using Vault is highly recommended.
@@ -96,11 +96,11 @@ recipes:
    0:
       name: Bad Example/Example/Good Example
       ingredients:
-      - SUGAR_CANE/5
-      - diamond/1
+      - Sugar_Cane/5
+      - Diamond/1
       - Cocoa_Beans/20
-      - spruce_planks/8
-      - BEDROCK/1
+      - Spruce_Planks/8
+      - Bedrock/1
 #     - Jungle Leaves/64  # Only with Vault
 #     - Green Dye/6       # Only with Vault
       cookingtime: 3
@@ -119,7 +119,7 @@ recipes:
    1:
       name: Skunky Wheatbeer/Wheatbeer/Fine Wheatbeer
       ingredients: 
-      - WHEAT/3
+      - Wheat/3
       cookingtime: 8
       distillruns: 0
       wood: 1
@@ -130,7 +130,7 @@ recipes:
    2:
       name: Skunky Beer/Beer/Fine Beer
       ingredients: 
-      - WHEAT/6
+      - Wheat/6
       cookingtime: 8
       distillruns: 0
       wood: 0
@@ -141,7 +141,7 @@ recipes:
    3:
       name: Skunky Darkbeer/Darkbeer/Fine Darkbeer
       ingredients: 
-      - WHEAT/6
+      - Wheat/6
       cookingtime: 8
       distillruns: 0
       wood: 4
@@ -152,7 +152,7 @@ recipes:
    4:
       name: Awkward Mead/Mead/&6Golden Mead
       ingredients: 
-      - SUGAR_CANE/6
+      - Sugar_Cane/6
       cookingtime: 3
       distillruns: 0
       wood: 2
@@ -163,8 +163,8 @@ recipes:
    5:
       name: Apple Mead/Sweet Apple Mead/&6Sweet Golden Apple Mead
       ingredients: 
-      - SUGAR_CANE/6
-      - APPLE/2
+      - Sugar_Cane/6
+      - Apple/2
       cookingtime: 4
       distillruns: 0
       wood: 2
@@ -177,7 +177,7 @@ recipes:
    6:
       name: Bitter Rum/Spicy Rum/&6Golden Rum
       ingredients: 
-      - SUGAR_CANE/14
+      - Sugar_Cane/14
       cookingtime: 5
       distillruns: 2
       distilltime: 30
@@ -192,7 +192,7 @@ recipes:
    7:
       name: Lousy Vodka/Vodka/Russian Vodka
       ingredients: 
-      - POTATO/10
+      - Potato/10
       cookingtime: 15
       distillruns: 3
       age: 0
@@ -205,7 +205,7 @@ recipes:
    8:
       name: Poor Absinthe/Absinthe/Strong Absinthe
       ingredients:
-      - GRASS/15
+      - Grass/15
       cookingtime: 3
       distillruns: 6
       distilltime: 80
@@ -217,8 +217,8 @@ recipes:
    9:
       name: Potato soup
       ingredients:
-      - POTATO/5
-      - GRASS/3
+      - Potato/5
+      - Grass/3
       cookingtime: 3
       color: PINK
       difficulty: 1
@@ -228,7 +228,7 @@ recipes:
       name: Stale Coffee/Coffee/Strong Coffee
       ingredients:
       - Cocoa_Beans/12
-      - MILK_BUCKET/2
+      - Milk_Bucket/2
       cookingtime: 2
       color: BLACK
       difficulty: 3
@@ -243,17 +243,17 @@ recipes:
 
 
 # cooked: EVERY possible ingredient and the names for the originating potions after fermenting:
-# [Example] MATERIAL_or_id: Name after cooking
+# [Example] MATERIAL: Name after cooking
 
 cooked:
-   WHEAT: Fermented wheat
-   SUGAR_CANE: Sugar brew
-   APPLE: Apple cider
-   POTATO: Potatomash
-   GRASS: Boiled herbs
-   RED_MUSHROOM: Mushroom brew
+   Wheat: Fermented wheat
+   Sugar_Cane: Sugar brew
+   Apple: Apple cider
+   Potato: Potatomash
+   Grass: Boiled herbs
+   Red_Mushroom: Mushroom brew
    Cocoa_Beans: Colored brew
-   MILK_BUCKET: Milky water
+   Milk_Bucket: Milky water
 
 
 

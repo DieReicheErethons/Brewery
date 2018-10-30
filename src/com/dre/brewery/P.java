@@ -38,7 +38,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class P extends JavaPlugin {
 	public static P p;
-	public static final String configVersion = "1.6";
+	public static final String configVersion = "1.7";
 	public static boolean debug;
 	public static boolean useUUID;
 	public static boolean use1_9;
@@ -249,12 +249,15 @@ public class P extends JavaPlugin {
 		// Load LanguageReader
 		languageReader = new LanguageReader(new File(p.getDataFolder(), "languages/" + language + ".yml"));
 
+		// Has to config still got old materials
+		boolean oldMat = config.getBoolean("oldMat", false);
+
 		// Check if config is the newest version
 		String version = config.getString("version", null);
 		if (version != null) {
-			if (!version.equals(configVersion)) {
+			if (!version.equals(configVersion) || (oldMat && use1_13)) {
 				copyDefaultConfigs(true);
-				new ConfigUpdater(file).update(version, language);
+				new ConfigUpdater(file).update(version, oldMat, language);
 				P.p.log("Config Updated to version: " + configVersion);
 				config = YamlConfiguration.loadConfiguration(file);
 			}
@@ -707,7 +710,7 @@ public class P extends JavaPlugin {
 			BCauldron.remove(block);
 			return true;
 
-                } else if (LegacyUtil.isFence(type)) {
+		} else if (LegacyUtil.isFence(type)) {
 			// remove barrel and throw potions on the ground
 			Barrel barrel = Barrel.getBySpigot(block);
 			if (barrel != null) {
@@ -720,7 +723,7 @@ public class P extends JavaPlugin {
 			}
 			return true;
 
-                } else if (LegacyUtil.isSign(type)) {
+		} else if (LegacyUtil.isSign(type)) {
 			// remove small Barrels
 			Barrel barrel2 = Barrel.getBySpigot(block);
 			if (barrel2 != null) {
@@ -737,7 +740,7 @@ public class P extends JavaPlugin {
 			}
 			return true;
 
-                } else if (LegacyUtil.isWoodPlanks(type) || LegacyUtil.isWoodStairs(type)){
+		} else if (LegacyUtil.isWoodPlanks(type) || LegacyUtil.isWoodStairs(type)){
 			Barrel barrel3 = Barrel.getByWood(block);
 			if (barrel3 != null) {
 				if (barrel3.hasPermsDestroy(player)) {
@@ -746,7 +749,7 @@ public class P extends JavaPlugin {
 					return false;
 				}
 			}
-                }
+		}
 		return true;
 	}
 

@@ -65,14 +65,15 @@ updateCheck: true
 autosave: 3
 
 # Config Version
-version: '1.6'
+version: '1.7'
+oldMat: true
 
 
 # -- Rezepte für Getränke --
 
 # name: Verschiedene Namen für schlecht/mittel/gut (Farbcodes möglich: z.b. &6)
-# ingredients: Auflistung von 'Material oder ID,Data/Anzahl'
-#   (Item-ids anstatt Material werden von Bukkit nicht mehr unterstützt und funktionieren möglicherweise in Zukunft nicht mehr!)
+# ingredients: Auflistung von 'Material,Data/Anzahl'
+#   (Item-ids anstatt Material können in Bukkit nicht mehr benutzt werden)
 #   Eine Liste von allen Materialien kann hier gefunden werden: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
 #   Es kann ein Data-Wert (durability) angegeben werden, weglassen ignoriert diesen beim hinzufügen einer Zutat
 #   Wenn Vault installiert ist können normale englische Item Namen verwendet werden, anstatt Material, ID und Data!
@@ -100,9 +101,9 @@ recipes:
       name: Schlechtes Beispiel/Beispiel/Gutes Beispiel
       ingredients:
       - SUGAR_CANE/5
-      - 264/1
+      - DIAMOND/1
       - INK_SACK,3/20
-      - 5,1/8
+      - WOOD,1/8
       - BEDROCK/1
 #     - Jungle Leaves/64  # Nur mit Vault
 #     - Green Dye/6       # Nur mit Vault
@@ -245,7 +246,7 @@ recipes:
 
 
 # cooked: ALLE möglichen Zutaten und die nach dem Gähren daraus entstehenden Tranknamen:
-# [Beispiel] MATERIAL_oder_id: Name nach Gähren
+# [Beispiel] MATERIAL: Name nach Gähren
 
 cooked:
    WHEAT: Getreideferment

@@ -33,13 +33,13 @@ public class LogBlockBarrel {
 			try {
 				rawData = BukkitUtils.class.getDeclaredMethod("rawData", ItemStack.class);
 				queueChestAccess = Consumer.class.getDeclaredMethod("queueChestAccess", String.class, Location.class, int.class, short.class, short.class, short.class);
-             	   } catch (NoSuchMethodException e) {
+			} catch (NoSuchMethodException e) {
 				P.p.errorLog("Failed to hook into LogBlock to log barrels. Logging barrel contents is not going to work.");
 				P.p.errorLog("Brewery was tested with version 1.12 to 1.13.1 of LogBlock.");
 				P.p.errorLog("Disable LogBlock support in the configuration file and type /brew reload.");
 				e.printStackTrace();
 			}
-                }
+		}
 	}
 
 	private HumanEntity player;
@@ -62,7 +62,7 @@ public class LogBlockBarrel {
 			if (!P.use1_13) {
 				try {
 					queueChestAccess.invoke(consumer, player.getName(), loc, LegacyUtil.getBlockTypeIdAt(loc), (short) item.getType().getId(), (short) item.getAmount(), (short) rawData.invoke(null, item));
-                                } catch(IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+				} catch(IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 					e.printStackTrace();
 				}
 			} else {
@@ -104,7 +104,7 @@ public class LogBlockBarrel {
 			if (!P.use1_13) {
 				try {
 					queueChestAccess.invoke(consumer, playerName, spigotLoc, LegacyUtil.getBlockTypeIdAt(spigotLoc), (short) item.getType().getId(), (short) (item.getAmount() * -1), rawData.invoke(null, item));
-                                } catch(IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+				} catch(IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 					e.printStackTrace();
 				}
 			} else {

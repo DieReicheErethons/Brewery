@@ -15,6 +15,8 @@ import org.bukkit.material.Wood;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 @SuppressWarnings("JavaReflectionMemberAccess")
 public class LegacyUtil {
@@ -32,6 +34,22 @@ public class LegacyUtil {
 			SET_DATA = Class.forName(Bukkit.getServer().getClass().getPackage().getName() + ".block.CraftBlock").getDeclaredMethod("setData", byte.class);
 		} catch (ClassNotFoundException | NoSuchMethodException | SecurityException ignored) {
 		}
+
+		List<Material> planks = new ArrayList<>(6);
+		for (Material m : Material.values()) {
+			if (m.name().endsWith("PLANKS")) {
+				planks.add(m);
+			}
+		}
+		PLANKS = planks;
+
+		List<Material> fences = new ArrayList<>(7);
+		for (Material m : Material.values()) {
+			if (m.name().endsWith("FENCE")) {
+				fences.add(m);
+			}
+		}
+		FENCES = fences;
 	}
 
 	public static final Material CLOCK = get("CLOCK", "WATCH");
@@ -41,6 +59,8 @@ public class LegacyUtil {
 	public static final Material JUNGLE_STAIRS = get("JUNGLE_STAIRS", "JUNGLE_WOOD_STAIRS");
 	public static final Material ACACIA_STAIRS = get("ACACIA_STAIRS");
 	public static final Material DARK_OAK_STAIRS = get("DARK_OAK_STAIRS");
+	public static final List<Material> PLANKS;
+	public static final List<Material> FENCES;
 
 	// Materials removed in 1.13
 	public static final Material STATIONARY_LAVA = get("STATIONARY_LAVA");
@@ -64,7 +84,7 @@ public class LegacyUtil {
 	}
 
 	public static boolean isWoodPlanks(Material type) {
-		return type.name().endsWith("PLANKS") || (WOOD != null && type == WOOD);
+		return (WOOD != null && type == WOOD) || PLANKS.contains(type);
 	}
 
 	public static boolean isWoodStairs(Material type) {
@@ -73,7 +93,7 @@ public class LegacyUtil {
 	}
 
 	public static boolean isFence(Material type) {
-		return type.name().endsWith("FENCE");
+		return FENCES.contains(type);
 	}
 
 	public static boolean isSign(Material type) {
@@ -176,7 +196,7 @@ public class LegacyUtil {
 	}
 
 	/*
-	 * only used in a very rare case to convert a very old Datafile from a very old version
+	 * only used to convert a very old Datafile or config from a very old version
 	 */
 	public static Material getMaterial(int id) {
 		try {

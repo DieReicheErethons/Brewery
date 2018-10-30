@@ -48,7 +48,7 @@ public class InventoryListener implements Listener {
 		if (!P.use1_9) return;
 		HumanEntity player = event.getPlayer();
 		Inventory inv = event.getInventory();
-		if (player == null || inv == null || !(inv instanceof BrewerInventory)) return;
+		if (player == null || !(inv instanceof BrewerInventory)) return;
 
 		P.p.debugLog("Starting brew inventory tracking");
 		trackedBrewmen.add(player.getUniqueId());
@@ -63,7 +63,7 @@ public class InventoryListener implements Listener {
 		if (!P.use1_9) return;
 		HumanEntity player = event.getPlayer();
 		Inventory inv = event.getInventory();
-		if (player == null || inv == null || !(inv instanceof BrewerInventory)) return;
+		if (player == null || !(inv instanceof BrewerInventory)) return;
 
 		P.p.debugLog("Stopping brew inventory tracking");
 		trackedBrewmen.remove(player.getUniqueId());
@@ -90,7 +90,7 @@ public class InventoryListener implements Listener {
 		if (!P.use1_9) return;
 		HumanEntity player = event.getWhoClicked();
 		Inventory inv = event.getInventory();
-		if (player == null || inv == null || !(inv instanceof BrewerInventory)) return;
+		if (player == null || !(inv instanceof BrewerInventory)) return;
 
 		UUID puid = player.getUniqueId();
 		if (!trackedBrewmen.contains(puid)) return;
@@ -106,6 +106,7 @@ public class InventoryListener implements Listener {
 		if (curTask != null) {
 			Bukkit.getScheduler().cancelTask(curTask); // cancel prior
 			brewer.getHolder().setBrewingTime(0); // Fixes brewing continuing without fuel for normal potions
+			brewer.getHolder().update();
 		}
 		final int fuel = brewer.getHolder().getFuelLevel();
 
@@ -159,6 +160,7 @@ public class InventoryListener implements Listener {
 							P.p.debugLog("Can distill more! Continuing.");
 						}
 					}
+					stand.update();
 				} else {
 					this.cancel();
 					trackedBrewers.remove(brewery);

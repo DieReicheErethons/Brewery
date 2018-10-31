@@ -2,6 +2,7 @@ package com.dre.brewery;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Levelled;
 import org.bukkit.entity.Player;
 import org.bukkit.Material;
@@ -97,12 +98,17 @@ public class BCauldron {
 			if (potion != null) {
 
 				if (P.use1_13) {
-					Levelled cauldron = ((Levelled) block.getBlockData());
+					BlockData data = block.getBlockData();
+					Levelled cauldron = ((Levelled) data);
 					if (cauldron.getLevel() <= 0) {
 						bcauldrons.remove(bcauldron);
 						return false;
 					}
 					cauldron.setLevel(cauldron.getLevel() - 1);
+					// Update the new Level to the Block
+					// We have to use the BlockData variable "data" here instead of the casted "cauldron"
+					// otherwise < 1.13 crashes on plugin load for not finding the BlockData Class
+					block.setBlockData(data);
 
 					if (cauldron.getLevel() <= 0) {
 						bcauldrons.remove(bcauldron);

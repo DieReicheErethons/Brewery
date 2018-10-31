@@ -17,7 +17,7 @@ public class TabListener implements TabCompleter {
 	private static final List<String> topCompletions = new ArrayList<>(2);
 
 	static {
-		completions.put("", Arrays.asList("info", "unlabel"));
+		completions.put("", Arrays.asList("info", "unlabel", "help"));
 		topCompletions.add("brew");
 		//topCompletions.add("brewery");
 	}

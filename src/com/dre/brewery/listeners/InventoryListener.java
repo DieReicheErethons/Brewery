@@ -124,11 +124,18 @@ public class InventoryListener implements Listener {
 							case 1:
 								// Custom potion but not for distilling. Stop any brewing and cancel this task
 								if (stand.getBrewingTime() > 0) {
-									// Brewing time is sent and stored as short
-									// This sends a negative short value to the Client
-									// In the client the Brewer will look like it is not doing anything
-									stand.setBrewingTime(Short.MAX_VALUE << 1);
+									if (P.use1_12) {
+										// The trick below doesnt work in 1.12, but we dont need it anymore
+										// This should only happen with older Brews that have been made with the old Potion Color System
+										stand.setBrewingTime(Short.MAX_VALUE);
+									} else {
+										// Brewing time is sent and stored as short
+										// This sends a negative short value to the Client
+										// In the client the Brewer will look like it is not doing anything
+										stand.setBrewingTime(Short.MAX_VALUE << 1);
+									}
 									stand.setFuelLevel(fuel);
+									stand.update();
 								}
 							case 0:
 								// No custom potion, cancel and ignore
@@ -148,19 +155,20 @@ public class InventoryListener implements Listener {
 					stand.setBrewingTime((int) ((float) brewTime / ((float) runTime / (float) DISTILLTIME)) + 1);
 
 					if (brewTime <= 1) { // Done!
+						stand.setBrewingTime(0);
+						stand.update();
 						BrewerInventory brewer = stand.getInventory();
 						if (!runDistill(brewer)) {
 							this.cancel();
 							trackedBrewers.remove(brewery);
-							stand.setBrewingTime(0);
 							P.p.debugLog("All done distilling");
 						} else {
 							brewTime = -1; // go again.
-							stand.setBrewingTime(0);
 							P.p.debugLog("Can distill more! Continuing.");
 						}
+					} else {
+						stand.update();
 					}
-					stand.update();
 				} else {
 					this.cancel();
 					trackedBrewers.remove(brewery);

@@ -727,10 +727,12 @@ public class Brew {
 
 		public void colorBrew(PotionMeta meta, ItemStack potion, boolean destillable) {
 			if (P.use1_9) {
-				meta.setBasePotionData(new PotionData(getType()));
 				meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
 				if (P.use1_12) {
+					// BasePotionData was only used for the Color, so starting with 1.12 we can use setColor instead
 					meta.setColor(getColor());
+				} else {
+					meta.setBasePotionData(new PotionData(getType()));
 				}
 			} else {
 				potion.setDurability(getColorId(destillable));

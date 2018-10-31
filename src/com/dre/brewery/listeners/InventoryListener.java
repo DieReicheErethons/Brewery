@@ -124,8 +124,8 @@ public class InventoryListener implements Listener {
 							case 1:
 								// Custom potion but not for distilling. Stop any brewing and cancel this task
 								if (stand.getBrewingTime() > 0) {
-									if (P.use1_12) {
-										// The trick below doesnt work in 1.12, but we dont need it anymore
+									if (P.use1_11) {
+										// The trick below doesnt work in 1.11, but we dont need it anymore
 										// This should only happen with older Brews that have been made with the old Potion Color System
 										stand.setBrewingTime(Short.MAX_VALUE);
 									} else {

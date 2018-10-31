@@ -31,6 +31,9 @@ public class LegacyUtil {
 		try {
 			GET_MATERIAL = Material.class.getDeclaredMethod("getMaterial", int.class);
 			GET_BLOCK_TYPE_ID_AT = World.class.getDeclaredMethod("getBlockTypeIdAt", Location.class);
+		} catch (NoSuchMethodException | SecurityException ignored) {
+		}
+		try {
 			SET_DATA = Class.forName(Bukkit.getServer().getClass().getPackage().getName() + ".block.CraftBlock").getDeclaredMethod("setData", byte.class);
 		} catch (ClassNotFoundException | NoSuchMethodException | SecurityException ignored) {
 		}

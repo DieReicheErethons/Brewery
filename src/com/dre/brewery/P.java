@@ -273,7 +273,7 @@ public class P extends JavaPlugin {
 			Plugin plugin = Bukkit.getPluginManager().getPlugin("WorldEdit");
 			if (plugin != null) {
 				String wgv = plugin.getDescription().getVersion();
-				if (wgv.startsWith("7.")) wg = new WGBarrel7();
+				if (wgv.startsWith("7.") || Bukkit.getPluginManager().getPlugin("FastAsyncWorldEdit") != null) wg = new WGBarrel7();
 				else if (wgv.startsWith("6.")) wg = new WGBarrelNew();
 				else if (wgv.startsWith("5.")) wg = new WGBarrelOld();
 			}

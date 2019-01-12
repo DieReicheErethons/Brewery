@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import org.bukkit.block.Block;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -13,17 +14,20 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.flags.StateFlag;
+import com.sk89q.worldguard.protection.managers.RegionManager;
 
 
 public class WGBarrelOld implements WGBarrel {
 
 	private Method allows;
 	private Method canBuild;
+	private Method getApplicableRegions;
 
 	public WGBarrelOld() {
 		try {
 			allows = ApplicableRegionSet.class.getMethod("allows", StateFlag.class, LocalPlayer.class);
 			canBuild = ApplicableRegionSet.class.getMethod("canBuild", LocalPlayer.class);
+			getApplicableRegions = RegionManager.class.getMethod("getApplicableRegions", Location.class);
 		} catch (NoSuchMethodException e) {
 			P.p.errorLog("Failed to Hook WorldGuard for Barrel Open Permissions! Opening Barrels will NOT work!");
 			P.p.errorLog("Brewery was tested with version 5.8 to 6.1 of WorldGuard!");
@@ -36,12 +40,11 @@ public class WGBarrelOld implements WGBarrel {
 	public boolean checkAccess(Player player, Block spigot, Plugin plugin) {
 		WorldGuardPlugin wg = (WorldGuardPlugin) plugin;
 		if (!wg.getGlobalRegionManager().hasBypass(player, player.getWorld())) {
+			try {
+				Object region = getApplicableRegions.invoke(wg.getRegionManager(player.getWorld()), spigot.getLocation());
 
-			Object region = wg.getRegionManager(player.getWorld()).getApplicableRegions(spigot.getLocation());
-
-			if (region != null) {
-				LocalPlayer localPlayer = wg.wrapPlayer(player);
-				try {
+				if (region != null) {
+					LocalPlayer localPlayer = wg.wrapPlayer(player);
 
 					if (!(Boolean) allows.invoke(region, DefaultFlag.CHEST_ACCESS, localPlayer)) {
 						if (!(Boolean) canBuild.invoke(region, localPlayer)) {
@@ -49,11 +52,11 @@ public class WGBarrelOld implements WGBarrel {
 							return false;
 						}
 					}
+				}
 
-				} catch (IllegalAccessException | InvocationTargetException e) {
+			} catch (IllegalAccessException | InvocationTargetException e) {
 					e.printStackTrace();
 					return false;
-				}
 			}
 		}
 		return true;

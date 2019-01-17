@@ -96,8 +96,40 @@ public class P extends JavaPlugin {
 
 		// Setup Metrics
 		try {
-			new Metrics(this);
-		} catch (Exception e) {
+			Metrics metrics = new Metrics(this);
+			metrics.addCustomChart(new Metrics.SingleLineChart("drunk_players", BPlayer::numDrunkPlayers));
+			metrics.addCustomChart(new Metrics.SingleLineChart("brews_in_existence", () -> Brew.potions.size()));
+			metrics.addCustomChart(new Metrics.SingleLineChart("barrels_built", () -> Barrel.barrels.size()));
+			metrics.addCustomChart(new Metrics.SingleLineChart("cauldrons_boiling", () -> BCauldron.bcauldrons.size()));
+			metrics.addCustomChart(new Metrics.AdvancedPie("brew_quality", () -> {
+				Map<String, Integer> map = new HashMap<>();
+				int exc = 0;
+				int good = 0;
+				int norm = 0;
+				int bad = 0;
+				int terr = 0;
+				for (Brew brew : Brew.potions.values()) {
+					if (brew.getQuality() >= 9) {
+						exc++;
+					} else if (brew.getQuality() >= 7) {
+						good++;
+					} else if (brew.getQuality() >= 5) {
+						norm++;
+					} else if (brew.getQuality() >= 3) {
+						bad++;
+					} else {
+						terr++;
+					}
+				}
+
+				map.put("excellent", exc);
+				map.put("good", good);
+				map.put("normal", norm);
+				map.put("bad", bad);
+				map.put("terrible", terr);
+				return map;
+			}));
+		} catch (Throwable e) {
 			e.printStackTrace();
 		}
 

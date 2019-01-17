@@ -119,6 +119,10 @@ public class BPlayer {
 		players.remove(P.playerString(player));
 	}
 
+	public static int numDrunkPlayers() {
+		return players.size();
+	}
+
 	public void remove() {
 		for (Map.Entry<String, BPlayer> entry : players.entrySet()) {
 			if (entry.getValue() == this) {

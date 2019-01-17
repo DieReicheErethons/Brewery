@@ -126,7 +126,7 @@ public class Barrel implements InventoryHolder {
 					}
 				} catch (Throwable e) {
 					P.p.errorLog("Failed to Check WorldGuard for Barrel Open Permissions!");
-					P.p.errorLog("Brewery was tested with version 5.8 to 6.1 of WorldGuard!");
+					P.p.errorLog("Brewery was tested with version 5.8, 6.1 to 7.0 of WorldGuard!");
 					P.p.errorLog("Disable the WorldGuard support in the config and do /brew reload");
 					e.printStackTrace();
 					P.p.msg(player, "&cError opening Barrel, please report to an Admin!");
@@ -143,7 +143,7 @@ public class Barrel implements InventoryHolder {
 					}
 				} catch (Throwable e) {
 					P.p.errorLog("Failed to Check GriefPrevention for Barrel Open Permissions!");
-					P.p.errorLog("Brewery was tested with GriefPrevention 14.5.4");
+					P.p.errorLog("Brewery was tested with GriefPrevention v14.5 - v16.9");
 					P.p.errorLog("Disable the GriefPrevention support in the config and do /brew reload");
 					e.printStackTrace();
 					P.p.msg(player, "&cError opening Barrel, please report to an Admin!");

@@ -87,14 +87,16 @@
 			<url>http://maven.sk89q.com/repo/</url>
 		</repository>
 		<repository>
+			<!-- GriefPrevention -->
 			<id>jitpack.io</id>
 			<url>https://jitpack.io</url>
 		</repository>
 		<repository>
-			<id>dre2n-rpo</id>
-			<url>http://erethon.de/repo/</url>
+			<id>brewery-repo</id>
+			<url>https://zebradrive.de/maven/</url>
 		</repository>
 		<repository>
+			<!-- Citadel -->
 			<id>devoted-repo</id>
 			<url>https://build.devotedmc.com/plugin/repository/everything/</url>
 		</repository>
@@ -212,13 +214,13 @@
 		<dependency>
 			<groupId>com.github.TechFortress</groupId>
 			<artifactId>GriefPrevention</artifactId>
-			<version>16.9</version>
+			<version>16.11.5</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.diddiz</groupId>
 			<artifactId>logblock</artifactId>
-			<version>1.13.1-SNAPSHOT</version>
+			<version>1.13.2-SNAPSHOT-391</version>
 			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
@@ -234,4 +236,11 @@
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
+
+	<distributionManagement>
+		<repository>
+			<id>file-repo</id>
+			<url>file:///var/tmp/MavenRepo</url>
+		</repository>
+	</distributionManagement>
 </project>

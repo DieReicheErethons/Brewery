@@ -1,5 +1,5 @@
 name: Brewery
-version: 1.7
+version: 1.7.1
 main: com.dre.brewery.P
 softdepend: [LWC, LogBlock, WorldGuard, GriefPrevention, Vault, Citadel]
 authors: [Milan Albrecht, Frank Baumann, ProgrammerDan, Daniel Saukel]

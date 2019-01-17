@@ -230,7 +230,7 @@ recipes:
    10:
       name: Fader Kaffee/Kaffee/Starker Kaffee
       ingredients:
-      - Ink_Sac,3/12
+      - Cocoa_Beans/12
       - Milk_Bucket/2
       cookingtime: 2
       color: BLACK

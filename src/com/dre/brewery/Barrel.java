@@ -129,7 +129,12 @@ public class Barrel implements InventoryHolder {
 					P.p.errorLog("Brewery was tested with version 5.8, 6.1 to 7.0 of WorldGuard!");
 					P.p.errorLog("Disable the WorldGuard support in the config and do /brew reload");
 					e.printStackTrace();
-					P.p.msg(player, "&cError opening Barrel, please report to an Admin!");
+					if (player.hasPermission("brewery.admin") || player.hasPermission("brewery.mod")) {
+						P.p.msg(player, "&cWorldGuard check Error, Brewery was tested with up to v7.0 of Worldguard");
+						P.p.msg(player, "&cSet &7useWorldGuard: false &cin the config and /brew reload");
+					} else {
+						P.p.msg(player, "&cError opening Barrel, please report to an Admin!");
+					}
 					return false;
 				}
 			}
@@ -146,7 +151,12 @@ public class Barrel implements InventoryHolder {
 					P.p.errorLog("Brewery was tested with GriefPrevention v14.5 - v16.9");
 					P.p.errorLog("Disable the GriefPrevention support in the config and do /brew reload");
 					e.printStackTrace();
-					P.p.msg(player, "&cError opening Barrel, please report to an Admin!");
+					if (player.hasPermission("brewery.admin") || player.hasPermission("brewery.mod")) {
+						P.p.msg(player, "&cGriefPrevention check Error, Brewery was tested with up to v16.9 of GriefPrevention");
+						P.p.msg(player, "&cSet &7useGriefPrevention: false &cin the config and /brew reload");
+					} else {
+						P.p.msg(player, "&cError opening Barrel, please report to an Admin!");
+					}
 					return false;
 				}
 			}
@@ -168,7 +178,12 @@ public class Barrel implements InventoryHolder {
 							P.p.errorLog("Brewery was tested with version 4.5.0 of LWC!");
 							P.p.errorLog("Disable the LWC support in the config and do /brew reload");
 							e.printStackTrace();
-							P.p.msg(player, "&cError opening Barrel, please report to an Admin!");
+							if (player.hasPermission("brewery.admin") || player.hasPermission("brewery.mod")) {
+								P.p.msg(player, "&cLWC check Error, Brewery was tested with up to v4.5.0 of LWC");
+								P.p.msg(player, "&cSet &7useLWC: false &cin the config and /brew reload");
+							} else {
+								P.p.msg(player, "&cError opening Barrel, please report to an Admin!");
+							}
 							return false;
 						}
 					}
@@ -190,7 +205,11 @@ public class Barrel implements InventoryHolder {
 					P.p.errorLog("Brewery was tested with version 3.9.1 of Citadel!");
 					P.p.errorLog("Disable Citadel support in the config and do /brew reload");
 					e.printStackTrace();
-					P.p.msg(player, "&cError opening Barrel, please report to an admin!");
+					if (player.hasPermission("brewery.admin") || player.hasPermission("brewery.mod")) {
+						P.p.msg(player, "&cCitadel check Error, Brewery was tested with up to v3.9.1 of Citadel");
+					} else {
+						P.p.msg(player, "&cError opening Barrel, please report to an Admin!");
+					}
 					return false;
 				}
 			}
@@ -213,7 +232,12 @@ public class Barrel implements InventoryHolder {
 				P.p.errorLog("Brewery was tested with version 4.5.0 of LWC!");
 				P.p.errorLog("Disable the LWC support in the config and do /brew reload");
 				e.printStackTrace();
-				P.p.msg(player, "&cError breaking Barrel, please report to an Admin!");
+				if (player.hasPermission("brewery.admin") || player.hasPermission("brewery.mod")) {
+					P.p.msg(player, "&cLWC check Error, Brewery was tested with up to v4.5.0 of LWC");
+					P.p.msg(player, "&cSet &7useLWC: false &cin the config and /brew reload");
+				} else {
+					P.p.msg(player, "&cError breaking Barrel, please report to an Admin!");
+				}
 				return false;
 			}
 		}

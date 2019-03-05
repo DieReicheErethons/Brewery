@@ -146,7 +146,7 @@ public class BRecipe {
 			return false;
 		}
 		try {
-			Brew.PotionColor.valueOf(getColor());
+			Brew.PotionColor.fromString(getColor());
 		} catch (IllegalArgumentException e) {
 			P.p.errorLog("Invalid Color '" + color + "' in Recipe: " + getName(5));
 			return false;
@@ -263,7 +263,7 @@ public class BRecipe {
 
 		Brew brew = new Brew(uid, bIngredients, quality, distillruns, getAge(), wood, getName(5), false, false, true, 0);
 
-		Brew.PotionColor.valueOf(getColor()).colorBrew(potionMeta, potion, false);
+		Brew.PotionColor.fromString(getColor()).colorBrew(potionMeta, potion, false);
 		potionMeta.setDisplayName(P.p.color("&f" + getName(quality)));
 		// This effect stores the UID in its Duration
 		potionMeta.addCustomEffect((PotionEffectType.REGENERATION).createEffect((uid * 4), 0), true);

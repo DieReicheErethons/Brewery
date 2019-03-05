@@ -80,7 +80,7 @@ public class BIngredients {
 			Brew.addOrReplaceEffects(potionMeta, brew.getEffects(), brew.getQuality());
 
 			cookedName = cookRecipe.getName(quality);
-			Brew.PotionColor.valueOf(cookRecipe.getColor()).colorBrew(potionMeta, potion, false);
+			Brew.PotionColor.fromString(cookRecipe.getColor()).colorBrew(potionMeta, potion, false);
 
 		} else {
 			// new base potion

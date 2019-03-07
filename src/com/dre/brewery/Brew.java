@@ -710,7 +710,7 @@ public class Brew {
 
 		public PotionColor(Color color) {
 			colorId = -1;
-			type = null;
+			type = WATER.getType();
 			this.color = color;
 		}
 

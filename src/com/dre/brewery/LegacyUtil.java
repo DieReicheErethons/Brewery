@@ -101,7 +101,7 @@ public class LegacyUtil {
 	}
 
 	public static boolean isSign(Material type) {
-		return type == Material.SIGN || type == Material.WALL_SIGN || (!P.use1_13 && type == SIGN_POST);
+		return type.name().endsWith("SIGN") || (!P.use1_13 && type == SIGN_POST);
 	}
 
 	// LAVA and STATIONARY_LAVA are merged as of 1.13

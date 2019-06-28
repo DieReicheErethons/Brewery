@@ -265,8 +265,12 @@ public class BRecipe {
 
 		Brew.PotionColor.valueOf(getColor()).colorBrew(potionMeta, potion, false);
 		potionMeta.setDisplayName(P.p.color("&f" + getName(quality)));
+		if (!P.use1_14) {
+			// Before 1.14 the effects duration would strangely be only a quarter of what we tell it to be
+			uid *= 4;
+		}
 		// This effect stores the UID in its Duration
-		potionMeta.addCustomEffect((PotionEffectType.REGENERATION).createEffect((uid * 4), 0), true);
+		potionMeta.addCustomEffect((PotionEffectType.REGENERATION).createEffect(uid, 0), true);
 
 		brew.convertLore(potionMeta, false);
 		Brew.addOrReplaceEffects(potionMeta, effects, quality);

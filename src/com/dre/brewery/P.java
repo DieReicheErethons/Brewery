@@ -176,7 +176,11 @@ public class P extends JavaPlugin {
 		p.getServer().getScheduler().runTaskTimer(p, new DrunkRunnable(), 120, 120);
 
 		if (updateCheck) {
-			p.getServer().getScheduler().runTaskLaterAsynchronously(p, new UpdateChecker(), 135);
+			try {
+				p.getServer().getScheduler().runTaskLaterAsynchronously(p, new UpdateChecker(), 135);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 
 		this.log(this.getDescription().getName() + " enabled!");

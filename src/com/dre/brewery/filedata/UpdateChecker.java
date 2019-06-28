@@ -1,18 +1,17 @@
 package com.dre.brewery.filedata;
 
+import com.dre.brewery.P;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import org.bukkit.entity.Player;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-
-import org.bukkit.entity.Player;
-
-import com.dre.brewery.P;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
 
 
 /**
@@ -80,19 +79,20 @@ public class UpdateChecker implements Runnable {
 			conn.addRequestProperty("User-Agent", "Brewery UpdateChecker (by Gravity)");
 
 			// Read the response of the query
-			// The response will be in a JSON format, so only reading one line is necessary.
 			final BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-			String response = reader.readLine();
+
+			JsonParser parser = new JsonParser();
+
 
 			// Parse the array of files from the query's response
-			JSONArray array = (JSONArray) JSONValue.parse(response);
+			JsonArray array = parser.parse(reader).getAsJsonArray();
 
 			if (array.size() > 0) {
 				// Get the newest file's details
-				JSONObject latest = (JSONObject) array.get(array.size() - 1);
+				JsonObject latest = array.get(array.size() - 1).getAsJsonObject();
 
 				// Get the version's title
-				String versionName = (String) latest.get(API_NAME_VALUE);
+				String versionName = latest.get(API_NAME_VALUE).getAsString();
 
 				/*// Get the version's link
 				String versionLink = (String) latest.get(API_LINK_VALUE);

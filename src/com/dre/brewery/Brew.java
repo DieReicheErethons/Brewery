@@ -160,7 +160,11 @@ public class Brew {
 		int uid = generateUID();
 		clone(uid);
 		PotionMeta meta = (PotionMeta) copy.getItemMeta();
-		meta.addCustomEffect((PotionEffectType.REGENERATION).createEffect((uid * 4), 0), true);
+		if (!P.use1_14) {
+			// This is due to the Duration Modifier, that is removed in 1.14
+			uid *= 4;
+		}
+		meta.addCustomEffect((PotionEffectType.REGENERATION).createEffect(uid, 0), true);
 		copy.setItemMeta(meta);
 		return copy;
 	}

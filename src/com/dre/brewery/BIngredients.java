@@ -110,6 +110,7 @@ public class BIngredients {
 		potionMeta.setDisplayName(P.p.color("&f" + cookedName));
 		if (!P.use1_14) {
 			// Before 1.14 the effects duration would strangely be only a quarter of what we tell it to be
+			// This is due to the Duration Modifier, that is removed in 1.14
 			uid *= 4;
 		}
 		// This effect stores the UID in its Duration

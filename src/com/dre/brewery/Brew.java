@@ -1,5 +1,6 @@
 package com.dre.brewery;
 
+import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.BrewerInventory;
@@ -159,7 +160,11 @@ public class Brew {
 		int uid = generateUID();
 		clone(uid);
 		PotionMeta meta = (PotionMeta) copy.getItemMeta();
-		meta.addCustomEffect((PotionEffectType.REGENERATION).createEffect((uid * 4), 0), true);
+		if (!P.use1_14) {
+			// This is due to the Duration Modifier, that is removed in 1.14
+			uid *= 4;
+		}
+		meta.addCustomEffect((PotionEffectType.REGENERATION).createEffect(uid, 0), true);
 		copy.setItemMeta(meta);
 		return copy;
 	}
@@ -246,10 +251,9 @@ public class Brew {
 		if (stat) return false;
 		if (currentRecipe != null) {
 			return currentRecipe.getDistillRuns() > distillRuns;
-		} else if (distillRuns >= 6) {
-			return false;
+		} else {
+			return distillRuns < 6;
 		}
-		return true;
 	}
 
 	// return special effect
@@ -625,7 +629,7 @@ public class Brew {
 
 	// True if the PotionMeta has colored Lore
 	public static Boolean hasColorLore(PotionMeta meta) {
-		return meta.hasLore() && !meta.getLore().get(1).startsWith(P.p.color("&7"));
+		return meta.hasLore() && (meta.getLore().size() > 1 && !meta.getLore().get(1).startsWith(P.p.color("&7")));
 	}
 
 	// gets the Color that represents a quality in Lore
@@ -685,25 +689,27 @@ public class Brew {
 	}
 
 	public enum PotionColor {
-		PINK(1, PotionType.REGEN),
-		CYAN(2, PotionType.SPEED),
-		ORANGE(3, PotionType.FIRE_RESISTANCE),
-		GREEN(4, PotionType.POISON),
-		BRIGHT_RED(5, PotionType.INSTANT_HEAL),
-		BLUE(6, PotionType.NIGHT_VISION),
-		BLACK(8, PotionType.WEAKNESS),
-		RED(9, PotionType.STRENGTH),
-		GREY(10, PotionType.SLOWNESS),
-		WATER(11, P.use1_9 ? PotionType.WATER_BREATHING : null),
-		DARK_RED(12, PotionType.INSTANT_DAMAGE),
-		BRIGHT_GREY(14, PotionType.INVISIBILITY);
+		PINK(1, PotionType.REGEN, Color.FUCHSIA),
+		CYAN(2, PotionType.SPEED, Color.AQUA),
+		ORANGE(3, PotionType.FIRE_RESISTANCE, Color.ORANGE),
+		GREEN(4, PotionType.POISON, Color.GREEN),
+		BRIGHT_RED(5, PotionType.INSTANT_HEAL, Color.fromRGB(255,0,0)),
+		BLUE(6, PotionType.NIGHT_VISION, Color.NAVY),
+		BLACK(8, PotionType.WEAKNESS, Color.BLACK),
+		RED(9, PotionType.STRENGTH, Color.fromRGB(196,0,0)),
+		GREY(10, PotionType.SLOWNESS, Color.GRAY),
+		WATER(11, P.use1_9 ? PotionType.WATER_BREATHING : null, Color.BLUE),
+		DARK_RED(12, PotionType.INSTANT_DAMAGE, Color.fromRGB(128,0,0)),
+		BRIGHT_GREY(14, PotionType.INVISIBILITY, Color.SILVER);
 
 		private final int colorId;
 		private final PotionType type;
+		private final Color color;
 
-		PotionColor(int colorId, PotionType type) {
+		PotionColor(int colorId, PotionType type, Color color) {
 			this.colorId = colorId;
 			this.type = type;
+			this.color = color;
 		}
 
 		// gets the Damage Value, that sets a color on the potion
@@ -718,11 +724,20 @@ public class Brew {
 		public PotionType getType() {
 			return type;
 		}
+		
+		public Color getColor() {
+			return color;
+		}
 
 		public void colorBrew(PotionMeta meta, ItemStack potion, boolean destillable) {
 			if (P.use1_9) {
-				meta.setBasePotionData(new PotionData(getType()));
 				meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
+				if (P.use1_11) {
+					// BasePotionData was only used for the Color, so starting with 1.12 we can use setColor instead
+					meta.setColor(getColor());
+				} else {
+					meta.setBasePotionData(new PotionData(getType()));
+				}
 			} else {
 				potion.setDurability(getColorId(destillable));
 			}

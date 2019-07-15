@@ -210,7 +210,7 @@ public class Words {
 					// All occurences of "from" need to be replaced
 					return words.replaceAll(from, to);
 				}
-				String newWords = "";
+				StringBuilder newWords = new StringBuilder();
 				if (words.endsWith(from)) {
 					// add space to end to recognize last occurence of "from"
 					words = words + " ";
@@ -226,15 +226,15 @@ public class Words {
 					while (index < splitted.length - 1) {
 						part = splitted[index];
 						// add current part of "words" to the output
-						newWords = newWords + part;
+						newWords.append(part);
 						// check if the part ends with correct string
 
 						if (doesPreMatch(part) && Math.random() * 100.0 <= percentage) {
 							// add replacement
-							newWords = newWords + to;
+							newWords.append(to);
 						} else {
 							// add original
-							newWords = newWords + from;
+							newWords.append(from);
 						}
 						index++;
 					}
@@ -242,9 +242,9 @@ public class Words {
 					part = splitted[index];
 					if (part.equals(" ")) {
 						// dont add the space to the end
-						return newWords;
+						return newWords.toString();
 					} else {
-						return newWords + part;
+						return newWords.append(part).toString();
 					}
 				}
 			} catch (java.util.regex.PatternSyntaxException e) {

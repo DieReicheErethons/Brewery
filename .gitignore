@@ -12,6 +12,7 @@
 
 # IntelliJ
 /.idea
+/*.iml
 
 # various other potential build files
 /build
@@ -24,3 +25,4 @@
 
 # maven
 /target
+/dependency-reduced-pom.xml

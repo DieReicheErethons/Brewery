@@ -1,0 +1,539 @@
+# config für Brewery.jar
+
+
+# -- Verschiedene Einstellungen --
+# Standardeinstellungen sind in [] angegeben
+# Löschen einzelner Einstellungen deaktiviert sie
+
+# Sprachedatei die genutzt werden sollte (befindet sich in plugins/Brewery/languages)
+language: de
+
+# Ob der Spieler beim nächsten Einloggen nach starker Trunkenheit am nächsten morgen Zuhause "aufwacht" (Ein home Plugin muss installiert sein!) [true]
+enableHome: true
+
+# Art des Nachhause-teleports: ['cmd: home']
+# bed = Spieler wird zu seinem Spawn Bett teleportiert
+# 'cmd: home' = /home wird vom Spieler ausgelöst. Es sollte kein Verzögerungs, etc. plugin installiert sein!
+# 'cmd: spawn' = /spawn wird vom Spieler ausgelöst
+# 'cmd: whatever' = /whatever wird vom Spieler ausgelöst
+homeType: 'cmd: home'
+
+# Ob der Spieler nach etwas kürzerem Ausloggen an einem zufälligen Ort "aufwacht" (diese müssen durch '/brew Wakeup add' von einem Admin festgelegt werden)
+# Der Spieler wacht an dem nähesten zweier zufälliger Orte aus seiner Welt auf. [true]
+enableWake: true
+
+# Ob der Spieler bei großer Trunkenheit mehrmals probieren muss sich einzuloggen, da sein Charakter kurz nicht reagiert [true]
+enableLoginDisallow: true
+
+# Ob der Spieler kurz in Ohnmacht fällt (vom Server gekickt wird) wenn er die maximale Trunkenheit erreicht [false]
+enableKickOnOverdrink: false
+
+# Ob der Spieler sich bei großer Trunkenheit übergibt (unten definiertes Item aus dem Mund fallen lässt) [true]
+# Das Item kann nicht aufgesammelt werden und bleibt bis zum Despawnen liegen.
+enablePuke: true
+
+# Item das beim Erbrechen mehrfach unaufsammelbar fallen gelassen wird [SOUL_SAND]
+pukeItem: SOUL_SAND
+
+# Zeit in Sekunden bis die pukeitems despawnen, (mc standard wäre 300 = 5 min) [60]
+# Wurde die item Despawnzeit in der spigot.yml verändert, verändert sich auch die pukeDespawnzeit in Abhängigkeit.
+pukeDespawntime: 60
+
+# Konsumierbares Item/Stärke. Senkt den Alkoholpegel um <Stärke> wenn konsumiert.
+drainItems:
+- BREAD/4
+- MILK_BUCKET/2
+
+# Zeit (in Tagen) die Trunkenheitsdaten nach offlinegehen eines Spielers im Speicher verbleiben, um z.B. Kater-Effekte anzuwenden. [7]
+hangoverDays: 7
+
+# Färben der Iteminformationen je nach Qualität während sie sich 1. im Fass und/oder 2. im Braustand befinden [true, true]
+colorInBarrels: true
+colorInBrewer: true
+
+# Ob große Fässer an jedem Block geöffnet werden können, nicht nur an Zapfhahn und Schild. Bei kleinen Fässern geht dies immer. [true]
+openLargeBarrelEverywhere: true
+
+# In den Serverlog loggen was der Spieler tatsächlich geschrieben hat, bevor seine Worte verändert wurden [false]
+logRealChat: false
+
+# Aktiviert das Suchen nach Updates für Brewery mit der curseforge api [true]
+# Wenn ein Update gefunden wurde, wird dies bei Serverstart im log angezeigt, sowie OPs benachrichtigt
+updateCheck: true
+
+# Autosave Intervall in Minuten [3]
+autosave: 3
+
+# Config Version
+version: '1.7'
+oldMat: true
+
+
+# -- Rezepte für Getränke --
+
+# name: Verschiedene Namen für schlecht/mittel/gut (Farbcodes möglich: z.b. &6)
+# ingredients: Auflistung von 'Material,Data/Anzahl'
+#   (Item-ids anstatt Material können in Bukkit nicht mehr benutzt werden)
+#   Eine Liste von allen Materialien kann hier gefunden werden: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
+#   Es kann ein Data-Wert (durability) angegeben werden, weglassen ignoriert diesen beim hinzufügen einer Zutat
+#   Wenn Vault installiert ist können normale englische Item Namen verwendet werden, anstatt Material, ID und Data!
+#   Vault erkennt Namen wie "Jungle Leaves" anstatt "LEAVES,3". Dies macht es viel einfacher!
+# cookingtime: Zeit in Echtminuten die die Zutaten kochen müssen
+# distillruns: Wie oft destilliert werden muss für vollen Alkoholgehalt (0=ohne Destillieren)
+# distilltime: Wie lange (in sekunden) ein Destillations-Durchlauf braucht (0=Standard Zeit von 40 sek) MC Standard wäre 20 sek
+# wood: Holz des Fasses 0=alle Holzsorten 1=Birke 2=Eiche 3=Jungel 4=Fichte 5=Akazie 6=Schwarzeiche
+# age: Zeit in Minecraft-Tagen, die das Getränk im Fass reifen muss 0= kein reifen
+# color: Farbe des Getränks nach destillieren/reifen.
+#   Benutzbare Farben: DARK_RED, RED, BRIGHT_RED, ORANGE, PINK, BLUE, CYAN, WATER, GREEN, BLACK, GREY, BRIGHT_GREY
+# difficulty: 1-10 Genauigkeit der Einhaltung der Vorgaben (1 = ungenau/einfach 10 = sehr genau/schwer)
+# alcohol: Alkoholgehalt 0-100 in absoluter Menge bei perfektem Getränk (wird dem Spieler hinzugefügt, bei 100 = tot)
+# effects: Auflistung Effekt/Level/Dauer  Besonderere Trank-Effekte beim Trinken, Dauer in sek.
+#   Ein 'X' an den Namen anhängen, um ihn zu verbergen. Bsp: 'POISONX/2/10' (WEAKNESS, INCREASE_DAMAGE, SLOW und SPEED sind immer verborgen.)
+#   Effekte sind ab der 1.9 immer verborgen, wegen Änderungen an den Tränken.
+#   Mögliche Effekte: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/potion/PotionEffectType.html
+#   Minimale und Maximale Level/Dauer können durch "-" festgelegt werden, Bsp: 'SPEED/1-2/30-40' = Level 1 und 30 sek minimal, Level 2 und 40 sek maximal
+#   Diese Bereiche funktionieren auch umgekehrt, Bsp: 'POISON/3-1/20-5' für abschwächende Effekte bei guter Qualität
+#   Längste mögliche Effektdauer: 1638 sek. Es muss keine Dauer für Effekte mit sofortiger Wirkung angegeben werden.
+
+recipes:
+#  Ein vollständiges Beispiel zuerst:
+   0:
+      name: Schlechtes Beispiel/Beispiel/Gutes Beispiel
+      ingredients:
+      - SUGAR_CANE/5
+      - DIAMOND/1
+      - INK_SACK,3/20
+      - WOOD,1/8
+      - BEDROCK/1
+#     - Jungle Leaves/64  # Nur mit Vault
+#     - Green Dye/6       # Nur mit Vault
+      cookingtime: 3
+      distillruns: 2
+      distilltime: 60
+      wood: 4
+      age: 11
+      color: DARK_RED
+      difficulty: 3
+      alcohol: 23
+      effects:
+      - FIRE_RESISTANCE/20
+      - HEAL/1
+      - WEAKNESS/2-3/50-60
+      - POISONX/1-0/20-0
+   1:
+      name: Ranziges Weißbier/Weißbier/Feines Weißbier
+      ingredients: 
+      - WHEAT/3
+      cookingtime: 8
+      distillruns: 0
+      wood: 1
+      age: 2
+      color: BRIGHT_GREY
+      difficulty: 1
+      alcohol: 5
+   2:
+      name: Ranziges Bier/Bier/Feines Bier
+      ingredients: 
+      - WHEAT/6
+      cookingtime: 8
+      distillruns: 0
+      wood: 0
+      age: 3
+      color: ORANGE
+      difficulty: 1
+      alcohol: 6
+   3:
+      name: Ranziges Dunkelbier/Dunkelbier/Feines Dunkelbier
+      ingredients: 
+      - WHEAT/6
+      cookingtime: 8
+      distillruns: 0
+      wood: 4
+      age: 8
+      color: BLACK
+      difficulty: 2
+      alcohol: 7
+   4:
+      name: Scheußlicher Met/Met/&6Goldener Met
+      ingredients: 
+      - SUGAR_CANE/6
+      cookingtime: 3
+      distillruns: 0
+      wood: 2
+      age: 4
+      color: ORANGE
+      difficulty: 2
+      alcohol: 9
+   5:
+      name: Apfelmet/Süßer Apfelmet/&6Goldensüßer Apfelmet
+      ingredients: 
+      - SUGAR_CANE/6
+      - APPLE/2
+      cookingtime: 4
+      distillruns: 0
+      wood: 2
+      age: 4
+      color: ORANGE
+      difficulty: 4
+      alcohol: 12
+      effects:
+      - WATER_BREATHINGX/1-2/150
+   6:
+      name: Bitterer Rum/Würziger Rum/&6Goldener Rum
+      ingredients: 
+      - SUGAR_CANE/14
+      cookingtime: 5
+      distillruns: 2
+      distilltime: 30
+      wood: 2
+      age: 14
+      color: DARK_RED
+      difficulty: 6
+      alcohol: 30
+      effects:
+      - FIRE_RESISTANCE/1/20-100
+      - POISONX/1-0/30-0
+   7:
+      name: Abgeranzter Vodka/Vodka/Russischer Vodka
+      ingredients: 
+      - POTATO_ITEM/10
+      cookingtime: 15
+      distillruns: 3
+      age: 0
+      color: BRIGHT_GREY
+      difficulty: 4
+      alcohol: 20
+      effects:
+      - WEAKNESS/15
+      - POISON/10
+   8:
+      name: minderwertiger Absinth/Absinth/Starker Absinth
+      ingredients:
+      - LONG_GRASS/15
+      cookingtime: 3
+      distillruns: 6
+      distilltime: 80
+      color: GREEN
+      difficulty: 8
+      alcohol: 45
+      effects:
+      - POISON/20-30
+   9:
+      name: Kartoffelsuppe
+      ingredients:
+      - POTATO_ITEM/5
+      - LONG_GRASS/3
+      cookingtime: 3
+      color: PINK
+      difficulty: 1
+      effects:
+      - HEAL/0-1
+   10:
+      name: Fader Kaffee/Kaffee/Starker Kaffee
+      ingredients:
+      - INK_SACK,3/12
+      - MILK_BUCKET/2
+      cookingtime: 2
+      color: BLACK
+      difficulty: 3
+      effects:
+      - REGENERATION/1/2-5
+      - SPEED/1/30-140
+
+# Mehr Ideen für Rezepte: Cachaca, Gin, Whiskey, Tequila, Cidre, etc, sowie Rezeptvarianten wie Goldener Vodka etc.
+# Ich werde keine weiteren Rezepte zu dieser Standardconfig hinzufügen, da diese öffentlich und für Spieler zum Abschauen einsehbar wären
+# Der Serveradmin kann neue Rezepte hinzufügen und bestehende ändern, um das Abschauen aus der Standardconfig zu verhindern.
+
+
+# cooked: ALLE möglichen Zutaten und die nach dem Gähren daraus entstehenden Tranknamen:
+# [Beispiel] MATERIAL: Name nach Gähren
+
+cooked:
+   WHEAT: Getreideferment
+   SUGAR_CANE: Zuckersud
+   APPLE: Apfelmost
+   POTATO_ITEM: Kartoffelmaische
+   LONG_GRASS: Kräuterbrühe
+   RED_MUSHROOM: Pilzsud
+   INK_SACK: Farbige Brühe
+   MILK_BUCKET: Milchiges Wasser
+
+
+
+# -- Plugin Kompatiblität --
+
+# Andere Plugins (wenn installiert) nach Rechten zum öffnen von Fässern checken [true]
+useWorldGuard: true
+useLWC: true
+useGriefPrevention: true
+useCitadel: true
+
+# Änderungen an Fassinventaren mit LogBlock aufzeichen [true]
+useLogBlock: true
+
+
+# -- Chat Veränderungs Einstellungen --
+
+# Ob geschriebener Chat bei großer Trunkenheit abgefälscht werden soll,
+# so dass es etwas betrunken aussieht was geschrieben wird.
+# Wie stark der Chat verändert wird hängt davon ab wie betrunken der Spieler ist
+# Unten kann noch eingestellt werden wie und was verändert wird
+enableChatDistortion: true
+
+# Text nach den angegebenen Kommandos wird bei Trunkenheit ebenfalls Verändert (Liste) [- /gl]
+distortCommands:
+- /gl
+- /global
+- /fl
+- /s
+- /letter
+- /g
+- /l
+- /lokal
+- /local
+- /mail send
+- /m
+- /msg
+- /w
+- /whisper
+- /reply
+- /r
+- /t
+- /tell
+
+# Geschriebenen Text auf Schildern bei Trunkenheit verändern [false]
+distortSignText: false
+
+# Im Chat geschriebener Text, der zwischen diesen Buchstaben steht, wird nicht verändert ("," als Trennung verwenden) (Liste) [- '[,]']
+# Also zum Beispiel im Chat: Hallo ich bin betrunken *Ich teste Brewery*
+distortBypass:
+- '*,*'
+- '[,]'
+
+# words: Wörter und Buchstaben die bei Chatten während Trunkenheit ersetzt werden sollen.
+# Diese werden von oben nach unten gelesen und in dieser Reihenfolge wird ein geschriebener Satz dann verändert.
+
+# replace: Zu ersetzendes Wort oder Buchstabe.   (Besondere: "-space": ersetzt Leerzeichen, "-random": Einfügen in zufällige Position, "-all": Alles, "-start": Ganz am Anfang, "-end": Ganz ans Ende.)
+# to: In welches Wort es ersetzt werden soll.
+# pre: Wörter und Buchstaben vor dem gesuchten Wort (durch "," getrennt)
+# match: true = eines der "pre"-Wörter muss vor dem gesuchten Wort stehen,  false = keines der "pre" Wörter darf vor dem gesuchten stehen
+# alcohol: 1-100 Trunkenheit ab der die Wörter ersetzt werden
+# percentage: Wahrscheinlichkeit des Ersetzen eines Wortes in Prozent
+
+words:
+-  replace: ch
+   to: sch
+   pre: u,s,o,a
+   match: false
+   alcohol: 10
+   percentage: 70
+
+-  replace: h
+   to: hh
+   pre: sch,h,t
+   match: false
+   percentage: 60
+   alcohol: 20
+
+-  replace: u
+   to: uuh
+   percentage: 20
+
+-  replace: u
+   to: uo
+   pre: u
+   match: false
+   percentage: 60
+
+-  replace: das
+   to: dass
+   percentage: 20
+   alcohol: 40
+
+-  replace: p
+   to: b
+   percentage: 30
+
+-  replace: p
+   to: b
+   percentage: 70
+   alcohol: 60
+
+-  replace: up
+   to: ubb
+   percentage: 80
+
+-  replace: o
+   to: oh
+   percentage: 20
+
+-  replace: ei
+   to: i
+   percentage: 15
+
+-  replace: b
+   to: bb
+   percentage: 80
+   alcohol: 40
+
+-  replace: '!!!'
+   to: '!!!111!!!einself!1!'
+   pre: '!'
+   match: false
+   percentage: 20
+   alcohol: 70
+
+-  replace: '!'
+   to: '!!'
+   pre: '!'
+   match: false
+   percentage: 90
+
+-  replace: betrunken
+   to: brhetriunkhn
+   pre: bist,seid
+   match: false
+   percentage: 70
+   alcohol: 65
+
+-  replace: laufen
+   to: lnhfeeehn
+   pre: kannst,kannst noch,kannst nicht
+   match: false
+   percentage: 80
+   alcohol: 30
+
+-  replace: gehen
+   to: hgheehn
+   pre: kannst,kannst noch,kannst nicht
+   match: false
+   percentage: 80
+   alcohol: 40
+
+-  replace: wtf
+   to: wft
+   percentage: 20
+   alcohol: 40
+
+-  replace: lol
+   to: loool
+   percentage: 80
+   alcohol: 10
+
+-  replace: afk
+   to: aafka
+   percentage: 20
+   alcohol: 30
+
+-  replace: schreiben
+   to: schribeen
+   pre: kannst,kannst noch,kannst nicht
+   match: false
+   percentage: 80
+   alcohol: 50
+
+-  replace: trinken
+   to: saufen
+   percentage: 80
+   alcohol: 70
+
+-  replace: '?'
+   to: '????'
+   pre: '?'
+   match: false
+   percentage: 80
+   alcohol: 40
+
+-  replace: -space
+   to: ''
+   pre: h,g,w
+   match: true
+   alcohol: 10
+
+-  replace: -space
+   to: ''
+   percentage: 30
+   alcohol: 35
+
+-  replace: -space
+   to: ''
+   percentage: 10
+
+-  replace: -start
+   to: dho
+   percentage: 15
+   alcohol: 50
+
+-  replace: -start
+   to: hhn
+   percentage: 10
+   alcohol: 50
+
+-  replace: -random
+   to: lug
+   percentage: 10
+
+-  replace: -random
+   to: lu
+   percentage: 20
+   alcohol: 40
+
+-  replace: -random
+   to: blub
+   percentage: 20
+   alcohol: 70
+
+-  replace: -random
+   to: lerg
+   percentage: 40
+   alcohol: 75
+
+-  replace: -random
+   to: gul
+   percentage: 50
+   alcohol: 80
+
+-  replace: -random
+   to: ' '
+   percentage: 100
+   alcohol: 70
+
+-  replace: -random
+   to: ' '
+   percentage: 60
+   alcohol: 40
+
+-  replace: -random
+   to: ' '
+   percentage: 50
+   alcohol: 30
+
+-  replace: -end
+   to: '!'
+   percentage: 40
+   alcohol: 30
+
+-  replace: -random
+   to: ' *hicks* '
+   percentage: 80
+   alcohol: 70
+
+-  replace: -random
+   to: ' *hicks* '
+   percentage: 15
+   alcohol: 40
+
+-  replace: -space
+   to: ' *hicks* '
+   percentage: 5
+   alcohol: 20
+
+-  replace: -end
+   to: ' *hicks*'
+   percentage: 70
+   alcohol: 50
+
+-  replace: -all
+   to: '*rülps*'
+   percentage: 3
+   alcohol: 60

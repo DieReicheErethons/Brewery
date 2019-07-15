@@ -2,6 +2,8 @@ package com.dre.brewery;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.Levelled;
 import org.bukkit.entity.Player;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -9,8 +11,6 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.Effect;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.material.Cauldron;
-import org.bukkit.material.MaterialData;
 
 public class BCauldron {
 	public static CopyOnWriteArrayList<BCauldron> bcauldrons = new CopyOnWriteArrayList<>();
@@ -36,8 +36,7 @@ public class BCauldron {
 
 	public void onUpdate() {
 		// Check if fire still alive
-		if (!block.getChunk().isLoaded() || block.getRelative(BlockFace.DOWN).getType() == Material.FIRE || block.getRelative(BlockFace.DOWN).getType() == Material.STATIONARY_LAVA
-				|| block.getRelative(BlockFace.DOWN).getType() == Material.LAVA) {
+		if (!block.getChunk().isLoaded() || block.getRelative(BlockFace.DOWN).getType() == Material.FIRE || LegacyUtil.isLava(block.getRelative(BlockFace.DOWN).getType())) {
 			// add a minute to cooking time
 			state++;
 			if (someRemoved) {
@@ -74,7 +73,7 @@ public class BCauldron {
 	// get cauldron from block and add given ingredient
 	public static boolean ingredientAdd(Block block, ItemStack ingredient) {
 		// if not empty
-		if (getFillLevel(block) != 0) {
+		if (LegacyUtil.getFillLevel(block) != 0) {
 			BCauldron bcauldron = get(block);
 			if (bcauldron != null) {
 				bcauldron.add(ingredient);
@@ -97,21 +96,42 @@ public class BCauldron {
 			}
 			ItemStack potion = bcauldron.ingredients.cook(bcauldron.state);
 			if (potion != null) {
-				byte data = block.getData();
-				if (data > 3) {
-					data = 3;
-					block.setData(data);
-				} else if (data <= 0) {
-					bcauldrons.remove(bcauldron);
-					return false;
-				}
-				data -= 1;
-				block.setData(data);
 
-				if (data == 0) {
-					bcauldrons.remove(bcauldron);
+				if (P.use1_13) {
+					BlockData data = block.getBlockData();
+					Levelled cauldron = ((Levelled) data);
+					if (cauldron.getLevel() <= 0) {
+						bcauldrons.remove(bcauldron);
+						return false;
+					}
+					cauldron.setLevel(cauldron.getLevel() - 1);
+					// Update the new Level to the Block
+					// We have to use the BlockData variable "data" here instead of the casted "cauldron"
+					// otherwise < 1.13 crashes on plugin load for not finding the BlockData Class
+					block.setBlockData(data);
+
+					if (cauldron.getLevel() <= 0) {
+						bcauldrons.remove(bcauldron);
+					} else {
+						bcauldron.someRemoved = true;
+					}
+
 				} else {
-					bcauldron.someRemoved = true;
+					byte data = block.getData();
+					if (data > 3) {
+						data = 3;
+					} else if (data <= 0) {
+						bcauldrons.remove(bcauldron);
+						return false;
+					}
+					data -= 1;
+					LegacyUtil.setData(block, data);
+
+					if (data == 0) {
+						bcauldrons.remove(bcauldron);
+					} else {
+						bcauldron.someRemoved = true;
+					}
 				}
 				// Bukkit Bug, inventory not updating while in event so this
 				// will delay the give
@@ -123,24 +143,6 @@ public class BCauldron {
 			}
 		}
 		return false;
-	}
-
-	// 0 = empty, 1 = something in, 2 = full
-	public static byte getFillLevel(Block block) {
-		if (block.getType() == Material.CAULDRON) {
-			MaterialData data = block.getState().getData();
-			if (data instanceof Cauldron) {
-				Cauldron cauldron = (Cauldron) data;
-				if (cauldron.isEmpty()) {
-					return 0;
-				} else if (cauldron.isFull()) {
-					return 2;
-				} else {
-					return 1;
-				}
-			}
-		}
-		return 0;
 	}
 
 	// prints the current cooking time to the player
@@ -161,7 +163,7 @@ public class BCauldron {
 
 	// reset to normal cauldron
 	public static void remove(Block block) {
-		if (getFillLevel(block) != 0) {
+		if (LegacyUtil.getFillLevel(block) != 0) {
 			BCauldron bcauldron = get(block);
 			if (bcauldron != null) {
 				bcauldrons.remove(bcauldron);

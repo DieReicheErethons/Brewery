@@ -119,6 +119,10 @@ public class BPlayer {
 		players.remove(P.playerString(player));
 	}
 
+	public static int numDrunkPlayers() {
+		return players.size();
+	}
+
 	public void remove() {
 		for (Map.Entry<String, BPlayer> entry : players.entrySet()) {
 			if (entry.getValue() == this) {
@@ -207,9 +211,7 @@ public class BPlayer {
 			}
 			quality = getQuality();
 			if (drunkeness <= -offlineDrunk) {
-				if (drunkeness <= -hangoverTime) {
-					return true;
-				}
+				return drunkeness <= -hangoverTime;
 			}
 		}
 		return false;
@@ -226,6 +228,8 @@ public class BPlayer {
 					// Is he moving
 					if (event.getFrom().getX() != event.getTo().getX() || event.getFrom().getZ() != event.getTo().getZ()) {
 						Player player = event.getPlayer();
+						// We have to cast here because it had issues otherwise on previous versions of Minecraft
+						// Dont know if thats still the case, but we better leave it
 						Entity entity = (Entity) player;
 						// not in midair
 						if (entity.isOnGround()) {
@@ -465,11 +469,14 @@ public class BPlayer {
 	public void drunkEffects(Player player) {
 		int duration = 10 - getQuality();
 		duration += drunkeness / 2;
-		duration *= 20;
-		if (duration > 960) {
+		duration *= 5;
+		if (duration > 240) {
 			duration *= 5;
-		} else if (duration < 460) {
-			duration = 460;
+		} else if (duration < 115) {
+			duration = 115;
+		}
+		if (!P.use1_14) {
+			duration *= 4;
 		}
 		PotionEffectType.CONFUSION.createEffect(duration, 0).apply(player);
 	}
@@ -477,14 +484,17 @@ public class BPlayer {
 	public static void addQualityEffects(int quality, int brewAlc, Player player) {
 		int duration = 7 - quality;
 		if (quality == 0) {
-			duration *= 500;
+			duration *= 125;
 		} else if (quality <= 5) {
-			duration *= 250;
+			duration *= 62;
 		} else {
-			duration = 100;
+			duration = 25;
 			if (brewAlc <= 10) {
 				duration = 0;
 			}
+		}
+		if (!P.use1_14) {
+			duration *= 4;
 		}
 		if (duration > 0) {
 			PotionEffectType.POISON.createEffect(duration, 0).apply(player);
@@ -494,9 +504,12 @@ public class BPlayer {
 			if (quality <= 5) {
 				duration = 10 - quality;
 				duration += brewAlc;
-				duration *= 60;
+				duration *= 15;
 			} else {
-				duration = 120;
+				duration = 30;
+			}
+			if (!P.use1_14) {
+				duration *= 4;
 			}
 			PotionEffectType.BLINDNESS.createEffect(duration, 0).apply(player);
 		}
@@ -512,7 +525,10 @@ public class BPlayer {
 	}
 
 	public void hangoverEffects(final Player player) {
-		int duration = offlineDrunk * 50 * getHangoverQuality();
+		int duration = offlineDrunk * 25 * getHangoverQuality();
+		if (!P.use1_14) {
+			duration *= 2;
+		}
 		int amplifier = getHangoverQuality() / 3;
 
 		PotionEffectType.SLOW.createEffect(duration, amplifier).apply(player);
@@ -605,7 +621,7 @@ public class BPlayer {
 		if (drunkeness < 0) {
 			return quality;
 		}
-		return Math.round(quality / drunkeness);
+		return Math.round((float) quality / (float) drunkeness);
 	}
 
 	// opposite of quality

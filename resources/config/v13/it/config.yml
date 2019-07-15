@@ -32,8 +32,8 @@ enableKickOnOverdrink: false
 # L'oggetto non può essere raccolto e resta per terra finché non sparisce.
 enablePuke: true
 
-# L'oggetto droppato in massa quando si vomita che dovrebbe rappresentare il vomito [SOUL_SAND]
-pukeItem: SOUL_SAND
+# L'oggetto droppato in massa quando si vomita che dovrebbe rappresentare il vomito [Soul_Sand]
+pukeItem: Soul_Sand
 
 # Tempo in secondi perché il vomito sparisca (il valore di minecraft di default è 300 = 5 min) [60]
 # Se il tempo di scomparsa viene cambiato in spigot.yml anche pukeDespawntime cambia.
@@ -41,8 +41,8 @@ pukeDespawntime: 60
 
 # Oggetto consumabile/forza. Questi oggetti se consumati calano il livello di alcool (della "forza" che avevi impsotato) (list)
 drainItems:
-- BREAD/4
-- MILK_BUCKET/2
+- Bread/4
+- Milk_Bucket/2
 
 # Tempo in giorni che la sbronza resta in memoria dopo che il giocatore va offline, cioè il tempo per cui i postumi della sbornia durano. [7]
 hangoverDays: 7
@@ -62,14 +62,14 @@ updateCheck: true
 autosave: 3
 
 # Versione del config
-version: '1.5'
+version: '1.7'
 
 
 # -- Ricette per pozioni --
 
 # name: Tre nomi diversi per diverse qualità (cattivo/normale/buono). I codici come &6 possono essere usati.
-# ingredients: Lista degli ingredienti nel formato materiale o id,dati/quantità
-#   (Gli id invece dei materiali sono "disapprovati" da Bukkit e potrebbero non funzionare in futuro!)
+# ingredients: Lista degli ingredienti nel formato materiale,dati/quantità
+#   (Gli id invece dei materiali sono "disapprovati" da Bukkit)
 #   Una lista di materiali può essere trovata qui: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
 #   Puoi specificare dei dati dell'oggetto, ma se omesso sarà semplicemente ignorato.
 #   Se Vault è installato i nomi normali possono essere usati invece del materiale o dell'id quindi l'uso di Vault è fortemente consigliato.
@@ -96,11 +96,11 @@ recipes:
    0:
       name: Cattivo esempio/Esempio/Buon esempio
       ingredients:
-      - SUGAR_CANE/5
-      - 264/1
-      - INK_SACK,3/20
-      - 5,1/8
-      - BEDROCK/1
+      - Sugar_Cane/5
+      - Diamond/1
+      - Cocoa_Beans/20
+      - Spruce_Planks/8
+      - Bedrock/1
 #     - Jungle Leaves/64  # Solo con Vault
 #     - Green Dye/6       # Solo con Vault
       cookingtime: 3
@@ -119,7 +119,7 @@ recipes:
    1:
       name: Birra di frumento puzzolente/Birra di frumento/Birra di frumento pregiata
       ingredients: 
-      - WHEAT/3
+      - Wheat/3
       cookingtime: 8
       distillruns: 0
       wood: 1
@@ -130,7 +130,7 @@ recipes:
    2:
       name: Birra puzzolente/Birra/Birra pregiata
       ingredients: 
-      - WHEAT/6
+      - Wheat/6
       cookingtime: 8
       distillruns: 0
       wood: 0
@@ -141,7 +141,7 @@ recipes:
    3:
       name: Birra scura puzzolente/Birra scura/Birra scura pregiata
       ingredients: 
-      - WHEAT/6
+      - Wheat/6
       cookingtime: 8
       distillruns: 0
       wood: 4
@@ -152,7 +152,7 @@ recipes:
    4:
       name: Idromele scarso/Idromele/&6Idromele dorato
       ingredients: 
-      - SUGAR_CANE/6
+      - Sugar_Cane/6
       cookingtime: 3
       distillruns: 0
       wood: 2
@@ -163,8 +163,8 @@ recipes:
    5:
       name: Idromele di mele/Idromele di mele dolci/&6Idromele di mele dolci dorato
       ingredients: 
-      - SUGAR_CANE/6
-      - APPLE/2
+      - Sugar_Cane/6
+      - Apple/2
       cookingtime: 4
       distillruns: 0
       wood: 2
@@ -177,7 +177,7 @@ recipes:
    6:
       name: Rum amaro/Rum speziato/&6Rum dorato
       ingredients: 
-      - SUGAR_CANE/14
+      - Sugar_Cane/14
       cookingtime: 5
       distillruns: 2
       distilltime: 30
@@ -192,7 +192,7 @@ recipes:
    7:
       name: Vodka schifosa/Vodka/Vodka russa
       ingredients: 
-      - POTATO_ITEM/10
+      - Potato/10
       cookingtime: 15
       distillruns: 3
       age: 0
@@ -205,7 +205,7 @@ recipes:
    8:
       name: Assenzio scarso/Assenzio/Assenzio forte
       ingredients:
-      - LONG_GRASS/15
+      - Grass/15
       cookingtime: 3
       distillruns: 6
       distilltime: 80
@@ -217,8 +217,8 @@ recipes:
    9:
       name: Zuppa di patate
       ingredients:
-      - POTATO_ITEM/5
-      - LONG_GRASS/3
+      - Potato/5
+      - Grass/3
       cookingtime: 3
       color: PINK
       difficulty: 1
@@ -227,8 +227,8 @@ recipes:
    10:
       name: Caffè stantio/Caffè/Caffè forte
       ingredients:
-      - INK_SACK,3/12
-      - MILK_BUCKET/2
+      - Cocoa_Beans,3/12
+      - Milk_Bucket/2
       cookingtime: 2
       color: BLACK
       difficulty: 3
@@ -243,17 +243,17 @@ recipes:
 
 
 # cooked: OGNI possibile ingrediente e i nomi per la pozione originatasi dopo la fermentazione.
-# (Esempio) MATERIALE_o_id: Nome dopo la cottura
+# (Esempio) MATERIALE: Nome dopo la cottura
 
 cooked:
-   WHEAT: Frumento fermentato
-   SUGAR_CANE: Miscela zuccherata
-   APPLE: Sidro di mele
-   POTATO_ITEM: Purè di patate
-   LONG_GRASS: Erbe bollite
-   RED_MUSHROOM: Miscela ai funghi
-   INK_SACK: Miscela colorata
-   MILK_BUCKET: Acqua lattea
+   Wheat: Frumento fermentato
+   Sugar_Cane: Miscela zuccherata
+   Apple: Sidro di mele
+   Potato: Purè di patate
+   Grass: Erbe bollite
+   Red_Mushroom: Miscela ai funghi
+   Cocoa_Beans: Miscela colorata
+   Milk_Bucket: Acqua lattea
 
 
 

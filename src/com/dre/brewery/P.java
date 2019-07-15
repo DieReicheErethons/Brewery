@@ -3,6 +3,7 @@ package com.dre.brewery;
 import com.dre.brewery.filedata.*;
 import com.dre.brewery.integration.LogBlockBarrel;
 import com.dre.brewery.integration.WGBarrel;
+import com.dre.brewery.integration.WGBarrel7;
 import com.dre.brewery.integration.WGBarrelNew;
 import com.dre.brewery.integration.WGBarrelOld;
 import com.dre.brewery.listeners.*;
@@ -18,6 +19,7 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.UUID;
 import org.apache.commons.lang.math.NumberUtils;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -31,14 +33,18 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class P extends JavaPlugin {
 	public static P p;
-	public static final String configVersion = "1.5";
+	public static final String configVersion = "1.7";
 	public static boolean debug;
 	public static boolean useUUID;
 	public static boolean use1_9;
+	public static boolean use1_11;
+	public static boolean use1_13;
+	public static boolean use1_14;
 	public static boolean updateCheck;
 
 	// Third Party Enabled
@@ -47,7 +53,8 @@ public class P extends JavaPlugin {
 	public boolean useLWC; //LWC
 	public boolean useLB; //LogBlock
 	public boolean useGP; //GriefPrevention
-	public boolean hasVault;
+	public boolean hasVault; // Vault
+	public boolean useCitadel; // CivCraft/DevotedMC Citadel
 
 	// Listeners
 	public BlockListener blockListener;
@@ -68,8 +75,13 @@ public class P extends JavaPlugin {
 
 		// Version check
 		String v = Bukkit.getBukkitVersion();
-		useUUID = !v.matches("(^|.*[^\\.\\d])1\\.[0-6]([^\\d].*|$)") && !v.matches("(^|.*[^\\.\\d])1\\.7\\.[0-5]([^\\d].*|$)");
-		use1_9 = !v.matches("(^|.*[^\\.\\d])1\\.[0-8]([^\\d].*|$)");
+		useUUID = !v.matches("(^|.*[^.\\d])1\\.[0-6]([^\\d].*|$)") && !v.matches("(^|.*[^.\\d])1\\.7\\.[0-5]([^\\d].*|$)");
+		use1_9 = !v.matches("(^|.*[^.\\d])1\\.[0-8]([^\\d].*|$)");
+		use1_11 = !v.matches("(^|.*[^.\\d])1\\.10([^\\d].*|$)") && !v.matches("(^|.*[^.\\d])1\\.[0-9]([^\\d].*|$)");
+		use1_13 = !v.matches("(^|.*[^.\\d])1\\.1[0-2]([^\\d].*|$)") && !v.matches("(^|.*[^.\\d])1\\.[0-9]([^\\d].*|$)");
+		use1_14 = !v.matches("(^|.*[^.\\d])1\\.1[0-3]([^\\d].*|$)") && !v.matches("(^|.*[^.\\d])1\\.[0-9]([^\\d].*|$)");
+
+		//P.p.log("§" + (use1_9 ? "a":"c") + "1.9 " + "§" + (use1_11 ? "a":"c") + "1.11 " + "§" + (use1_13 ? "a":"c") + "1.13 " + "§" + (use1_14 ? "a":"c") + "1.14");
 
 		// load the Config
 		try {
@@ -87,7 +99,63 @@ public class P extends JavaPlugin {
 		readData();
 
 		// Setup Metrics
-		setupMetrics();
+		try {
+			Metrics metrics = new Metrics(this);
+			metrics.addCustomChart(new Metrics.SingleLineChart("drunk_players", BPlayer::numDrunkPlayers));
+			metrics.addCustomChart(new Metrics.SingleLineChart("brews_in_existence", () -> Brew.potions.size()));
+			metrics.addCustomChart(new Metrics.SingleLineChart("barrels_built", () -> Barrel.barrels.size()));
+			metrics.addCustomChart(new Metrics.SingleLineChart("cauldrons_boiling", () -> BCauldron.bcauldrons.size()));
+			metrics.addCustomChart(new Metrics.AdvancedPie("brew_quality", () -> {
+				Map<String, Integer> map = new HashMap<>(5);
+				int exc = 0;
+				int good = 0;
+				int norm = 0;
+				int bad = 0;
+				int terr = 0;
+				for (Brew brew : Brew.potions.values()) {
+					if (brew.getQuality() >= 9) {
+						exc++;
+					} else if (brew.getQuality() >= 7) {
+						good++;
+					} else if (brew.getQuality() >= 5) {
+						norm++;
+					} else if (brew.getQuality() >= 3) {
+						bad++;
+					} else {
+						terr++;
+					}
+				}
+
+				map.put("excellent", exc);
+				map.put("good", good);
+				map.put("normal", norm);
+				map.put("bad", bad);
+				map.put("terrible", terr);
+				return map;
+			}));
+			metrics.addCustomChart(new Metrics.SimplePie("number_of_recipes", () -> {
+				int recipes = BIngredients.recipes.size();
+				if (recipes < 7) {
+					return "Less than 7";
+				} else if (recipes < 11) {
+					return "7-10";
+				} else if (recipes == 11) {
+					// There are 11 default recipes, so show this as its own slice
+					return "11";
+				} else if (recipes <= 31) {
+					if (recipes % 2 == 0) {
+						return recipes + "-" + (recipes + 1);
+					} else {
+						return (recipes - 1) + "-" + recipes;
+					}
+				} else {
+					return "More than 31";
+				}
+
+			}));
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
 
 		// Listeners
 		blockListener = new BlockListener();
@@ -96,6 +164,7 @@ public class P extends JavaPlugin {
 		inventoryListener = new InventoryListener();
 		worldListener = new WorldListener();
 		getCommand("Brewery").setExecutor(new CommandListener());
+		getCommand("Brewery").setTabCompleter(new TabListener());
 
 		p.getServer().getPluginManager().registerEvents(blockListener, p);
 		p.getServer().getPluginManager().registerEvents(playerListener, p);
@@ -111,7 +180,11 @@ public class P extends JavaPlugin {
 		p.getServer().getScheduler().runTaskTimer(p, new DrunkRunnable(), 120, 120);
 
 		if (updateCheck) {
-			p.getServer().getScheduler().runTaskLaterAsynchronously(p, new UpdateChecker(), 135);
+			try {
+				p.getServer().getScheduler().runTaskLaterAsynchronously(p, new UpdateChecker(), 135);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 
 		this.log(this.getDescription().getName() + " enabled!");
@@ -150,13 +223,6 @@ public class P extends JavaPlugin {
 		Words.commands = null;
 
 		this.log(this.getDescription().getName() + " disabled!");
-	}
-
-	public void setupMetrics() {
-		try {
-			new com.dre.brewery.integration.Metrics(this).start();
-		} catch (Exception ignored) {
-		}
 	}
 
 	public void reload(CommandSender sender) {
@@ -198,7 +264,7 @@ public class P extends JavaPlugin {
 		languageReader = new LanguageReader(new File(p.getDataFolder(), "languages/" + language + ".yml"));
 
 		// Reload Recipes
-		Boolean successful = true;
+		boolean successful = true;
 		for (Brew brew : Brew.potions.values()) {
 			if (!brew.reloadRecipe()) {
 				successful = false;
@@ -244,12 +310,15 @@ public class P extends JavaPlugin {
 		// Load LanguageReader
 		languageReader = new LanguageReader(new File(p.getDataFolder(), "languages/" + language + ".yml"));
 
+		// Has to config still got old materials
+		boolean oldMat = config.getBoolean("oldMat", false);
+
 		// Check if config is the newest version
 		String version = config.getString("version", null);
 		if (version != null) {
-			if (!version.equals(configVersion)) {
+			if (!version.equals(configVersion) || (oldMat && use1_13)) {
 				copyDefaultConfigs(true);
-				new ConfigUpdater(file).update(version, language);
+				new ConfigUpdater(file).update(version, oldMat, language);
 				P.p.log("Config Updated to version: " + configVersion);
 				config = YamlConfiguration.loadConfiguration(file);
 			}
@@ -261,25 +330,30 @@ public class P extends JavaPlugin {
 		// Third-Party
 		useWG = config.getBoolean("useWorldGuard", true) && getServer().getPluginManager().isPluginEnabled("WorldGuard");
 		if (useWG) {
-			try {
-				try {
-					Class.forName("com.sk89q.worldguard.bukkit.RegionContainer");
+			Plugin plugin = Bukkit.getPluginManager().getPlugin("WorldEdit");
+			if (plugin != null) {
+				String wgv = plugin.getDescription().getVersion();
+				if (wgv.startsWith("6.")) {
 					wg = new WGBarrelNew();
-				} catch (ClassNotFoundException e) {
+				} else if (wgv.startsWith("5.")) {
 					wg = new WGBarrelOld();
+				} else {
+					wg = new WGBarrel7();
 				}
-			} catch (Throwable e) {
-				wg = null;
+			}
+			if (wg == null) {
 				P.p.errorLog("Failed loading WorldGuard Integration! Opening Barrels will NOT work!");
-				P.p.errorLog("Brewery was tested with version 5.8 to 6.1 of WorldGuard!");
+				P.p.errorLog("Brewery was tested with version 5.8, 6.1 and 7.0 of WorldGuard!");
 				P.p.errorLog("Disable the WorldGuard support in the config and do /brew reload");
-				e.printStackTrace();
 			}
 		}
 		useLWC = config.getBoolean("useLWC", true) && getServer().getPluginManager().isPluginEnabled("LWC");
 		useGP = config.getBoolean("useGriefPrevention", true) && getServer().getPluginManager().isPluginEnabled("GriefPrevention");
 		useLB = config.getBoolean("useLogBlock", false) && getServer().getPluginManager().isPluginEnabled("LogBlock");
-		hasVault = getServer().getPluginManager().isPluginEnabled("Vault");
+		useCitadel = config.getBoolean("useCitadel", false) && getServer().getPluginManager().isPluginEnabled("Citadel");
+		// The item util has been removed in Vault 1.7+
+		hasVault = getServer().getPluginManager().isPluginEnabled("Vault")
+			&& Integer.parseInt(getServer().getPluginManager().getPlugin("Vault").getDescription().getVersion().split("\\.")[1]) <= 6;
 
 		// various Settings
 		DataSave.autosave = config.getInt("autosave", 3);
@@ -474,7 +548,17 @@ public class P extends JavaPlugin {
 		ArrayList<ItemStack> ingredients = new ArrayList<>();
 		for (String mat : matSection.getKeys(false)) {
 			String[] matSplit = mat.split(",");
-			ItemStack item = new ItemStack(Material.getMaterial(matSplit[0]), matSection.getInt(mat));
+			Material m = Material.getMaterial(matSplit[0]);
+			if (m == null && use1_13) {
+				if (matSplit[0].equals("LONG_GRASS")) {
+					m = Material.GRASS;
+				} else {
+					m = Material.matchMaterial(matSplit[0], true);
+				}
+				debugLog("converting Data Material from " + matSplit[0] + " to " + m);
+			}
+			if (m == null) continue;
+			ItemStack item = new ItemStack(m, matSection.getInt(mat));
 			if (matSplit.length == 2) {
 				item.setDurability((short) P.p.parseInt(matSplit[1]));
 			}
@@ -604,7 +688,7 @@ public class P extends JavaPlugin {
 		if (!cfg.exists()) {
 			errorLog("No config.yml found, creating default file! You may want to choose a config according to your language!");
 			errorLog("You can find them in plugins/Brewery/configs/");
-			InputStream defconf = getResource("config/en/config.yml");
+			InputStream defconf = getResource("config/" + (use1_13 ? "v13/" : "v12/") + "en/config.yml");
 			if (defconf == null) {
 				errorLog("default config file not found, your jarfile may be corrupt. Disabling Brewery!");
 				return false;
@@ -631,7 +715,7 @@ public class P extends JavaPlugin {
 		for (String l : new String[] {"de", "en", "fr", "it"}) {
 			File lfold = new File(configs, l);
 			try {
-				saveFile(getResource("config/" + l + "/config.yml"), lfold, "config.yml", overwrite);
+				saveFile(getResource("config/" + (use1_13 ? "v13/" : "v12/") + l + "/config.yml"), lfold, "config.yml", overwrite);
 				saveFile(getResource("languages/" + l + ".yml"), languages, l + ".yml", false); // Never overwrite languages for now
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -695,19 +779,13 @@ public class P extends JavaPlugin {
 
 	// Returns true if the Block can be destroyed by the Player or something else (null)
 	public boolean blockDestroy(Block block, Player player) {
-		switch (block.getType()) {
-		case CAULDRON:
+		Material type = block.getType();
+		if (type == Material.CAULDRON) {
 			// will only remove when existing
 			BCauldron.remove(block);
 			return true;
-		case FENCE:
-		case NETHER_FENCE:
-		case ACACIA_FENCE:
-		case BIRCH_FENCE:
-		case DARK_OAK_FENCE:
-		case IRON_FENCE:
-		case JUNGLE_FENCE:
-		case SPRUCE_FENCE:
+
+		} else if (LegacyUtil.isFence(type)) {
 			// remove barrel and throw potions on the ground
 			Barrel barrel = Barrel.getBySpigot(block);
 			if (barrel != null) {
@@ -719,8 +797,8 @@ public class P extends JavaPlugin {
 				}
 			}
 			return true;
-		case SIGN_POST:
-		case WALL_SIGN:
+
+		} else if (LegacyUtil.isSign(type)) {
 			// remove small Barrels
 			Barrel barrel2 = Barrel.getBySpigot(block);
 			if (barrel2 != null) {
@@ -736,13 +814,8 @@ public class P extends JavaPlugin {
 				}
 			}
 			return true;
-		case WOOD:
-		case WOOD_STAIRS:
-		case BIRCH_WOOD_STAIRS:
-		case JUNGLE_WOOD_STAIRS:
-		case SPRUCE_WOOD_STAIRS:
-		case ACACIA_STAIRS:
-		case DARK_OAK_STAIRS:
+
+		} else if (LegacyUtil.isWoodPlanks(type) || LegacyUtil.isWoodStairs(type)){
 			Barrel barrel3 = Barrel.getByWood(block);
 			if (barrel3 != null) {
 				if (barrel3.hasPermsDestroy(player)) {
@@ -751,8 +824,6 @@ public class P extends JavaPlugin {
 					return false;
 				}
 			}
-		default:
-			break;
 		}
 		return true;
 	}

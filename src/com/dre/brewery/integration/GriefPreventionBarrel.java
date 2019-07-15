@@ -31,7 +31,7 @@ public class GriefPreventionBarrel {
 			playerData.lastClaim = claim;
 			String noContainersReason = claim.allowContainers(player);
 			if (noContainersReason != null) {
-				brewery.msg(player, brewery.languageReader.get("Error_NoBarrelAccess"));
+				brewery.msg(player, brewery.languageReader.get("Error_NoBarrelAccess") + " " + noContainersReason);
 				return false;
 			}
 		}

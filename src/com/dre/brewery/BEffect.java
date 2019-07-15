@@ -90,7 +90,9 @@ public class BEffect {
 		}
 
 		duration *= 20;
-		duration /= type.getDurationModifier();
+		if (!P.use1_14) {
+			duration /= type.getDurationModifier();
+		}
 		type.createEffect(duration, lvl - 1).apply(player);
 	}
 

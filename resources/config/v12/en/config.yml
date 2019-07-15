@@ -62,14 +62,15 @@ updateCheck: true
 autosave: 3
 
 # Config Version
-version: '1.5'
+version: '1.7'
+oldMat: true
 
 
 # -- Recipes for Potions --
 
 # name: Different names for bad/normal/good (Formatting codes possible: such as &6)
-# ingredients: List of 'material or id,data/amount'
-#   (Item-ids instead of material are deprecated by bukkit and may not work in the future!)
+# ingredients: List of 'material,data/amount'
+#   (Item-ids instead of material are not supported by bukkit anymore and will not work)
 #   A list of materials can be found here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
 #   You can specify a data (durability) value, omitting it will ignore the data value of the added ingredient
 #   If Vault is installed normal names can be used instead of material or id, so using Vault is highly recommended.
@@ -97,9 +98,9 @@ recipes:
       name: Bad Example/Example/Good Example
       ingredients:
       - SUGAR_CANE/5
-      - 264/1
+      - DIAMOND/1
       - INK_SACK,3/20
-      - 5,1/8
+      - WOOD,1/8
       - BEDROCK/1
 #     - Jungle Leaves/64  # Only with Vault
 #     - Green Dye/6       # Only with Vault
@@ -243,7 +244,7 @@ recipes:
 
 
 # cooked: EVERY possible ingredient and the names for the originating potions after fermenting:
-# [Example] MATERIAL_or_id: Name after cooking
+# [Example] MATERIAL: Name after cooking
 
 cooked:
    WHEAT: Fermented wheat
@@ -263,6 +264,7 @@ cooked:
 useWorldGuard: true
 useLWC: true
 useGriefPrevention: true
+useCitadel: true
 
 # Enable the Logging of Barrel Inventories to LogBlock [true]
 useLogBlock: true

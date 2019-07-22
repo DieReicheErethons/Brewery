@@ -78,7 +78,7 @@ public class PlayerListener implements Listener {
 
 						// Check if fire alive below cauldron when adding ingredients
 						Block down = clickedBlock.getRelative(BlockFace.DOWN);
-						if (down.getType() == Material.FIRE || LegacyUtil.isLava(down.getType())) {
+						if (LegacyUtil.isFireForCauldron(down.getType())) {
 
 							event.setCancelled(true);
 							boolean handSwap = false;

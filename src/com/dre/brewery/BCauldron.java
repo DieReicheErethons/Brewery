@@ -5,7 +5,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Levelled;
 import org.bukkit.entity.Player;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.inventory.ItemStack;
@@ -36,7 +35,7 @@ public class BCauldron {
 
 	public void onUpdate() {
 		// Check if fire still alive
-		if (!block.getChunk().isLoaded() || block.getRelative(BlockFace.DOWN).getType() == Material.FIRE || LegacyUtil.isLava(block.getRelative(BlockFace.DOWN).getType())) {
+		if (!block.getChunk().isLoaded() || LegacyUtil.isFireForCauldron(block.getRelative(BlockFace.DOWN).getType())) {
 			// add a minute to cooking time
 			state++;
 			if (someRemoved) {

@@ -104,6 +104,12 @@ public class LegacyUtil {
 		return type.name().endsWith("SIGN") || (!P.use1_13 && type == SIGN_POST);
 	}
 
+	public static boolean isFireForCauldron(Material type) {
+		return type == Material.FIRE
+		|| type == Material.CAMPFIRE
+		|| LegacyUtil.isLava(type);
+	}
+
 	// LAVA and STATIONARY_LAVA are merged as of 1.13
 	public static boolean isLava(Material type) {
 		return type == Material.LAVA || (!P.use1_13 && type == STATIONARY_LAVA) || (MAGMA != null && type == MAGMA);

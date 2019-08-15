@@ -55,7 +55,8 @@ public class LegacyUtil {
 		FENCES = fences;
 	}
 
-	public static final Material MAGMA = get("MAGMA_BLOCK", "MAGMA");
+	public static final Material MAGMA_BLOCK = get("MAGMA_BLOCK", "MAGMA");
+	public static final Material CAMPFIRE = get("CAMPFIRE");
 	public static final Material CLOCK = get("CLOCK", "WATCH");
 	public static final Material OAK_STAIRS = get("OAK_STAIRS", "WOOD_STAIRS");
 	public static final Material SPRUCE_STAIRS = get("SPRUCE_STAIRS", "SPRUCE_WOOD_STAIRS");
@@ -105,14 +106,12 @@ public class LegacyUtil {
 	}
 
 	public static boolean isFireForCauldron(Material type) {
-		return type == Material.FIRE
-		|| type == Material.CAMPFIRE
-		|| LegacyUtil.isLava(type);
+		return type != null && (type == Material.FIRE || type == CAMPFIRE || type == MAGMA_BLOCK || isLava(type));
 	}
 
 	// LAVA and STATIONARY_LAVA are merged as of 1.13
 	public static boolean isLava(Material type) {
-		return type == Material.LAVA || (!P.use1_13 && type == STATIONARY_LAVA) || (MAGMA != null && type == MAGMA);
+		return type == Material.LAVA || (!P.use1_13 && type == STATIONARY_LAVA);
 	}
 
 	public static boolean areStairsInverted(Block block) {

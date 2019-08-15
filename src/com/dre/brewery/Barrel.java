@@ -691,7 +691,7 @@ public class Barrel implements InventoryHolder {
 	// the barrel needs to be formed correctly
 	// flag force to also check if chunk is not loaded
 	public Block getBrokenBlock(boolean force) {
-		if (force || spigot.getChunk().isLoaded()) {
+		if (force || Util.isChunkLoaded(spigot)) {
 			spigot = getSpigotOfSign(spigot);
 			if (LegacyUtil.isSign(spigot.getType())) {
 				return checkSBarrel();

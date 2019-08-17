@@ -293,7 +293,7 @@ public class InventoryListener implements Listener {
 						BRecipe recipe = brew.getCurrentRecipe();
 						if (recipe != null) {
 							Brew.removeEffects(potion);
-							Brew.PotionColor.valueOf(recipe.getColor()).colorBrew(potion, item, brew.canDistill());
+							Brew.PotionColor.fromString(recipe.getColor()).colorBrew(potion, item, brew.canDistill());
 							item.setItemMeta(potion);
 						}
 					}

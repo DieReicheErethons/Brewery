@@ -319,9 +319,9 @@ public class Brew {
 		this.stat = stat;
 		if (currentRecipe != null && canDistill()) {
 			if (stat) {
-				PotionColor.valueOf(currentRecipe.getColor()).colorBrew(((PotionMeta) potion.getItemMeta()), potion, false);
+				PotionColor.fromString(currentRecipe.getColor()).colorBrew(((PotionMeta) potion.getItemMeta()), potion, false);
 			} else {
-				PotionColor.valueOf(currentRecipe.getColor()).colorBrew(((PotionMeta) potion.getItemMeta()), potion, true);
+				PotionColor.fromString(currentRecipe.getColor()).colorBrew(((PotionMeta) potion.getItemMeta()), potion, true);
 			}
 		}
 	}
@@ -358,7 +358,7 @@ public class Brew {
 
 			addOrReplaceEffects(potionMeta, getEffects(), quality);
 			potionMeta.setDisplayName(P.p.color("&f" + recipe.getName(quality)));
-			PotionColor.valueOf(recipe.getColor()).colorBrew(potionMeta, slotItem, canDistill());
+			PotionColor.fromString(recipe.getColor()).colorBrew(potionMeta, slotItem, canDistill());
 
 		} else {
 			quality = 0;
@@ -423,7 +423,7 @@ public class Brew {
 
 				addOrReplaceEffects(potionMeta, getEffects(), quality);
 				potionMeta.setDisplayName(P.p.color("&f" + recipe.getName(quality)));
-				PotionColor.valueOf(recipe.getColor()).colorBrew(potionMeta, item, canDistill());
+				PotionColor.fromString(recipe.getColor()).colorBrew(potionMeta, item, canDistill());
 			} else {
 				quality = 0;
 				removeEffects(potionMeta);
@@ -688,19 +688,19 @@ public class Brew {
 		}
 	}
 
-	public enum PotionColor {
-		PINK(1, PotionType.REGEN, Color.FUCHSIA),
-		CYAN(2, PotionType.SPEED, Color.AQUA),
-		ORANGE(3, PotionType.FIRE_RESISTANCE, Color.ORANGE),
-		GREEN(4, PotionType.POISON, Color.GREEN),
-		BRIGHT_RED(5, PotionType.INSTANT_HEAL, Color.fromRGB(255,0,0)),
-		BLUE(6, PotionType.NIGHT_VISION, Color.NAVY),
-		BLACK(8, PotionType.WEAKNESS, Color.BLACK),
-		RED(9, PotionType.STRENGTH, Color.fromRGB(196,0,0)),
-		GREY(10, PotionType.SLOWNESS, Color.GRAY),
-		WATER(11, P.use1_9 ? PotionType.WATER_BREATHING : null, Color.BLUE),
-		DARK_RED(12, PotionType.INSTANT_DAMAGE, Color.fromRGB(128,0,0)),
-		BRIGHT_GREY(14, PotionType.INVISIBILITY, Color.SILVER);
+	public static class PotionColor {
+		public static final PotionColor PINK = new PotionColor(1, PotionType.REGEN, Color.FUCHSIA);
+		public static final PotionColor CYAN = new PotionColor(2, PotionType.SPEED, Color.AQUA);
+		public static final PotionColor ORANGE = new PotionColor(3, PotionType.FIRE_RESISTANCE, Color.ORANGE);
+		public static final PotionColor GREEN = new PotionColor(4, PotionType.POISON, Color.GREEN);
+		public static final PotionColor BRIGHT_RED = new PotionColor(5, PotionType.INSTANT_HEAL, Color.fromRGB(255,0,0));
+		public static final PotionColor BLUE = new PotionColor(6, PotionType.NIGHT_VISION, Color.NAVY);
+		public static final PotionColor BLACK = new PotionColor(8, PotionType.WEAKNESS, Color.BLACK);
+		public static final PotionColor RED = new PotionColor(9, PotionType.STRENGTH, Color.fromRGB(196,0,0));
+		public static final PotionColor GREY = new PotionColor(10, PotionType.SLOWNESS, Color.GRAY);
+		public static final PotionColor WATER = new PotionColor(11, P.use1_9 ? PotionType.WATER_BREATHING : null, Color.BLUE);
+		public static final PotionColor DARK_RED = new PotionColor(12, PotionType.INSTANT_DAMAGE, Color.fromRGB(128,0,0));
+		public static final PotionColor BRIGHT_GREY = new PotionColor(14, PotionType.INVISIBILITY, Color.SILVER);
 
 		private final int colorId;
 		private final PotionType type;
@@ -709,6 +709,12 @@ public class Brew {
 		PotionColor(int colorId, PotionType type, Color color) {
 			this.colorId = colorId;
 			this.type = type;
+			this.color = color;
+		}
+
+		public PotionColor(Color color) {
+			colorId = -1;
+			type = WATER.getType();
 			this.color = color;
 		}
 
@@ -741,6 +747,33 @@ public class Brew {
 				}
 			} else {
 				potion.setDurability(getColorId(destillable));
+			}
+		}
+
+		public static PotionColor fromString(String string) {
+			switch (string) {
+				case "PINK": return PINK;
+				case "CYAN": return CYAN;
+				case "ORANGE": return ORANGE;
+				case "GREEN": return GREEN;
+				case "BRIGHT_RED": return BRIGHT_RED;
+				case "BLUE": return BLUE;
+				case "BLACK": return BLACK;
+				case "RED": return RED;
+				case "GREY": return GREY;
+				case "WATER": return WATER;
+				case "DARK_RED": return DARK_RED;
+				case "BRIGHT_GREY": return BRIGHT_GREY;
+				default:
+					try{
+						return new PotionColor(Color.fromRGB(
+							Integer.parseInt(string.substring( 1, 3 ), 16 ),
+							Integer.parseInt(string.substring( 3, 5 ), 16 ),
+							Integer.parseInt(string.substring( 5, 7 ), 16 )
+						));
+					} catch (Exception e) {
+						return WATER;
+					}
 			}
 		}
 

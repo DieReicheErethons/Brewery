@@ -65,7 +65,7 @@ updateCheck: true
 autosave: 3
 
 # Version de configuration
-version: '1.7'
+version: '1.8'
 
 
 # -- Recette pour les boissons --
@@ -85,6 +85,7 @@ version: '1.7'
 # age: Temps en jours de Minecraft, la potion devra être âgée dans un baril. 0=Pas besoin d'âge
 # color: Couleur de la potion après distillation/avoir laissé vieillir.
 #   Couleurs disponibles: DARK_RED, RED, BRIGHT_RED, ORANGE, PINK, BLUE, CYAN, WATER, GREEN, BLACK, GREY, BRIGHT_GREY (Dans l'ordre : Rouge foncé, Rouge, Rouge clair, Orange, Rose, Bleu, Cyan, Eau, Vert, Noir, Gris, Gris clair)
+#   Or RGB colors (hex: for example '99FF33') (with '') (search for "HTML color" on the internet)
 # difficulty: 1-10 précision nécessaire pour obtenir une bonne qualité (1 = imprécis/facile, 10 = très précis/difficile)
 # alcohol: Le montant d'alcool absolu dans une boisson parfaite (cela sera ajouté directement au joueur, où 100% entraînera l'évanouissement), un degré d'alcooléisme en fait
 # effects: Liste des effets/durée en secondes lors de la consommation.

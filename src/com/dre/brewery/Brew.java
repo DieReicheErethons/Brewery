@@ -766,10 +766,13 @@ public class Brew {
 				case "BRIGHT_GREY": return BRIGHT_GREY;
 				default:
 					try{
+						if (string.length() >= 7) {
+							string = string.substring(1);
+						}
 						return new PotionColor(Color.fromRGB(
-							Integer.parseInt(string.substring( 1, 3 ), 16 ),
-							Integer.parseInt(string.substring( 3, 5 ), 16 ),
-							Integer.parseInt(string.substring( 5, 7 ), 16 )
+							Integer.parseInt(string.substring( 0, 2 ), 16 ),
+							Integer.parseInt(string.substring( 2, 4 ), 16 ),
+							Integer.parseInt(string.substring( 4, 6 ), 16 )
 						));
 					} catch (Exception e) {
 						return WATER;

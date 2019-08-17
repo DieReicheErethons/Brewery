@@ -145,9 +145,8 @@ public class BRecipe {
 			P.p.errorLog("Invalid age time '" + age + "' in Recipe: " + getName(5));
 			return false;
 		}
-		try {
-			Brew.PotionColor.fromString(getColor());
-		} catch (IllegalArgumentException e) {
+		String c = getColor();
+		if (!c.equals("WATER") && Brew.PotionColor.fromString(c) == Brew.PotionColor.WATER) {
 			P.p.errorLog("Invalid Color '" + color + "' in Recipe: " + getName(5));
 			return false;
 		}

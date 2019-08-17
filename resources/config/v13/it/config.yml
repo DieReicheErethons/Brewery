@@ -65,7 +65,7 @@ updateCheck: true
 autosave: 3
 
 # Versione del config
-version: '1.7'
+version: '1.8'
 
 
 # -- Ricette per pozioni --
@@ -84,6 +84,7 @@ version: '1.7'
 # age: Tempo in giorni di Minecraft per cui la pozione deve essere invecchiata in un barile (0=nessun invecchiamento).
 # color: Colore della pozione dopo essere stata distillata/invecchiata
 #   Colori utilizzabili: DARK_RED, RED, BRIGHT_RED, ORANGE, PINK, BLUE, CYAN, WATER, GREEN, BLACK, GREY, BRIGHT_GREY
+#   Or RGB colors (hex: for example '99FF33') (with '') (search for "HTML color" on the internet)
 # difficoltà: Precisione richiesta per avere la migliore qualità da 1 a 10(1 = spreciso/più facile, 10 = molto preciso/più difficile)
 # alcohol: Volume alcolico da 0 a 100 nella versione perfetta (sarà aggiunta direttamente al giocatore, dove 100 è la quantità massima di alcohol assorbibile.
 # effects: Eventuali effetti come quelli delle pozioni nel formato di effetto/livello/durata.

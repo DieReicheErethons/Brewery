@@ -65,7 +65,7 @@ updateCheck: true
 autosave: 3
 
 # Config Version
-version: '1.7'
+version: '1.8'
 
 
 # -- Recipes for Potions --
@@ -84,6 +84,7 @@ version: '1.7'
 # age: Time in Minecraft-days, the potion has to age in a barrel 0=no aging
 # color: Color of the potion after distilling/aging.
 #   Usable Colors: DARK_RED, RED, BRIGHT_RED, ORANGE, PINK, BLUE, CYAN, WATER, GREEN, BLACK, GREY, BRIGHT_GREY
+#   Or RGB colors (hex: for example '99FF33') (with '') (search for "HTML color" on the internet)
 # difficulty: 1-10 accuracy needed to get good quality (1 = unaccurate/easy, 10 = very precise/hard)
 # alcohol: Absolute amount of alcohol 0-100 in a perfect potion (will be added directly to the player, where 100 means fainting)
 # effects: List of effect/level/duration  Special potion-effect when drinking, duration in sek.

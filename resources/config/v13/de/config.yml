@@ -68,7 +68,7 @@ updateCheck: true
 autosave: 3
 
 # Config Version
-version: '1.7'
+version: '1.8'
 
 
 # -- Rezepte für Getränke --
@@ -87,6 +87,7 @@ version: '1.7'
 # age: Zeit in Minecraft-Tagen, die das Getränk im Fass reifen muss 0= kein reifen
 # color: Farbe des Getränks nach destillieren/reifen.
 #   Benutzbare Farben: DARK_RED, RED, BRIGHT_RED, ORANGE, PINK, BLUE, CYAN, WATER, GREEN, BLACK, GREY, BRIGHT_GREY
+#   Oder RGB Farben (Hex: also zB '99FF33') (Ohne #) (mit '') (Einfach nach "HTML color" im Internet suchen)
 # difficulty: 1-10 Genauigkeit der Einhaltung der Vorgaben (1 = ungenau/einfach 10 = sehr genau/schwer)
 # alcohol: Alkoholgehalt 0-100 in absoluter Menge bei perfektem Getränk (wird dem Spieler hinzugefügt, bei 100 = tot)
 # effects: Auflistung Effekt/Level/Dauer  Besonderere Trank-Effekte beim Trinken, Dauer in sek.

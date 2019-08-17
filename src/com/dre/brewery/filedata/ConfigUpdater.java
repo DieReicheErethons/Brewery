@@ -1137,10 +1137,18 @@ public class ConfigUpdater {
 		String[] lines = {"",
 			"# Wie viele Brewery Getränke in die Minecraft Fässer getan werden können [6]",
 			"maxBrewsInMCBarrels: 6"};
-		if (index == 0) {
+		if (index == -1) {
 			appendLines(lines);
 		} else {
 			addLines(index + 1, lines);
+		}
+
+		index = indexOfStart("#   Benutzbare Farben");
+		if (index == -1) {
+			index = indexOfStart("# color:");
+		}
+		if (index != -1) {
+			addLines(index + 1, "#   Oder RGB Farben (Hex: also zB '99FF33') (Ohne #) (mit '') (Einfach nach \"HTML color\" im Internet suchen)");
 		}
 	}
 
@@ -1164,10 +1172,18 @@ public class ConfigUpdater {
 		String[] lines = {"",
 			"# How many Brewery drinks can be put into the Minecraft barrels [6]",
 			"maxBrewsInMCBarrels: 6"};
-		if (index == 0) {
+		if (index == -1) {
 			appendLines(lines);
 		} else {
 			addLines(index + 1, lines);
+		}
+
+		index = indexOfStart("#   Usable Colors");
+		if (index == -1) {
+			index = indexOfStart("# color:");
+		}
+		if (index != -1) {
+			addLines(index + 1, "#   Or RGB colors (hex: for example '99FF33') (with '') (search for \"HTML color\" on the internet)");
 		}
 	}
 

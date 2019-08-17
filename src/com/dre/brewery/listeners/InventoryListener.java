@@ -3,15 +3,18 @@ package com.dre.brewery.listeners;
 import com.dre.brewery.*;
 import com.dre.brewery.integration.LogBlockBarrel;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.BrewingStand;
 import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.*;
+import org.bukkit.inventory.BlockInventoryHolder;
 import org.bukkit.inventory.BrewerInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
@@ -309,6 +312,25 @@ public class InventoryListener implements Listener {
 							brew.convertLore(meta, false);
 							item.setItemMeta(meta);
 						}
+					}
+				}
+			}
+		}
+	}
+
+	@EventHandler(ignoreCancelled = true)
+	public void onInventoryOpen(InventoryOpenEvent event) {
+		if (!P.use1_14) return;
+		if (!(event.getPlayer() instanceof Player)) return;
+
+		if (event.getInventory().getType() == InventoryType.BARREL) {
+			Inventory inv = event.getInventory();
+			if (inv.getHolder() instanceof BlockInventoryHolder) {
+				Location loc = ((BlockInventoryHolder) inv.getHolder()).getBlock().getLocation();
+				for (MCBarrel barrel : MCBarrel.barrels) {
+					if (barrel.getBlock().getLocation().equals(loc)) {
+						barrel.open(inv, ((Player) event.getPlayer()));
+						return;
 					}
 				}
 			}

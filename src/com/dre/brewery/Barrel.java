@@ -78,6 +78,8 @@ public class Barrel implements InventoryHolder {
 		}
 
 		if (woodsloc == null && stairsloc == null) {
+			// If loading from old data, or block locations are missing, regenerate them
+			// This will only be done in those extreme cases.
 			Block broken = getBrokenBlock(true);
 			if (broken != null) {
 				remove(broken, null);

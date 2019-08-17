@@ -903,6 +903,7 @@ public class P extends JavaPlugin {
 				cauldron.onUpdate();// runs every min to update cooking time
 			}
 			Barrel.onUpdate();// runs every min to check and update ageing time
+			MCBarrel.onUpdate();
 			BPlayer.onUpdate();// updates players drunkeness
 
 			debugLog("Update");

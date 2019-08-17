@@ -9,6 +9,8 @@ import com.dre.brewery.P;
 import com.dre.brewery.integration.LogBlockBarrel;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.BrewingStand;
@@ -389,6 +391,18 @@ public class InventoryListener implements Listener {
 		}
 
 		if (!P.use1_14) return;
+
+		// Barrel Closing Sound
+		if (event.getInventory().getHolder() instanceof Barrel) {
+			Barrel barrel = ((Barrel) event.getInventory().getHolder());
+			float randPitch = (float) (Math.random() * 0.1);
+			if (barrel.isLarge()) {
+				barrel.getSpigot().getWorld().playSound(barrel.getSpigot().getLocation(), Sound.BLOCK_BARREL_CLOSE, SoundCategory.BLOCKS, 0.5f, 0.5f + randPitch);
+				barrel.getSpigot().getWorld().playSound(barrel.getSpigot().getLocation(), Sound.ITEM_BUCKET_EMPTY, SoundCategory.BLOCKS, 0.2f, 0.6f + randPitch);
+			} else {
+				barrel.getSpigot().getWorld().playSound(barrel.getSpigot().getLocation(), Sound.BLOCK_BARREL_CLOSE, SoundCategory.BLOCKS, 0.5f, 0.8f + randPitch);
+			}
+		}
 
 		// Check for MC Barrel
 		if (event.getInventory().getType() == InventoryType.BARREL) {

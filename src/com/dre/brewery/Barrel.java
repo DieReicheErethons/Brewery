@@ -192,7 +192,7 @@ public class Barrel implements InventoryHolder {
 				}
 			}
 		}
-		
+
 		if (event != null && P.p.useCitadel) {
 			Plugin plugin = P.p.getServer().getPluginManager().getPlugin("Citadel");
 			if (plugin != null) {
@@ -309,6 +309,10 @@ public class Barrel implements InventoryHolder {
 	@Override
 	public Inventory getInventory() {
 		return inventory;
+	}
+
+	public Block getSpigot() {
+		return spigot;
 	}
 
 	// Returns true if this Block is part of this Barrel

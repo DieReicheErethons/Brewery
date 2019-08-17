@@ -4,6 +4,8 @@ import com.dre.brewery.*;
 import com.dre.brewery.filedata.UpdateChecker;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
@@ -172,6 +174,18 @@ public class PlayerListener implements Listener {
 						}
 
 						barrel.open(player);
+
+						if (P.use1_14) {
+							// Barrel opening Sound
+							float randPitch = (float) (Math.random() * 0.1);
+							if (barrel.isLarge()) {
+								barrel.getSpigot().getWorld().playSound(barrel.getSpigot().getLocation(), Sound.BLOCK_CHEST_OPEN, SoundCategory.BLOCKS, 0.4f, 0.55f + randPitch);
+								//barrel.getSpigot().getWorld().playSound(barrel.getSpigot().getLocation(), Sound.ITEM_BUCKET_EMPTY, SoundCategory.BLOCKS, 0.5f, 0.6f + randPitch);
+								barrel.getSpigot().getWorld().playSound(barrel.getSpigot().getLocation(), Sound.BLOCK_BREWING_STAND_BREW, SoundCategory.BLOCKS, 0.4f, 0.45f + randPitch);
+							} else {
+								barrel.getSpigot().getWorld().playSound(barrel.getSpigot().getLocation(), Sound.BLOCK_BARREL_OPEN, SoundCategory.BLOCKS, 0.5f, 0.8f + randPitch);
+							}
+						}
 					}
 				}
 			}

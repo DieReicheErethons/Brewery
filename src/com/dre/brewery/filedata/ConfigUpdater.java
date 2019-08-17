@@ -152,11 +152,20 @@ public class ConfigUpdater {
 			oldMat = false;
 		}
 
+		if (fromVersion.equals("1.7")) {
+			if (de) {
+				update17de();
+			} else {
+				update17en();
+			}
+			fromVersion = "1.8";
+		}
+
 		if (P.use1_13 && oldMat) {
 			updateMaterials(true);
 		}
 
-		if (!fromVersion.equals("1.7")) {
+		if (!fromVersion.equals("1.8")) {
 			P.p.log(P.p.languageReader.get("Error_ConfigUpdate", fromVersion));
 			return;
 		}
@@ -1105,6 +1114,60 @@ public class ConfigUpdater {
 				setLine(index, "# [Example] MATERIAL: Name after cooking");
 			}
 
+		}
+	}
+
+	// Update de from 1.7 to 1.8
+	private void update17de() {
+		updateVersion("1.8");
+
+		int index = indexOfStart("openLargeBarrelEverywhere");
+		if (index == -1) {
+			index = indexOfStart("colorInBrewer");
+			if (index == -1) {
+				index = indexOfStart("colorInBarrels");
+				if (index == -1) {
+					index = indexOfStart("hangoverDays");
+					if (index == -1) {
+						index = indexOfStart("language");
+					}
+				}
+			}
+		}
+		String[] lines = {"",
+			"# Wie viele Brewery Getränke in die Minecraft Fässer getan werden können [6]",
+			"maxBrewsInMCBarrels: 6"};
+		if (index == 0) {
+			appendLines(lines);
+		} else {
+			addLines(index + 1, lines);
+		}
+	}
+
+	// Update en from 1.7 to 1.8
+	private void update17en() {
+		updateVersion("1.8");
+
+		int index = indexOfStart("openLargeBarrelEverywhere");
+		if (index == -1) {
+			index = indexOfStart("colorInBrewer");
+			if (index == -1) {
+				index = indexOfStart("colorInBarrels");
+				if (index == -1) {
+					index = indexOfStart("hangoverDays");
+					if (index == -1) {
+						index = indexOfStart("language");
+					}
+				}
+			}
+		}
+		String[] lines = {"",
+			"# How many Brewery drinks can be put into the Minecraft barrels [6]",
+			"maxBrewsInMCBarrels: 6"};
+		if (index == 0) {
+			appendLines(lines);
+		} else {
+			addLines(index + 1, lines);
 		}
 	}
 

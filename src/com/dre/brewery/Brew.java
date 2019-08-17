@@ -375,7 +375,7 @@ public class Brew {
 		}
 		String prefix = P.p.color("&7");
 		if (colorInBrewer && currentRecipe != null) {
-			prefix = getQualityColor(ingredients.getDistillQuality(recipe, distillRuns));
+			prefix = getQualityColor(ingredients.getDistillQuality(currentRecipe, distillRuns));
 		}
 		updateDistillLore(prefix, potionMeta);
 		touch();
@@ -477,7 +477,7 @@ public class Brew {
 	}
 
 	// Lore -----------
-	
+
 	// Converts to/from qualitycolored Lore
 	public void convertLore(PotionMeta meta, Boolean toQuality) {
 		if (currentRecipe == null) {
@@ -724,11 +724,12 @@ public class Brew {
 		public PotionType getType() {
 			return type;
 		}
-		
+
 		public Color getColor() {
 			return color;
 		}
 
+		@SuppressWarnings("deprecation")
 		public void colorBrew(PotionMeta meta, ItemStack potion, boolean destillable) {
 			if (P.use1_9) {
 				meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);

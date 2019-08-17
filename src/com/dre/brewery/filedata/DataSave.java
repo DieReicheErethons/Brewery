@@ -3,6 +3,7 @@ package com.dre.brewery.filedata;
 
 import java.io.File;
 
+import com.dre.brewery.MCBarrel;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -60,6 +61,7 @@ public class DataSave extends BukkitRunnable {
 		FileConfiguration configFile = new YamlConfiguration();
 
 		configFile.set("installTime", Brew.installTime);
+		configFile.set("MCBarrelTime", MCBarrel.mcBarrelTime);
 
 		if (!Brew.potions.isEmpty()) {
 			Brew.save(configFile.createSection("Brew"));

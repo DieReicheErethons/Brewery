@@ -54,6 +54,9 @@ colorInBrewer: true
 # Si le grand tonneau peut être ouvert en cliquant sur n'importe quel bloc, non seulement le robinet ou le panneau. Toujours "true" pour les petits tonneaux. [true]
 openLargeBarrelEverywhere: true
 
+# How many Brewery drinks can be put into the Minecraft barrels [6]
+maxBrewsInMCBarrels: 6
+
 # Enable checking for Updates, Checks the curseforge api for updates to Brewery [true]
 # If an Update is found a Message is logged on Server-start and displayed to OPs joining the game
 updateCheck: true
@@ -70,7 +73,7 @@ version: '1.7'
 # name: Différents noms pour la mauvaise/moyen/bonne qualité (Les codes de mise en forme sont pris en charge: comme par exemple &6 pour la couleur Or.)
 # ingredients: Liste des 'matériaux,data/montant'
 #   (Les id d'objets à la place des matériaux sont obsolètes pour bukkit)
-#     Ex: 'Sugar_Cane' 
+#     Ex: 'Sugar_Cane'
 #   Une liste des matériaux peuvent-être trouvés ici: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
 #   Vous pouvez spécifier une data (Ex: 5,3 -> Planche de bois de jungle), si vous ne le faites pas la data ne sera pas prise en compte (Ex : 5 -> Bois en général)
 #   If Vault is installed normal names can be used instead of material or id, so using Vault is highly recommended.
@@ -123,7 +126,7 @@ recipes:
       - POISONX/1-0/20-0
    1:
       name: Bière Blanche Fade/Bière Blanche/Bonne Bière Blanche
-      ingredients: 
+      ingredients:
       - Wheat/3
       cookingtime: 8
       distillruns: 0
@@ -134,7 +137,7 @@ recipes:
       alcohol: 5
    2:
       name: Bière Fade/Bière/Bonne Bière
-      ingredients: 
+      ingredients:
       - Wheat/6
       cookingtime: 8
       distillruns: 0
@@ -145,7 +148,7 @@ recipes:
       alcohol: 6
    3:
       name: Bière Brune Fade/Bière Brune/Bonne Bière Brune
-      ingredients: 
+      ingredients:
       - Wheat/6
       cookingtime: 8
       distillruns: 0
@@ -156,7 +159,7 @@ recipes:
       alcohol: 7
    4:
       name: Hydromel Bizarre/Hydromel/&6Hydromel Doré
-      ingredients: 
+      ingredients:
       - Sugar_Cane/6
       cookingtime: 3
       distillruns: 0
@@ -167,7 +170,7 @@ recipes:
       alcohol: 9
    5:
       name: Hydromel de Pommes/Doux Hydromel de Pommes/&6Doux Hydromel de Pommes Dorées
-      ingredients: 
+      ingredients:
       - Sugar_Cane/6
       - Apple/2
       cookingtime: 4
@@ -181,7 +184,7 @@ recipes:
       - WATER_BREATHINGX/1-2/150
    6:
       name: Rhum Amer/Rhum Epicé/&6Rhum Doré
-      ingredients: 
+      ingredients:
       - Sugar_Cane/14
       cookingtime: 5
       distillruns: 2
@@ -196,7 +199,7 @@ recipes:
       - POISONX/1-0/30-0
    7:
       name: Vodka Sale/Vodka/Vodka Russe
-      ingredients: 
+      ingredients:
       - Potato/10
       cookingtime: 15
       distillruns: 3

@@ -75,6 +75,7 @@ Help_Create: '&6/brew Create <Rezept> [Qualität] [Spieler] &9Erstellt einen Tra
 
 # Player
 Player_BarrelCreated: Fass erfolgreich erstellt
+Player_BarrelFull: '&cHier passen nicht mehr Getränke hinein'
 Player_CantDrink: Du kannst nicht mehr trinken
 Player_CauldronInfo1: Dieser Kessel siedet nun seit &v1 Minuten
 Player_CauldronInfo2: Dieser Kessel siedet seit weniger als einer Minute

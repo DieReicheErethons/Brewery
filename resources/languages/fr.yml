@@ -75,6 +75,7 @@ Perms_NoSmallBarrelCreate: '&cVous n´avez pas la permission de créer de petits
 
 # Joueur
 Player_BarrelCreated: Baril créé
+Player_BarrelFull: '&cThis barrel can''t hold any more drinks'
 Player_CantDrink: Vous ne pouvez pas boire plus.
 Player_CauldronInfo1: Ce chaudron a été en ébullition durant &v1 minutes.
 Player_CauldronInfo2: Ce chaudron est tout juste à ébullition.

@@ -54,6 +54,9 @@ colorInBrewer: true
 # Ob große Fässer an jedem Block geöffnet werden können, nicht nur an Zapfhahn und Schild. Bei kleinen Fässern geht dies immer. [true]
 openLargeBarrelEverywhere: true
 
+# Wie viele Brewery Getränke in die Minecraft Fässer getan werden können [6]
+maxBrewsInMCBarrels: 6
+
 # In den Serverlog loggen was der Spieler tatsächlich geschrieben hat, bevor seine Worte verändert wurden [false]
 logRealChat: false
 
@@ -121,7 +124,7 @@ recipes:
       - POISONX/1-0/20-0
    1:
       name: Ranziges Weißbier/Weißbier/Feines Weißbier
-      ingredients: 
+      ingredients:
       - Wheat/3
       cookingtime: 8
       distillruns: 0
@@ -132,7 +135,7 @@ recipes:
       alcohol: 5
    2:
       name: Ranziges Bier/Bier/Feines Bier
-      ingredients: 
+      ingredients:
       - Wheat/6
       cookingtime: 8
       distillruns: 0
@@ -143,7 +146,7 @@ recipes:
       alcohol: 6
    3:
       name: Ranziges Dunkelbier/Dunkelbier/Feines Dunkelbier
-      ingredients: 
+      ingredients:
       - Wheat/6
       cookingtime: 8
       distillruns: 0
@@ -154,7 +157,7 @@ recipes:
       alcohol: 7
    4:
       name: Scheußlicher Met/Met/&6Goldener Met
-      ingredients: 
+      ingredients:
       - Sugar_Cane/6
       cookingtime: 3
       distillruns: 0
@@ -165,7 +168,7 @@ recipes:
       alcohol: 9
    5:
       name: Apfelmet/Süßer Apfelmet/&6Goldensüßer Apfelmet
-      ingredients: 
+      ingredients:
       - Sugar_Cane/6
       - Apple/2
       cookingtime: 4
@@ -179,7 +182,7 @@ recipes:
       - WATER_BREATHINGX/1-2/150
    6:
       name: Bitterer Rum/Würziger Rum/&6Goldener Rum
-      ingredients: 
+      ingredients:
       - Sugar_Cane/14
       cookingtime: 5
       distillruns: 2
@@ -194,7 +197,7 @@ recipes:
       - POISONX/1-0/30-0
    7:
       name: Abgeranzter Vodka/Vodka/Russischer Vodka
-      ingredients: 
+      ingredients:
       - Potato/10
       cookingtime: 15
       distillruns: 3

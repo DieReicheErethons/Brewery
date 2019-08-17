@@ -38,7 +38,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class P extends JavaPlugin {
 	public static P p;
-	public static final String configVersion = "1.7";
+	public static final String configVersion = "1.8";
 	public static boolean debug;
 	public static boolean useUUID;
 	public static boolean use1_9;
@@ -270,7 +270,7 @@ public class P extends JavaPlugin {
 				successful = false;
 			}
 		}
-		if (!successful) {
+		if (!successful && sender != null) {
 			msg(sender, p.languageReader.get("Error_Recipeload"));
 		}
 		reloader = null;
@@ -369,6 +369,7 @@ public class P extends JavaPlugin {
 		Brew.colorInBarrels = config.getBoolean("colorInBarrels", false);
 		Brew.colorInBrewer = config.getBoolean("colorInBrewer", false);
 		PlayerListener.openEverywhere = config.getBoolean("openLargeBarrelEverywhere", false);
+		MCBarrel.maxBrews = config.getInt("maxBrewsInMCBarrels", 6);
 
 		// loading recipes
 		ConfigurationSection configSection = config.getConfigurationSection("recipes");
@@ -458,6 +459,7 @@ public class P extends JavaPlugin {
 			FileConfiguration data = YamlConfiguration.loadConfiguration(file);
 
 			Brew.installTime = data.getLong("installTime", System.currentTimeMillis());
+			MCBarrel.mcBarrelTime = data.getLong("MCBarrelTime", 0);
 
 			// Check if data is the newest version
 			String version = data.getString("Version", null);
@@ -903,7 +905,7 @@ public class P extends JavaPlugin {
 				cauldron.onUpdate();// runs every min to update cooking time
 			}
 			Barrel.onUpdate();// runs every min to check and update ageing time
-			MCBarrel.onUpdate();
+			if (use1_14) MCBarrel.onUpdate();
 			BPlayer.onUpdate();// updates players drunkeness
 
 			debugLog("Update");

@@ -54,6 +54,9 @@ colorInBrewer: true
 # If a Large Barrel can be opened by clicking on any of its blocks, not just Spigot or Sign. This is always true for Small Barrels. [true]
 openLargeBarrelEverywhere: true
 
+# How many Brewery drinks can be put into the Minecraft barrels [6]
+maxBrewsInMCBarrels: 6
+
 # Enable checking for Updates, Checks the curseforge api for updates to Brewery [true]
 # If an Update is found a Message is logged on Server-start and displayed to OPs joining the game
 updateCheck: true
@@ -118,7 +121,7 @@ recipes:
       - POISONX/1-0/20-0
    1:
       name: Skunky Wheatbeer/Wheatbeer/Fine Wheatbeer
-      ingredients: 
+      ingredients:
       - Wheat/3
       cookingtime: 8
       distillruns: 0
@@ -129,7 +132,7 @@ recipes:
       alcohol: 5
    2:
       name: Skunky Beer/Beer/Fine Beer
-      ingredients: 
+      ingredients:
       - Wheat/6
       cookingtime: 8
       distillruns: 0
@@ -140,7 +143,7 @@ recipes:
       alcohol: 6
    3:
       name: Skunky Darkbeer/Darkbeer/Fine Darkbeer
-      ingredients: 
+      ingredients:
       - Wheat/6
       cookingtime: 8
       distillruns: 0
@@ -151,7 +154,7 @@ recipes:
       alcohol: 7
    4:
       name: Awkward Mead/Mead/&6Golden Mead
-      ingredients: 
+      ingredients:
       - Sugar_Cane/6
       cookingtime: 3
       distillruns: 0
@@ -162,7 +165,7 @@ recipes:
       alcohol: 9
    5:
       name: Apple Mead/Sweet Apple Mead/&6Sweet Golden Apple Mead
-      ingredients: 
+      ingredients:
       - Sugar_Cane/6
       - Apple/2
       cookingtime: 4
@@ -176,7 +179,7 @@ recipes:
       - WATER_BREATHINGX/1-2/150
    6:
       name: Bitter Rum/Spicy Rum/&6Golden Rum
-      ingredients: 
+      ingredients:
       - Sugar_Cane/14
       cookingtime: 5
       distillruns: 2
@@ -191,7 +194,7 @@ recipes:
       - POISONX/1-0/30-0
    7:
       name: Lousy Vodka/Vodka/Russian Vodka
-      ingredients: 
+      ingredients:
       - Potato/10
       cookingtime: 15
       distillruns: 3

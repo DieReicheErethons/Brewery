@@ -302,20 +302,14 @@ public class BIngredients {
 		}
 		int quality = 10 - Math.round(recipe.getWoodDiff(wood) * recipe.getDifficulty());
 
-		if (quality > 0) {
-			return quality;
-		}
-		return 0;
+		return Math.max(quality, 0);
 	}
 
 	// returns the quality regarding the ageing time conditioning given Recipe
 	public int getAgeQuality(BRecipe recipe, float time) {
 		int quality = 10 - Math.round(Math.abs(time - recipe.getAge()) * ((float) recipe.getDifficulty() / 2));
 
-		if (quality > 0) {
-			return quality;
-		}
-		return 0;
+		return Math.max(quality, 0);
 	}
 
 	// Creates a copy ingredients

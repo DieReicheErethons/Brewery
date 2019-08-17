@@ -1,20 +1,30 @@
 package com.dre.brewery.listeners;
 
-import com.dre.brewery.*;
+import com.dre.brewery.BPlayer;
+import com.dre.brewery.BRecipe;
+import com.dre.brewery.Barrel;
+import com.dre.brewery.Brew;
+import com.dre.brewery.MCBarrel;
+import com.dre.brewery.P;
 import com.dre.brewery.integration.LogBlockBarrel;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.BrewingStand;
 import org.bukkit.entity.HumanEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.*;
-import org.bukkit.inventory.BlockInventoryHolder;
+import org.bukkit.event.inventory.BrewEvent;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryAction;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.inventory.InventoryPickupItemEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.BrewerInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
@@ -24,6 +34,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.UUID;
 
 /**
@@ -297,7 +308,7 @@ public class InventoryListener implements Listener {
 			if (event.getSlot() > 2) {
 				return;
 			}
-		} else if (!(event.getInventory().getHolder() instanceof Barrel)) {
+		} else if (!(event.getInventory().getHolder() instanceof Barrel) && !(event.getInventory().getHolder() instanceof org.bukkit.block.Barrel)) {
 			return;
 		}
 
@@ -318,22 +329,40 @@ public class InventoryListener implements Listener {
 		}
 	}
 
-	@EventHandler(ignoreCancelled = true)
+	// Check if the player tries to add more than the allowed amount of brews into an mc-barrel
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	public void onInventoryClickMCBarrel(InventoryClickEvent event) {
+		if (!P.use1_14) return;
+		if (event.getInventory().getType() != InventoryType.BARREL) return;
+
+		Inventory inv = event.getInventory();
+		for (MCBarrel barrel : MCBarrel.openBarrels) {
+			if (barrel.getInventory().equals(inv)) {
+				barrel.clickInv(event);
+				return;
+			}
+		}
+		MCBarrel barrel = new MCBarrel(inv);
+		MCBarrel.openBarrels.add(barrel);
+		barrel.clickInv(event);
+	}
+
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onInventoryOpen(InventoryOpenEvent event) {
 		if (!P.use1_14) return;
-		if (!(event.getPlayer() instanceof Player)) return;
 
+		// Check for MC Barrel
 		if (event.getInventory().getType() == InventoryType.BARREL) {
 			Inventory inv = event.getInventory();
-			if (inv.getHolder() instanceof BlockInventoryHolder) {
-				Location loc = ((BlockInventoryHolder) inv.getHolder()).getBlock().getLocation();
-				for (MCBarrel barrel : MCBarrel.barrels) {
-					if (barrel.getBlock().getLocation().equals(loc)) {
-						barrel.open(inv, ((Player) event.getPlayer()));
-						return;
-					}
+			for (MCBarrel barrel : MCBarrel.openBarrels) {
+				if (barrel.getInventory().equals(inv)) {
+					barrel.open();
+					return;
 				}
 			}
+			MCBarrel barrel = new MCBarrel(inv);
+			MCBarrel.openBarrels.add(barrel);
+			barrel.open();
 		}
 	}
 
@@ -357,6 +386,25 @@ public class InventoryListener implements Listener {
 					e.printStackTrace();
 				}
 			}
+		}
+
+		if (!P.use1_14) return;
+
+		// Check for MC Barrel
+		if (event.getInventory().getType() == InventoryType.BARREL) {
+			Inventory inv = event.getInventory();
+			for (Iterator<MCBarrel> iter = MCBarrel.openBarrels.iterator(); iter.hasNext(); ) {
+				MCBarrel barrel = iter.next();
+				if (barrel.getInventory().equals(inv)) {
+					barrel.close();
+					if (inv.getViewers().size() == 1) {
+						// Last viewer, remove Barrel from List of open Barrels
+						iter.remove();
+					}
+					return;
+				}
+			}
+			new MCBarrel(inv).close();
 		}
 	}
 }

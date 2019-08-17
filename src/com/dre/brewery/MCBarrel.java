@@ -1,39 +1,53 @@
 package com.dre.brewery;
 
 import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockState;
-import org.bukkit.entity.Player;
+import org.bukkit.NamespacedKey;
+import org.bukkit.block.Barrel;
+import org.bukkit.event.inventory.InventoryAction;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
 
 public class MCBarrel {
 
 	public static final byte OAK = 2;
-	public static List<MCBarrel> barrels = new ArrayList<>();
+	public static final String TAG = "Btime";
+	public static int maxBrews = 6;
 
-	private Block block;
-	private float time;
+	public static long mcBarrelTime; // Globally stored Barrel time. Difference between this and the time stored on each mc-barrel will give the barrel age time
+	public static List<MCBarrel> openBarrels = new ArrayList<>();
+
 	private byte brews = -1; // How many Brewery Brews are in this Barrel
+	private final Inventory inv;
 
 
-	public MCBarrel(Block block, float time) {
-		this.block = block;
-		this.time = time;
+	public MCBarrel(Inventory inv) {
+		this.inv = inv;
 	}
 
 
 	// Now Opening this Barrel for a player
-	public void open(Inventory inv, Player player) {
-		brews = -1;
-		if (time > 0) {
-			// if nobody has the inventory opened
-			if (inv.getViewers().isEmpty()) {
+	public void open() {
+		// if nobody had the inventory opened
+		if (inv.getViewers().size() == 1 && inv.getHolder() instanceof org.bukkit.block.Barrel) {
+			Barrel barrel = (Barrel) inv.getHolder();
+			PersistentDataContainer data = barrel.getPersistentDataContainer();
+			NamespacedKey key = new NamespacedKey(P.p, TAG);
+			if (!data.has(key, PersistentDataType.LONG)) return;
+
+			// Get the difference between the time that is stored on the Barrel and the current stored global mcBarrelTime
+			long time = mcBarrelTime - data.getOrDefault(key, PersistentDataType.LONG, mcBarrelTime);
+			data.remove(key);
+			barrel.update();
+			P.p.debugLog("Barrel Time since last open: " + time);
+
+			if (time > 0) {
 				brews = 0;
 				// if inventory contains potions
 				if (inv.contains(Material.POTION)) {
@@ -42,8 +56,9 @@ public class MCBarrel {
 						if (item != null) {
 							Brew brew = Brew.get(item);
 							if (brew != null) {
-								if (brews <= 6) {
-									brew.age(item, time, OAK);
+								if (brews < maxBrews) {
+									// The time is in minutes, but brew.age() expects time in mc-days
+									brew.age(item, ((float) time) / 20f, OAK);
 								}
 								brews++;
 							}
@@ -55,70 +70,132 @@ public class MCBarrel {
 				}
 			}
 		}
-		// reset barreltime, potions have new age
-		time = 0;
 	}
 
-	// Closing Inventory. Check if we need to track this Barrel
-	// Returns true if there are Brews in the Inv
-	public boolean close(Inventory inv, Player player) {
+	// Closing Inventory. Check if we need to set a time on the Barrel
+	public void close() {
 		if (inv.getViewers().size() == 1) {
 			// This is the last viewer
 			for (ItemStack item : inv.getContents()) {
 				if (item != null) {
 					Brew brew = Brew.get(item);
 					if (brew != null) {
-						// We found a brew, so we keep this Barrel
-						return true;
+						// We found a brew, so set time on this Barrel
+						if (inv.getHolder() instanceof org.bukkit.block.Barrel) {
+							Barrel barrel = (Barrel) inv.getHolder();
+							PersistentDataContainer data = barrel.getPersistentDataContainer();
+							data.set(new NamespacedKey(P.p, TAG), PersistentDataType.LONG, mcBarrelTime);
+							barrel.update();
+						}
+						return;
 					}
 				}
 			}
-			// No Brew found, remove this Barrel
-			return false;
+			// No Brew found, ignore this Barrel
 		}
-		return true;
 	}
 
-	public Block getBlock() {
-		return block;
-	}
+	// Used to visually stop Players from placing more than 6 (configurable) brews in the MC Barrels.
+	// There are still methods to place more Brews in that would be too tedious to catch.
+	// This is only for direct visual Notification, the age routine above will never age more than 6 brews in any case.
+	public void clickInv(InventoryClickEvent event) {
+		boolean adding = false;
+		switch (event.getAction()) {
+			case PLACE_ALL:
+			case PLACE_ONE:
+			case PLACE_SOME:
+			case SWAP_WITH_CURSOR:
+				// Placing Brew in MC Barrel
+				if (event.getCursor() != null && event.getClickedInventory() != null && event.getClickedInventory().getType() == InventoryType.BARREL && event.getCursor().getType() == Material.POTION) {
+					Brew b = Brew.get(event.getCursor());
+					if (b != null) {
+						if (event.getAction() == InventoryAction.SWAP_WITH_CURSOR && event.getCurrentItem() != null && event.getCurrentItem().getType() == Material.POTION) {
+							Brew bb = Brew.get(event.getCurrentItem());
+							if (bb != null) {
+								// The item we are swapping with is also a brew, dont change the count and allow
+								break;
+							}
+						}
+						adding = true;
+					}
+				}
+				break;
+			case MOVE_TO_OTHER_INVENTORY:
+				if (event.getCurrentItem() != null && event.getCurrentItem().getType() == Material.POTION && event.getClickedInventory() != null) {
+					if (event.getClickedInventory().getType() == InventoryType.BARREL) {
+						// Moving Brew out of MC Barrel
+						Brew b = Brew.get(event.getCurrentItem());
+						if (b != null) {
+							if (brews == -1) {
+								countBrews();
+							}
+							brews--;
+						}
+						break;
+					} else if (event.getClickedInventory().getType() == InventoryType.PLAYER) {
+						// Moving Brew into MC Barrel
+						Brew b = Brew.get(event.getCurrentItem());
+						if (b != null) {
+							adding = true;
+						}
+					}
+				}
+				break;
 
-	public float getTime() {
-		return time;
-	}
-
-	public Inventory getInventory() {
-		BlockState state = block.getState();
-		if (state instanceof InventoryHolder) {
-			return ((InventoryHolder) state).getInventory();
+			case PICKUP_ALL:
+			case PICKUP_ONE:
+			case PICKUP_HALF:
+			case PICKUP_SOME:
+			case COLLECT_TO_CURSOR:
+				// Pickup Brew from MC Barrel
+				if (event.getCurrentItem() != null && event.getClickedInventory() != null && event.getClickedInventory().getType() == InventoryType.BARREL && event.getCurrentItem().getType() == Material.POTION) {
+					Brew b = Brew.get(event.getCurrentItem());
+					if (b != null) {
+						if (brews == -1) {
+							countBrews();
+						}
+						brews--;
+					}
+				}
+				break;
+			case HOTBAR_MOVE_AND_READD:
+			case HOTBAR_SWAP:
+				brews = -1;
+				break;
+			default:
+				return;
 		}
-		return null;
+		if (adding) {
+			if (brews == -1) {
+				countBrews();
+			}
+			if (brews >= maxBrews) {
+				event.setCancelled(true);
+				P.p.msg(event.getWhoClicked(), P.p.languageReader.get("Player_BarrelFull"));
+			} else {
+				brews++;
+			}
+		}
 	}
 
-	public static void onUpdate() {
-		if (barrels.isEmpty()) return;
-
-		// Check if stored MCBarrels still exist
-		// Choose a random starting point for check
-		int random = (int) Math.floor(Math.random() * barrels.size());
-		random = Math.max(0, random - 5);
-		ListIterator<MCBarrel> iter = barrels.listIterator(random);
-		// Check at least 4 barrels, but if there are many, check about 1/64 of them all, so in about 1 hour we have checked all
-		for (int i = Math.max(4, barrels.size() >> 6); i <= 0; i--) {
-			if (!iter.hasNext()) break;
-
-			Block block = iter.next().block;
-			if (Util.isChunkLoaded(block)) {
-				// If the chunk is loaded we can check if the block is still a MC Barrel. If not we remove the stored entry.
-				if (block.getType() != Material.BARREL) {
-					iter.remove();
+	public void countBrews() {
+		brews = 0;
+		for (ItemStack item : inv.getContents()) {
+			if (item != null) {
+				Brew brew = Brew.get(item);
+				if (brew != null) {
+					brews++;
 				}
 			}
 		}
-
-		for (MCBarrel barrel : barrels) {
-			// Minecraft day is 20 min, so add 1/20 to the time every minute
-			barrel.time += (1.0 / 20.0);
-		}
 	}
+
+	public Inventory getInventory() {
+		return inv;
+	}
+
+	public static void onUpdate() {
+		mcBarrelTime++;
+	}
+
 }

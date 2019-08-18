@@ -54,6 +54,9 @@ colorInBrewer: true
 # Se un barile grande può essere aperto  cliccandoci sopra, non solo sul cartello e sulla staccionata. Questo è sempre true per i barili piccoli. [true]
 openLargeBarrelEverywhere: true
 
+# How many Brewery drinks can be put into the Minecraft barrels [6]
+maxBrewsInMCBarrels: 6
+
 # Abilita il controllo degli aggiornamenti, controlla l'API di CurseForge per eventuali aggiornamenti di Brewery [true]
 # Se quando un aggiornamento viene trovato un messaggio è loggato e mostrato agli OPs quando entrano in gioco.
 updateCheck: true
@@ -62,7 +65,7 @@ updateCheck: true
 autosave: 3
 
 # Versione del config
-version: '1.7'
+version: '1.8'
 oldMat: true
 
 
@@ -70,6 +73,7 @@ oldMat: true
 
 # name: Tre nomi diversi per diverse qualità (cattivo/normale/buono). I codici come &6 possono essere usati.
 # ingredients: Lista degli ingredienti nel formato materiale,dati/quantità
+#   With an item in your hand, use /brew configname to get its material for use in a recipe
 #   (Gli id invece dei materiali sono "disapprovati" da Bukkit e potrebbero non funzionare in futuro!)
 #   Una lista di materiali può essere trovata qui: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
 #   Puoi specificare dei dati dell'oggetto, ma se omesso sarà semplicemente ignorato.
@@ -82,6 +86,7 @@ oldMat: true
 # age: Tempo in giorni di Minecraft per cui la pozione deve essere invecchiata in un barile (0=nessun invecchiamento).
 # color: Colore della pozione dopo essere stata distillata/invecchiata
 #   Colori utilizzabili: DARK_RED, RED, BRIGHT_RED, ORANGE, PINK, BLUE, CYAN, WATER, GREEN, BLACK, GREY, BRIGHT_GREY
+#   Or RGB colors (hex: for example '99FF33') (with '') (search for "HTML color" on the internet)
 # difficoltà: Precisione richiesta per avere la migliore qualità da 1 a 10(1 = spreciso/più facile, 10 = molto preciso/più difficile)
 # alcohol: Volume alcolico da 0 a 100 nella versione perfetta (sarà aggiunta direttamente al giocatore, dove 100 è la quantità massima di alcohol assorbibile.
 # effects: Eventuali effetti come quelli delle pozioni nel formato di effetto/livello/durata.
@@ -119,7 +124,7 @@ recipes:
       - POISONX/1-0/20-0
    1:
       name: Birra di frumento puzzolente/Birra di frumento/Birra di frumento pregiata
-      ingredients: 
+      ingredients:
       - WHEAT/3
       cookingtime: 8
       distillruns: 0
@@ -130,7 +135,7 @@ recipes:
       alcohol: 5
    2:
       name: Birra puzzolente/Birra/Birra pregiata
-      ingredients: 
+      ingredients:
       - WHEAT/6
       cookingtime: 8
       distillruns: 0
@@ -141,7 +146,7 @@ recipes:
       alcohol: 6
    3:
       name: Birra scura puzzolente/Birra scura/Birra scura pregiata
-      ingredients: 
+      ingredients:
       - WHEAT/6
       cookingtime: 8
       distillruns: 0
@@ -152,7 +157,7 @@ recipes:
       alcohol: 7
    4:
       name: Idromele scarso/Idromele/&6Idromele dorato
-      ingredients: 
+      ingredients:
       - SUGAR_CANE/6
       cookingtime: 3
       distillruns: 0
@@ -163,7 +168,7 @@ recipes:
       alcohol: 9
    5:
       name: Idromele di mele/Idromele di mele dolci/&6Idromele di mele dolci dorato
-      ingredients: 
+      ingredients:
       - SUGAR_CANE/6
       - APPLE/2
       cookingtime: 4
@@ -177,7 +182,7 @@ recipes:
       - WATER_BREATHINGX/1-2/150
    6:
       name: Rum amaro/Rum speziato/&6Rum dorato
-      ingredients: 
+      ingredients:
       - SUGAR_CANE/14
       cookingtime: 5
       distillruns: 2
@@ -192,7 +197,7 @@ recipes:
       - POISONX/1-0/30-0
    7:
       name: Vodka schifosa/Vodka/Vodka russa
-      ingredients: 
+      ingredients:
       - POTATO_ITEM/10
       cookingtime: 15
       distillruns: 3

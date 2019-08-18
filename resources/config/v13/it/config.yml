@@ -71,12 +71,10 @@ version: '1.8'
 # -- Ricette per pozioni --
 
 # name: Tre nomi diversi per diverse qualità (cattivo/normale/buono). I codici come &6 possono essere usati.
-# ingredients: Lista degli ingredienti nel formato materiale,dati/quantità
+# ingredients: Lista degli ingredienti nel formato materiale/quantità
+#   With an item in your hand, use /brew configname to get its material for use in a recipe
 #   (Gli id invece dei materiali sono "disapprovati" da Bukkit)
 #   Una lista di materiali può essere trovata qui: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
-#   Puoi specificare dei dati dell'oggetto, ma se omesso sarà semplicemente ignorato.
-#   Se Vault è installato i nomi normali possono essere usati invece del materiale o dell'id quindi l'uso di Vault è fortemente consigliato.
-#   Vault riconoscerà cose come "Jungle Leaves" invece di "LEAVES,3".
 # cookingtime: Tempo in minuti richiesto dagli ingredienti per bollire
 # distillruns: Quanto spesso deve essere distillato per ottenere la versione perfetta con il volume alcolico impostato (0=non serve distillare).
 # distilltime: How long (in seconds) one distill-run takes (0=Default time of 40 sec) MC Default would be 20 sec
@@ -88,8 +86,6 @@ version: '1.8'
 # difficoltà: Precisione richiesta per avere la migliore qualità da 1 a 10(1 = spreciso/più facile, 10 = molto preciso/più difficile)
 # alcohol: Volume alcolico da 0 a 100 nella versione perfetta (sarà aggiunta direttamente al giocatore, dove 100 è la quantità massima di alcohol assorbibile.
 # effects: Eventuali effetti come quelli delle pozioni nel formato di effetto/livello/durata.
-#   Aggiungere il suffisso 'X' per nascondere l'effetto dalla descrizione. Esempio: 'POISONX/2/10' (gli effetti WEAKNESS, INCREASE_DAMAGE, SLOW and SPEED sono sempre nascosti).
-#   Gli effetti sono sempre nascosti dalla 1.9 in poi, per via dei cambiamenti nelle meccaniche delle pozioni.
 #   Lista di effetti possibili: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/potion/PotionEffectType.html
 #   Intervalli di livelli o durate possono essere specificati con un "-", per esempio 'SPEED/1-2/30-40'. Ciò significa nel peggior caso livello 1 e 30 secondi di durata e livello 2 e 40 secondi nel migliore.
 #   Gli intervalli funzionano anche in ordine decrescente, per effetti più deboli a qualità maggiori. Esempio: 'POISON/3-1/20-5'.
@@ -105,8 +101,6 @@ recipes:
       - Cocoa_Beans/20
       - Spruce_Planks/8
       - Bedrock/1
-#     - Jungle Leaves/64  # Solo con Vault
-#     - Green Dye/6       # Solo con Vault
       cookingtime: 3
       distillruns: 2
       distilltime: 60
@@ -119,7 +113,7 @@ recipes:
       - FIRE_RESISTANCE/20
       - HEAL/1
       - WEAKNESS/2-3/50-60
-      - POISONX/1-0/20-0
+      - POISON/1-0/20-0
    1:
       name: Birra di frumento puzzolente/Birra di frumento/Birra di frumento pregiata
       ingredients:
@@ -177,7 +171,7 @@ recipes:
       difficulty: 4
       alcohol: 12
       effects:
-      - WATER_BREATHINGX/1-2/150
+      - WATER_BREATHING/1-2/150
    6:
       name: Rum amaro/Rum speziato/&6Rum dorato
       ingredients:
@@ -192,7 +186,7 @@ recipes:
       alcohol: 30
       effects:
       - FIRE_RESISTANCE/1/20-100
-      - POISONX/1-0/30-0
+      - POISON/1-0/30-0
    7:
       name: Vodka schifosa/Vodka/Vodka russa
       ingredients:

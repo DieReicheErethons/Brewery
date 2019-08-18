@@ -71,13 +71,11 @@ version: '1.8'
 # -- Recette pour les boissons --
 
 # name: Différents noms pour la mauvaise/moyen/bonne qualité (Les codes de mise en forme sont pris en charge: comme par exemple &6 pour la couleur Or.)
-# ingredients: Liste des 'matériaux,data/montant'
+# ingredients: Liste des 'matériaux/montant'
+#   With an item in your hand, use /brew configname to get its material for use in a recipe
 #   (Les id d'objets à la place des matériaux sont obsolètes pour bukkit)
 #     Ex: 'Sugar_Cane'
 #   Une liste des matériaux peuvent-être trouvés ici: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
-#   Vous pouvez spécifier une data (Ex: 5,3 -> Planche de bois de jungle), si vous ne le faites pas la data ne sera pas prise en compte (Ex : 5 -> Bois en général)
-#   If Vault is installed normal names can be used instead of material or id, so using Vault is highly recommended.
-#   Vault will recognize things like "Jungle Leaves" instead of "5,3"
 # cookingtime: Temps en minutes réelles durant lesquelles les ingrédients devront bouillir
 # distillruns: Combien de fois le breuvage devra être distillé pour un alcool de qualité (0=Ne pas distiller)
 # distilltime: How long (in seconds) one distill-run takes (0=Default time of 40 sec) MC Default would be 20 sec
@@ -89,9 +87,6 @@ version: '1.8'
 # difficulty: 1-10 précision nécessaire pour obtenir une bonne qualité (1 = imprécis/facile, 10 = très précis/difficile)
 # alcohol: Le montant d'alcool absolu dans une boisson parfaite (cela sera ajouté directement au joueur, où 100% entraînera l'évanouissement), un degré d'alcooléisme en fait
 # effects: Liste des effets/durée en secondes lors de la consommation.
-#   Rajouter le suffixe 'X' pour le cacher du label. Exemple: POISONX/10
-#   (WEAKNESS, INCREASE_DAMAGE, SLOW et SPEED sont toujours cachés.)
-#   Effects are always hidden in 1.9 and newer, because of changes in the potion mechanics.
 #   Effets posssible: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/potion/PotionEffectType.html
 #   POUR LES EFFETS EN FONCTIONS DE LA QUALITE : Les Niveaux (I ou II) ou les Intervalles de durées d'effets doivent être spécifiés avec un "-".
 #       Ex: 'SPEED/1-2/30-40' => Vitesse niveau 1 et durée de 30 sec pour la pire qualité, et niveau 2 et durée de 40 sec pour la meilleure.
@@ -110,8 +105,6 @@ recipes:
       - Cocoa_Beans/20
       - Spruce_Planks/8
       - Bedrock/1
-#     - Jungle Leaves/64  # Only with Vault
-#     - Green Dye/6       # Only with Vault
       cookingtime: 3
       distillruns: 2
       distilltime: 60
@@ -124,7 +117,7 @@ recipes:
       - FIRE_RESISTANCE/20
       - HEAL/1
       - WEAKNESS/2-3/50-60
-      - POISONX/1-0/20-0
+      - POISON/1-0/20-0
    1:
       name: Bière Blanche Fade/Bière Blanche/Bonne Bière Blanche
       ingredients:
@@ -182,7 +175,7 @@ recipes:
       difficulty: 4
       alcohol: 12
       effects:
-      - WATER_BREATHINGX/1-2/150
+      - WATER_BREATHING/1-2/150
    6:
       name: Rhum Amer/Rhum Epicé/&6Rhum Doré
       ingredients:
@@ -197,7 +190,7 @@ recipes:
       alcohol: 30
       effects:
       - FIRE_RESISTANCE/1/20-100
-      - POISONX/1-0/30-0
+      - POISON/1-0/30-0
    7:
       name: Vodka Sale/Vodka/Vodka Russe
       ingredients:

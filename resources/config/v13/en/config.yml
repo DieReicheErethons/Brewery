@@ -71,12 +71,10 @@ version: '1.8'
 # -- Recipes for Potions --
 
 # name: Different names for bad/normal/good (Formatting codes possible: such as &6)
-# ingredients: List of 'material,data/amount'
+# ingredients: List of 'material/amount'
+#   With an item in your hand, use /brew configname to get its material for use in a recipe
 #   (Item-ids instead of material are not supported by bukkit anymore and will not work)
 #   A list of materials can be found here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
-#   You can specify a data (durability) value, omitting it will ignore the data value of the added ingredient
-#   If Vault is installed normal names can be used instead of material or id, so using Vault is highly recommended.
-#   Vault will recognize things like "Jungle Leaves" instead of "LEAVES,3"
 # cookingtime: Time in real minutes ingredients have to boil
 # distillruns: How often it has to be distilled for full alcohol (0=without distilling)
 # distilltime: How long (in seconds) one distill-run takes (0=Default time of 40 sec) MC Default would be 20 sec
@@ -88,8 +86,6 @@ version: '1.8'
 # difficulty: 1-10 accuracy needed to get good quality (1 = unaccurate/easy, 10 = very precise/hard)
 # alcohol: Absolute amount of alcohol 0-100 in a perfect potion (will be added directly to the player, where 100 means fainting)
 # effects: List of effect/level/duration  Special potion-effect when drinking, duration in sek.
-#   Suffix name with 'X' to hide effect from label. Sample: 'POISONX/2/10' (WEAKNESS, INCREASE_DAMAGE, SLOW and SPEED are always hidden.)
-#   Effects are always hidden in 1.9 and newer, because of changes in the potion mechanics.
 #   Possible Effects: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/potion/PotionEffectType.html
 #   Level or Duration ranges may be specified with a "-", ex. 'SPEED/1-2/30-40' = lvl 1 and 30 sec at worst and lvl 2 and 40 sec at best
 #   Ranges also work high-low, ex. 'POISON/3-1/20-5' for weaker effects at good quality.
@@ -105,8 +101,6 @@ recipes:
       - Cocoa_Beans/20
       - Spruce_Planks/8
       - Bedrock/1
-#     - Jungle Leaves/64  # Only with Vault
-#     - Green Dye/6       # Only with Vault
       cookingtime: 3
       distillruns: 2
       distilltime: 60
@@ -119,7 +113,7 @@ recipes:
       - FIRE_RESISTANCE/20
       - HEAL/1
       - WEAKNESS/2-3/50-60
-      - POISONX/1-0/20-0
+      - POISON/1-0/20-0
    1:
       name: Skunky Wheatbeer/Wheatbeer/Fine Wheatbeer
       ingredients:
@@ -177,7 +171,7 @@ recipes:
       difficulty: 4
       alcohol: 12
       effects:
-      - WATER_BREATHINGX/1-2/150
+      - WATER_BREATHING/1-2/150
    6:
       name: Bitter Rum/Spicy Rum/&6Golden Rum
       ingredients:
@@ -192,7 +186,7 @@ recipes:
       alcohol: 30
       effects:
       - FIRE_RESISTANCE/1/20-100
-      - POISONX/1-0/30-0
+      - POISON/1-0/30-0
    7:
       name: Lousy Vodka/Vodka/Russian Vodka
       ingredients:

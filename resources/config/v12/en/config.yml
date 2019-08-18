@@ -54,6 +54,9 @@ colorInBrewer: true
 # If a Large Barrel can be opened by clicking on any of its blocks, not just Spigot or Sign. This is always true for Small Barrels. [true]
 openLargeBarrelEverywhere: true
 
+# How many Brewery drinks can be put into the Minecraft barrels [6]
+maxBrewsInMCBarrels: 6
+
 # Enable checking for Updates, Checks the curseforge api for updates to Brewery [true]
 # If an Update is found a Message is logged on Server-start and displayed to OPs joining the game
 updateCheck: true
@@ -62,7 +65,7 @@ updateCheck: true
 autosave: 3
 
 # Config Version
-version: '1.7'
+version: '1.8'
 oldMat: true
 
 
@@ -70,6 +73,7 @@ oldMat: true
 
 # name: Different names for bad/normal/good (Formatting codes possible: such as &6)
 # ingredients: List of 'material,data/amount'
+#   With an item in your hand, use /brew configname to get its material for use in a recipe
 #   (Item-ids instead of material are not supported by bukkit anymore and will not work)
 #   A list of materials can be found here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
 #   You can specify a data (durability) value, omitting it will ignore the data value of the added ingredient
@@ -82,6 +86,7 @@ oldMat: true
 # age: Time in Minecraft-days, the potion has to age in a barrel 0=no aging
 # color: Color of the potion after distilling/aging.
 #   Usable Colors: DARK_RED, RED, BRIGHT_RED, ORANGE, PINK, BLUE, CYAN, WATER, GREEN, BLACK, GREY, BRIGHT_GREY
+#   Or RGB colors (hex: for example '99FF33') (with '') (search for "HTML color" on the internet)
 # difficulty: 1-10 accuracy needed to get good quality (1 = unaccurate/easy, 10 = very precise/hard)
 # alcohol: Absolute amount of alcohol 0-100 in a perfect potion (will be added directly to the player, where 100 means fainting)
 # effects: List of effect/level/duration  Special potion-effect when drinking, duration in sek.
@@ -119,7 +124,7 @@ recipes:
       - POISONX/1-0/20-0
    1:
       name: Skunky Wheatbeer/Wheatbeer/Fine Wheatbeer
-      ingredients: 
+      ingredients:
       - WHEAT/3
       cookingtime: 8
       distillruns: 0
@@ -130,7 +135,7 @@ recipes:
       alcohol: 5
    2:
       name: Skunky Beer/Beer/Fine Beer
-      ingredients: 
+      ingredients:
       - WHEAT/6
       cookingtime: 8
       distillruns: 0
@@ -141,7 +146,7 @@ recipes:
       alcohol: 6
    3:
       name: Skunky Darkbeer/Darkbeer/Fine Darkbeer
-      ingredients: 
+      ingredients:
       - WHEAT/6
       cookingtime: 8
       distillruns: 0
@@ -152,7 +157,7 @@ recipes:
       alcohol: 7
    4:
       name: Awkward Mead/Mead/&6Golden Mead
-      ingredients: 
+      ingredients:
       - SUGAR_CANE/6
       cookingtime: 3
       distillruns: 0
@@ -163,7 +168,7 @@ recipes:
       alcohol: 9
    5:
       name: Apple Mead/Sweet Apple Mead/&6Sweet Golden Apple Mead
-      ingredients: 
+      ingredients:
       - SUGAR_CANE/6
       - APPLE/2
       cookingtime: 4
@@ -177,7 +182,7 @@ recipes:
       - WATER_BREATHINGX/1-2/150
    6:
       name: Bitter Rum/Spicy Rum/&6Golden Rum
-      ingredients: 
+      ingredients:
       - SUGAR_CANE/14
       cookingtime: 5
       distillruns: 2
@@ -192,7 +197,7 @@ recipes:
       - POISONX/1-0/30-0
    7:
       name: Lousy Vodka/Vodka/Russian Vodka
-      ingredients: 
+      ingredients:
       - POTATO_ITEM/10
       cookingtime: 15
       distillruns: 3

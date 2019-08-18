@@ -1,6 +1,7 @@
 package com.dre.brewery.listeners;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 import com.dre.brewery.Util;
 import org.bukkit.Material;
@@ -38,6 +39,14 @@ public class CommandListener implements CommandExecutor {
 			if (sender.hasPermission("brewery.cmd.reload")) {
 				p.reload(sender);
 				p.msg(sender, p.languageReader.get("CMD_Reload"));
+			} else {
+				p.msg(sender, p.languageReader.get("Error_NoPermissions"));
+			}
+
+		} else if (cmd.equalsIgnoreCase("configname")) {
+
+			if (sender.hasPermission("brewery.cmd.reload")) {
+				cmdConfigName(sender);
 			} else {
 				p.msg(sender, p.languageReader.get("Error_NoPermissions"));
 			}
@@ -353,6 +362,22 @@ public class CommandListener implements CommandExecutor {
 			p.msg(sender, p.languageReader.get("CMD_Info_Drunk", playerName, "" + bPlayer.getDrunkeness(), "" + bPlayer.getQuality()));
 		}
 
+	}
+
+	public void cmdConfigName(CommandSender sender) {
+		if (sender instanceof Player) {
+
+			Player player = (Player) sender;
+			ItemStack hand = P.use1_9 ? player.getInventory().getItemInMainHand() : player.getItemInHand();
+			if (hand != null) {
+				p.msg(sender, p.languageReader.get("CMD_Configname", hand.getType().name().toLowerCase(Locale.ENGLISH)));
+			} else {
+				p.msg(sender, p.languageReader.get("CMD_Configname_Error"));
+			}
+
+		} else {
+			p.msg(sender, p.languageReader.get("Error_PlayerCommand"));
+		}
 	}
 
 	@SuppressWarnings("deprecation")

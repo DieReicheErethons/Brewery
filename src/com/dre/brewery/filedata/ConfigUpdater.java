@@ -44,6 +44,7 @@ public class ConfigUpdater {
 	}
 
 	// adds some Lines at the index
+	// Will push all lines including the one at index down
 	public void addLines(int index, String... newLines) {
 		config.addAll(index, Arrays.asList(newLines));
 	}
@@ -163,6 +164,7 @@ public class ConfigUpdater {
 
 		if (P.use1_13 && oldMat) {
 			updateMaterials(true);
+			updateMaterialDescriptions(de);
 		}
 
 		if (!fromVersion.equals("1.8")) {
@@ -1150,6 +1152,18 @@ public class ConfigUpdater {
 		if (index != -1) {
 			addLines(index + 1, "#   Oder RGB Farben (Hex: also zB '99FF33') (Ohne #) (mit '') (Einfach nach \"HTML color\" im Internet suchen)");
 		}
+
+		index = indexOfStart("# ingredients:");
+		if (index == -1) {
+			index = indexOfStart("#   Eine Liste von allen Materialien");
+			if (index == -1) {
+				index = indexOfStart("# -- Rezepte");
+			}
+		}
+		if (index != -1) {
+			addLines(index + 1, "#   Halte ein Item in der Hand und benutze /brew configname um dessen Material herauszufinden und für ein Rezept zu benutzen");
+		}
+		if (P.use1_13) updateMaterialDescriptions(true);
 	}
 
 	// Update en from 1.7 to 1.8
@@ -1185,6 +1199,18 @@ public class ConfigUpdater {
 		if (index != -1) {
 			addLines(index + 1, "#   Or RGB colors (hex: for example '99FF33') (with '') (search for \"HTML color\" on the internet)");
 		}
+
+		index = indexOfStart("# ingredients:");
+		if (index == -1) {
+			index = indexOfStart("#   A list of materials");
+			if (index == -1) {
+				index = indexOfStart("# -- Recipes");
+			}
+		}
+		if (index != -1) {
+			addLines(index + 1, "#   With an item in your hand, use /brew configname to get its material for use in a recipe");
+		}
+		if (P.use1_13) updateMaterialDescriptions(false);
 	}
 
 	// Update all Materials to Minecraft 1.13
@@ -1290,6 +1316,83 @@ public class ConfigUpdater {
 			}
 		} else {
 			return line;
+		}
+	}
+
+	private void updateMaterialDescriptions(boolean de) {
+		int index;
+		if (de) {
+			index = indexOfStart("# ingredients: Auflistung von 'Material,Data/Anzahl'");
+			if (index != -1) {
+				setLine(index, "# ingredients: Auflistung von 'Material/Anzahl'");
+			}
+
+			index = indexOfStart("#   Es kann ein Data-Wert (durability) angegeben werden");
+			if (index != -1) {
+				config.remove(index);
+			}
+
+			index = indexOfStart("#   Wenn Vault installiert ist");
+			if (index != -1) {
+				config.remove(index);
+			}
+
+			index = indexOfStart("#   Vault erkennt Namen wie");
+			if (index != -1) {
+				config.remove(index);
+			}
+			index = indexOfStart("#     - Jungle Leaves/64  # Nur mit Vault");
+			if (index != -1) {
+				config.remove(index);
+			}
+			index = indexOfStart("#     - Green Dye/6       # Nur mit Vault");
+			if (index != -1) {
+				config.remove(index);
+			}
+			index = indexOfStart("#   Ein 'X' an den Namen");
+			if (index != -1) {
+				config.remove(index);
+			}
+			index = indexOfStart("#   Effekte sind ab der 1.9 immer verborgen");
+			if (index != -1) {
+				config.remove(index);
+			}
+		} else {
+			index = indexOfStart("# ingredients: List of 'material,data/amount'");
+			if (index != -1) {
+				setLine(index, "# ingredients: List of 'material/amount'");
+			}
+
+			index = indexOfStart("#   You can specify a data (durability) value");
+			if (index != -1) {
+				config.remove(index);
+			}
+
+			index = indexOfStart("#   If Vault is installed normal names can be used");
+			if (index != -1) {
+				config.remove(index);
+			}
+
+			index = indexOfStart("#   Vault will recognize things");
+			if (index != -1) {
+				config.remove(index);
+			}
+			index = indexOfStart("#     - Jungle Leaves/64  # Only with Vault");
+			if (index != -1) {
+				config.remove(index);
+			}
+			index = indexOfStart("#     - Green Dye/6       # Only with Vault");
+			if (index != -1) {
+				config.remove(index);
+			}
+			index = indexOfStart("#   Suffix name with 'X' to hide effect");
+			if (index != -1) {
+				config.remove(index);
+			}
+			index = indexOfStart("#   Effects are always hidden in 1.9 and newer");
+			if (index != -1) {
+				config.remove(index);
+			}
 		}
 	}
 

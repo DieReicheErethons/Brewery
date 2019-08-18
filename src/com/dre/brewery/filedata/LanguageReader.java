@@ -34,9 +34,10 @@ public class LanguageReader {
 	}
 
 	private void setDefaults() {
-		
+
 		/* Player */
 		defaults.put("Player_BarrelCreated", "Barrel created");
+		defaults.put("Player_BarrelFull", "&cThis barrel can''t hold any more drinks");
 		defaults.put("Player_CauldronInfo1", "This cauldron has been boiling for &v1 minutes.");
 		defaults.put("Player_CauldronInfo2", "This cauldron has just started boiling.");
 		defaults.put("Player_CantDrink", "You can't drink any more.");
@@ -74,9 +75,11 @@ public class LanguageReader {
 		defaults.put("Brew_HundredsOfYears", "Hundreds of Years");
 		defaults.put("Brew_Woodtype", "Woodtype");
 		defaults.put("Brew_ThickBrew", "Muddy Brew");
-		
+
 		/* Commands */
 		defaults.put("CMD_Reload", "&aConfig was successfully reloaded");
+		defaults.put("CMD_Configname", "&aName for the Config is: &f&v1");
+		defaults.put("CMD_Configname_Error", "&cCould not find item in your hand");
 		defaults.put("CMD_Player", "&a&v1 is now &6&v2% &adrunk, with a quality of &6&v3");
 		defaults.put("CMD_Player_Error", "&cThe quality has to be between 1 and 10!");
 		defaults.put("CMD_Info_NotDrunk", "&v1 is not drunk");
@@ -89,7 +92,7 @@ public class LanguageReader {
 		defaults.put("CMD_CopyNotPersistent", "&eThese copies of this Brew will not be persistent or static!");
 		defaults.put("CMD_Static", "&aPotion is now static and will not change in barrels or brewing stands.");
 		defaults.put("CMD_NonStatic", "&ePotion is not static anymore and will normally age in barrels.");
-		
+
 		/* Error */
 		defaults.put("Error_UnknownCommand", "Unknown Command");
 		defaults.put("Error_ShowHelp", "Use &6/brew help &fto display the help");
@@ -108,7 +111,7 @@ public class LanguageReader {
 		defaults.put("Perms_NoBigBarrelCreate", "&cYou don't have permissions to create big barrels!");
 		defaults.put("Perms_NoCauldronInsert", "&cYou don't have permissions to put ingredients into cauldrons!");
 		defaults.put("Perms_NoCauldronFill", "&cYou don't have permissions to fill bottles from this cauldron!");
-		
+
 		/* Help */
 		defaults.put("Help_Help", "&6/brew help [Page] &9Shows a specific help-page");
 		defaults.put("Help_Player", "&6/brew <Player> <%Drunkeness> [Quality]&9 Sets Drunkeness (and Quality) of a Player");
@@ -124,10 +127,11 @@ public class LanguageReader {
 		defaults.put("Help_WakeupAdd", "&6/brew wakeup add &9Adds a wakeup point at your current position");
 		defaults.put("Help_WakeupRemove", "&6/brew wakeup remove <id> &9Removes the wakeup point with <id>");
 		defaults.put("Help_Reload", "&6/brew reload &9Reload config");
+		defaults.put("Help_Configname", "&6/brew configname &9Display name of item in hand for the config");
 		defaults.put("Help_Persist", "&6/brew persist &9Make Brew persistent -> copyable by any plugin and technique");
 		defaults.put("Help_Static", "&6/brew static &9Make Brew static -> No further ageing or distilling");
 		defaults.put("Help_Create", "&6/brew create <Recipe> [Quality] [Player] &9Create a Brew with optional quality (1-10)");
-		
+
 		/* Etc. */
 		defaults.put("Etc_Usage", "Usage:");
 		defaults.put("Etc_Page", "Page");

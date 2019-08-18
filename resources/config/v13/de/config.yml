@@ -74,12 +74,10 @@ version: '1.8'
 # -- Rezepte für Getränke --
 
 # name: Verschiedene Namen für schlecht/mittel/gut (Farbcodes möglich: z.b. &6)
-# ingredients: Auflistung von 'Material,Data/Anzahl'
+# ingredients: Auflistung von 'Material/Anzahl'
+#   Halte ein Item in der Hand und benutze /brew configname um dessen Material herauszufinden und für ein Rezept zu benutzen
 #   (Item-ids anstatt Material können in Bukkit nicht mehr benutzt werden)
 #   Eine Liste von allen Materialien kann hier gefunden werden: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
-#   Es kann ein Data-Wert (durability) angegeben werden, weglassen ignoriert diesen beim hinzufügen einer Zutat
-#   Wenn Vault installiert ist können normale englische Item Namen verwendet werden, anstatt Material, ID und Data!
-#   Vault erkennt Namen wie "Jungle Leaves" anstatt "LEAVES,3". Dies macht es viel einfacher!
 # cookingtime: Zeit in Echtminuten die die Zutaten kochen müssen
 # distillruns: Wie oft destilliert werden muss für vollen Alkoholgehalt (0=ohne Destillieren)
 # distilltime: Wie lange (in sekunden) ein Destillations-Durchlauf braucht (0=Standard Zeit von 40 sek) MC Standard wäre 20 sek
@@ -91,8 +89,6 @@ version: '1.8'
 # difficulty: 1-10 Genauigkeit der Einhaltung der Vorgaben (1 = ungenau/einfach 10 = sehr genau/schwer)
 # alcohol: Alkoholgehalt 0-100 in absoluter Menge bei perfektem Getränk (wird dem Spieler hinzugefügt, bei 100 = tot)
 # effects: Auflistung Effekt/Level/Dauer  Besonderere Trank-Effekte beim Trinken, Dauer in sek.
-#   Ein 'X' an den Namen anhängen, um ihn zu verbergen. Bsp: 'POISONX/2/10' (WEAKNESS, INCREASE_DAMAGE, SLOW und SPEED sind immer verborgen.)
-#   Effekte sind ab der 1.9 immer verborgen, wegen Änderungen an den Tränken.
 #   Mögliche Effekte: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/potion/PotionEffectType.html
 #   Minimale und Maximale Level/Dauer können durch "-" festgelegt werden, Bsp: 'SPEED/1-2/30-40' = Level 1 und 30 sek minimal, Level 2 und 40 sek maximal
 #   Diese Bereiche funktionieren auch umgekehrt, Bsp: 'POISON/3-1/20-5' für abschwächende Effekte bei guter Qualität
@@ -108,8 +104,6 @@ recipes:
       - Cocoa_Beans/20
       - Spruce_Planks/8
       - Bedrock/1
-#     - Jungle Leaves/64  # Nur mit Vault
-#     - Green Dye/6       # Nur mit Vault
       cookingtime: 3
       distillruns: 2
       distilltime: 60
@@ -122,7 +116,7 @@ recipes:
       - FIRE_RESISTANCE/20
       - HEAL/1
       - WEAKNESS/2-3/50-60
-      - POISONX/1-0/20-0
+      - POISON/1-0/20-0
    1:
       name: Ranziges Weißbier/Weißbier/Feines Weißbier
       ingredients:
@@ -180,7 +174,7 @@ recipes:
       difficulty: 4
       alcohol: 12
       effects:
-      - WATER_BREATHINGX/1-2/150
+      - WATER_BREATHING/1-2/150
    6:
       name: Bitterer Rum/Würziger Rum/&6Goldener Rum
       ingredients:
@@ -195,7 +189,7 @@ recipes:
       alcohol: 30
       effects:
       - FIRE_RESISTANCE/1/20-100
-      - POISONX/1-0/30-0
+      - POISON/1-0/30-0
    7:
       name: Abgeranzter Vodka/Vodka/Russischer Vodka
       ingredients:

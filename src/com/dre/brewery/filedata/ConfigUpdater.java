@@ -1161,7 +1161,11 @@ public class ConfigUpdater {
 			}
 		}
 		if (index != -1) {
-			addLines(index + 1, "#   Halte ein Item in der Hand und benutze /brew configname um dessen Material herauszufinden und für ein Rezept zu benutzen");
+			addLines(index + 1, "#   Halte ein Item in der Hand und benutze /brew ItemName um dessen Material herauszufinden und für ein Rezept zu benutzen");
+		}
+		index = indexOfStart("# wood: Holz des Fasses");
+		if (index != -1) {
+			addLines(index + 1, "#   Das Minecraft Fass besteht aus Eiche");
 		}
 		if (P.use1_13) updateMaterialDescriptions(true);
 	}
@@ -1209,6 +1213,10 @@ public class ConfigUpdater {
 		}
 		if (index != -1) {
 			addLines(index + 1, "#   With an item in your hand, use /brew ItemName to get its material for use in a recipe");
+		}
+		index = indexOfStart("# wood: Wood of the barrel");
+		if (index != -1) {
+			addLines(index + 1, "#   The Minecraft barrel is made of oak");
 		}
 		if (P.use1_13) updateMaterialDescriptions(false);
 	}

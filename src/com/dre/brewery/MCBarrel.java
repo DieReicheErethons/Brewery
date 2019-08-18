@@ -25,10 +25,12 @@ public class MCBarrel {
 
 	private byte brews = -1; // How many Brewery Brews are in this Barrel
 	private final Inventory inv;
+	private final int invSize;
 
 
 	public MCBarrel(Inventory inv) {
 		this.inv = inv;
+		invSize = inv.getSize();
 	}
 
 
@@ -56,7 +58,7 @@ public class MCBarrel {
 						if (item != null) {
 							Brew brew = Brew.get(item);
 							if (brew != null) {
-								if (brews < maxBrews) {
+								if (brews < maxBrews || maxBrews < 0) {
 									// The time is in minutes, but brew.age() expects time in mc-days
 									brew.age(item, ((float) time) / 20f, OAK);
 								}
@@ -99,6 +101,10 @@ public class MCBarrel {
 	// There are still methods to place more Brews in that would be too tedious to catch.
 	// This is only for direct visual Notification, the age routine above will never age more than 6 brews in any case.
 	public void clickInv(InventoryClickEvent event) {
+		if (maxBrews >= invSize || maxBrews < 0) {
+			// There are enough brews allowed to fill the inventory, we don't need to keep track
+			return;
+		}
 		boolean adding = false;
 		switch (event.getAction()) {
 			case PLACE_ALL:

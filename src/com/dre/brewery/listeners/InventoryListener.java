@@ -310,7 +310,7 @@ public class InventoryListener implements Listener {
 			if (event.getSlot() > 2) {
 				return;
 			}
-		} else if (!(event.getInventory().getHolder() instanceof Barrel) && !(event.getInventory().getHolder() instanceof org.bukkit.block.Barrel)) {
+		} else if (!(event.getInventory().getHolder() instanceof Barrel) && !(P.use1_14 && event.getInventory().getHolder() instanceof org.bukkit.block.Barrel)) {
 			return;
 		}
 

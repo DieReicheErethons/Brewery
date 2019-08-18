@@ -43,7 +43,7 @@ public class CommandListener implements CommandExecutor {
 				p.msg(sender, p.languageReader.get("Error_NoPermissions"));
 			}
 
-		} else if (cmd.equalsIgnoreCase("configname") || cmd.equalsIgnoreCase("itemname")) {
+		} else if (cmd.equalsIgnoreCase("configname") || cmd.equalsIgnoreCase("itemname") || cmd.equalsIgnoreCase("iteminfo")) {
 
 			if (sender.hasPermission("brewery.cmd.reload")) {
 				cmdItemName(sender);

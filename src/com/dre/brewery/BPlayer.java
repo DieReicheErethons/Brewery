@@ -57,7 +57,7 @@ public class BPlayer {
 
 	public static BPlayer get(Player player) {
 		if (!players.isEmpty()) {
-			return players.get(P.playerString(player));
+			return players.get(Util.playerString(player));
 		}
 		return null;
 	}
@@ -105,18 +105,18 @@ public class BPlayer {
 	}
 
 	public static boolean hasPlayer(Player player) {
-		return players.containsKey(P.playerString(player));
+		return players.containsKey(Util.playerString(player));
 	}
 
 	// Create a new BPlayer and add it to the list
 	public static BPlayer addPlayer(Player player) {
 		BPlayer bPlayer = new BPlayer();
-		players.put(P.playerString(player), bPlayer);
+		players.put(Util.playerString(player), bPlayer);
 		return bPlayer;
 	}
 
 	public static void remove(Player player) {
-		players.remove(P.playerString(player));
+		players.remove(Util.playerString(player));
 	}
 
 	public static int numDrunkPlayers() {
@@ -319,7 +319,7 @@ public class BPlayer {
 			}
 			hangoverEffects(player);
 			// wird der spieler noch gebraucht?
-			players.remove(P.playerString(player));
+			players.remove(Util.playerString(player));
 
 		} else if (offlineDrunk - drunkeness >= 30) {
 			Location randomLoc = Wakeup.getRandom(player.getLocation());
@@ -545,7 +545,7 @@ public class BPlayer {
 
 			if (bplayer.drunkeness > 30) {
 				if (bplayer.offlineDrunk == 0) {
-					Player player = P.getPlayerfromString(name);
+					Player player = Util.getPlayerfromString(name);
 					if (player != null) {
 
 						bplayer.drunkEffects(player);
@@ -573,7 +573,7 @@ public class BPlayer {
 					// Prevent 0 drunkeness
 					soberPerMin++;
 				}
-				if (bplayer.drain(P.getPlayerfromString(name), soberPerMin)) {
+				if (bplayer.drain(Util.getPlayerfromString(name), soberPerMin)) {
 					iter.remove();
 				}
 			}

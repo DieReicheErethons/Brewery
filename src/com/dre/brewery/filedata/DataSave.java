@@ -4,6 +4,7 @@ package com.dre.brewery.filedata;
 import java.io.File;
 
 import com.dre.brewery.MCBarrel;
+import com.dre.brewery.Util;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -153,7 +154,7 @@ public class DataSave extends BukkitRunnable {
 		for (World world : P.p.getServer().getWorlds()) {
 			String worldName = world.getName();
 			if (worldName.startsWith("DXL_")) {
-				worldName = P.p.getDxlName(worldName);
+				worldName = Util.getDxlName(worldName);
 				root.set("Worlds." + worldName, 0);
 			} else {
 				worldName = world.getUID().toString();

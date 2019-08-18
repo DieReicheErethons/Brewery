@@ -140,7 +140,7 @@ public class Wakeup {
 				locs.add("&6" + s + id + "&f" + s + ": " + world + " " + x + "," + y + "," + z);
 			}
 		}
-		p.list(sender, locs, page);
+		Util.list(sender, locs, page);
 	}
 
 	public static void check(CommandSender sender, int id, boolean all) {
@@ -211,7 +211,7 @@ public class Wakeup {
 			checkPlayer.teleport(wakeup.loc);
 		} else {
 			p.msg(checkPlayer, p.languageReader.get("Player_WakeFilled", "" + checkId, world, "" + x , "" + y, "" + z));
-		}			
+		}
 		p.msg(checkPlayer, p.languageReader.get("Player_WakeHint1"));
 		p.msg(checkPlayer, p.languageReader.get("Player_WakeHint2"));
 	}
@@ -228,7 +228,7 @@ public class Wakeup {
 
 
 	public static void save(ConfigurationSection section, ConfigurationSection oldData) {
-		p.createWorldSections(section);
+		Util.createWorldSections(section);
 
 		// loc is saved as a String in world sections with format x/y/z/pitch/yaw
 		if (!wakeups.isEmpty()) {
@@ -245,7 +245,7 @@ public class Wakeup {
 				String prefix;
 
 				if (worldName.startsWith("DXL_")) {
-					prefix = p.getDxlName(worldName) + "." + id;
+					prefix = Util.getDxlName(worldName) + "." + id;
 				} else {
 					prefix = wakeup.loc.getWorld().getUID().toString() + "." + id;
 				}

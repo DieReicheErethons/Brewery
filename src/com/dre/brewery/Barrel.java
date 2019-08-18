@@ -526,7 +526,7 @@ public class Barrel implements InventoryHolder {
 
 	// Saves all data
 	public static void save(ConfigurationSection config, ConfigurationSection oldData) {
-		P.p.createWorldSections(config);
+		Util.createWorldSections(config);
 
 		if (!barrels.isEmpty()) {
 			int id = 0;
@@ -536,7 +536,7 @@ public class Barrel implements InventoryHolder {
 				String prefix;
 
 				if (worldName.startsWith("DXL_")) {
-					prefix = P.p.getDxlName(worldName) + "." + id;
+					prefix = Util.getDxlName(worldName) + "." + id;
 				} else {
 					prefix = barrel.spigot.getWorld().getUID().toString() + "." + id;
 				}

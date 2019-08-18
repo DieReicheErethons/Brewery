@@ -1,23 +1,16 @@
 package com.dre.brewery;
 
-import com.dre.brewery.filedata.*;
+import com.dre.brewery.filedata.ConfigUpdater;
+import com.dre.brewery.filedata.DataSave;
+import com.dre.brewery.filedata.DataUpdater;
+import com.dre.brewery.filedata.LanguageReader;
+import com.dre.brewery.filedata.UpdateChecker;
 import com.dre.brewery.integration.LogBlockBarrel;
 import com.dre.brewery.integration.WGBarrel;
 import com.dre.brewery.integration.WGBarrel7;
 import com.dre.brewery.integration.WGBarrelNew;
 import com.dre.brewery.integration.WGBarrelOld;
 import com.dre.brewery.listeners.*;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-import java.util.UUID;
 import org.apache.commons.lang.math.NumberUtils;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
@@ -35,6 +28,15 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class P extends JavaPlugin {
 	public static P p;
@@ -535,7 +537,7 @@ public class P extends JavaPlugin {
 
 			for (World world : p.getServer().getWorlds()) {
 				if (world.getName().startsWith("DXL_")) {
-					loadWorldData(getDxlName(world.getName()), world);
+					loadWorldData(Util.getDxlName(world.getName()), world);
 				} else {
 					loadWorldData(world.getUID().toString(), world);
 				}
@@ -696,7 +698,7 @@ public class P extends JavaPlugin {
 				return false;
 			}
 			try {
-				saveFile(defconf, getDataFolder(), "config.yml", false);
+				Util.saveFile(defconf, getDataFolder(), "config.yml", false);
 			} catch (IOException e) {
 				e.printStackTrace();
 				return false;
@@ -717,8 +719,8 @@ public class P extends JavaPlugin {
 		for (String l : new String[] {"de", "en", "fr", "it"}) {
 			File lfold = new File(configs, l);
 			try {
-				saveFile(getResource("config/" + (use1_13 ? "v13/" : "v12/") + l + "/config.yml"), lfold, "config.yml", overwrite);
-				saveFile(getResource("languages/" + l + ".yml"), languages, l + ".yml", false); // Never overwrite languages for now
+				Util.saveFile(getResource("config/" + (use1_13 ? "v13/" : "v12/") + l + "/config.yml"), lfold, "config.yml", overwrite);
+				Util.saveFile(getResource("languages/" + l + ".yml"), languages, l + ".yml", false); // Never overwrite languages for now
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -731,53 +733,6 @@ public class P extends JavaPlugin {
 		return NumberUtils.toInt(string, 0);
 	}
 
-	// gets the Name of a DXL World
-	public String getDxlName(String worldName) {
-		File dungeonFolder = new File(worldName);
-		if (dungeonFolder.isDirectory()) {
-			for (File file : dungeonFolder.listFiles()) {
-				if (!file.isDirectory()) {
-					if (file.getName().startsWith(".id_")) {
-						return file.getName().substring(1).toLowerCase();
-					}
-				}
-			}
-		}
-		return worldName;
-	}
-
-	// create empty World save Sections
-	public void createWorldSections(ConfigurationSection section) {
-		for (World world : p.getServer().getWorlds()) {
-			String worldName = world.getName();
-			if (worldName.startsWith("DXL_")) {
-				worldName = getDxlName(worldName);
-			} else {
-				worldName = world.getUID().toString();
-			}
-			section.createSection(worldName);
-		}
-	}
-
-	// prints a list of Strings at the specified page
-	public void list(CommandSender sender, ArrayList<String> strings, int page) {
-		int pages = (int) Math.ceil(strings.size() / 7F);
-		if (page > pages || page < 1) {
-			page = 1;
-		}
-
-		sender.sendMessage(color("&7-------------- &f" + languageReader.get("Etc_Page") + " &6" + page + "&f/&6" + pages + " &7--------------"));
-
-		ListIterator<String> iter = strings.listIterator((page - 1) * 7);
-
-		for (int i = 0; i < 7; i++) {
-			if (iter.hasNext()) {
-				sender.sendMessage(color(iter.next()));
-			} else {
-				break;
-			}
-		}
-	}
 
 	// Returns true if the Block can be destroyed by the Player or something else (null)
 	public boolean blockDestroy(Block block, Player player) {
@@ -831,60 +786,9 @@ public class P extends JavaPlugin {
 	}
 
 	public String color(String msg) {
-		if (msg != null) {
-			msg = ChatColor.translateAlternateColorCodes('&', msg);
-		}
-		return msg;
+		return Util.color(msg);
 	}
 
-	@SuppressWarnings("ResultOfMethodCallIgnored")
-	public static void saveFile(InputStream in, File dest, String name, boolean overwrite) throws IOException {
-		if (in == null) return;
-		if (!dest.exists()) {
-			dest.mkdirs();
-		}
-		File result = new File(dest, name);
-		if (result.exists()) {
-			if (overwrite) {
-				result.delete();
-			} else {
-				return;
-			}
-		}
-
-		OutputStream out = new FileOutputStream(result);
-		byte[] buffer = new byte[1024];
-
-		int length;
-		//copy the file content in bytes
-		while ((length = in.read(buffer)) > 0){
-			out.write(buffer, 0, length);
-		}
-
-		in.close();
-		out.close();
-	}
-
-	// Returns either uuid or Name of player, depending on bukkit version
-	public static String playerString(Player player) {
-		if (useUUID) {
-			return player.getUniqueId().toString();
-		} else {
-			return player.getName();
-		}
-	}
-
-	// returns the Player if online
-	public static Player getPlayerfromString(String name) {
-		if (useUUID) {
-			try {
-				return Bukkit.getPlayer(UUID.fromString(name));
-			} catch (Exception e) {
-				return Bukkit.getPlayerExact(name);
-			}
-		}
-		return Bukkit.getPlayerExact(name);
-	}
 
 	// Runnables
 

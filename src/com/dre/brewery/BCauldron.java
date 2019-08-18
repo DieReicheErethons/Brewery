@@ -181,7 +181,7 @@ public class BCauldron {
 	}
 
 	public static void save(ConfigurationSection config, ConfigurationSection oldData) {
-		P.p.createWorldSections(config);
+		Util.createWorldSections(config);
 
 		if (!bcauldrons.isEmpty()) {
 			int id = 0;
@@ -190,7 +190,7 @@ public class BCauldron {
 				String prefix;
 
 				if (worldName.startsWith("DXL_")) {
-					prefix = P.p.getDxlName(worldName) + "." + id;
+					prefix = Util.getDxlName(worldName) + "." + id;
 				} else {
 					prefix = cauldron.block.getWorld().getUID().toString() + "." + id;
 				}

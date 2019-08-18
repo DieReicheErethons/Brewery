@@ -2,6 +2,7 @@ package com.dre.brewery.listeners;
 
 import java.util.ArrayList;
 
+import com.dre.brewery.Util;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -154,10 +155,10 @@ public class CommandListener implements CommandExecutor {
 		ArrayList<String> commands = getCommands(sender);
 
 		if (page == 1) {
-			p.msg(sender, "&6" + p.getDescription().getName() + " v" + p.getDescription().getVersion());	
+			p.msg(sender, "&6" + p.getDescription().getName() + " v" + p.getDescription().getVersion());
 		}
 
-		p.list(sender, commands, page);
+		Util.list(sender, commands, page);
 
 	}
 
@@ -200,6 +201,7 @@ public class CommandListener implements CommandExecutor {
 		}
 
 		if (sender.hasPermission("brewery.cmd.reload")) {
+			cmds.add(p.languageReader.get("Help_Configname"));
 			cmds.add(p.languageReader.get("Help_Reload"));
 		}
 

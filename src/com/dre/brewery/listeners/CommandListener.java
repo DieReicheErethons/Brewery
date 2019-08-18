@@ -43,10 +43,10 @@ public class CommandListener implements CommandExecutor {
 				p.msg(sender, p.languageReader.get("Error_NoPermissions"));
 			}
 
-		} else if (cmd.equalsIgnoreCase("configname")) {
+		} else if (cmd.equalsIgnoreCase("configname") || cmd.equalsIgnoreCase("itemname")) {
 
 			if (sender.hasPermission("brewery.cmd.reload")) {
-				cmdConfigName(sender);
+				cmdItemName(sender);
 			} else {
 				p.msg(sender, p.languageReader.get("Error_NoPermissions"));
 			}
@@ -364,7 +364,7 @@ public class CommandListener implements CommandExecutor {
 
 	}
 
-	public void cmdConfigName(CommandSender sender) {
+	public void cmdItemName(CommandSender sender) {
 		if (sender instanceof Player) {
 
 			Player player = (Player) sender;

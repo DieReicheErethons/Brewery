@@ -59,7 +59,7 @@ Help_InfoOther: '&6/brew info [玩家]&9 顯示 [玩家] 當前醉酒程度和�
 Help_Persist: '&6/brew persist &9使釀造持久化 - >可通過任何插件和技術進行複制'
 Help_Player: '&6/brew <玩家> <%醉酒> [數量]&9 設置玩家的醉酒度（和酒的品質）'
 Help_Reload: '&6/brew reload &9重新加載設定檔'
-Help_Configname: '&6/brew configname &9Display name of item in hand for the config'
+Help_Configname: '&6/brew ItemName &9Display name of item in hand for the config'
 Help_Static: '&6/brew static &9使釀造靜止 - >不再進一步老化或蒸餾'
 Help_UnLabel: '&6/brew unlabel &9刪除藥水的詳細標籤'
 Help_Wakeup: '&6/brew wakeup list <頁數>&9 列出所有喚醒點'

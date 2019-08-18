@@ -73,7 +73,7 @@ oldMat: true
 
 # name: Différents noms pour la mauvaise/moyen/bonne qualité (Les codes de mise en forme sont pris en charge: comme par exemple &6 pour la couleur Or.)
 # ingredients: Liste des 'matériaux,data/montant'
-#   With an item in your hand, use /brew configname to get its material for use in a recipe
+#   With an item in your hand, use /brew ItemName to get its material for use in a recipe
 #   (Les id d'objets à la place des matériaux sont obsolètes pour bukkit et pourraient ne pas fonctionner dans le futur!)
 #     Ex: 'SUGAR_CANE'
 #   Une liste des matériaux peuvent-être trouvés ici: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html

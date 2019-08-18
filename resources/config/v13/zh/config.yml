@@ -73,7 +73,7 @@ version: '1.8'
 
 # name: 饮品名称, 可以为 劣质/普通/优质 三种质量的饮品命名(可插入样式代码, 如:&6).
 # ingredients: 配方列表, 格式为"材料名称/数量".
-#   手中持有物品的时候, 可以使用/brew configname来获取其物品id, 便于增改配方
+#   手中持有物品的时候, 可以使用/brew ItemName来获取其物品id, 便于增改配方
 #   (请勿使用物品ID, 物品ID已被弃用, 使用材料名称是唯一支持的做法.)
 #   材料名称列表详见此处: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html (可能需要挂梯子进行浏览)
 # cookingtime: 原料需要在炼药锅内烹制发酵的时间, 单位为现实分钟.

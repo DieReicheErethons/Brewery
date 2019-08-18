@@ -73,7 +73,7 @@ oldMat: true
 
 # name: Tre nomi diversi per diverse qualità (cattivo/normale/buono). I codici come &6 possono essere usati.
 # ingredients: Lista degli ingredienti nel formato materiale,dati/quantità
-#   With an item in your hand, use /brew configname to get its material for use in a recipe
+#   With an item in your hand, use /brew ItemName to get its material for use in a recipe
 #   (Gli id invece dei materiali sono "disapprovati" da Bukkit e potrebbero non funzionare in futuro!)
 #   Una lista di materiali può essere trovata qui: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
 #   Puoi specificare dei dati dell'oggetto, ma se omesso sarà semplicemente ignorato.

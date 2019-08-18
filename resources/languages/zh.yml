@@ -59,7 +59,7 @@ Help_InfoOther: '&6/brew info [指定玩家] &9显示指定玩家目前的醉酒
 Help_Persist: '&6/brew persist &9将手中的饮品数据固定在服务端, 这将允许其被任何手段复制并饮用而不影响原饮品本体.'
 Help_Player: '&6/brew <目标玩家> <%醉酒程度> [醉酒质量] &9设定目标玩家的醉酒程度与质量.'
 Help_Reload: '&6/brew reload &9重载插件配置, 可用以重载饮品配方.'
-Help_Configname: '&6/brew configname &9显示手中物品的配置名称'
+Help_Configname: '&6/brew ItemName &9显示手中物品的配置名称'
 Help_Static: '&6/brew static &9将手中饮品静滞化, 这将阻止其被蒸馏或继续熟成.'
 Help_UnLabel: '&6/brew unlabel &9去除饮品的附加信息.'
 Help_Wakeup: '&6/brew wakeup list <页数> &9列出所有的苏醒处, 醉酒后下线的玩家再上线可能会在这些地方醒来.'

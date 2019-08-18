@@ -73,7 +73,7 @@ oldMat: true
 
 # name: Different names for bad/normal/good (Formatting codes possible: such as &6)
 # ingredients: List of 'material,data/amount'
-#   With an item in your hand, use /brew configname to get its material for use in a recipe
+#   With an item in your hand, use /brew ItemName to get its material for use in a recipe
 #   (Item-ids instead of material are not supported by bukkit anymore and will not work)
 #   A list of materials can be found here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
 #   You can specify a data (durability) value, omitting it will ignore the data value of the added ingredient

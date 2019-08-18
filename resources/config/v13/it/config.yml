@@ -72,7 +72,7 @@ version: '1.8'
 
 # name: Tre nomi diversi per diverse qualità (cattivo/normale/buono). I codici come &6 possono essere usati.
 # ingredients: Lista degli ingredienti nel formato materiale/quantità
-#   With an item in your hand, use /brew configname to get its material for use in a recipe
+#   With an item in your hand, use /brew ItemName to get its material for use in a recipe
 #   (Gli id invece dei materiali sono "disapprovati" da Bukkit)
 #   Una lista di materiali può essere trovata qui: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
 # cookingtime: Tempo in minuti richiesto dagli ingredienti per bollire

@@ -76,7 +76,7 @@ oldMat: true
 
 # name: Verschiedene Namen für schlecht/mittel/gut (Farbcodes möglich: z.b. &6)
 # ingredients: Auflistung von 'Material,Data/Anzahl'
-#   Halte ein Item in der Hand und benutze /brew configname um dessen Material herauszufinden und für ein Rezept zu benutzen
+#   Halte ein Item in der Hand und benutze /brew ItemName um dessen Material herauszufinden und für ein Rezept zu benutzen
 #   (Item-ids anstatt Material können in Bukkit nicht mehr benutzt werden)
 #   Eine Liste von allen Materialien kann hier gefunden werden: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
 #   Es kann ein Data-Wert (durability) angegeben werden, weglassen ignoriert diesen beim hinzufügen einer Zutat

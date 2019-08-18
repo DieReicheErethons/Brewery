@@ -59,7 +59,7 @@ Help_InfoOther: '&6/brew info [Player]&9 Displays the current Drunkeness and Qua
 Help_Persist: '&6/brew persist &9Make Brew persistent -> copyable by any plugin and technique'
 Help_Player: '&6/brew <Player> <%Drunkeness> [Quality]&9 Sets Drunkeness (and Quality) of a Player'
 Help_Reload: '&6/brew reload &9Reload config'
-Help_Configname: '&6/brew configname &9Display name of item in hand for the config'
+Help_Configname: '&6/brew ItemName &9Display name of item in hand for the config'
 Help_Static: '&6/brew static &9Make Brew static -> No further ageing or distilling'
 Help_UnLabel: '&6/brew unlabel &9Removes the detailled label of a potion'
 Help_Wakeup: '&6/brew wakeup list <Page>&9 Lists all wakeup points'

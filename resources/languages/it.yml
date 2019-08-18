@@ -59,7 +59,7 @@ Help_InfoOther: '&6/brew info [Giocatore]&9 Mostra l''attuale livello di sbronza
 Help_Persist: '&6/brew persist &9Rendi una miscela persistente quindi copiabile normalmente in ogni modo e da ogni plugin.'
 Help_Player: '&6/brew <Giocatore> <%Sbronza> [Qualità]&9 Imposta livello di sbronza (e qualità) di un giocatore.'
 Help_Reload: '&6/brew reload &9Ricarica la configurazione'
-Help_Configname: '&6/brew configname &9Display name of item in hand for the config'
+Help_Configname: '&6/brew ItemName &9Display name of item in hand for the config'
 Help_Static: '&6/brew static &9Rende la miscela statica quindi non distillabile e invecchiabile ulteriormente.'
 Help_UnLabel: '&6/brew unlabel &9Rimuove la descrizione dettagliata di una pozione.'
 Help_Wakeup: '&6/brew wakeup list <Pagina>&9 Mostra tutti i punti di risveglio.'

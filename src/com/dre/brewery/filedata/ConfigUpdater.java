@@ -1208,7 +1208,7 @@ public class ConfigUpdater {
 			}
 		}
 		if (index != -1) {
-			addLines(index + 1, "#   With an item in your hand, use /brew configname to get its material for use in a recipe");
+			addLines(index + 1, "#   With an item in your hand, use /brew ItemName to get its material for use in a recipe");
 		}
 		if (P.use1_13) updateMaterialDescriptions(false);
 	}

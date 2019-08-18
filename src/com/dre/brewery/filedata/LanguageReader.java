@@ -127,7 +127,7 @@ public class LanguageReader {
 		defaults.put("Help_WakeupAdd", "&6/brew wakeup add &9Adds a wakeup point at your current position");
 		defaults.put("Help_WakeupRemove", "&6/brew wakeup remove <id> &9Removes the wakeup point with <id>");
 		defaults.put("Help_Reload", "&6/brew reload &9Reload config");
-		defaults.put("Help_Configname", "&6/brew configname &9Display name of item in hand for the config");
+		defaults.put("Help_Configname", "&6/brew ItemName &9Display name of item in hand for the config");
 		defaults.put("Help_Persist", "&6/brew persist &9Make Brew persistent -> copyable by any plugin and technique");
 		defaults.put("Help_Static", "&6/brew static &9Make Brew static -> No further ageing or distilling");
 		defaults.put("Help_Create", "&6/brew create <Recipe> [Quality] [Player] &9Create a Brew with optional quality (1-10)");

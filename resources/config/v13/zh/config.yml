@@ -55,7 +55,7 @@ colorInBrewer: true
 # 大型熟成木桶可以通过右击桶身任意一个位置来打开, 而不需要专门右击其龙头. 这一操作对小型酒桶总为真.[true]
 openLargeBarrelEverywhere: false
 
-# How many Brewery drinks can be put into the Minecraft barrels [6]
+# MC自带的桶内可以存放多少饮品 [6]
 maxBrewsInMCBarrels: 6
 
 # 是否检查更新.[true]
@@ -73,7 +73,7 @@ version: '1.8'
 
 # name: 饮品名称, 可以为 劣质/普通/优质 三种质量的饮品命名(可插入样式代码, 如:&6).
 # ingredients: 配方列表, 格式为"材料名称/数量".
-#   With an item in your hand, use /brew configname to get its material for use in a recipe
+#   手中持有物品的时候, 可以使用/brew configname来获取其物品id, 便于增改配方
 #   (请勿使用物品ID, 物品ID已被弃用, 使用材料名称是唯一支持的做法.)
 #   材料名称列表详见此处: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html (可能需要挂梯子进行浏览)
 # cookingtime: 原料需要在炼药锅内烹制发酵的时间, 单位为现实分钟.
@@ -84,7 +84,7 @@ version: '1.8'
 # color: 饮品制成后的颜色.
 #   可用颜色列表:
 #   DARK_RED(深红), RED(红), BRIGHT_RED(亮红), ORANGE(橙黄), PINK(粉色), BLUE(蓝色), CYAN(靛青), WATER(水色), GREEN(绿色), BLACK(黑色), GREY(灰色), BRIGHT_GREY(亮灰色)
-#   Or RGB colors (hex: for example '99FF33') (with '') (search for "HTML color" on the internet)
+#   也可以使用RGB颜色(十六进制, 如'99FF33', 必须包含两个单引号)(在线搜索"HTML 颜色"或者其他颜色库即刻获得你需要的颜色的十六进制表示)
 # difficulty: 酿制难度, 1 = 不需要非常精确的操作就可以制出优质饮品, 10 = 需要非常精确的操作才可以制出优质饮品.
 # alcohol: 完美质量的饮品所含有的酒精度(百分数, 会被直接添加到玩家身上, 100意为直接昏迷)
 # effects: 饮用后能够获得的药效的列表. 格式为"药效/强度/时长(秒)".

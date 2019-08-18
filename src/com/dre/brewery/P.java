@@ -716,13 +716,15 @@ public class P extends JavaPlugin {
 	private void copyDefaultConfigs(boolean overwrite) {
 		File configs = new File(getDataFolder(), "configs");
 		File languages = new File(getDataFolder(), "languages");
-		for (String l : new String[] {"de", "en", "fr", "it"}) {
+		for (String l : new String[] {"de", "en", "fr", "it", "zh", "tw"}) {
 			File lfold = new File(configs, l);
 			try {
 				Util.saveFile(getResource("config/" + (use1_13 ? "v13/" : "v12/") + l + "/config.yml"), lfold, "config.yml", overwrite);
 				Util.saveFile(getResource("languages/" + l + ".yml"), languages, l + ".yml", false); // Never overwrite languages for now
 			} catch (IOException e) {
-				e.printStackTrace();
+				if (!(l.equals("zh") || l.equals("tw"))) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}

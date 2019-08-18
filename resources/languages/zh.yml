@@ -1,0 +1,101 @@
+# Brew
+Brew_-times: 次
+Brew_BadPotion: 酿坏了的废液
+Brew_BarrelRiped: 木桶熟成
+Brew_DistillUndefined: 未名蒸馏液
+Brew_Distilled: 蒸馏
+Brew_HundredsOfYears: 百年陈酿
+Brew_Ingredients: 原料
+Brew_MinutePluralPostfix: ''
+Brew_OneYear: 一年
+Brew_ThickBrew: 一滩烂糊
+Brew_Undefined: 未名酿制品
+Brew_Woodtype: 木头种类
+Brew_Years: 年
+Brew_fermented: 炖煮发酵
+Brew_minute: 分钟
+
+# CMD
+CMD_CopyNotPersistent: '&e复制饮品的数据并未静滞或固定! 请多加注意!'
+CMD_Copy_Error: '&6&v1&r, &c你的背包塞不下了.'
+CMD_Info_Drunk: '&v1醉酒程度为&6&v2%&f, 醉酒质量为&6&v3.'
+CMD_Info_NotDrunk: '&v1没醉.'
+CMD_NonStatic: '&e饮品已被取消静滞, 现在可以正常地进行蒸馏或进行木桶熟成了.'
+CMD_PersistRemove: '&c当前饮品的数据已被固定, 无法从数据库中移除, 否则将使得任何该饮品的复制品无效!'
+CMD_Persistent: '&a当前饮品的数据已被固定. 现在你可以正常地对该饮品进行复制. 再执行一次该命令将会撤销固定.'
+CMD_Player: '&a&v1醉酒程度为&6&v2%&f, 醉酒质量为&6&v3.'
+CMD_Player_Error: '&c醉酒质量必须在1到10之间.'
+CMD_Reload: '&a配置文件重载成功.'
+CMD_Configname: '&aName for the Config is: &f&v1'
+CMD_Configname_Error: '&cCould not find item in your hand'
+CMD_Static: '&a饮品已被静滞, 现在其无法被蒸馏或进行木桶熟成.'
+CMD_UnLabel: '&a标签已被去除!'
+CMD_UnPersist: '&a当前饮品的数据已被撤销固定, 通过非指令方式(/brew copy)复制的饮品将可能无效!'
+
+# Error
+Error_ConfigUpdate: '未知的配置版本:v&v1, 插件配置未更新!'
+Error_ItemNotPotion: '&c你手上的物品并未成功地被认定为饮品!'
+Error_NoBarrelAccess: '&c你没有权限与该木桶互动!'
+Error_NoBrewName: '&c未找到名字为''&v1&c''的饮品!'
+Error_NoPermissions: '&c你没有权限这样做.'
+Error_PersistStatic: '&c数据固定的饮品一定是静滞化饮品!'
+Error_PlayerCommand: '&c该命令必须由玩家执行.'
+Error_Recipeload: '&c加载饮品配方时出现问题, 请查看控制台以获得详细信息!'
+Error_ShowHelp: 使用&6/brew help&f以查看帮助
+Error_UnknownCommand: 未知命令.
+
+# Etc
+Etc_Barrel: 木桶
+Etc_Page: 页
+Etc_Usage: '用途:'
+
+# Help
+Help_Copy: '&6/brew copy [数量] &9复制当前手中的饮品.'
+Help_Create: '&6/brew create <饮品名称(若有颜色符号须附上)> [饮品质量] [授予玩家] &9获得一杯饮品, 质量可为1到10, 越高越好.'
+Help_Delete: '&6/brew delete &9删除手中的饮品.'
+Help_Help: '&6/brew help [页数] &9显示某一页的帮助.'
+Help_Info: '&6/brew info &9显示你目前的醉酒程度与质量, 醉酒质量将会影响宿醉程度.'
+Help_InfoOther: '&6/brew info [指定玩家] &9显示指定玩家目前的醉酒程度与质量.'
+Help_Persist: '&6/brew persist &9将手中的饮品数据固定在服务端, 这将允许其被任何手段复制并饮用而不影响原饮品本体.'
+Help_Player: '&6/brew <目标玩家> <%醉酒程度> [醉酒质量] &9设定目标玩家的醉酒程度与质量.'
+Help_Reload: '&6/brew reload &9重载插件配置, 可用以重载饮品配方.'
+Help_Configname: '&6/brew configname &9Display name of item in hand for the config'
+Help_Static: '&6/brew static &9将手中饮品静滞化, 这将阻止其被蒸馏或继续熟成.'
+Help_UnLabel: '&6/brew unlabel &9去除饮品的附加信息.'
+Help_Wakeup: '&6/brew wakeup list <页数> &9列出所有的苏醒处, 醉酒后下线的玩家再上线可能会在这些地方醒来.'
+Help_WakeupAdd: '&6/brew wakeup add &9添加苏醒处.'
+Help_WakeupCheck: '&6/brew wakeup check &9传送至每一个苏醒处进行一一检查.'
+Help_WakeupCheckSpecific: '&6/brew wakeup check <id> &9传送至指定苏醒处.'
+Help_WakeupList: '&6/brew wakeup list <页数> [世界] &9列出该世界所有的苏醒处.'
+Help_WakeupRemove: '&6/brew wakeup remove <页数> &9移除指定id的苏醒处.'
+
+# Perms
+Perms_NoBarrelCreate: '&c你没有权限创造木桶!'
+Perms_NoBigBarrelCreate: '&c你没有权限创造大型木桶!'
+Perms_NoCauldronFill: '&c你没有权限从这口锅中取用液体!'
+Perms_NoCauldronInsert: '&c你没有权限将原料放入这口锅!'
+Perms_NoSmallBarrelCreate: '&c你没有权限创造小型木桶!'
+
+# Player
+Player_BarrelCreated: 木桶已创建.
+Player_BarrelFull: '&cThis barrel can''t hold any more drinks'
+Player_CantDrink: 你不能再喝了.
+Player_CauldronInfo1: 这口锅已经炖了&v1分钟了.
+Player_CauldronInfo2: 这口锅才刚刚烧开.
+Player_DrunkPassOut: 你喝高了, 晕了过去.
+Player_LoginDeny: 你的角色试图登入服务器, 可惜的是他晕得找不着北, 再试一次?
+Player_LoginDenyLong: 你的角色喝到不省人事, 昏倒在地, 十分钟后再尝试登录吧!
+Player_TriedToSay: '&v1试图说出: &0&v2'
+Player_Wake: 淦, 我怎么到的这儿...?
+Player_WakeAlreadyDeleted: '&cid为: &6&v1 &c的苏醒处已被删除!'
+Player_WakeCancel: '&6苏醒处检查已被取消.'
+Player_WakeCreated: '&aid为: &6&v1 &a的苏醒处被成功创建!'
+Player_WakeDeleted: '&aid为: &6&v1 &a的苏醒处被成功删除!'
+Player_WakeFilled: '&cid为: &6&v1 &c所在方位为: &6&v2 &v3, &v4, &v5 &c被填充了方块!'
+Player_WakeHint1: '前往下一个苏醒处, 请对空打拳.'
+Player_WakeHint2: '取消检查: &9/br wakeup cancel'
+Player_WakeLast: '&a这是最后一个苏醒处了.'
+Player_WakeNoCheck: '&c目前没有执行苏醒处检查.'
+Player_WakeNoPoints: '&c目前没有设定任何一个苏醒处!'
+Player_WakeNotExist: '&cid为: &6&v1 &c的苏醒处并不存在!'
+Player_WakeTeleport: '前往id为: &6&v1 &f坐标为: &6&v2 &v3, &v4, &v5 &r的苏醒处.'

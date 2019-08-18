@@ -1,0 +1,101 @@
+# Brew
+Brew_-times: 次
+Brew_BadPotion: 失敗的藥水
+Brew_BarrelRiped: 貯存陳化
+Brew_DistillUndefined: 無法確定的蒸餾
+Brew_Distilled: 蒸餾
+Brew_HundredsOfYears: 數百年
+Brew_Ingredients: 配料
+Brew_MinutePluralPostfix: 的
+Brew_OneYear: 1年
+Brew_ThickBrew: 混濁的釀造
+Brew_Undefined: 無法確定的釀造
+Brew_Woodtype: 木材質
+Brew_Years: 年
+Brew_fermented: 發酵
+Brew_minute: 分鐘
+
+# CMD
+CMD_CopyNotPersistent: '&e這個釀造的副本不會持久或靜態!'
+CMD_Copy_Error: '&6&v1 &c藥水不適合你的庫存'
+CMD_Info_Drunk: '&v1 是 &6&v2% &f醉酒,酒的品質為 &6&v3'
+CMD_Info_NotDrunk: '&v1 沒有醉酒'
+CMD_NonStatic: '&e藥水不再是靜止的,會在桶木中老化.'
+CMD_PersistRemove: '&c無法從數據庫中刪除持久性釀造.它會使任何副本無用！'
+CMD_Persistent: '&a藥水現在是持久性和靜態,現在可以像任何其他項一樣被複製.您可以使用相同的命令刪除持久性.'
+CMD_Player: '&a&v1 現在是 &6&v2% &a醉酒,酒的品質為 &6&v3'
+CMD_Player_Error: '&c酒的品質必須在1到10之間！'
+CMD_Reload: '&a設定檔已成功重新加載'
+CMD_Configname: '&aName for the Config is: &f&v1'
+CMD_Configname_Error: '&cCould not find item in your hand'
+CMD_Static: '&a藥水現在是靜止的,不會在桶或釀造台上變化.'
+CMD_UnLabel: '&a標籤已刪除！'
+CMD_UnPersist: '&a持久性和靜態刪除.&e每個隱藏的副本都不用''/brew copy'',現在可能變得無用了！'
+
+# Error
+Error_ConfigUpdate: '未知 釀酒 設定檔版本: v&v1,設定檔沒有更新!'
+Error_ItemNotPotion: '&c你手上的物品不能確定為藥水'
+Error_NoBarrelAccess: '&c你沒有權限存取！'
+Error_NoBrewName: '&c沒有這個配方: ''&v1&c'' 找到!'
+Error_NoPermissions: '&c你沒有權限這樣做！'
+Error_PersistStatic: '&c持久藥水總是靜止的！'
+Error_PlayerCommand: '&c這個指令只能由玩家執行！'
+Error_Recipeload: '&c並非所有配方都可以有用：服務器日誌中的更多信息！'
+Error_ShowHelp: 使用 &6/brew help &f顯示幫助
+Error_UnknownCommand: 未知的指令
+
+# Etc
+Etc_Barrel: 釀造桶
+Etc_Page: 頁數
+Etc_Usage: '用法:'
+
+# Help
+Help_Copy: '&6/brew copy [數量]&9 複製手中的藥水'
+Help_Create: '&6/brew create <配方> [數量] [玩家] &9創建具有可選酒的品質釀造（1-10）'
+Help_Delete: '&6/brew delete &9刪除你手中的藥水'
+Help_Help: '&6/brew help [頁數] &9顯示幫助的頁面'
+Help_Info: '&6/brew info&9 顯示您當前的醉酒和酒的品質'
+Help_InfoOther: '&6/brew info [玩家]&9 顯示 [玩家] 當前醉酒程度和酒的品質程度'
+Help_Persist: '&6/brew persist &9使釀造持久化 - >可通過任何插件和技術進行複制'
+Help_Player: '&6/brew <玩家> <%醉酒> [數量]&9 設置玩家的醉酒度（和酒的品質）'
+Help_Reload: '&6/brew reload &9重新加載設定檔'
+Help_Configname: '&6/brew configname &9Display name of item in hand for the config'
+Help_Static: '&6/brew static &9使釀造靜止 - >不再進一步老化或蒸餾'
+Help_UnLabel: '&6/brew unlabel &9刪除藥水的詳細標籤'
+Help_Wakeup: '&6/brew wakeup list <頁數>&9 列出所有喚醒點'
+Help_WakeupAdd: '&6/brew wakeup add &9在當前位置添加喚醒點'
+Help_WakeupCheck: '&6/brew wakeup check &9傳送到所有喚醒點'
+Help_WakeupCheckSpecific: '&6/brew wakeup check <id> &9使用<id>傳送到喚醒點'
+Help_WakeupList: '&6/brew wakeup list <頁數> [World]&9 列出<world>的所有喚醒點'
+Help_WakeupRemove: '&6/brew wakeup remove <id> &9使用<id>刪除喚醒點'
+
+# Perms
+Perms_NoBarrelCreate: '&c您沒有權限創建釀造桶!'
+Perms_NoBigBarrelCreate: '&c你沒有權限創建大釀造桶!'
+Perms_NoCauldronFill: '&c你沒有權利從這個鍋釜裡裝滿瓶子!'
+Perms_NoCauldronInsert: '&c您無權將材料放入鍋釜中!'
+Perms_NoSmallBarrelCreate: '&c您無權創建小釀造桶！'
+
+# Player
+Player_BarrelCreated: 創造釀造桶
+Player_BarrelFull: '&cThis barrel can''t hold any more drinks'
+Player_CantDrink: 你不能飲更多了.
+Player_CauldronInfo1: 這個鍋釜煮了 &v1 分鐘.
+Player_CauldronInfo2: 這個鍋釜剛開始沸騰.
+Player_DrunkPassOut: 你喝得太多,昏倒了.
+Player_LoginDeny: 你試圖登錄,但是你飲得太醉了,無法找到服務器.再試一次！
+Player_LoginDenyLong: 你的角色真的喝醉了,已經昏倒了.10分鐘後再試一次！
+Player_TriedToSay: '&v1 試圖說: &0&v2'
+Player_Wake: 不好了！我不記得我是怎麼來到這裡的......
+Player_WakeAlreadyDeleted: '&c這個喚醒點 id: &6&v1 &chas 已被刪除！'
+Player_WakeCancel: '&6喚醒點檢查被取消'
+Player_WakeCreated: '&a這個喚醒點 id: &6&v1 &a成功創建!'
+Player_WakeDeleted: '&a這個喚醒點 id: &6&v1 &a成功刪除!'
+Player_WakeFilled: '&c這個喚醒點 id: &6&v1&c 在位置 &6&v2 &v3, &v4, &v5&c 充滿了方塊!'
+Player_WakeHint1: '到下一個喚醒點：把拳頭打在空中'
+Player_WakeHint2: '取消: &9/br wakeup cancel'
+Player_WakeLast: '&a這是最後一個喚醒點'
+Player_WakeNoCheck: '&c目前沒有喚醒點是處於活動狀態'
+Player_WakeNoPoints: '&c沒有喚醒點!'
+Player_WakeNotExist: '&c這個喚醒點 id: &6&v1 &c不存在!'
+Player_WakeTeleport: '傳送到這個喚醒點 id: &6&v1&f 在位置: &6&v2 &v3, &v4, &v5'

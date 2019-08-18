@@ -1,0 +1,453 @@
+# Brewery插件的配置文件
+
+#翻译由Neubulae贡献, mcbbsID: 891215991
+
+# -- 设置 --
+# 方框[]内的设定为默认设定
+# 移除某一行可以禁用该功能, 或者true为启用, false为禁用
+
+# 语言文件(可在plugins/Brewery/languages下找到)
+language: zh
+
+# 喝高了的下线玩家会在家里醒来(需要/home等功能支持)[true]
+enableHome: true
+
+# 上述功能的回家方式: ['cmd: home']
+# bed = 会在床边醒来
+# 'cmd: home' = 强制让玩家执行/home. 需要设置好玩家权限, 以避免传送出现延迟.
+# 'cmd: spawn' = 强制让玩家执行/spawn.
+# 'cmd: 指定命令' = 强制让玩家执行该命令, 例如'cmd: warp xxx'等.
+homeType: 'cmd: home'
+
+# 玩家醉酒以后下线一段时间醒来是否会在某些苏醒处醒来(苏醒处需要管理员通过'/brew Wakeup add'进行设定).
+# 玩家将会在最近的两个苏醒处之一醒来.[true]
+enableWake: true
+
+# 醉酒的玩家是否需要反复尝试登录才能进入服务器.[true]
+enableLoginDisallow: true
+
+# 饮酒过量的玩家是否会晕倒一小段时间(即被暂时踢出服务器).[false]
+enableKickOnOverdrink: false
+
+# 醉酒程度过高的玩家是否会呕吐(呕吐物在下面定义).[true]
+# 物品无法被捡起, 直至消失.
+enablePuke: true
+
+# 呕吐物[Soul_Sand]
+pukeItem: Soul_Sand
+
+# 呕吐物消失的时间, 单位为秒(MC默认为300 = 5分钟)[60]
+# 如果spigot.yml中的物品消失时间被变更, 此处也会变更.
+pukeDespawntime: 60
+
+# 解酒物/解酒强度. 降低玩家一定程度的醉酒程度, 解救强度为百分数.(下列)
+drainItems:
+- Bread/4
+- Milk_Bucket/2
+
+# 最大玩家下线记忆时长(单位为天). 饮酒的记忆保持时间, 便于计算宿醉.[7]
+hangoverDays: 7
+
+# 饮品上是否显示带颜色的提示, 颜色由执行步骤的正误决定. 第一项为在熟成酒桶内显示颜色, 第二项为在酿造台内显示颜色.[true, true]
+colorInBarrels: true
+colorInBrewer: true
+
+# 大型熟成木桶可以通过右击桶身任意一个位置来打开, 而不需要专门右击其龙头. 这一操作对小型酒桶总为真.[true]
+openLargeBarrelEverywhere: false
+
+# How many Brewery drinks can be put into the Minecraft barrels [6]
+maxBrewsInMCBarrels: 6
+
+# 是否检查更新.[true]
+# 若有更新, 服务端后台与上线时的管理员会收到通知.
+updateCheck: true
+
+# 自动保存时间间隔, 单位:分钟.[3]
+autosave: 3
+
+# 配置文件版本
+version: '1.8'
+
+
+# -- 饮品配方列表 --
+
+# name: 饮品名称, 可以为 劣质/普通/优质 三种质量的饮品命名(可插入样式代码, 如:&6).
+# ingredients: 配方列表, 格式为"材料名称/数量".
+#   With an item in your hand, use /brew configname to get its material for use in a recipe
+#   (请勿使用物品ID, 物品ID已被弃用, 使用材料名称是唯一支持的做法.)
+#   材料名称列表详见此处: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html (可能需要挂梯子进行浏览)
+# cookingtime: 原料需要在炼药锅内烹制发酵的时间, 单位为现实分钟.
+# distillruns: 饮品需要在酿造台上蒸馏的次数(0=无需蒸馏).
+# distilltime: 每次蒸馏所需要耗费的时间(0=默认值, 即40秒), MC默认则为20秒/
+# wood: 木桶所需要的木质 0=任意 1=桦木 2=橡木 3=丛林木 4=云杉木 5=金合欢木 6=深色橡木
+# age: 饮品需要在木桶中熟成所需要的时间(MC天). 0=无需熟成.
+# color: 饮品制成后的颜色.
+#   可用颜色列表:
+#   DARK_RED(深红), RED(红), BRIGHT_RED(亮红), ORANGE(橙黄), PINK(粉色), BLUE(蓝色), CYAN(靛青), WATER(水色), GREEN(绿色), BLACK(黑色), GREY(灰色), BRIGHT_GREY(亮灰色)
+#   Or RGB colors (hex: for example '99FF33') (with '') (search for "HTML color" on the internet)
+# difficulty: 酿制难度, 1 = 不需要非常精确的操作就可以制出优质饮品, 10 = 需要非常精确的操作才可以制出优质饮品.
+# alcohol: 完美质量的饮品所含有的酒精度(百分数, 会被直接添加到玩家身上, 100意为直接昏迷)
+# effects: 饮用后能够获得的药效的列表. 格式为"药效/强度/时长(秒)".
+#   药效列表: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/potion/PotionEffectType.html
+#   药效强度与时长可以用"-"划分区间, 如: "SPEED/1-2/30-40" = 最劣质情况下的饮品会给予速度1三十秒, 最优质则会给予速度2四十秒.
+#   区间可以从大到小, 如: "POISON/3-1/20-5"即可让优质饮品的毒性降低.
+#   时长极限为1638秒. 药效强度极限为255级. 瞬间型药效无需附加时长.
+
+recipes:
+#  例:
+   0:
+      name: 劣质的 范例饮品/范例饮品/优质的 范例饮品
+      ingredients:
+      - Sugar_Cane/5
+      - Diamond/1
+      - Cocoa_Beans/20
+      - Spruce_Planks/8
+      - Bedrock/1
+      cookingtime: 3
+      distillruns: 2
+      distilltime: 60
+      wood: 4
+      age: 11
+      color: DARK_RED
+      difficulty: 3
+      alcohol: 23
+      effects:
+      - FIRE_RESISTANCE/20
+      - HEAL/1
+      - WEAKNESS/2-3/50-60
+      - POISON/1-0/20-0
+   1:
+      name: 劣质麦啤/麦啤/优质麦啤
+      ingredients:
+      - Wheat/3
+      cookingtime: 8
+      distillruns: 0
+      wood: 1
+      age: 2
+      color: BRIGHT_GREY
+      difficulty: 1
+      alcohol: 5
+   2:
+      name: 劣质啤酒/啤酒/鲜啤
+      ingredients:
+      - Wheat/6
+      cookingtime: 8
+      distillruns: 0
+      wood: 0
+      age: 3
+      color: ORANGE
+      difficulty: 1
+      alcohol: 6
+   3:
+      name: 劣质黑啤/黑啤/精制黑啤
+      ingredients:
+      - Wheat/6
+      cookingtime: 8
+      distillruns: 0
+      wood: 4
+      age: 8
+      color: BLACK
+      difficulty: 2
+      alcohol: 7
+   4:
+      name: 粗制蜜酒/蜜酒/黄金蜜酒
+      ingredients:
+      - Sugar_Cane/6
+      cookingtime: 3
+      distillruns: 0
+      wood: 2
+      age: 4
+      color: ORANGE
+      difficulty: 2
+      alcohol: 9
+   5:
+      name: 苹果蜜酒/甜苹果蜜酒/甘醇黄金苹果蜜酒
+      ingredients:
+      - Sugar_Cane/6
+      - Apple/2
+      cookingtime: 4
+      distillruns: 0
+      wood: 2
+      age: 4
+      color: ORANGE
+      difficulty: 4
+      alcohol: 12
+      effects:
+      - WATER_BREATHING/1-2/150
+   6:
+      name: 苦涩的朗姆/辛辣的朗姆/金品朗姆
+      ingredients:
+      - Sugar_Cane/14
+      cookingtime: 5
+      distillruns: 2
+      distilltime: 30
+      wood: 2
+      age: 14
+      color: DARK_RED
+      difficulty: 6
+      alcohol: 30
+      effects:
+      - FIRE_RESISTANCE/1/20-100
+      - POISON/1-0/30-0
+   7:
+      name: 劣质伏特加/伏特加/纯正俄式风味伏特加
+      ingredients:
+      - Potato/10
+      cookingtime: 15
+      distillruns: 3
+      age: 0
+      color: BRIGHT_GREY
+      difficulty: 4
+      alcohol: 20
+      effects:
+      - WEAKNESS/15
+      - POISON/10
+   8:
+      name: 劣质苦艾酒/苦艾酒/劲猛苦艾酒
+      ingredients:
+      - Grass/15
+      cookingtime: 3
+      distillruns: 6
+      distilltime: 80
+      color: GREEN
+      difficulty: 8
+      alcohol: 45
+      effects:
+      - POISON/20-30
+   9:
+      name: 土豆汤
+      ingredients:
+      - Potato/5
+      - Grass/3
+      cookingtime: 3
+      color: PINK
+      difficulty: 1
+      effects:
+      - HEAL/0-1
+   10:
+      name: 平淡的咖啡/咖啡/浓苦黑咖
+      ingredients:
+      - Cocoa_Beans/12
+      - Milk_Bucket/2
+      cookingtime: 2
+      color: BLACK
+      difficulty: 3
+      effects:
+      - REGENERATION/1/2-5
+      - SPEED/1/30-140
+
+# 未来可能加入的酒品配方: 卡沙夏酒, 琴酒, 威士忌, 特基拉酒, 果酒等. 并改进一些物品名称.
+# 并不会直接加入到默认配置中, 这会导致游戏玩家偷看配方表进行作弊.
+# 插件的本意是让玩家自行实验饮品制造配方, 所以未来的新配方由服管决定是否加入.
+
+
+
+
+# cooked: 炼药锅中烹制发酵过后的液体名称, 由一个饮品中的第一个原料决定.
+# [例] 原料名称: 烹制后的名称
+
+cooked:
+   Wheat: 发酵麦汁
+   Sugar_Cane: 糖浆
+   Apple: 苹果汁
+   Potato: 土豆泥
+   Grass: 蒸煮过的药草
+   Red_Mushroom: 蘑菇酿
+   Cocoa_Beans: 上了色的水
+   Milk_Bucket: 乳浊液体
+
+
+
+
+# -- 插件兼容性 --
+
+# 检查插件以进行权限配置[true]
+useWorldGuard: true
+useLWC: true
+useGriefPrevention: true
+
+# 对LogBlock启用方块数据录入[true]
+useLogBlock: true
+
+
+# -- 口糊设置 --
+
+# 醉酒的玩家会口糊,
+# 所以聊天框内打出来的东西也会跟着糊.
+# 说话说不清的程度取决于玩家有多醉.
+# 以下是设置以及具体的口糊方式的配置.
+
+# 打开聊天口糊功能[true]
+enableChatDistortion: true
+
+# 在服务器后台登记玩家实际输入的内容, 而非口糊后的内容.[false]
+logRealChat: false
+
+# 以下命令后跟随的语句会糊.[- /gl]
+distortCommands:
+- /gl
+- /global
+- /fl
+- /s
+- /letter
+- /g
+- /l
+- /lokal
+- /local
+- /mail send
+- /m
+- /msg
+- /w
+- /whisper
+- /reply
+- /r
+- /t
+- /tell
+
+# 醉酒的时候写下的告示牌内容也会变化.[false]
+distortSignText: false
+
+# 被以下设定字符框住的字眼不会被更改(请使用","(半角逗号)进行分隔) (列表) [- '[,]']
+# 例句: 我~喝~醉了 *但是这里面的话不会变哦!*
+distortBypass:
+- '*,*'
+- '[,]'
+
+# words: 针对具体词句进行糊化.
+# 糊化的执行优先级是表内从上到下.
+
+# replace: 被替换的字句. (特例: "-space": 替换空格, "-random": 在句子内随机插入, "-all": 整句话, "-start": 句首, "-end": 句末.)
+# to: 替换成的内容.
+# pre: 前置字眼, 即在被替换的词句前面需要出现的字眼(用","(半角逗号)分隔)
+# match: true = 前置字眼必须出现其一,  false = 前置字眼不能出现任意一个.
+# alcohol: 词句被开始替换所需要的酒精度.
+# percentage: 词句被替换的概率.
+
+words:
+-  replace: '!!!'
+   to: '!!!111!!!1111!1!'
+   pre: '!'
+   match: false
+   percentage: 20
+   alcohol: 70
+
+-  replace: '！！！'
+   to: '!!!111!!!1111!1!'
+   pre: '!'
+   match: false
+   percentage: 20
+   alcohol: 70
+-  replace: '!'
+   to: '!!'
+   pre: '!'
+   match: false
+   percentage: 90
+
+-  replace: '?'
+   to: '????'
+   pre: '?'
+   match: false
+   percentage: 80
+   alcohol: 40
+
+-  replace: '？'
+   to: '????'
+   pre: '?'
+   match: false
+   percentage: 80
+   alcohol: 40
+
+-  replace: ','
+   to: ''
+   pre: h,g,w
+   match: true
+   alcohol: 10
+
+-  replace: '，'
+   to: ''
+   pre: h,g,w
+   match: true
+   alcohol: 10
+
+-  replace: "."
+   to: ''
+   percentage: 30
+   alcohol: 35
+
+-  replace: "。"
+   to: ''
+   percentage: 10
+
+-  replace: -start
+   to: 呃
+   percentage: 15
+   alcohol: 50
+
+-  replace: -start
+   to: 哼嗯
+   percentage: 10
+   alcohol: 50
+
+-  replace: -random
+   to: 噜
+   percentage: 10
+
+-  replace: -random
+   to: 啦
+   percentage: 10
+   alcohol: 50
+
+-  replace: -random
+   to: 咕
+   percentage: 20
+   alcohol: 80
+
+-  replace: -random
+   to: 咯
+   percentage: 40
+   alcohol: 85
+
+-  replace: -random
+   to: 嘎
+   percentage: 40
+   alcohol: 80
+
+-  replace: -random
+   to: ' '
+   percentage: 100
+   alcohol: 70
+
+-  replace: -end
+   to: '!'
+   percentage: 40
+   alcohol: 30
+
+-  replace: -random
+   to: '*嗝*'
+   percentage: 80
+   alcohol: 70
+
+-  replace: -random
+   to: '*嗝*'
+   percentage: 15
+   alcohol: 40
+
+-  replace: -space
+   to: '*嗝*'
+   percentage: 5
+   alcohol: 20
+
+-  replace: -end
+   to: '*嗝*'
+   percentage: 70
+   alcohol: 50
+
+-  replace: -all
+   to: '*嗝儿————*'
+   percentage: 3
+   alcohol: 60
+
+-  replace: -all
+   to: '*嗝儿————*'
+   percentage: 6
+   alcohol: 80

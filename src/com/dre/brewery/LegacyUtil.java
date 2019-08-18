@@ -105,13 +105,24 @@ public class LegacyUtil {
 		return type.name().endsWith("SIGN") || (!P.use1_13 && type == SIGN_POST);
 	}
 
-	public static boolean isFireForCauldron(Material type) {
-		return type != null && (type == Material.FIRE || type == CAMPFIRE || type == MAGMA_BLOCK || isLava(type));
+	public static boolean isFireForCauldron(Block block) {
+		Material type = block.getType();
+		return type != null && (type == Material.FIRE || type == MAGMA_BLOCK || litCampfire(block) || isLava(type));
 	}
 
 	// LAVA and STATIONARY_LAVA are merged as of 1.13
 	public static boolean isLava(Material type) {
 		return type == Material.LAVA || (!P.use1_13 && type == STATIONARY_LAVA);
+	}
+
+	public static boolean litCampfire(Block block) {
+		if (block.getType() == CAMPFIRE) {
+			BlockData data = block.getBlockData();
+			if (data instanceof org.bukkit.block.data.Lightable) {
+				return ((org.bukkit.block.data.Lightable) data).isLit();
+			}
+		}
+		return false;
 	}
 
 	public static boolean areStairsInverted(Block block) {

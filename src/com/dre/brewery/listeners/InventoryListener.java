@@ -349,9 +349,22 @@ public class InventoryListener implements Listener {
 		barrel.clickInv(event);
 	}
 
+	//public static boolean opening = false;
+
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onInventoryOpen(InventoryOpenEvent event) {
 		if (!P.use1_14) return;
+
+		/*Barrel x = null;
+		if (event.getInventory().getHolder() instanceof Barrel) {
+			x = ((Barrel) event.getInventory().getHolder());
+		}
+
+		if (!opening) {
+			opening = true;
+			Barrel finalBarrel = x;
+			P.p.getServer().getScheduler().scheduleSyncDelayedTask(P.p, () -> {finalBarrel.remove(null, null); opening = false;}, 100);
+		}*/
 
 		// Check for MC Barrel
 		if (event.getInventory().getType() == InventoryType.BARREL) {

@@ -8,6 +8,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
@@ -18,6 +19,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -469,9 +471,10 @@ public class Barrel implements InventoryHolder {
 	// removes a barrel, throwing included potions to the ground
 	public void remove(Block broken, Player breaker) {
 		if (inventory != null) {
-			while (!inventory.getViewers().isEmpty()) {
-				// Use while loop to fix ConcModExc
-				inventory.getViewers().get(0).closeInventory();
+			List<HumanEntity> viewers = new ArrayList(inventory.getViewers());
+			// Copy List to fix ConcModExc
+			for (HumanEntity viewer : viewers) {
+				viewer.closeInventory();
 			}
 			ItemStack[] items = inventory.getContents();
 			inventory.clear();

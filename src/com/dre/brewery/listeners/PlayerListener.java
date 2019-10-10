@@ -16,6 +16,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -176,6 +177,34 @@ public class PlayerListener implements Listener {
 						barrel.open(player);
 
 						if (P.use1_14) {
+
+							// When right clicking a normal Block in 1.14 with a potion or any edible item in hand,
+							// even when cancelled the consume animation will continue playing while opening the Barrel inventory.
+							// The Animation and sound will play endlessly while the inventory is open, though no item is consumed.
+							// This seems to be a client bug.
+							// This workaround switches the currently selected slot to another for a short time, it needs to be a slot with a different item in it.
+							// This seems to make the client stop animating a consumption
+							// If there is a better way to do this please let me know
+							Material hand = event.getMaterial();
+							if ((hand == Material.POTION || hand.isEdible()) && !LegacyUtil.isSign(type)) {
+								PlayerInventory inv = player.getInventory();
+								final int held = inv.getHeldItemSlot();
+								int useSlot = -1;
+								for (int i = 0; i < 9; i++) {
+									ItemStack item = inv.getItem(i);
+									if (item == null || item.getType() == Material.AIR) {
+										useSlot = i;
+										break;
+									} else if (useSlot == -1 && item.getType() != hand) {
+										useSlot = i;
+									}
+								}
+								if (useSlot != -1) {
+									inv.setHeldItemSlot(useSlot);
+									P.p.getServer().getScheduler().scheduleSyncDelayedTask(P.p, () -> player.getInventory().setHeldItemSlot(held), 2);
+								}
+							}
+
 							// Barrel opening Sound
 							float randPitch = (float) (Math.random() * 0.1);
 							if (barrel.isLarge()) {

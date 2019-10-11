@@ -101,8 +101,9 @@
 			<url>https://build.devotedmc.com/plugin/repository/everything/</url>
 		</repository>
 		<repository>
-			<id>bstats-repo</id>
-			<url>http://repo.bstats.org/content/repositories/releases/</url>
+			<!-- bStats -->
+			<id>CodeMC</id>
+			<url>https://repo.codemc.org/repository/maven-public</url>
 		</repository>
 	</repositories>
 
@@ -228,7 +229,7 @@
 		<dependency>
 			<groupId>org.bstats</groupId>
 			<artifactId>bstats-bukkit</artifactId>
-			<version>1.2</version>
+			<version>1.5</version>
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>

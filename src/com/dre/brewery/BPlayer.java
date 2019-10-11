@@ -170,7 +170,7 @@ public class BPlayer {
 		quality = getQuality() * 100;
 		drunkeness = 100;
 		if (overdrinkKick && !player.hasPermission("brewery.bypass.overdrink")) {
-			passOut(player);
+			P.p.getServer().getScheduler().scheduleSyncDelayedTask(P.p, () -> passOut(player), 1);
 		} else {
 			addPuke(player, 60 + (int) (Math.random() * 60.0));
 			P.p.msg(player, P.p.languageReader.get("Player_CantDrink"));

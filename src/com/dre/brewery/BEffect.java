@@ -93,7 +93,7 @@ public class BEffect {
 		if (!P.use1_14) {
 			duration /= type.getDurationModifier();
 		}
-		type.createEffect(duration, lvl - 1).apply(player);
+		Util.reapplyPotionEffect(player, type.createEffect(duration, lvl - 1), true);
 	}
 
 	public int calcDuration(float quality) {

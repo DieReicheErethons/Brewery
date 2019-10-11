@@ -497,7 +497,7 @@ public class BPlayer {
 			duration *= 4;
 		}
 		if (duration > 0) {
-			PotionEffectType.POISON.createEffect(duration, 0).apply(player);
+			Util.reapplyPotionEffect(player, PotionEffectType.POISON.createEffect(duration, 0), true);
 		}
 
 		if (brewAlc > 10) {
@@ -511,7 +511,7 @@ public class BPlayer {
 			if (!P.use1_14) {
 				duration *= 4;
 			}
-			PotionEffectType.BLINDNESS.createEffect(duration, 0).apply(player);
+			Util.reapplyPotionEffect(player, PotionEffectType.BLINDNESS.createEffect(duration, 0), true);
 		}
 	}
 
@@ -531,12 +531,12 @@ public class BPlayer {
 		}
 		int amplifier = getHangoverQuality() / 3;
 
-		PotionEffectType.SLOW.createEffect(duration, amplifier).apply(player);
-		PotionEffectType.HUNGER.createEffect(duration, amplifier).apply(player);
+		Util.reapplyPotionEffect(player, PotionEffectType.SLOW.createEffect(duration, amplifier), true);
+		Util.reapplyPotionEffect(player, PotionEffectType.HUNGER.createEffect(duration, amplifier), true);
 	}
 
 
-	// #### Sheduled ####
+	// #### Scheduled ####
 
 	public static void drunkeness() {
 		for (Map.Entry<String, BPlayer> entry : players.entrySet()) {

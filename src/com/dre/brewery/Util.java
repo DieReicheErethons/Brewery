@@ -7,6 +7,8 @@ import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -52,6 +54,26 @@ public class Util {
 			}
 		}
 		return Bukkit.getPlayerExact(name);
+	}
+
+	// Apply a Potion Effect, if player already has this effect, overwrite the existing effect.
+	// Optionally only overwrite if the new one is stronger, i.e. has higher level or longer duration
+	public static void reapplyPotionEffect(Player player, PotionEffect effect, boolean onlyIfStronger) {
+		final PotionEffectType type = effect.getType();
+		if (player.hasPotionEffect(type)) {
+			PotionEffect plEffect;
+			if (P.use1_11) {
+				plEffect = player.getPotionEffect(type);
+			} else {
+				plEffect = player.getActivePotionEffects().stream().filter(e -> e.getType().equals(type)).findAny().get();
+			}
+			if (plEffect.getAmplifier() < effect.getAmplifier() || (plEffect.getAmplifier() == effect.getAmplifier() && plEffect.getDuration() < effect.getDuration())) {
+				player.removePotionEffect(type);
+			} else {
+				return;
+			}
+		}
+		effect.apply(player);
 	}
 
 	/**********     Other Utils     **********/

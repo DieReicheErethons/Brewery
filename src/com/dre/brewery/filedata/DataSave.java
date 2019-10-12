@@ -62,7 +62,6 @@ public class DataSave extends BukkitRunnable {
 		FileConfiguration configFile = new YamlConfiguration();
 
 		configFile.set("installTime", Brew.installTime);
-
 		configFile.set("MCBarrelTime", MCBarrel.mcBarrelTime);
 
 		Brew.writeSeed(configFile);

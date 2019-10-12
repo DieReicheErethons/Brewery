@@ -577,7 +577,6 @@ public class P extends JavaPlugin {
 
 		// Third-Party
 		useWG = config.getBoolean("useWorldGuard", true) && getServer().getPluginManager().isPluginEnabled("WorldGuard");
-		hasVault = getServer().getPluginManager().isPluginEnabled("Vault");
 
 		if (useWG) {
 			Plugin plugin = Bukkit.getPluginManager().getPlugin("WorldEdit");
@@ -709,7 +708,6 @@ public class P extends JavaPlugin {
 			FileConfiguration data = YamlConfiguration.loadConfiguration(file);
 
 			Brew.installTime = data.getLong("installTime", System.currentTimeMillis());
-
 			MCBarrel.mcBarrelTime = data.getLong("MCBarrelTime", 0);
 
 			Brew.loadSeed(data);

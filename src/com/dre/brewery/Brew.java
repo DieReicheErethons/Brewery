@@ -46,6 +46,7 @@ public class Brew {
 
 	public Brew(BIngredients ingredients) {
 		this.ingredients = ingredients;
+		touch();
 	}
 
 	// quality already set
@@ -53,6 +54,7 @@ public class Brew {
 		this.ingredients = ingredients;
 		this.quality = quality;
 		this.currentRecipe = recipe;
+		touch();
 	}
 
 	// loading with all values set

@@ -1,18 +1,20 @@
 package com.dre.brewery;
 
-import java.util.concurrent.CopyOnWriteArrayList;
-
-import org.bukkit.block.data.BlockData;
-import org.bukkit.block.data.Levelled;
 import com.dre.brewery.api.events.IngedientAddEvent;
-import org.bukkit.entity.Player;
+import org.bukkit.Effect;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.Effect;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.Levelled;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class BCauldron {
+	public static final byte EMPTY = 0, SOME = 1, FULL = 2;
 	public static CopyOnWriteArrayList<BCauldron> bcauldrons = new CopyOnWriteArrayList<>(); // TODO find best Collection
 
 	private BIngredients ingredients = new BIngredients();
@@ -35,7 +37,7 @@ public class BCauldron {
 
 	public void onUpdate() {
 		// Check if fire still alive
-		if (!Util.isChunkLoaded(block) || LegacyUtil.isFireForCauldron(block.getRelative(BlockFace.DOWN))) {
+		if (!BUtil.isChunkLoaded(block) || LegacyUtil.isFireForCauldron(block.getRelative(BlockFace.DOWN))) {
 			// add a minute to cooking time
 			state++;
 			if (someRemoved) {
@@ -74,7 +76,7 @@ public class BCauldron {
 	// Calls the IngredientAddEvent and may be cancelled or changed
 	public static boolean ingredientAdd(Block block, ItemStack ingredient, Player player) {
 		// if not empty
-		if (LegacyUtil.getFillLevel(block) != 0) {
+		if (LegacyUtil.getFillLevel(block) != EMPTY) {
 			BCauldron bcauldron = get(block);
 			if (bcauldron == null) {
 				bcauldron = new BCauldron(block);
@@ -84,7 +86,7 @@ public class BCauldron {
 			P.p.getServer().getPluginManager().callEvent(event);
 			if (!event.isCancelled()) {
 				bcauldron.add(event.getIngredient());
-				return event.shouldTakeItem();
+				return event.willTakeItem();
 			} else {
 				return false;
 			}
@@ -169,7 +171,7 @@ public class BCauldron {
 
 	// reset to normal cauldron
 	public static boolean remove(Block block) {
-		if (LegacyUtil.getFillLevel(block) != 0) {
+		if (LegacyUtil.getFillLevel(block) != EMPTY) {
 			BCauldron bcauldron = get(block);
 			if (bcauldron != null) {
 				bcauldrons.remove(bcauldron);
@@ -190,7 +192,7 @@ public class BCauldron {
 	}
 
 	public static void save(ConfigurationSection config, ConfigurationSection oldData) {
-		Util.createWorldSections(config);
+		BUtil.createWorldSections(config);
 
 		if (!bcauldrons.isEmpty()) {
 			int id = 0;
@@ -199,7 +201,7 @@ public class BCauldron {
 				String prefix;
 
 				if (worldName.startsWith("DXL_")) {
-					prefix = Util.getDxlName(worldName) + "." + id;
+					prefix = BUtil.getDxlName(worldName) + "." + id;
 				} else {
 					prefix = cauldron.block.getWorld().getUID().toString() + "." + id;
 				}

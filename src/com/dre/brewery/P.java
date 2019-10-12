@@ -5,19 +5,8 @@ import com.dre.brewery.filedata.DataSave;
 import com.dre.brewery.filedata.DataUpdater;
 import com.dre.brewery.filedata.LanguageReader;
 import com.dre.brewery.filedata.UpdateChecker;
-import com.dre.brewery.integration.IntegrationListener;
-import com.dre.brewery.integration.LogBlockBarrel;
-import com.dre.brewery.integration.WGBarrel;
-import com.dre.brewery.integration.WGBarrel7;
-import com.dre.brewery.integration.WGBarrelNew;
-import com.dre.brewery.integration.WGBarrelOld;
-import com.dre.brewery.listeners.BlockListener;
-import com.dre.brewery.listeners.CauldronListener;
-import com.dre.brewery.listeners.CommandListener;
-import com.dre.brewery.listeners.EntityListener;
-import com.dre.brewery.listeners.InventoryListener;
-import com.dre.brewery.listeners.PlayerListener;
-import com.dre.brewery.listeners.WorldListener;
+import com.dre.brewery.integration.*;
+import com.dre.brewery.listeners.*;
 import org.apache.commons.lang.math.NumberUtils;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
@@ -25,7 +14,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
-import com.dre.brewery.lore.LoreOutputStream;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
@@ -38,14 +26,11 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.UUID;
 
@@ -360,7 +345,7 @@ public class P extends JavaPlugin {
 		readData();
 
 		// Setup Metrics
-		try {
+		/*try {
 			Metrics metrics = new Metrics(this);
 			metrics.addCustomChart(new Metrics.SingleLineChart("drunk_players", BPlayer::numDrunkPlayers));
 			metrics.addCustomChart(new Metrics.SingleLineChart("brews_in_existence", () -> Brew.potions.size()));
@@ -416,7 +401,7 @@ public class P extends JavaPlugin {
 			}));
 		} catch (Throwable e) {
 			e.printStackTrace();
-		}
+		}*/
 
 		// Listeners
 		blockListener = new BlockListener();
@@ -592,9 +577,6 @@ public class P extends JavaPlugin {
 
 		// Third-Party
 		useWG = config.getBoolean("useWorldGuard", true) && getServer().getPluginManager().isPluginEnabled("WorldGuard");
-		useLWC = config.getBoolean("useLWC", true) && getServer().getPluginManager().isPluginEnabled("LWC");
-		useGP = config.getBoolean("useGriefPrevention", true) && getServer().getPluginManager().isPluginEnabled("GriefPrevention");
-		useLB = config.getBoolean("useLogBlock", false) && getServer().getPluginManager().isPluginEnabled("LogBlock");
 		hasVault = getServer().getPluginManager().isPluginEnabled("Vault");
 
 		if (useWG) {
@@ -773,9 +755,9 @@ public class P extends JavaPlugin {
 					boolean unlabeled = section.getBoolean(uid + ".unlabeled", false);
 					boolean persistent = section.getBoolean(uid + ".persist", false);
 					boolean stat = section.getBoolean(uid + ".stat", false);
-					//int lastUpdate = section.getInt("lastUpdate", 0);
+					int lastUpdate = section.getInt("lastUpdate", 0);
 
-					Brew.loadLegacy(ingredients, parseInt(uid), quality, distillRuns, ageTime, wood, recipe, unlabeled, persistent, stat);
+					Brew.loadLegacy(ingredients, parseInt(uid), quality, distillRuns, ageTime, wood, recipe, unlabeled, persistent, stat, lastUpdate);
 				}
 			}
 
@@ -806,7 +788,7 @@ public class P extends JavaPlugin {
 
 			for (World world : p.getServer().getWorlds()) {
 				if (world.getName().startsWith("DXL_")) {
-					loadWorldData(Util.getDxlName(world.getName()), world);
+					loadWorldData(BUtil.getDxlName(world.getName()), world);
 				} else {
 					loadWorldData(world.getUID().toString(), world);
 				}
@@ -967,7 +949,7 @@ public class P extends JavaPlugin {
 				return false;
 			}
 			try {
-				Util.saveFile(defconf, getDataFolder(), "config.yml", false);
+				BUtil.saveFile(defconf, getDataFolder(), "config.yml", false);
 			} catch (IOException e) {
 				e.printStackTrace();
 				return false;
@@ -988,8 +970,8 @@ public class P extends JavaPlugin {
 		for (String l : new String[] {"de", "en", "fr", "it", "zh", "tw"}) {
 			File lfold = new File(configs, l);
 			try {
-				Util.saveFile(getResource("config/" + (use1_13 ? "v13/" : "v12/") + l + "/config.yml"), lfold, "config.yml", overwrite);
-				Util.saveFile(getResource("languages/" + l + ".yml"), languages, l + ".yml", false); // Never overwrite languages for now
+				BUtil.saveFile(getResource("config/" + (use1_13 ? "v13/" : "v12/") + l + "/config.yml"), lfold, "config.yml", overwrite);
+				BUtil.saveFile(getResource("languages/" + l + ".yml"), languages, l + ".yml", false); // Never overwrite languages for now
 			} catch (IOException e) {
 				if (!(l.equals("zh") || l.equals("tw"))) {
 					e.printStackTrace();
@@ -1004,60 +986,8 @@ public class P extends JavaPlugin {
 		return NumberUtils.toInt(string, 0);
 	}
 
-
-	// Returns true if the Block can be destroyed by the Player or something else (null)
-	public boolean blockDestroy(Block block, Player player) {
-		Material type = block.getType();
-		if (type == Material.CAULDRON) {
-			// will only remove when existing
-			BCauldron.remove(block);
-			return true;
-
-		} else if (LegacyUtil.isFence(type)) {
-			// remove barrel and throw potions on the ground
-			Barrel barrel = Barrel.getBySpigot(block);
-			if (barrel != null) {
-				if (barrel.hasPermsDestroy(player)) {
-					barrel.remove(null, player);
-					return true;
-				} else {
-					return false;
-				}
-			}
-			return true;
-
-		} else if (LegacyUtil.isSign(type)) {
-			// remove small Barrels
-			Barrel barrel2 = Barrel.getBySpigot(block);
-			if (barrel2 != null) {
-				if (!barrel2.isLarge()) {
-					if (barrel2.hasPermsDestroy(player)) {
-						barrel2.remove(null, player);
-						return true;
-					} else {
-						return false;
-					}
-				} else {
-					barrel2.destroySign();
-				}
-			}
-			return true;
-
-		} else if (LegacyUtil.isWoodPlanks(type) || LegacyUtil.isWoodStairs(type)){
-			Barrel barrel3 = Barrel.getByWood(block);
-			if (barrel3 != null) {
-				if (barrel3.hasPermsDestroy(player)) {
-					barrel3.remove(block, player);
-				} else {
-					return false;
-				}
-			}
-		}
-		return true;
-	}
-
 	public String color(String msg) {
-		return Util.color(msg);
+		return BUtil.color(msg);
 	}
 
 

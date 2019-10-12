@@ -1,12 +1,6 @@
 package com.dre.brewery.listeners;
 
-import com.dre.brewery.BPlayer;
-import com.dre.brewery.BRecipe;
-import com.dre.brewery.Barrel;
-import com.dre.brewery.Brew;
-import com.dre.brewery.MCBarrel;
-import com.dre.brewery.integration.LogBlockBarrel;
-import com.dre.brewery.P;
+import com.dre.brewery.*;
 import com.dre.brewery.lore.BrewLore;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -19,15 +13,7 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.BrewEvent;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryAction;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.event.inventory.InventoryOpenEvent;
-import org.bukkit.event.inventory.InventoryPickupItemEvent;
-import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.inventory.*;
 import org.bukkit.inventory.BrewerInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
@@ -38,7 +24,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -203,13 +188,25 @@ public class InventoryListener implements Listener {
 		for (int slot = 0; slot < 3; slot++) {
 			item = inv.getItem(slot);
 			if (item != null) {
-				if (item.getType() == Material.POTION) {
-					if (item.hasItemMeta()) {
-						Brew pot = Brew.get(item);
-						if (pot != null && (!distill || pot.canDistill())) { // need at least one distillable potion.
-							return true;
-						}
-					}
+				contents[slot] = Brew.get(item);
+			}
+		}
+		return contents;
+	}
+
+	private byte hasCustom(BrewerInventory brewer) {
+		ItemStack item = brewer.getItem(3); // ingredient
+		boolean glowstone = (item != null && Material.GLOWSTONE_DUST == item.getType()); // need dust in the top slot.
+		byte customFound = 0;
+		for (Brew brew : getDistillContents(brewer)) {
+			if (brew != null) {
+				if (!glowstone) {
+					return 1;
+				}
+				if (brew.canDistill()) {
+					return 2;
+				} else {
+					customFound = 1;
 				}
 			}
 		}
@@ -231,24 +228,14 @@ public class InventoryListener implements Listener {
 
 	private boolean runDistill(BrewerInventory inv) {
 		boolean custom = false;
-		Boolean[] contents = new Boolean[3];
-		while (slot < 3) {
-			item = inv.getItem(slot);
-			contents[slot] = false;
-			if (item != null) {
-				if (item.getType() == Material.POTION) {
-					if (item.hasItemMeta()) {
-						Brew brew = Brew.get(item);
-						if (brew != null) {
-							// has custom potion in "slot"
-							if (brew.canDistill()) {
-								// is further distillable
-								contents[slot] = true;
-								custom = true;
-							}
-						}
-					}
-				}
+		Brew[] contents = getDistillContents(inv);
+		for (int slot = 0; slot < 3; slot++) {
+			if (contents[slot] == null) continue;
+			if (contents[slot].canDistill()) {
+				// is further distillable
+				custom = true;
+			} else {
+				contents[slot] = null;
 			}
 		}
 		if (custom) {
@@ -299,7 +286,7 @@ public class InventoryListener implements Listener {
 					P.p.log(potion.getLore().get(0).replaceAll("§", ""));
 					P.p.log("similar to beispiel? " + BRecipe.get("Beispiel").createBrew(10).isSimilar(brew));
 
-					//brew.touch();
+					brew.touch();
 
 					/*try {
 						DataInputStream in = new DataInputStream(new Base91DecoderStream(new LoreLoadStream(potion)));
@@ -457,18 +444,6 @@ public class InventoryListener implements Listener {
 
 	@EventHandler
 	public void onInventoryClose(InventoryCloseEvent event) {
-		if (P.p.useLB) {
-			if (event.getInventory().getHolder() instanceof Barrel) {
-				try {
-					LogBlockBarrel.closeBarrel(event.getPlayer(), event.getInventory());
-				} catch (Exception e) {
-					P.p.errorLog("Failed to Log Barrel to LogBlock!");
-					P.p.errorLog("Brewery was tested with version 1.94 of LogBlock!");
-					e.printStackTrace();
-				}
-			}
-		}
-
 		if (!P.use1_14) return;
 
 		// Barrel Closing Sound

@@ -24,7 +24,7 @@ public class PlayerPushEvent extends PlayerEvent implements Cancellable {
 		this.bPlayer = bPlayer;
 	}
 
-	public BPlayer getbPlayer() {
+	public BPlayer getBPlayer() {
 		return bPlayer;
 	}
 

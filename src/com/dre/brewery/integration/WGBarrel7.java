@@ -55,12 +55,7 @@ public class WGBarrel7 implements WGBarrel {
 
 		RegionQuery query = platform.getRegionContainer().createQuery();
 
-		if (!query.testBuild(new Location(world, spigot.getX(), spigot.getY(), spigot.getZ()), wg.wrapPlayer(player), Flags.USE, Flags.CHEST_ACCESS)) {
-			P.p.msg(player, P.p.languageReader.get("Error_NoBarrelAccess"));
-			return false;
-		}
-
-		return true;
+		return query.testBuild(new Location(world, spigot.getX(), spigot.getY(), spigot.getZ()), wg.wrapPlayer(player), Flags.USE, Flags.CHEST_ACCESS);
 	}
 
 }

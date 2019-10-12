@@ -12,6 +12,7 @@ public class BrewModifyEvent extends BrewEvent implements Cancellable {
 	private static final HandlerList handlers = new HandlerList();
 	private final Type type;
 	private boolean cancelled;
+	//private List<Consumer<Brew>> fcts;
 
 	public BrewModifyEvent(Brew brew, Type type) {
 		super(brew);
@@ -21,6 +22,10 @@ public class BrewModifyEvent extends BrewEvent implements Cancellable {
 	public Type getType() {
 		return type;
 	}
+
+	/*public void addModification(Consumer<Brew> predicate) {
+		fcts.add(predicate);
+	}*/
 
 	@Override
 	public boolean isCancelled() {

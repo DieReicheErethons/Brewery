@@ -1,9 +1,6 @@
 package com.dre.brewery.listeners;
 
-import java.util.ArrayList;
-import java.util.Locale;
-
-import com.dre.brewery.Util;
+import com.dre.brewery.*;
 import com.dre.brewery.api.events.brew.BrewModifyEvent;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -12,12 +9,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import com.dre.brewery.BIngredients;
-import com.dre.brewery.BRecipe;
-import com.dre.brewery.P;
-import com.dre.brewery.Wakeup;
-import com.dre.brewery.BPlayer;
-import com.dre.brewery.Brew;
+import java.util.ArrayList;
+import java.util.Locale;
 
 public class CommandListener implements CommandExecutor {
 
@@ -168,7 +161,7 @@ public class CommandListener implements CommandExecutor {
 			p.msg(sender, "&6" + p.getDescription().getName() + " v" + p.getDescription().getVersion());
 		}
 
-		Util.list(sender, commands, page);
+		BUtil.list(sender, commands, page);
 
 	}
 

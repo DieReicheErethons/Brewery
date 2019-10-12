@@ -5,6 +5,7 @@ import com.dre.brewery.P;
 import com.dre.brewery.api.events.barrel.BarrelAccessEvent;
 import com.dre.brewery.api.events.barrel.BarrelDestroyEvent;
 import com.dre.brewery.api.events.barrel.BarrelRemoveEvent;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -25,10 +26,16 @@ public class IntegrationListener implements Listener {
 				} catch (Throwable e) {
 					event.setCancelled(true);
 					P.p.errorLog("Failed to Check WorldGuard for Barrel Open Permissions!");
-					P.p.errorLog("Brewery was tested with version 5.8 to 6.1 of WorldGuard!");
+					P.p.errorLog("Brewery was tested with version 5.8, 6.1 to 7.0 of WorldGuard!");
 					P.p.errorLog("Disable the WorldGuard support in the config and do /brew reload");
 					e.printStackTrace();
-					P.p.msg(event.getPlayer(), "&cError opening Barrel, please report to an Admin!");
+					Player player = event.getPlayer();
+					if (player.hasPermission("brewery.admin") || player.hasPermission("brewery.mod")) {
+						P.p.msg(player, "&cWorldGuard check Error, Brewery was tested with up to v7.0 of Worldguard");
+						P.p.msg(player, "&cSet &7useWorldGuard: false &cin the config and /brew reload");
+					} else {
+						P.p.msg(player, "&cError opening Barrel, please report to an Admin!");
+					}
 				}
 			}
 		}
@@ -45,10 +52,16 @@ public class IntegrationListener implements Listener {
 				} catch (Throwable e) {
 					event.setCancelled(true);
 					P.p.errorLog("Failed to Check GriefPrevention for Barrel Open Permissions!");
-					P.p.errorLog("Brewery was tested with GriefPrevention 14.5.4");
+					P.p.errorLog("Brewery was tested with GriefPrevention v14.5 - v16.9");
 					P.p.errorLog("Disable the GriefPrevention support in the config and do /brew reload");
 					e.printStackTrace();
-					P.p.msg(event.getPlayer(), "&cError opening Barrel, please report to an Admin!");
+					Player player = event.getPlayer();
+					if (player.hasPermission("brewery.admin") || player.hasPermission("brewery.mod")) {
+						P.p.msg(player, "&cGriefPrevention check Error, Brewery was tested with up to v16.9 of GriefPrevention");
+						P.p.msg(player, "&cSet &7useGriefPrevention: false &cin the config and /brew reload");
+					} else {
+						P.p.msg(player, "&cError opening Barrel, please report to an Admin!");
+					}
 				}
 			}
 		}
@@ -69,7 +82,13 @@ public class IntegrationListener implements Listener {
 				P.p.errorLog("Brewery was tested with version 4.5.0 of LWC!");
 				P.p.errorLog("Disable the LWC support in the config and do /brew reload");
 				e.printStackTrace();
-				P.p.msg(event.getPlayerOptional(), "&cError breaking Barrel, please report to an Admin!");
+				Player player = event.getPlayerOptional();
+				if (player.hasPermission("brewery.admin") || player.hasPermission("brewery.mod")) {
+					P.p.msg(player, "&cLWC check Error, Brewery was tested with up to v4.5.0 of LWC");
+					P.p.msg(player, "&cSet &7useLWC: false &cin the config and /brew reload");
+				} else {
+					P.p.msg(player, "&cError opening Barrel, please report to an Admin!");
+				}
 			}
 		} else {
 			try {

@@ -1,8 +1,11 @@
 package com.dre.brewery.api.events;
 
 import com.dre.brewery.BCauldron;
+import com.dre.brewery.LegacyUtil;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.Levelled;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
@@ -40,7 +43,7 @@ public class IngedientAddEvent extends PlayerEvent implements Cancellable {
 	}
 
 	// Get the item currently being added to the cauldron by the player
-	// Can be changed directly or with the setter
+	// Can be changed directly (mutable) or with the setter Method
 	// The amount is ignored and always one added
 	public ItemStack getIngredient() {
 		return ingredient;
@@ -55,7 +58,7 @@ public class IngedientAddEvent extends PlayerEvent implements Cancellable {
 
 	// If the amount of the item in the players hand should be decreased
 	// Default true
-	public boolean shouldTakeItem() {
+	public boolean willTakeItem() {
 		return takeItem;
 	}
 
@@ -64,22 +67,21 @@ public class IngedientAddEvent extends PlayerEvent implements Cancellable {
 		this.takeItem = takeItem;
 	}
 
-	// Get the MaterialData of the Cauldron
+	// Get the BlockData of the Cauldron
 	// May be null if the Cauldron does not exist anymore
-	public Cauldron getCauldronData() {
-		BlockState state = block.getState();
-		if (state != null) {
-			MaterialData data = state.getData();
-			if (data instanceof Cauldron) {
-				return ((Cauldron) state);
-			}
+	public Levelled getCauldronData() {
+		BlockData data = block.getBlockData();
+		if (data instanceof Levelled) {
+			return (Levelled) data;
 		}
 		return null;
 	}
 
+	// Get the Water Fill level of the Cauldron
 	// 0 = empty, 1 = something in, 2 = full
-	public int getFillLevel() {
-		return BCauldron.getFillLevel(block);
+	// Can use BCauldron.EMPTY, BCauldron.SOME, BCauldron.FULL
+	public byte getFillLevel() {
+		return LegacyUtil.getFillLevel(block);
 	}
 
 	@Override

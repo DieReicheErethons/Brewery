@@ -1,8 +1,8 @@
 package com.dre.brewery;
 
-import org.bukkit.Color;
 import com.dre.brewery.api.events.brew.BrewModifyEvent;
 import com.dre.brewery.lore.*;
+import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.BrewerInventory;
@@ -42,7 +42,7 @@ public class Brew {
 	private boolean unlabeled;
 	private boolean persistent; // Only for legacy
 	private boolean immutable; // static/immutable potions should not be changed
-	//private int lastUpdate; // last update in hours after install time
+	private int lastUpdate; // last update in hours after install time
 
 	public Brew(BIngredients ingredients) {
 		this.ingredients = ingredients;
@@ -56,7 +56,7 @@ public class Brew {
 	}
 
 	// loading with all values set
-	public Brew(BIngredients ingredients, int quality, byte distillRuns, float ageTime, float wood, String recipe, boolean unlabeled, boolean immutable) {
+	public Brew(BIngredients ingredients, int quality, byte distillRuns, float ageTime, float wood, String recipe, boolean unlabeled, boolean immutable, int lastUpdate) {
 		this.ingredients = ingredients;
 		this.quality = quality;
 		this.distillRuns = distillRuns;
@@ -64,6 +64,7 @@ public class Brew {
 		this.wood = wood;
 		this.unlabeled = unlabeled;
 		this.immutable = immutable;
+		this.lastUpdate = lastUpdate;
 		setRecipeFromString(recipe);
 	}
 
@@ -77,6 +78,7 @@ public class Brew {
 			if (meta instanceof PotionMeta && ((PotionMeta) meta).hasCustomEffect(PotionEffectType.REGENERATION)) {
 				Brew brew = load(meta);
 				if (brew != null) {
+					// Load Legacy
 					brew = getFromPotionEffect(((PotionMeta) meta), false);
 				}
 				return brew;
@@ -98,6 +100,7 @@ public class Brew {
 						if (brew != null) {
 							((PotionMeta) meta).removeCustomEffect(PotionEffectType.REGENERATION);
 						} else {
+							// Load Legacy and convert
 							brew = getFromPotionEffect(((PotionMeta) meta), true);
 							if (brew == null) return null;
 							brew.save(meta);
@@ -113,6 +116,7 @@ public class Brew {
 		return null;
 	}
 
+	// Legacy Brew Loading
 	private static Brew getFromPotionEffect(PotionMeta potionMeta, boolean remove) {
 		for (PotionEffect effect : potionMeta.getCustomEffects()) {
 			if (effect.getType().equals(PotionEffectType.REGENERATION)) {
@@ -365,9 +369,8 @@ public class Brew {
 	}
 
 	// Do some regular updates
-	// Currently does nothing, but may be used to update something on this brew
 	public void touch() {
-		//lastUpdate = (int) ((double) (System.currentTimeMillis() - installTime) / 3600000D);
+		lastUpdate = (int) ((double) (System.currentTimeMillis() - installTime) / 3600000D);
 	}
 
 	public byte getDistillRuns() {
@@ -439,9 +442,9 @@ public class Brew {
 		}
 	}
 
-	/*public int getLastUpdate() {
+	public int getLastUpdate() {
 		return lastUpdate;
-	}*/
+	}
 
 	// Distilling section ---------------
 
@@ -459,6 +462,7 @@ public class Brew {
 	// distill custom potion in given slot
 	public void distillSlot(ItemStack slotItem, PotionMeta potionMeta) {
 		if (immutable) return;
+		//List<Consumer<Brew>> fcts = new ArrayList<>();
 		BrewModifyEvent modifyEvent = new BrewModifyEvent(this, BrewModifyEvent.Type.DISTILL);
 		P.p.getServer().getPluginManager().callEvent(modifyEvent);
 		if (modifyEvent.isCancelled()) return;
@@ -574,7 +578,7 @@ public class Brew {
 			factor = 2;
 		} else if (ageTime > 10) {
 			factor = 2;
-			factor += (float) ageTime / 10F;
+			factor += ageTime / 10F;
 		}
 		if (wood > to) {
 			wood -= time / factor;
@@ -723,8 +727,8 @@ public class Brew {
 	}
 
 	// Load potion data from data file for backwards compatibility
-	public static void loadLegacy(BIngredients ingredients, int uid, int quality, byte distillRuns, float ageTime, float wood, String recipe, boolean unlabeled, boolean persistent, boolean stat) {
-		Brew brew = new Brew(ingredients, quality, distillRuns, ageTime, wood, recipe, unlabeled, stat);
+	public static void loadLegacy(BIngredients ingredients, int uid, int quality, byte distillRuns, float ageTime, float wood, String recipe, boolean unlabeled, boolean persistent, boolean stat, int lastUpdate) {
+		Brew brew = new Brew(ingredients, quality, distillRuns, ageTime, wood, recipe, unlabeled, stat, lastUpdate);
 		brew.persistent = persistent;
 		legacyPotions.put(uid, brew);
 	}
@@ -751,7 +755,7 @@ public class Brew {
 		if (hasRecipe()) {
 			BrewLore lore = new BrewLore(this, potionMeta);
 			lore.removeEffects();
-			PotionColor.valueOf(currentRecipe.getColor()).colorBrew(potionMeta, item, canDistill());
+			PotionColor.fromString(currentRecipe.getColor()).colorBrew(potionMeta, item, canDistill());
 		} else {
 			PotionColor.GREY.colorBrew(potionMeta, item, canDistill());
 		}
@@ -792,9 +796,9 @@ public class Brew {
 			if (brew.immutable) {
 				idConfig.set("stat", true);
 			}
-			/*if (brew.lastUpdate > 0) {
+			if (brew.lastUpdate > 0) {
 				idConfig.set("lastUpdate", brew.lastUpdate);
-			}*/
+			}
 			// save the ingredients
 			idConfig.set("ingId", brew.ingredients.save(config.getParent()));
 		}

@@ -15,7 +15,7 @@ public class BarrelRemoveEvent extends BarrelEvent {
 		super(barrel);
 	}
 
-	public boolean shouldItemsDrop() {
+	public boolean willItemsDrop() {
 		return itemsDrop;
 	}
 

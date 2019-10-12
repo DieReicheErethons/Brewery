@@ -4,14 +4,11 @@ import com.dre.brewery.api.events.barrel.BarrelAccessEvent;
 import com.dre.brewery.api.events.barrel.BarrelCreateEvent;
 import com.dre.brewery.api.events.barrel.BarrelDestroyEvent;
 import com.dre.brewery.api.events.barrel.BarrelRemoveEvent;
-import com.dre.brewery.integration.CitadelBarrel;
-import com.dre.brewery.integration.GriefPreventionBarrel;
 import com.dre.brewery.integration.LWCBarrel;
 import com.dre.brewery.integration.LogBlockBarrel;
 import com.dre.brewery.lore.BrewLore;
 import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Material;
-import org.bukkit.TreeSpecies;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.HumanEntity;
@@ -21,10 +18,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
-import org.bukkit.material.MaterialData;
-import org.bukkit.material.Stairs;
-import org.bukkit.material.Tree;
-import org.bukkit.material.Wood;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -142,7 +135,7 @@ public class Barrel implements InventoryHolder {
 			if (plugin != null) {
 
 				// If the Clicked Block was the Sign, LWC already knows and we dont need to do anything here
-				if (!isSign(event.getClickedBlock())) {
+				if (!LegacyUtil.isSign(event.getClickedBlock().getType())) {
 					Block sign = getSignOfSpigot();
 					// If the Barrel does not have a Sign, it cannot be locked
 					if (!sign.equals(event.getClickedBlock())) {
@@ -410,14 +403,14 @@ public class Barrel implements InventoryHolder {
 			inventory.clear();
 			if (P.p.useLB && breaker != null) {
 				try {
-					LogBlockBarrel.breakBarrel(breaker.getName(), items, spigot.getLocation());
+					LogBlockBarrel.breakBarrel(breaker, items, spigot.getLocation());
 				} catch (Throwable e) {
 					P.p.errorLog("Failed to Log Barrel-break to LogBlock!");
 					P.p.errorLog("Brewery was tested with version 1.94 of LogBlock!");
 					e.printStackTrace();
 				}
 			}
-			if (event.shouldItemsDrop()) {
+			if (event.willItemsDrop()) {
 				for (ItemStack item : items) {
 					if (item != null) {
 						Brew brew = Brew.get(item);
@@ -462,7 +455,7 @@ public class Barrel implements InventoryHolder {
 
 	// Saves all data
 	public static void save(ConfigurationSection config, ConfigurationSection oldData) {
-		Util.createWorldSections(config);
+		BUtil.createWorldSections(config);
 
 		if (!barrels.isEmpty()) {
 			int id = 0;
@@ -472,7 +465,7 @@ public class Barrel implements InventoryHolder {
 				String prefix;
 
 				if (worldName.startsWith("DXL_")) {
-					prefix = Util.getDxlName(worldName) + "." + id;
+					prefix = BUtil.getDxlName(worldName) + "." + id;
 				} else {
 					prefix = barrel.spigot.getWorld().getUID().toString() + "." + id;
 				}
@@ -638,7 +631,7 @@ public class Barrel implements InventoryHolder {
 	// the barrel needs to be formed correctly
 	// flag force to also check if chunk is not loaded
 	public Block getBrokenBlock(boolean force) {
-		if (force || Util.isChunkLoaded(spigot)) {
+		if (force || BUtil.isChunkLoaded(spigot)) {
 			spigot = getSpigotOfSign(spigot);
 			if (LegacyUtil.isSign(spigot.getType())) {
 				return checkSBarrel();
@@ -825,7 +818,6 @@ public class Barrel implements InventoryHolder {
 							P.p.debugLog("Barrel at " + broken.getWorld().getName() + "/" + broken.getX() + "/" + broken.getY() + "/" + broken.getZ()
 									+ " has been destroyed unexpectedly, contents will drop");
 							// remove the barrel if it was destroyed
-							barrel.willDestroy(); // TODO Check if still needed
 							barrel.remove(broken, null);
 						} else {
 							// Dont check this barrel again, its enough to check it once after every restart

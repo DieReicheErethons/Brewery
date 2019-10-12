@@ -18,6 +18,10 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.dre.brewery.BCauldron.EMPTY;
+import static com.dre.brewery.BCauldron.SOME;
+import static com.dre.brewery.BCauldron.FULL;
+
 @SuppressWarnings("JavaReflectionMemberAccess")
 public class LegacyUtil {
 
@@ -190,27 +194,27 @@ public class LegacyUtil {
 	// 0 = empty, 1 = something in, 2 = full
 	public static byte getFillLevel(Block block) {
 		if (block.getType() != Material.CAULDRON) {
-			return 0;
+			return EMPTY;
 		}
 
 		if (P.use1_13) {
 			Levelled cauldron = ((Levelled) block.getBlockData());
 			if (cauldron.getLevel() == 0) {
-				return 0;
+				return EMPTY;
 			} else if (cauldron.getLevel() == cauldron.getMaximumLevel()) {
-				return 2;
+				return FULL;
 			} else {
-				return 1;
+				return SOME;
 			}
 
 		} else {
 			Cauldron cauldron = (Cauldron) block.getState().getData();
 			if (cauldron.isEmpty()) {
-				return 0;
+				return EMPTY;
 			} else if (cauldron.isFull()) {
-				return 2;
+				return FULL;
 			} else {
-				return 1;
+				return SOME;
 			}
 		}
 	}

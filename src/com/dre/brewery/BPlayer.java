@@ -22,13 +22,7 @@ import org.bukkit.util.Vector;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
 public class BPlayer {
 	private static Map<String, BPlayer> players = new HashMap<>();// Players name/uuid and BPlayer
@@ -69,7 +63,7 @@ public class BPlayer {
 
 	public static BPlayer get(Player player) {
 		if (!players.isEmpty()) {
-			return players.get(Util.playerString(player));
+			return players.get(BUtil.playerString(player));
 		}
 		return null;
 	}
@@ -117,18 +111,18 @@ public class BPlayer {
 	}
 
 	public static boolean hasPlayer(Player player) {
-		return players.containsKey(Util.playerString(player));
+		return players.containsKey(BUtil.playerString(player));
 	}
 
 	// Create a new BPlayer and add it to the list
 	public static BPlayer addPlayer(Player player) {
 		BPlayer bPlayer = new BPlayer();
-		players.put(Util.playerString(player), bPlayer);
+		players.put(BUtil.playerString(player), bPlayer);
 		return bPlayer;
 	}
 
 	public static void remove(Player player) {
-		players.remove(Util.playerString(player));
+		players.remove(BUtil.playerString(player));
 	}
 
 	public static int numDrunkPlayers() {
@@ -353,7 +347,7 @@ public class BPlayer {
 			}
 			hangoverEffects(player);
 			// wird der spieler noch gebraucht?
-			players.remove(Util.playerString(player));
+			players.remove(BUtil.playerString(player));
 
 		} else if (offlineDrunk - drunkeness >= 30) {
 			Location randomLoc = Wakeup.getRandom(player.getLocation());
@@ -514,7 +508,7 @@ public class BPlayer {
 			return;
 		}
 		for (PotionEffect effect : effects) {
-			Util.reapplyPotionEffect(player, effect, true);
+			BUtil.reapplyPotionEffect(player, effect, true);
 		}
 	}
 
@@ -582,7 +576,7 @@ public class BPlayer {
 
 	public static void addQualityEffects(int quality, int brewAlc, Player player) {
 		for (PotionEffect effect : getQualityEffects(quality, brewAlc)) {
-			Util.reapplyPotionEffect(player, effect, true);
+			BUtil.reapplyPotionEffect(player, effect, true);
 		}
 	}
 
@@ -615,8 +609,8 @@ public class BPlayer {
 		}
 		int amplifier = getHangoverQuality() / 3;
 
-		Util.reapplyPotionEffect(player, PotionEffectType.SLOW.createEffect(duration, amplifier), true);
-		Util.reapplyPotionEffect(player, PotionEffectType.HUNGER.createEffect(duration, amplifier), true);
+		BUtil.reapplyPotionEffect(player, PotionEffectType.SLOW.createEffect(duration, amplifier), true);
+		BUtil.reapplyPotionEffect(player, PotionEffectType.HUNGER.createEffect(duration, amplifier), true);
 	}
 
 
@@ -629,7 +623,7 @@ public class BPlayer {
 
 			if (bplayer.drunkeness > 30) {
 				if (bplayer.offlineDrunk == 0) {
-					Player player = Util.getPlayerfromString(name);
+					Player player = BUtil.getPlayerfromString(name);
 					if (player != null) {
 
 						bplayer.drunkEffects(player);
@@ -657,7 +651,7 @@ public class BPlayer {
 					// Prevent 0 drunkeness
 					soberPerMin++;
 				}
-				if (bplayer.drain(Util.getPlayerfromString(name), soberPerMin)) {
+				if (bplayer.drain(BUtil.getPlayerfromString(name), soberPerMin)) {
 					iter.remove();
 				}
 			}

@@ -140,7 +140,7 @@ public class Wakeup {
 				locs.add("&6" + s + id + "&f" + s + ": " + world + " " + x + "," + y + "," + z);
 			}
 		}
-		Util.list(sender, locs, page);
+		BUtil.list(sender, locs, page);
 	}
 
 	public static void check(CommandSender sender, int id, boolean all) {
@@ -228,7 +228,7 @@ public class Wakeup {
 
 
 	public static void save(ConfigurationSection section, ConfigurationSection oldData) {
-		Util.createWorldSections(section);
+		BUtil.createWorldSections(section);
 
 		// loc is saved as a String in world sections with format x/y/z/pitch/yaw
 		if (!wakeups.isEmpty()) {
@@ -245,7 +245,7 @@ public class Wakeup {
 				String prefix;
 
 				if (worldName.startsWith("DXL_")) {
-					prefix = Util.getDxlName(worldName) + "." + id;
+					prefix = BUtil.getDxlName(worldName) + "." + id;
 				} else {
 					prefix = wakeup.loc.getWorld().getUID().toString() + "." + id;
 				}

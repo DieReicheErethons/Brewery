@@ -256,7 +256,7 @@ public class PlayerListener implements Listener {
 			if (item.getType() == Material.POTION) {
 				Brew brew = Brew.get(item);
 				if (brew != null) {
-					if (!BPlayer.drink(brew, player)) {
+					if (!BPlayer.drink(brew, item.getItemMeta(), player)) {
 						event.setCancelled(true);
 						return;
 					}

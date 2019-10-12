@@ -1,5 +1,7 @@
 package com.dre.brewery;
 
+import com.dre.brewery.api.events.brew.BrewBeginModifyEvent;
+import com.dre.brewery.api.events.brew.BrewModifiedEvent;
 import com.dre.brewery.lore.BrewLore;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -255,6 +257,12 @@ public class BRecipe {
 
 		Brew brew = createBrew(quality);
 
+		BrewBeginModifyEvent modifyEvent = new BrewBeginModifyEvent(brew, potionMeta, BrewBeginModifyEvent.Type.CREATE);
+		P.p.getServer().getPluginManager().callEvent(modifyEvent);
+		if (modifyEvent.isCancelled()) {
+			return null;
+		}
+
 		Brew.PotionColor.fromString(getColor()).colorBrew(potionMeta, potion, false);
 		potionMeta.setDisplayName(P.p.color("&f" + getName(quality)));
 		//if (!P.use1_14) {
@@ -269,6 +277,8 @@ public class BRecipe {
 		lore.convertLore(false);
 		lore.addOrReplaceEffects(effects, quality);
 		lore.write();
+		BrewModifiedEvent modifiedEvent = new BrewModifiedEvent(brew, potionMeta, BrewModifiedEvent.Type.CREATE);
+		P.p.getServer().getPluginManager().callEvent(modifiedEvent);
 		brew.touch();
 		brew.save(potionMeta);
 

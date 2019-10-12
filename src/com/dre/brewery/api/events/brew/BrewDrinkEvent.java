@@ -1,14 +1,11 @@
 package com.dre.brewery.api.events.brew;
 
-import com.dre.brewery.BEffect;
 import com.dre.brewery.BPlayer;
 import com.dre.brewery.Brew;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
-import org.bukkit.potion.PotionEffect;
-
-import java.util.List;
+import org.bukkit.inventory.meta.ItemMeta;
 
 /*
  * A Player Drinks a Brew
@@ -23,8 +20,8 @@ public class BrewDrinkEvent extends BrewEvent implements Cancellable {
 	private int quality;
 	private boolean cancelled;
 
-	public BrewDrinkEvent(Brew brew, Player player, BPlayer bPlayer) {
-		super(brew);
+	public BrewDrinkEvent(Brew brew, ItemMeta meta, Player player, BPlayer bPlayer) {
+		super(brew, meta);
 		this.player = player;
 		this.bPlayer = bPlayer;
 		alc = brew.calcAlcohol();

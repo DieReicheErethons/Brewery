@@ -1,13 +1,15 @@
 package com.dre.brewery.listeners;
 
 import com.dre.brewery.*;
-import com.dre.brewery.api.events.brew.BrewModifyEvent;
+import com.dre.brewery.api.events.brew.BrewBeginModifyEvent;
+import com.dre.brewery.api.events.brew.BrewModifiedEvent;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -478,7 +480,8 @@ public class CommandListener implements CommandExecutor {
 			if (hand != null) {
 				Brew brew = Brew.get(hand);
 				if (brew != null) {
-					BrewModifyEvent modifyEvent = new BrewModifyEvent(brew, BrewModifyEvent.Type.STATIC);
+					ItemMeta meta = hand.getItemMeta();
+					BrewBeginModifyEvent modifyEvent = new BrewBeginModifyEvent(brew, meta, BrewBeginModifyEvent.Type.STATIC);
 					P.p.getServer().getPluginManager().callEvent(modifyEvent);
 					if (modifyEvent.isCancelled()) {
 						return;
@@ -495,7 +498,10 @@ public class CommandListener implements CommandExecutor {
 						p.msg(sender, p.languageReader.get("CMD_Static"));
 					}
 					brew.touch();
-					brew.save(hand);
+					BrewModifiedEvent modifiedEvent = new BrewModifiedEvent(brew, meta, BrewModifiedEvent.Type.STATIC);
+					P.p.getServer().getPluginManager().callEvent(modifiedEvent);
+					brew.save(meta);
+					hand.setItemMeta(meta);
 					return;
 				}
 			}
@@ -515,14 +521,18 @@ public class CommandListener implements CommandExecutor {
 			if (hand != null) {
 				Brew brew = Brew.get(hand);
 				if (brew != null) {
-					BrewModifyEvent modifyEvent = new BrewModifyEvent(brew, BrewModifyEvent.Type.UNLABEL);
+					ItemMeta meta = hand.getItemMeta();
+					BrewBeginModifyEvent modifyEvent = new BrewBeginModifyEvent(brew, meta, BrewBeginModifyEvent.Type.UNLABEL);
 					P.p.getServer().getPluginManager().callEvent(modifyEvent);
 					if (modifyEvent.isCancelled()) {
 						return;
 					}
 					brew.unLabel(hand);
 					brew.touch();
-					brew.save(hand);
+					BrewModifiedEvent modifiedEvent = new BrewModifiedEvent(brew, meta, BrewModifiedEvent.Type.UNLABEL);
+					P.p.getServer().getPluginManager().callEvent(modifiedEvent);
+					brew.save(meta);
+					hand.setItemMeta(meta);
 					p.msg(sender, p.languageReader.get("CMD_UnLabel"));
 					return;
 				}
@@ -602,7 +612,10 @@ public class CommandListener implements CommandExecutor {
 				}
 			}
 			if (recipe != null) {
-				player.getInventory().addItem(recipe.create(quality));
+				ItemStack item = recipe.create(quality);
+				if (item != null) {
+					player.getInventory().addItem(item);
+				}
 			} else {
 				p.msg(sender, p.languageReader.get("Error_NoBrewName", name));
 			}

@@ -1,6 +1,7 @@
 package com.dre.brewery;
 
-import com.dre.brewery.api.events.brew.BrewModifyEvent;
+import com.dre.brewery.api.events.brew.BrewBeginModifyEvent;
+import com.dre.brewery.api.events.brew.BrewModifiedEvent;
 import com.dre.brewery.lore.BrewLore;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -121,7 +122,7 @@ public class BIngredients {
 			cookedName = P.p.languageReader.get("Brew_Undefined");
 			Brew.PotionColor.CYAN.colorBrew(potionMeta, potion, true);
 		}
-		BrewModifyEvent modifyEvent = new BrewModifyEvent(brew, BrewModifyEvent.Type.FILL);
+		BrewBeginModifyEvent modifyEvent = new BrewBeginModifyEvent(brew, potionMeta, BrewBeginModifyEvent.Type.FILL);
 		P.p.getServer().getPluginManager().callEvent(modifyEvent);
 		if (modifyEvent.isCancelled()) {
 			return null;
@@ -137,6 +138,8 @@ public class BIngredients {
 		//potionMeta.addCustomEffect((PotionEffectType.REGENERATION).createEffect((uid * 4), 0), true);
 
 		brew.touch();
+		BrewModifiedEvent modifiedEvent = new BrewModifiedEvent(brew, potionMeta, BrewModifiedEvent.Type.FILL);
+		P.p.getServer().getPluginManager().callEvent(modifiedEvent);
 		brew.save(potionMeta);
 		potion.setItemMeta(potionMeta);
 

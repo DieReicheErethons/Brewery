@@ -1,6 +1,7 @@
 package com.dre.brewery;
 
-import com.dre.brewery.api.events.brew.BrewModifyEvent;
+import com.dre.brewery.api.events.brew.BrewBeginModifyEvent;
+import com.dre.brewery.api.events.brew.BrewModifiedEvent;
 import com.dre.brewery.lore.*;
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -22,7 +23,9 @@ import java.security.InvalidKeyException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 
 public class Brew {
 
@@ -464,8 +467,7 @@ public class Brew {
 	// distill custom potion in given slot
 	public void distillSlot(ItemStack slotItem, PotionMeta potionMeta) {
 		if (immutable) return;
-		//List<Consumer<Brew>> fcts = new ArrayList<>();
-		BrewModifyEvent modifyEvent = new BrewModifyEvent(this, BrewModifyEvent.Type.DISTILL);
+		BrewBeginModifyEvent modifyEvent = new BrewBeginModifyEvent(this, potionMeta, BrewBeginModifyEvent.Type.DISTILL);
 		P.p.getServer().getPluginManager().callEvent(modifyEvent);
 		if (modifyEvent.isCancelled()) return;
 
@@ -497,6 +499,8 @@ public class Brew {
 		lore.updateDistillLore(colorInBrewer);
 		lore.write();
 		touch();
+		BrewModifiedEvent modifiedEvent = new BrewModifiedEvent(this, potionMeta, BrewModifiedEvent.Type.DISTILL);
+		P.p.getServer().getPluginManager().callEvent(modifiedEvent);
 		save(potionMeta);
 
 		slotItem.setItemMeta(potionMeta);
@@ -522,11 +526,11 @@ public class Brew {
 
 	public void age(ItemStack item, float time, byte woodType) {
 		if (immutable) return;
-		BrewModifyEvent modifyEvent = new BrewModifyEvent(this, BrewModifyEvent.Type.AGE);
+		PotionMeta potionMeta = (PotionMeta) item.getItemMeta();
+		BrewBeginModifyEvent modifyEvent = new BrewBeginModifyEvent(this, potionMeta, BrewBeginModifyEvent.Type.AGE);
 		P.p.getServer().getPluginManager().callEvent(modifyEvent);
 		if (modifyEvent.isCancelled()) return;
 
-		PotionMeta potionMeta = (PotionMeta) item.getItemMeta();
 		BrewLore lore = new BrewLore(this, potionMeta);
 		ageTime += time;
 
@@ -569,6 +573,8 @@ public class Brew {
 		}
 		lore.write();
 		touch();
+		BrewModifiedEvent modifiedEvent = new BrewModifiedEvent(this, potionMeta, BrewModifiedEvent.Type.AGE);
+		P.p.getServer().getPluginManager().callEvent(modifiedEvent);
 		save(potionMeta);
 		item.setItemMeta(potionMeta);
 	}

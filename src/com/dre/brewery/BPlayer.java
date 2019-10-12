@@ -15,6 +15,7 @@ import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
@@ -144,12 +145,12 @@ public class BPlayer {
 	}
 
 	// Drink a brew and apply effects, etc.
-	public static boolean drink(Brew brew, Player player) {
+	public static boolean drink(Brew brew, ItemMeta meta, Player player) {
 		BPlayer bPlayer = get(player);
 		if (bPlayer == null) {
 			bPlayer = addPlayer(player);
 		}
-		BrewDrinkEvent drinkEvent = new BrewDrinkEvent(brew, player, bPlayer);
+		BrewDrinkEvent drinkEvent = new BrewDrinkEvent(brew, meta, player, bPlayer);
 		P.p.getServer().getPluginManager().callEvent(drinkEvent);
 		if (drinkEvent.isCancelled()) {
 			if (bPlayer.drunkeness <= 0) {

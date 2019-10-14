@@ -1,15 +1,10 @@
 package com.dre.brewery;
 
-import com.dre.brewery.api.events.brew.BrewBeginModifyEvent;
-import com.dre.brewery.api.events.brew.BrewModifiedEvent;
-import com.dre.brewery.lore.BrewLore;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.PotionMeta;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class BRecipe {
@@ -113,7 +108,7 @@ public class BRecipe {
 				if (effect.isValid()) {
 					effects.add(effect);
 				} else {
-					P.p.errorLog("Error adding Effect to Recipe: " + getName(5));
+					P.p.errorLog("Error adding Effect to Recipe: " + getRecipeName());
 				}
 			}
 		}
@@ -125,45 +120,45 @@ public class BRecipe {
 			P.p.errorLog("Recipe Name missing or invalid!");
 			return false;
 		}
-		if (getName(5) == null || getName(5).length() < 1) {
+		if (getRecipeName() == null || getRecipeName().length() < 1) {
 			P.p.errorLog("Recipe Name invalid");
 			return false;
 		}
 		if (ingredients == null || ingredients.isEmpty()) {
-			P.p.errorLog("No ingredients could be loaded for Recipe: " + getName(5));
+			P.p.errorLog("No ingredients could be loaded for Recipe: " + getRecipeName());
 			return false;
 		}
 		if (cookingTime < 1) {
-			P.p.errorLog("Invalid cooking time '" + cookingTime + "' in Recipe: " + getName(5));
+			P.p.errorLog("Invalid cooking time '" + cookingTime + "' in Recipe: " + getRecipeName());
 			return false;
 		}
 		if (distillruns < 0) {
-			P.p.errorLog("Invalid distillruns '" + distillruns + "' in Recipe: " + getName(5));
+			P.p.errorLog("Invalid distillruns '" + distillruns + "' in Recipe: " + getRecipeName());
 			return false;
 		}
 		if (distillTime < 0) {
-			P.p.errorLog("Invalid distilltime '" + distillTime + "' in Recipe: " + getName(5));
+			P.p.errorLog("Invalid distilltime '" + distillTime + "' in Recipe: " + getRecipeName());
 			return false;
 		}
 		if (wood < 0 || wood > 6) {
-			P.p.errorLog("Invalid wood type '" + wood + "' in Recipe: " + getName(5));
+			P.p.errorLog("Invalid wood type '" + wood + "' in Recipe: " + getRecipeName());
 			return false;
 		}
 		if (age < 0) {
-			P.p.errorLog("Invalid age time '" + age + "' in Recipe: " + getName(5));
+			P.p.errorLog("Invalid age time '" + age + "' in Recipe: " + getRecipeName());
 			return false;
 		}
 		String c = getColor();
-		if (!c.equals("WATER") && Brew.PotionColor.fromString(c) == Brew.PotionColor.WATER) {
-			P.p.errorLog("Invalid Color '" + color + "' in Recipe: " + getName(5));
+		if (!c.equals("WATER") && PotionColor.fromString(c) == PotionColor.WATER) {
+			P.p.errorLog("Invalid Color '" + color + "' in Recipe: " + getRecipeName());
 			return false;
 		}
 		if (difficulty < 0 || difficulty > 10) {
-			P.p.errorLog("Invalid difficulty '" + difficulty + "' in Recipe: " + getName(5));
+			P.p.errorLog("Invalid difficulty '" + difficulty + "' in Recipe: " + getRecipeName());
 			return false;
 		}
 		if (alcohol < 0) {
-			P.p.errorLog("Invalid alcohol '" + alcohol + "' in Recipe: " + getName(5));
+			P.p.errorLog("Invalid alcohol '" + alcohol + "' in Recipe: " + getRecipeName());
 			return false;
 		}
 		return true;
@@ -250,42 +245,20 @@ public class BRecipe {
 		return recipeItem.getDurability() == -1 || recipeItem.getDurability() == usedItem.getDurability();
 	}
 
-	// Create a Potion from this Recipe with best values. Quality can be set, but will reset to 10 if put in a barrel
+	/**
+	 * Create a Potion from this Recipe with best values. Quality can be set, but will reset to 10 if put in a barrel
+	 * @param quality The Quality of the Brew
+	 * @return The Created Item
+	 */
 	public ItemStack create(int quality) {
-		ItemStack potion = new ItemStack(Material.POTION);
-		PotionMeta potionMeta = (PotionMeta) potion.getItemMeta();
-
-		Brew brew = createBrew(quality);
-
-		BrewBeginModifyEvent modifyEvent = new BrewBeginModifyEvent(brew, potionMeta, BrewBeginModifyEvent.Type.CREATE);
-		P.p.getServer().getPluginManager().callEvent(modifyEvent);
-		if (modifyEvent.isCancelled()) {
-			return null;
-		}
-
-		Brew.PotionColor.fromString(getColor()).colorBrew(potionMeta, potion, false);
-		potionMeta.setDisplayName(P.p.color("&f" + getName(quality)));
-		//if (!P.use1_14) {
-			// Before 1.14 the effects duration would strangely be only a quarter of what we tell it to be
-			// This is due to the Duration Modifier, that is removed in 1.14
-		//	uid *= 4;
-		//}
-		// This effect stores the UID in its Duration
-		//potionMeta.addCustomEffect((PotionEffectType.REGENERATION).createEffect((uid * 4), 0), true);
-
-		BrewLore lore = new BrewLore(brew, potionMeta);
-		lore.convertLore(false);
-		lore.addOrReplaceEffects(effects, quality);
-		lore.write();
-		BrewModifiedEvent modifiedEvent = new BrewModifiedEvent(brew, potionMeta, BrewModifiedEvent.Type.CREATE);
-		P.p.getServer().getPluginManager().callEvent(modifiedEvent);
-		brew.touch();
-		brew.save(potionMeta);
-
-		potion.setItemMeta(potionMeta);
-		return potion;
+		return createBrew(quality).createItem(this);
 	}
 
+	/**
+	 * Create a Brew from this Recipe with best values. Quality can be set, but will reset to 10 if put in a barrel
+	 * @param quality The Quality of the Brew
+	 * @return The created Brew
+	 */
 	public Brew createBrew(int quality) {
 		ArrayList<ItemStack> list = new ArrayList<>(ingredients.size());
 		for (ItemStack item : ingredients) {
@@ -298,7 +271,7 @@ public class BRecipe {
 
 		BIngredients bIngredients = new BIngredients(list, cookingTime);
 
-		return new Brew(bIngredients, quality, distillruns, getAge(), wood, getName(5), false, true, 0);
+		return new Brew(bIngredients, quality, distillruns, getAge(), wood, getRecipeName(), false, true, 0);
 	}
 
 
@@ -312,6 +285,11 @@ public class BRecipe {
 			}
 		}
 		return 0;
+	}
+
+	// Same as getName(5)
+	public String getRecipeName() {
+		return getName(5);
 	}
 
 	// name that fits the quality
@@ -381,12 +359,12 @@ public class BRecipe {
 
 	@Override
 	public String toString() {
-		return "BRecipe{" + getName(5) + '}';
+		return "BRecipe{" + getRecipeName() + '}';
 	}
 
 	public static BRecipe get(String name) {
 		for (BRecipe recipe : BIngredients.recipes) {
-			if (recipe.getName(5).equalsIgnoreCase(name)) {
+			if (recipe.getRecipeName().equalsIgnoreCase(name)) {
 				return recipe;
 			}
 		}

@@ -1,7 +1,6 @@
 package com.dre.brewery;
 
-import com.dre.brewery.api.events.brew.BrewBeginModifyEvent;
-import com.dre.brewery.api.events.brew.BrewModifiedEvent;
+import com.dre.brewery.api.events.brew.BrewModifyEvent;
 import com.dre.brewery.lore.BrewLore;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -96,7 +95,7 @@ public class BIngredients {
 			lore.addOrReplaceEffects(brew.getEffects(), brew.getQuality());
 
 			cookedName = cookRecipe.getName(quality);
-			Brew.PotionColor.fromString(cookRecipe.getColor()).colorBrew(potionMeta, potion, false);
+			PotionColor.fromString(cookRecipe.getColor()).colorBrew(potionMeta, potion, false);
 
 		} else {
 			// new base potion
@@ -104,14 +103,14 @@ public class BIngredients {
 
 			if (state <= 1) {
 				cookedName = P.p.languageReader.get("Brew_ThickBrew");
-				Brew.PotionColor.BLUE.colorBrew(potionMeta, potion, false);
+				PotionColor.BLUE.colorBrew(potionMeta, potion, false);
 			} else {
 				for (Material ingredient : materials.keySet()) {
 					if (cookedNames.containsKey(ingredient)) {
 						// if more than half of the ingredients is of one kind
 						if (materials.get(ingredient) > (getIngredientsCount() / 2)) {
 							cookedName = cookedNames.get(ingredient);
-							Brew.PotionColor.CYAN.colorBrew(potionMeta, potion, true);
+							PotionColor.CYAN.colorBrew(potionMeta, potion, true);
 						}
 					}
 				}
@@ -120,12 +119,7 @@ public class BIngredients {
 		if (cookedName == null) {
 			// if no name could be found
 			cookedName = P.p.languageReader.get("Brew_Undefined");
-			Brew.PotionColor.CYAN.colorBrew(potionMeta, potion, true);
-		}
-		BrewBeginModifyEvent modifyEvent = new BrewBeginModifyEvent(brew, potionMeta, BrewBeginModifyEvent.Type.FILL);
-		P.p.getServer().getPluginManager().callEvent(modifyEvent);
-		if (modifyEvent.isCancelled()) {
-			return null;
+			PotionColor.CYAN.colorBrew(potionMeta, potion, true);
 		}
 
 		potionMeta.setDisplayName(P.p.color("&f" + cookedName));
@@ -138,8 +132,11 @@ public class BIngredients {
 		//potionMeta.addCustomEffect((PotionEffectType.REGENERATION).createEffect((uid * 4), 0), true);
 
 		brew.touch();
-		BrewModifiedEvent modifiedEvent = new BrewModifiedEvent(brew, potionMeta, BrewModifiedEvent.Type.FILL);
-		P.p.getServer().getPluginManager().callEvent(modifiedEvent);
+		BrewModifyEvent modifyEvent = new BrewModifyEvent(brew, potionMeta, BrewModifyEvent.Type.FILL);
+		P.p.getServer().getPluginManager().callEvent(modifyEvent);
+		if (modifyEvent.isCancelled()) {
+			return null;
+		}
 		brew.save(potionMeta);
 		potion.setItemMeta(potionMeta);
 

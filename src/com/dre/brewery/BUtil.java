@@ -24,13 +24,15 @@ import java.util.UUID;
 
 public class BUtil {
 
-	/******************************************/
-	/**********                      **********/
-	/**********     Bukkit Utils     **********/
-	/**********                      **********/
-	/******************************************/
+	/* **************************************** */
+	/* *********                      ********* */
+	/* *********     Bukkit Utils     ********* */
+	/* *********                      ********* */
+	/* **************************************** */
 
-	// Check if the Chunk of a Block is loaded !without loading it in the process!
+	/**
+	 * Check if the Chunk of a Block is loaded !without loading it in the process!
+	 */
 	public static boolean isChunkLoaded(Block block) {
 		return block.getWorld().isChunkLoaded(block.getX() >> 4, block.getZ() >> 4);
 	}
@@ -42,7 +44,9 @@ public class BUtil {
 		return msg;
 	}
 
-	// Returns either uuid or Name of player, depending on bukkit version
+	/**
+	 * Returns either uuid or Name of player, depending on bukkit version
+	 */
 	public static String playerString(Player player) {
 		if (P.useUUID) {
 			return player.getUniqueId().toString();
@@ -63,8 +67,11 @@ public class BUtil {
 		return Bukkit.getPlayerExact(name);
 	}
 
-	// Apply a Potion Effect, if player already has this effect, overwrite the existing effect.
-	// Optionally only overwrite if the new one is stronger, i.e. has higher level or longer duration
+	/**
+	 * Apply a Potion Effect, if player already has this effect, overwrite the existing effect.
+	 *
+	 * @param onlyIfStronger Optionally only overwrite if the new one is stronger, i.e. has higher level or longer duration
+	 */
 	public static void reapplyPotionEffect(Player player, PotionEffect effect, boolean onlyIfStronger) {
 		final PotionEffectType type = effect.getType();
 		if (player.hasPotionEffect(type)) {
@@ -74,7 +81,9 @@ public class BUtil {
 			} else {
 				plEffect = player.getActivePotionEffects().stream().filter(e -> e.getType().equals(type)).findAny().get();
 			}
-			if (plEffect.getAmplifier() < effect.getAmplifier() || (plEffect.getAmplifier() == effect.getAmplifier() && plEffect.getDuration() < effect.getDuration())) {
+			if (!onlyIfStronger ||
+				plEffect.getAmplifier() < effect.getAmplifier() ||
+				(plEffect.getAmplifier() == effect.getAmplifier() && plEffect.getDuration() < effect.getDuration())) {
 				player.removePotionEffect(type);
 			} else {
 				return;
@@ -83,13 +92,18 @@ public class BUtil {
 		effect.apply(player);
 	}
 
-	/******************************************/
-	/**********                      **********/
-	/**********     String Utils     **********/
-	/**********                      **********/
-	/******************************************/
+	/* **************************************** */
+	/* *********                      ********* */
+	/* *********     String Utils     ********* */
+	/* *********                      ********* */
+	/* **************************************** */
 
-	// Returns the Index of a String from the list that contains this substring
+	/**
+	 * Returns the Index of a String from the list that contains this substring
+	 *
+	 * @param list The List in which to search for a substring
+	 * @param substring Part of the String to search for in each of <tt>list</tt>
+	 */
 	public static int indexOfSubstring(List<String> list, String substring) {
 		if (list.isEmpty()) return -1;
 		for (int index = 0, size = list.size(); index < size; index++) {
@@ -101,7 +115,9 @@ public class BUtil {
 		return -1;
 	}
 
-	// Returns the index of a String from the list that starts with 'lineStart', returns -1 if not found;
+	/**
+	 * Returns the index of a String from the list that starts with 'lineStart', returns -1 if not found;
+	 */
 	public static int indexOfStart(List<String> list, String lineStart) {
 		for (int i = 0, size = list.size(); i < size; i++) {
 			if (list.get(i).startsWith(lineStart)) {
@@ -111,13 +127,15 @@ public class BUtil {
 		return -1;
 	}
 
-	/******************************************/
-	/**********                      **********/
-	/**********     Brewery Utils    **********/
-	/**********                      **********/
-	/******************************************/
+	/* **************************************** */
+	/* *********                      ********* */
+	/* *********     Brewery Utils    ********* */
+	/* *********                      ********* */
+	/* **************************************** */
 
-	// create empty World save Sections
+	/**
+	 * create empty World save Sections
+	 */
 	public static void createWorldSections(ConfigurationSection section) {
 		for (World world : P.p.getServer().getWorlds()) {
 			String worldName = world.getName();
@@ -130,7 +148,12 @@ public class BUtil {
 		}
 	}
 
-	// Returns true if the Block can be destroyed by the Player or something else (null)
+	/**
+	 * Returns true if the Block can be destroyed by the Player or something else (null)
+	 *
+	 * @param player The Player that destroyed a Block, Null if no Player involved
+	 * @return True if the Block can be destroyed
+	 */
 	public static boolean blockDestroy(Block block, Player player, BarrelDestroyEvent.Reason reason) {
 		Material type = block.getType();
 		if (type == Material.CAULDRON) {
@@ -181,13 +204,17 @@ public class BUtil {
 		return true;
 	}
 
-	/******************************************/
-	/**********                      **********/
-	/**********     Other Utils      **********/
-	/**********                      **********/
-	/******************************************/
+	/* **************************************** */
+	/* *********                      ********* */
+	/* *********     Other Utils      ********* */
+	/* *********                      ********* */
+	/* **************************************** */
 
-	// prints a list of Strings at the specified page
+	/**
+	 * prints a list of Strings at the specified page
+	 *
+	 * @param sender The CommandSender to send the Page to
+	 */
 	public static void list(CommandSender sender, ArrayList<String> strings, int page) {
 		int pages = (int) Math.ceil(strings.size() / 7F);
 		if (page > pages || page < 1) {
@@ -207,7 +234,9 @@ public class BUtil {
 		}
 	}
 
-	// gets the Name of a DXL World
+	/**
+	 * gets the Name of a DXL World
+	 */
 	public static String getDxlName(String worldName) {
 		File dungeonFolder = new File(worldName);
 		if (dungeonFolder.isDirectory()) {

@@ -1,8 +1,7 @@
 package com.dre.brewery.listeners;
 
 import com.dre.brewery.*;
-import com.dre.brewery.api.events.brew.BrewBeginModifyEvent;
-import com.dre.brewery.api.events.brew.BrewModifiedEvent;
+import com.dre.brewery.api.events.brew.BrewModifyEvent;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -480,12 +479,6 @@ public class CommandListener implements CommandExecutor {
 			if (hand != null) {
 				Brew brew = Brew.get(hand);
 				if (brew != null) {
-					ItemMeta meta = hand.getItemMeta();
-					BrewBeginModifyEvent modifyEvent = new BrewBeginModifyEvent(brew, meta, BrewBeginModifyEvent.Type.STATIC);
-					P.p.getServer().getPluginManager().callEvent(modifyEvent);
-					if (modifyEvent.isCancelled()) {
-						return;
-					}
 					if (brew.isStatic()) {
 						if (!brew.isPersistent()) {
 							brew.setStatic(false, hand);
@@ -498,8 +491,12 @@ public class CommandListener implements CommandExecutor {
 						p.msg(sender, p.languageReader.get("CMD_Static"));
 					}
 					brew.touch();
-					BrewModifiedEvent modifiedEvent = new BrewModifiedEvent(brew, meta, BrewModifiedEvent.Type.STATIC);
-					P.p.getServer().getPluginManager().callEvent(modifiedEvent);
+					ItemMeta meta = hand.getItemMeta();
+					BrewModifyEvent modifyEvent = new BrewModifyEvent(brew, meta, BrewModifyEvent.Type.STATIC);
+					P.p.getServer().getPluginManager().callEvent(modifyEvent);
+					if (modifyEvent.isCancelled()) {
+						return;
+					}
 					brew.save(meta);
 					hand.setItemMeta(meta);
 					return;
@@ -521,16 +518,16 @@ public class CommandListener implements CommandExecutor {
 			if (hand != null) {
 				Brew brew = Brew.get(hand);
 				if (brew != null) {
-					ItemMeta meta = hand.getItemMeta();
-					BrewBeginModifyEvent modifyEvent = new BrewBeginModifyEvent(brew, meta, BrewBeginModifyEvent.Type.UNLABEL);
-					P.p.getServer().getPluginManager().callEvent(modifyEvent);
-					if (modifyEvent.isCancelled()) {
-						return;
-					}
+					ItemMeta origMeta = hand.getItemMeta();
 					brew.unLabel(hand);
 					brew.touch();
-					BrewModifiedEvent modifiedEvent = new BrewModifiedEvent(brew, meta, BrewModifiedEvent.Type.UNLABEL);
-					P.p.getServer().getPluginManager().callEvent(modifiedEvent);
+					ItemMeta meta = hand.getItemMeta();
+					BrewModifyEvent modifyEvent = new BrewModifyEvent(brew, meta, BrewModifyEvent.Type.UNLABEL);
+					P.p.getServer().getPluginManager().callEvent(modifyEvent);
+					if (modifyEvent.isCancelled()) {
+						hand.setItemMeta(origMeta);
+						return;
+					}
 					brew.save(meta);
 					hand.setItemMeta(meta);
 					p.msg(sender, p.languageReader.get("CMD_UnLabel"));

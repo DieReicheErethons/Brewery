@@ -27,6 +27,7 @@ public class EntityListener implements Listener {
 	// Remove the Potion from Brew when it despawns
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onItemDespawn(ItemDespawnEvent event) {
+		if (Brew.noLegacy()) return;
 		ItemStack item = event.getEntity().getItemStack();
 		if (item.getType() == Material.POTION) {
 			Brew.removeLegacy(item);
@@ -35,6 +36,7 @@ public class EntityListener implements Listener {
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onEntityCombust(EntityCombustEvent event) {
+		if (!Brew.noLegacy()) return;
 		Entity entity = event.getEntity();
 		if (entity.getType() == EntityType.DROPPED_ITEM) {
 			if (entity instanceof Item) {

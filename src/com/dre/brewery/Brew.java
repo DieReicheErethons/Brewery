@@ -1,20 +1,15 @@
 package com.dre.brewery;
 
-import com.dre.brewery.api.events.brew.BrewBeginModifyEvent;
-import com.dre.brewery.api.events.brew.BrewModifiedEvent;
+import com.dre.brewery.api.events.brew.BrewModifyEvent;
 import com.dre.brewery.lore.*;
-import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.BrewerInventory;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
-import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.potion.PotionType;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -23,9 +18,7 @@ import java.security.InvalidKeyException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.function.BiConsumer;
 
 public class Brew {
 
@@ -41,7 +34,7 @@ public class Brew {
 	private byte distillRuns;
 	private float ageTime;
 	private float wood;
-	private BRecipe currentRecipe;
+	private BRecipe currentRecipe; // Recipe this Brew is currently Based off. May change between modifications and is often null when not modifying
 	private boolean unlabeled;
 	private boolean persistent; // Only for legacy
 	private boolean immutable; // static/immutable potions should not be changed
@@ -189,7 +182,7 @@ public class Brew {
 		currentRecipe = null;
 		if (name != null && !name.equals("")) {
 			for (BRecipe recipe : BIngredients.recipes) {
-				if (recipe.getName(5).equalsIgnoreCase(name)) {
+				if (recipe.getRecipeName().equalsIgnoreCase(name)) {
 					currentRecipe = recipe;
 					return true;
 				}
@@ -201,7 +194,7 @@ public class Brew {
 					if (!immutable) {
 						this.quality = calcQuality();
 					}
-					P.p.log("Brew was made from Recipe: '" + name + "' which could not be found. '" + currentRecipe.getName(5) + "' used instead!");
+					P.p.log("Brew was made from Recipe: '" + name + "' which could not be found. '" + currentRecipe.getRecipeName() + "' used instead!");
 					return true;
 				} else {
 					P.p.errorLog("Brew was made from Recipe: '" + name + "' which could not be found!");
@@ -212,7 +205,7 @@ public class Brew {
 	}
 
 	public boolean reloadRecipe() {
-		return currentRecipe == null || setRecipeFromString(currentRecipe.getName(5));
+		return currentRecipe == null || setRecipeFromString(currentRecipe.getRecipeName());
 	}
 
 	// Copy a Brew with a new unique ID and return its item
@@ -467,9 +460,6 @@ public class Brew {
 	// distill custom potion in given slot
 	public void distillSlot(ItemStack slotItem, PotionMeta potionMeta) {
 		if (immutable) return;
-		BrewBeginModifyEvent modifyEvent = new BrewBeginModifyEvent(this, potionMeta, BrewBeginModifyEvent.Type.DISTILL);
-		P.p.getServer().getPluginManager().callEvent(modifyEvent);
-		if (modifyEvent.isCancelled()) return;
 
 		distillRuns += 1;
 		BrewLore lore = new BrewLore(this, potionMeta);
@@ -499,8 +489,13 @@ public class Brew {
 		lore.updateDistillLore(colorInBrewer);
 		lore.write();
 		touch();
-		BrewModifiedEvent modifiedEvent = new BrewModifiedEvent(this, potionMeta, BrewModifiedEvent.Type.DISTILL);
-		P.p.getServer().getPluginManager().callEvent(modifiedEvent);
+		BrewModifyEvent modifyEvent = new BrewModifyEvent(this, potionMeta, BrewModifyEvent.Type.DISTILL);
+		P.p.getServer().getPluginManager().callEvent(modifyEvent);
+		if (modifyEvent.isCancelled()) {
+			// As the brew and everything connected to it is only saved on the meta from now on,
+			// not saving the brew into potionMeta is enough to not change anything in case of cancel
+			return;
+		}
 		save(potionMeta);
 
 		slotItem.setItemMeta(potionMeta);
@@ -527,9 +522,6 @@ public class Brew {
 	public void age(ItemStack item, float time, byte woodType) {
 		if (immutable) return;
 		PotionMeta potionMeta = (PotionMeta) item.getItemMeta();
-		BrewBeginModifyEvent modifyEvent = new BrewBeginModifyEvent(this, potionMeta, BrewBeginModifyEvent.Type.AGE);
-		P.p.getServer().getPluginManager().callEvent(modifyEvent);
-		if (modifyEvent.isCancelled()) return;
 
 		BrewLore lore = new BrewLore(this, potionMeta);
 		ageTime += time;
@@ -573,8 +565,13 @@ public class Brew {
 		}
 		lore.write();
 		touch();
-		BrewModifiedEvent modifiedEvent = new BrewModifiedEvent(this, potionMeta, BrewModifiedEvent.Type.AGE);
-		P.p.getServer().getPluginManager().callEvent(modifiedEvent);
+		BrewModifyEvent modifyEvent = new BrewModifyEvent(this, potionMeta, BrewModifyEvent.Type.AGE);
+		P.p.getServer().getPluginManager().callEvent(modifyEvent);
+		if (modifyEvent.isCancelled()) {
+			// As the brew and everything connected to it is only saved on the meta from now on,
+			// not saving the brew into potionMeta is enough to not change anything in case of cancel
+			return;
+		}
 		save(potionMeta);
 		item.setItemMeta(potionMeta);
 	}
@@ -599,6 +596,60 @@ public class Brew {
 				wood = to;
 			}
 		}
+	}
+
+	/**
+	 * Create a new Item of this Brew. A BrewModifyEvent type CREATE will be called.
+	 *
+	 * @param recipe Recipe is required if the brew doesn't have a currentRecipe
+	 * @return The created Item, null if the Event is cancelled
+	 */
+	public ItemStack createItem(BRecipe recipe) {
+		return createItem(recipe, true);
+	}
+
+	/**
+	 * Create a new Item of this Brew.
+	 *
+	 * @param recipe Recipe is required if the brew doesn't have a currentRecipe
+	 * @param event Set event to true if a BrewModifyEvent type CREATE should be called and may be cancelled. Only then may this method return null
+	 * @return The created Item, null if the Event is cancelled
+	 */
+	public ItemStack createItem(BRecipe recipe, boolean event) {
+		if (recipe == null) {
+			recipe = getCurrentRecipe();
+		}
+		if (recipe == null) {
+			throw new IllegalArgumentException("Recipe can't be null if the brew doesn't have a currentRecipe");
+		}
+		ItemStack potion = new ItemStack(Material.POTION);
+		PotionMeta potionMeta = (PotionMeta) potion.getItemMeta();
+
+		PotionColor.fromString(recipe.getColor()).colorBrew(potionMeta, potion, false);
+		potionMeta.setDisplayName(P.p.color("&f" + recipe.getName(quality)));
+		//if (!P.use1_14) {
+		// Before 1.14 the effects duration would strangely be only a quarter of what we tell it to be
+		// This is due to the Duration Modifier, that is removed in 1.14
+		//	uid *= 4;
+		//}
+		// This effect stores the UID in its Duration
+		//potionMeta.addCustomEffect((PotionEffectType.REGENERATION).createEffect((uid * 4), 0), true);
+
+		BrewLore lore = new BrewLore(this, potionMeta);
+		lore.convertLore(false);
+		lore.addOrReplaceEffects(recipe.getEffects(), quality);
+		lore.write();
+		touch();
+		if (event) {
+			BrewModifyEvent modifyEvent = new BrewModifyEvent(this, potionMeta, BrewModifyEvent.Type.CREATE);
+			P.p.getServer().getPluginManager().callEvent(modifyEvent);
+			if (modifyEvent.isCancelled()) {
+				return null;
+			}
+		}
+		save(potionMeta);
+		potion.setItemMeta(potionMeta);
+		return potion;
 	}
 
 	private static Brew load(ItemMeta meta) {
@@ -715,7 +766,7 @@ public class Brew {
 			out.writeFloat(wood);
 		}
 		if (currentRecipe != null) {
-			out.writeUTF(currentRecipe.getName(5));
+			out.writeUTF(currentRecipe.getRecipeName());
 		}
 		ingredients.save(out);
 	}
@@ -732,6 +783,10 @@ public class Brew {
 				saveSeed = new SecureRandom().nextLong();
 			}
 		}
+	}
+
+	public static boolean noLegacy() {
+		return legacyPotions.isEmpty();
 	}
 
 	// Load potion data from data file for backwards compatibility
@@ -793,7 +848,7 @@ public class Brew {
 				idConfig.set("wood", brew.wood);
 			}
 			if (brew.currentRecipe != null) {
-				idConfig.set("recipe", brew.currentRecipe.getName(5));
+				idConfig.set("recipe", brew.currentRecipe.getRecipeName());
 			}
 			if (brew.unlabeled) {
 				idConfig.set("unlabeled", true);
@@ -810,100 +865,6 @@ public class Brew {
 			// save the ingredients
 			idConfig.set("ingId", brew.ingredients.save(config.getParent()));
 		}
-	}
-
-	public static class PotionColor {
-		public static final PotionColor PINK = new PotionColor(1, PotionType.REGEN, Color.FUCHSIA);
-		public static final PotionColor CYAN = new PotionColor(2, PotionType.SPEED, Color.AQUA);
-		public static final PotionColor ORANGE = new PotionColor(3, PotionType.FIRE_RESISTANCE, Color.ORANGE);
-		public static final PotionColor GREEN = new PotionColor(4, PotionType.POISON, Color.GREEN);
-		public static final PotionColor BRIGHT_RED = new PotionColor(5, PotionType.INSTANT_HEAL, Color.fromRGB(255,0,0));
-		public static final PotionColor BLUE = new PotionColor(6, PotionType.NIGHT_VISION, Color.NAVY);
-		public static final PotionColor BLACK = new PotionColor(8, PotionType.WEAKNESS, Color.BLACK);
-		public static final PotionColor RED = new PotionColor(9, PotionType.STRENGTH, Color.fromRGB(196,0,0));
-		public static final PotionColor GREY = new PotionColor(10, PotionType.SLOWNESS, Color.GRAY);
-		public static final PotionColor WATER = new PotionColor(11, P.use1_9 ? PotionType.WATER_BREATHING : null, Color.BLUE);
-		public static final PotionColor DARK_RED = new PotionColor(12, PotionType.INSTANT_DAMAGE, Color.fromRGB(128,0,0));
-		public static final PotionColor BRIGHT_GREY = new PotionColor(14, PotionType.INVISIBILITY, Color.SILVER);
-
-		private final int colorId;
-		private final PotionType type;
-		private final Color color;
-
-		PotionColor(int colorId, PotionType type, Color color) {
-			this.colorId = colorId;
-			this.type = type;
-			this.color = color;
-		}
-
-		public PotionColor(Color color) {
-			colorId = -1;
-			type = WATER.getType();
-			this.color = color;
-		}
-
-		// gets the Damage Value, that sets a color on the potion
-		// offset +32 is not accepted by brewer, so not further destillable
-		public short getColorId(boolean destillable) {
-			if (destillable) {
-				return (short) (colorId + 64);
-			}
-			return (short) (colorId + 32);
-		}
-
-		public PotionType getType() {
-			return type;
-		}
-
-		public Color getColor() {
-			return color;
-		}
-
-		@SuppressWarnings("deprecation")
-		public void colorBrew(PotionMeta meta, ItemStack potion, boolean destillable) {
-			if (P.use1_9) {
-				meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
-				if (P.use1_11) {
-					// BasePotionData was only used for the Color, so starting with 1.12 we can use setColor instead
-					meta.setColor(getColor());
-				} else {
-					meta.setBasePotionData(new PotionData(getType()));
-				}
-			} else {
-				potion.setDurability(getColorId(destillable));
-			}
-		}
-
-		public static PotionColor fromString(String string) {
-			switch (string) {
-				case "PINK": return PINK;
-				case "CYAN": return CYAN;
-				case "ORANGE": return ORANGE;
-				case "GREEN": return GREEN;
-				case "BRIGHT_RED": return BRIGHT_RED;
-				case "BLUE": return BLUE;
-				case "BLACK": return BLACK;
-				case "RED": return RED;
-				case "GREY": return GREY;
-				case "WATER": return WATER;
-				case "DARK_RED": return DARK_RED;
-				case "BRIGHT_GREY": return BRIGHT_GREY;
-				default:
-					try{
-						if (string.length() >= 7) {
-							string = string.substring(1);
-						}
-						return new PotionColor(Color.fromRGB(
-							Integer.parseInt(string.substring( 0, 2 ), 16 ),
-							Integer.parseInt(string.substring( 2, 4 ), 16 ),
-							Integer.parseInt(string.substring( 4, 6 ), 16 )
-						));
-					} catch (Exception e) {
-						return WATER;
-					}
-			}
-		}
-
 	}
 
 }

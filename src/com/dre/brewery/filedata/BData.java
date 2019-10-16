@@ -211,11 +211,17 @@ public class BData {
 							String[] st = section.getString(barrel + ".st", "").split(",");
 							String[] wo = section.getString(barrel + ".wo", "").split(",");
 
+							Barrel b;
 							if (invSection != null) {
-								new Barrel(block, sign, st, wo, invSection.getValues(true), time);
+								b = new Barrel(block, sign, st, wo, invSection.getValues(true), time);
 							} else {
 								// Barrel has no inventory
-								new Barrel(block, sign, st, wo, null, time);
+								b = new Barrel(block, sign, st, wo, null, time);
+							}
+
+							// In case Barrel Block locations were missing and could not be recreated: do not add the barrel
+							if (b.getBody().getStairsloc() != null || b.getBody().getWoodsloc() != null) {
+								Barrel.barrels.add(b);
 							}
 
 						} else {

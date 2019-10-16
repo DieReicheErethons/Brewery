@@ -5,10 +5,9 @@ import com.dre.brewery.api.events.barrel.BarrelCreateEvent;
 import com.dre.brewery.api.events.barrel.BarrelDestroyEvent;
 import com.dre.brewery.api.events.barrel.BarrelRemoveEvent;
 import com.dre.brewery.filedata.BConfig;
-import com.dre.brewery.integration.LWCBarrel;
 import com.dre.brewery.integration.LogBlockBarrel;
 import com.dre.brewery.lore.BrewLore;
-import org.apache.commons.lang.ArrayUtils;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
@@ -21,7 +20,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
@@ -34,23 +32,20 @@ public class Barrel implements InventoryHolder {
 	public static CopyOnWriteArrayList<Barrel> barrels = new CopyOnWriteArrayList<>(); // TODO find best collection
 	private static int check = 0;
 
-	private Block spigot;
-	private int[] woodsloc = null; // location of wood Blocks
-	private int[] stairsloc = null; // location of stair Blocks
-	private byte signoffset;
-	private boolean checked;
+	private final Block spigot;
+	private final BarrelBody body; // The Blocks that make up a Barrel in the World
+	private boolean checked; // Checked by the random BarrelCheck routine
 	private Inventory inventory;
 	private float time;
 
 	public Barrel(Block spigot, byte signoffset) {
 		this.spigot = spigot;
-		this.signoffset = signoffset;
+		body = new BarrelBody(this, signoffset);
 	}
 
 	// load from file
 	public Barrel(Block spigot, byte sign, String[] st, String[] wo, Map<String, Object> items, float time) {
 		this.spigot = spigot;
-		this.signoffset = sign;
 		if (isLarge()) {
 			this.inventory = P.p.getServer().createInventory(this, 27, P.p.languageReader.get("Etc_Barrel"));
 		} else {
@@ -65,34 +60,7 @@ public class Barrel implements InventoryHolder {
 		}
 		this.time = time;
 
-		int i = 0;
-		if (wo.length > 1) {
-			woodsloc = new int[wo.length];
-			for (String wos : wo) {
-				woodsloc[i] = P.p.parseInt(wos);
-				i++;
-			}
-			i = 0;
-		}
-		if (st.length > 1) {
-			stairsloc = new int[st.length];
-			for (String sts : st) {
-				stairsloc[i] = P.p.parseInt(sts);
-				i++;
-			}
-		}
-
-		if (woodsloc == null && stairsloc == null) {
-			// If loading from old data, or block locations are missing, regenerate them
-			// This will only be done in those extreme cases.
-			Block broken = getBrokenBlock(true);
-			if (broken != null) {
-				remove(broken, null);
-				return;
-			}
-		}
-
-		barrels.add(this);
+		body = new BarrelBody(this, sign, st, wo);
 	}
 
 	public static void onUpdate() {
@@ -158,7 +126,7 @@ public class Barrel implements InventoryHolder {
 				if (inventory.getViewers().isEmpty()) {
 					// if inventory contains potions
 					if (inventory.contains(Material.POTION)) {
-						byte wood = getWood();
+						byte wood = body.getWood();
 						long loadTime = System.nanoTime();
 						for (ItemStack item : inventory.getContents()) {
 							if (item != null) {
@@ -192,22 +160,24 @@ public class Barrel implements InventoryHolder {
 
 	public void playOpeningSound() {
 		float randPitch = (float) (Math.random() * 0.1);
+		Location location = getSpigot().getLocation();
 		if (isLarge()) {
-			getSpigot().getWorld().playSound(getSpigot().getLocation(), Sound.BLOCK_CHEST_OPEN, SoundCategory.BLOCKS, 0.4f, 0.55f + randPitch);
+			location.getWorld().playSound(location, Sound.BLOCK_CHEST_OPEN, SoundCategory.BLOCKS, 0.4f, 0.55f + randPitch);
 			//getSpigot().getWorld().playSound(getSpigot().getLocation(), Sound.ITEM_BUCKET_EMPTY, SoundCategory.BLOCKS, 0.5f, 0.6f + randPitch);
-			getSpigot().getWorld().playSound(getSpigot().getLocation(), Sound.BLOCK_BREWING_STAND_BREW, SoundCategory.BLOCKS, 0.4f, 0.45f + randPitch);
+			location.getWorld().playSound(location, Sound.BLOCK_BREWING_STAND_BREW, SoundCategory.BLOCKS, 0.4f, 0.45f + randPitch);
 		} else {
-			getSpigot().getWorld().playSound(getSpigot().getLocation(), Sound.BLOCK_BARREL_OPEN, SoundCategory.BLOCKS, 0.5f, 0.8f + randPitch);
+			location.getWorld().playSound(location, Sound.BLOCK_BARREL_OPEN, SoundCategory.BLOCKS, 0.5f, 0.8f + randPitch);
 		}
 	}
 
 	public void playClosingSound() {
 		float randPitch = (float) (Math.random() * 0.1);
+		Location location = getSpigot().getLocation();
 		if (isLarge()) {
-			getSpigot().getWorld().playSound(getSpigot().getLocation(), Sound.BLOCK_BARREL_CLOSE, SoundCategory.BLOCKS, 0.5f, 0.5f + randPitch);
-			getSpigot().getWorld().playSound(getSpigot().getLocation(), Sound.ITEM_BUCKET_EMPTY, SoundCategory.BLOCKS, 0.2f, 0.6f + randPitch);
+			location.getWorld().playSound(location, Sound.BLOCK_BARREL_CLOSE, SoundCategory.BLOCKS, 0.5f, 0.5f + randPitch);
+			location.getWorld().playSound(location, Sound.ITEM_BUCKET_EMPTY, SoundCategory.BLOCKS, 0.2f, 0.6f + randPitch);
 		} else {
-			getSpigot().getWorld().playSound(getSpigot().getLocation(), Sound.BLOCK_BARREL_CLOSE, SoundCategory.BLOCKS, 0.5f, 0.8f + randPitch);
+			location.getWorld().playSound(location, Sound.BLOCK_BARREL_CLOSE, SoundCategory.BLOCKS, 0.5f, 0.8f + randPitch);
 		}
 	}
 
@@ -220,70 +190,25 @@ public class Barrel implements InventoryHolder {
 		return spigot;
 	}
 
+	public BarrelBody getBody() {
+		return body;
+	}
+
 	public float getTime() {
 		return time;
 	}
 
 	// Returns true if this Block is part of this Barrel
 	public boolean hasBlock(Block block) {
-		if (block != null) {
-			if (LegacyUtil.isWoodPlanks(block.getType())) {
-				return hasWoodBlock(block);
-			} else if (LegacyUtil.isWoodStairs(block.getType())) {
-				return hasStairsBlock(block);
-			}
-		}
-		return false;
+		return body.hasBlock(block);
 	}
 
 	public boolean hasWoodBlock(Block block) {
-		if (woodsloc != null) {
-			if (spigot.getWorld() != null && spigot.getWorld().equals(block.getWorld())) {
-				if (woodsloc.length > 2) {
-					int x = block.getX();
-					if (Math.abs(x - woodsloc[0]) < 10) {
-						for (int i = 0; i < woodsloc.length - 2; i += 3) {
-							if (woodsloc[i] == x) {
-								if (woodsloc[i + 1] == block.getY()) {
-									if (woodsloc[i + 2] == block.getZ()) {
-										return true;
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		return false;
+		return body.hasWoodBlock(block);
 	}
 
 	public boolean hasStairsBlock(Block block) {
-		if (stairsloc != null) {
-			if (spigot.getWorld() != null && spigot.getWorld().equals(block.getWorld())) {
-				if (stairsloc.length > 2) {
-					int x = block.getX();
-					if (Math.abs(x - stairsloc[0]) < 10) {
-						for (int i = 0; i < stairsloc.length - 2; i += 3) {
-							if (stairsloc[i] == x) {
-								if (stairsloc[i + 1] == block.getY()) {
-									if (stairsloc[i + 2] == block.getZ()) {
-										return true;
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		return false;
-	}
-
-	// Returns true if the Offset of the clicked Sign matches the Barrel.
-	// This prevents adding another sign to the barrel and clicking that.
-	public boolean isSignOfBarrel(byte offset) {
-		return offset == 0 || signoffset == 0 || signoffset == offset;
+		return body.hasStairsBlock(block);
 	}
 
 	// Get the Barrel by Block, null if that block is not part of a barrel
@@ -303,7 +228,7 @@ public class Barrel implements InventoryHolder {
 	// Get the Barrel by Sign or Spigot (Fastest)
 	public static Barrel getBySpigot(Block sign) {
 		// convert spigot if neccessary
-		Block spigot = getSpigotOfSign(sign);
+		Block spigot = BarrelBody.getSpigotOfSign(sign);
 
 		byte signoffset = 0;
 		if (!spigot.equals(sign)) {
@@ -311,11 +236,11 @@ public class Barrel implements InventoryHolder {
 		}
 
 		for (Barrel barrel : barrels) {
-			if (barrel.isSignOfBarrel(signoffset)) {
-				if (barrel.spigot.equals(spigot)) {
-					if (barrel.signoffset == 0 && signoffset != 0) {
+			if (barrel.body.isSignOfBarrel(signoffset)) {
+				if (barrel.body.equals(spigot)) {
+					if (barrel.body.getSignoffset() == 0 && signoffset != 0) {
 						// Barrel has no signOffset even though we clicked a sign, may be old
-						barrel.signoffset = signoffset;
+						barrel.body.setSignoffset(signoffset);
 					}
 					return barrel;
 				}
@@ -328,13 +253,13 @@ public class Barrel implements InventoryHolder {
 	public static Barrel getByWood(Block wood) {
 		if (LegacyUtil.isWoodPlanks(wood.getType())) {
 			for (Barrel barrel : barrels) {
-				if (barrel.hasWoodBlock(wood)) {
+				if (barrel.body.hasWoodBlock(wood)) {
 					return barrel;
 				}
 			}
 		} else if (LegacyUtil.isWoodStairs(wood.getType())) {
 			for (Barrel barrel : Barrel.barrels) {
-				if (barrel.hasStairsBlock(wood)) {
+				if (barrel.body.hasStairsBlock(wood)) {
 					return barrel;
 				}
 			}
@@ -344,7 +269,7 @@ public class Barrel implements InventoryHolder {
 
 	// creates a new Barrel out of a sign
 	public static boolean create(Block sign, Player player) {
-		Block spigot = getSpigotOfSign(sign);
+		Block spigot = BarrelBody.getSpigotOfSign(sign);
 
 		byte signoffset = 0;
 		if (!spigot.equals(sign)) {
@@ -354,7 +279,7 @@ public class Barrel implements InventoryHolder {
 		Barrel barrel = getBySpigot(spigot);
 		if (barrel == null) {
 			barrel = new Barrel(spigot, signoffset);
-			if (barrel.getBrokenBlock(true) == null) {
+			if (barrel.body.getBrokenBlock(true) == null) {
 				if (LegacyUtil.isSign(spigot.getType())) {
 					if (!player.hasPermission("brewery.createbarrel.small")) {
 						P.p.msg(player, P.p.languageReader.get("Perms_NoSmallBarrelCreate"));
@@ -374,8 +299,8 @@ public class Barrel implements InventoryHolder {
 				}
 			}
 		} else {
-			if (barrel.signoffset == 0 && signoffset != 0) {
-				barrel.signoffset = signoffset;
+			if (barrel.body.getSignoffset() == 0 && signoffset != 0) {
+				barrel.body.setSignoffset(signoffset);
 				return true;
 			}
 		}
@@ -411,7 +336,7 @@ public class Barrel implements InventoryHolder {
 						Brew brew = Brew.get(item);
 						if (brew != null) {
 							// Brew before throwing
-							brew.age(item, time, getWood());
+							brew.age(item, time, body.getWood());
 							PotionMeta meta = (PotionMeta) item.getItemMeta();
 							if (BrewLore.hasColorLore(meta)) {
 								BrewLore lore = new BrewLore(brew, meta);
@@ -434,45 +359,6 @@ public class Barrel implements InventoryHolder {
 		barrels.remove(this);
 	}
 
-	// If the Sign of a Large Barrel gets destroyed, set signOffset to 0
-	public void destroySign() {
-		signoffset = 0;
-	}
-
-	// direction of the barrel from the spigot
-	public static int getDirection(Block spigot) {
-		int direction = 0;// 1=x+ 2=x- 3=z+ 4=z-
-		Material type = spigot.getRelative(0, 0, 1).getType();
-		if (LegacyUtil.isWoodPlanks(type) || LegacyUtil.isWoodStairs(type)) {
-			direction = 3;
-		}
-		type = spigot.getRelative(0, 0, -1).getType();
-		if (LegacyUtil.isWoodPlanks(type) || LegacyUtil.isWoodStairs(type)) {
-			if (direction == 0) {
-				direction = 4;
-			} else {
-				return 0;
-			}
-		}
-		type = spigot.getRelative(1, 0, 0).getType();
-		if (LegacyUtil.isWoodPlanks(type) || LegacyUtil.isWoodStairs(type)) {
-			if (direction == 0) {
-				direction = 1;
-			} else {
-				return 0;
-			}
-		}
-		type = spigot.getRelative(-1, 0, 0).getType();
-		if (LegacyUtil.isWoodPlanks(type) || LegacyUtil.isWoodStairs(type)) {
-			if (direction == 0) {
-				direction = 2;
-			} else {
-				return 0;
-			}
-		}
-		return direction;
-	}
-
 	// is this a Large barrel?
 	public boolean isLarge() {
 		return !isSmall();
@@ -483,239 +369,21 @@ public class Barrel implements InventoryHolder {
 		return !LegacyUtil.isSign(spigot.getType());
 	}
 
-	// woodtype of the block the spigot is attached to
-	public byte getWood() {
-		Block wood;
-		switch (getDirection(spigot)) { // 1=x+ 2=x- 3=z+ 4=z-
-			case 0:
-				return 0;
-			case 1:
-				wood = spigot.getRelative(1, 0, 0);
-				break;
-			case 2:
-				wood = spigot.getRelative(-1, 0, 0);
-				break;
-			case 3:
-				wood = spigot.getRelative(0, 0, 1);
-				break;
-			default:
-				wood = spigot.getRelative(0, 0, -1);
-		}
-		try {
-			return LegacyUtil.getWoodType(wood);
-		} catch (NoSuchFieldError | NoClassDefFoundError noSuchFieldError) {
-			// Using older minecraft versions some fields and classes do not exist
-			return 0;
-		}
-	}
-
 	// returns the Sign of a large barrel, the spigot if there is none
 	public Block getSignOfSpigot() {
-		if (signoffset != 0) {
-			if (LegacyUtil.isSign(spigot.getType())) {
-				return spigot;
-			}
-
-			if (LegacyUtil.isSign(spigot.getRelative(0, signoffset, 0).getType())) {
-				return spigot.getRelative(0, signoffset, 0);
-			} else {
-				signoffset = 0;
-			}
-		}
-		return spigot;
+		return body.getSignOfSpigot();
 	}
 
 	// returns the fence above/below a block, itself if there is none
 	public static Block getSpigotOfSign(Block block) {
-
-		int y = -2;
-		while (y <= 1) {
-			// Fence and Netherfence
-			Block relative = block.getRelative(0, y, 0);
-			if (LegacyUtil.isFence(relative.getType())) {
-				return (relative);
-			}
-			y++;
-		}
-		return block;
+		return BarrelBody.getSpigotOfSign(block);
 	}
 
 	// returns null if Barrel is correctly placed; the block that is missing when not
 	// the barrel needs to be formed correctly
 	// flag force to also check if chunk is not loaded
 	public Block getBrokenBlock(boolean force) {
-		if (force || BUtil.isChunkLoaded(spigot)) {
-			spigot = getSpigotOfSign(spigot);
-			if (LegacyUtil.isSign(spigot.getType())) {
-				return checkSBarrel();
-			} else {
-				return checkLBarrel();
-			}
-		}
-		return null;
-	}
-
-	public Block checkSBarrel() {
-		int direction = getDirection(spigot);// 1=x+ 2=x- 3=z+ 4=z-
-		if (direction == 0) {
-			return spigot;
-		}
-		int startX;
-		int startZ;
-		int endX;
-		int endZ;
-
-		ArrayList<Integer> stairs = new ArrayList<>();
-
-		if (direction == 1) {
-			startX = 1;
-			endX = startX + 1;
-			startZ = -1;
-			endZ = 0;
-		} else if (direction == 2) {
-			startX = -2;
-			endX = startX + 1;
-			startZ = 0;
-			endZ = 1;
-		} else if (direction == 3) {
-			startX = 0;
-			endX = 1;
-			startZ = 1;
-			endZ = startZ + 1;
-		} else {
-			startX = -1;
-			endX = 0;
-			startZ = -2;
-			endZ = startZ + 1;
-		}
-
-		Material type;
-		int x = startX;
-		int y = 0;
-		int z = startZ;
-		while (y <= 1) {
-			while (x <= endX) {
-				while (z <= endZ) {
-					Block block = spigot.getRelative(x, y, z);
-					type = block.getType();
-
-					if (LegacyUtil.isWoodStairs(type)) {
-						if (y == 0) {
-							// stairs have to be upside down
-							if (!LegacyUtil.areStairsInverted(block)) {
-								return block;
-							}
-						}
-						stairs.add(block.getX());
-						stairs.add(block.getY());
-						stairs.add(block.getZ());
-						z++;
-					} else {
-						return spigot.getRelative(x, y, z);
-					}
-				}
-				z = startZ;
-				x++;
-			}
-			z = startZ;
-			x = startX;
-			y++;
-		}
-		stairsloc = ArrayUtils.toPrimitive(stairs.toArray(new Integer[0]));
-		return null;
-	}
-
-	public Block checkLBarrel() {
-		int direction = getDirection(spigot);// 1=x+ 2=x- 3=z+ 4=z-
-		if (direction == 0) {
-			return spigot;
-		}
-		int startX;
-		int startZ;
-		int endX;
-		int endZ;
-
-		ArrayList<Integer> stairs = new ArrayList<>();
-		ArrayList<Integer> woods = new ArrayList<>();
-
-		if (direction == 1) {
-			startX = 1;
-			endX = startX + 3;
-			startZ = -1;
-			endZ = 1;
-		} else if (direction == 2) {
-			startX = -4;
-			endX = startX + 3;
-			startZ = -1;
-			endZ = 1;
-		} else if (direction == 3) {
-			startX = -1;
-			endX = 1;
-			startZ = 1;
-			endZ = startZ + 3;
-		} else {
-			startX = -1;
-			endX = 1;
-			startZ = -4;
-			endZ = startZ + 3;
-		}
-
-		Material type;
-		int x = startX;
-		int y = 0;
-		int z = startZ;
-		while (y <= 2) {
-			while (x <= endX) {
-				while (z <= endZ) {
-					Block block = spigot.getRelative(x, y, z);
-					type = block.getType();
-					if (direction == 1 || direction == 2) {
-						if (y == 1 && z == 0) {
-							if (x == -1 || x == -4 || x == 1 || x == 4) {
-								woods.add(block.getX());
-								woods.add(block.getY());
-								woods.add(block.getZ());
-							}
-							z++;
-							continue;
-						}
-					} else {
-						if (y == 1 && x == 0) {
-							if (z == -1 || z == -4 || z == 1 || z == 4) {
-								woods.add(block.getX());
-								woods.add(block.getY());
-								woods.add(block.getZ());
-							}
-							z++;
-							continue;
-						}
-					}
-					if (LegacyUtil.isWoodPlanks(type) || LegacyUtil.isWoodStairs(type)) {
-						if (LegacyUtil.isWoodPlanks(type)) {
-							woods.add(block.getX());
-							woods.add(block.getY());
-							woods.add(block.getZ());
-						} else {
-							stairs.add(block.getX());
-							stairs.add(block.getY());
-							stairs.add(block.getZ());
-						}
-						z++;
-					} else {
-						return block;
-					}
-				}
-				z = startZ;
-				x++;
-			}
-			z = startZ;
-			x = startX;
-			y++;
-		}
-		stairsloc = ArrayUtils.toPrimitive(stairs.toArray(new Integer[0]));
-		woodsloc = ArrayUtils.toPrimitive(woods.toArray(new Integer[0]));
-
-		return null;
+		return body.getBrokenBlock(force);
 	}
 
 	//unloads barrels that are in a unloading world
@@ -731,7 +399,7 @@ public class Barrel implements InventoryHolder {
 	public static void save(ConfigurationSection config, ConfigurationSection oldData) {
 		BUtil.createWorldSections(config);
 
-		if (barrels.isEmpty()) {
+		if (!barrels.isEmpty()) {
 			int id = 0;
 			for (Barrel barrel : barrels) {
 
@@ -747,23 +415,8 @@ public class Barrel implements InventoryHolder {
 				// block: x/y/z
 				config.set(prefix + ".spigot", barrel.spigot.getX() + "/" + barrel.spigot.getY() + "/" + barrel.spigot.getZ());
 
-				if (barrel.signoffset != 0) {
-					config.set(prefix + ".sign", barrel.signoffset);
-				}
-				if (barrel.stairsloc != null && barrel.stairsloc.length > 0) {
-					StringBuilder st = new StringBuilder();
-					for (int i : barrel.stairsloc) {
-						st.append(i).append(",");
-					}
-					config.set(prefix + ".st", st.substring(0, st.length() - 1));
-				}
-				if (barrel.woodsloc != null && barrel.woodsloc.length > 0) {
-					StringBuilder wo = new StringBuilder();
-					for (int i : barrel.woodsloc) {
-						wo.append(i).append(",");
-					}
-					config.set(prefix + ".wo", wo.substring(0, wo.length() - 1));
-				}
+				// save the body data into the section as well
+				barrel.body.save(config, prefix);
 
 				if (barrel.inventory != null) {
 					int slot = 0;
@@ -808,7 +461,7 @@ public class Barrel implements InventoryHolder {
 				if (check < barrels.size()) {
 					Barrel barrel = barrels.get(check);
 					if (!barrel.checked) {
-						Block broken = barrel.getBrokenBlock(false);
+						Block broken = barrel.body.getBrokenBlock(false);
 						if (broken != null) {
 							P.p.debugLog("Barrel at " + broken.getWorld().getName() + "/" + broken.getX() + "/" + broken.getY() + "/" + broken.getZ()
 									+ " has been destroyed unexpectedly, contents will drop");

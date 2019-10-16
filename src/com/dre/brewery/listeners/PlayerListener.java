@@ -52,7 +52,7 @@ public class PlayerListener implements Listener {
 			}
 		} else if (LegacyUtil.isWoodStairs(type)) {
 			for (Barrel barrel2 : Barrel.barrels) {
-				if (barrel2.hasStairsBlock(clickedBlock)) {
+				if (barrel2.getBody().hasStairsBlock(clickedBlock)) {
 					if (BConfig.openEverywhere || !barrel2.isLarge()) {
 						barrel = barrel2;
 					}

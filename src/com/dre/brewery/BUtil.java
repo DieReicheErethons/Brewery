@@ -186,7 +186,7 @@ public class BUtil {
 						return false;
 					}
 				} else {
-					barrel2.destroySign();
+					barrel2.getBody().destroySign();
 				}
 			}
 			return true;

@@ -1,12 +1,12 @@
 package com.dre.brewery;
 
+import org.bukkit.Location;
+import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+
 import java.util.ArrayList;
 import java.util.Iterator;
-
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.command.CommandSender;
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
 
 public class Wakeup {
 

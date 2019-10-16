@@ -4,6 +4,7 @@ import com.dre.brewery.BCauldron;
 import com.dre.brewery.Barrel;
 import com.dre.brewery.P;
 import com.dre.brewery.BUtil;
+import com.dre.brewery.filedata.BData;
 import com.dre.brewery.filedata.DataSave;
 import org.bukkit.World;
 import org.bukkit.event.EventHandler;
@@ -19,9 +20,9 @@ public class WorldListener implements Listener {
 		World world = event.getWorld();
 
 		if (world.getName().startsWith("DXL_")) {
-			P.p.loadWorldData(BUtil.getDxlName(world.getName()), world);
+			BData.loadWorldData(BUtil.getDxlName(world.getName()), world);
 		} else {
-			P.p.loadWorldData(world.getUID().toString(), world);
+			BData.loadWorldData(world.getUID().toString(), world);
 		}
 	}
 

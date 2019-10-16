@@ -1,6 +1,7 @@
 package com.dre.brewery;
 
 import com.dre.brewery.api.events.brew.BrewModifyEvent;
+import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.lore.*;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -26,8 +27,6 @@ public class Brew {
 	private static long saveSeed;
 	public static Map<Integer, Brew> legacyPotions = new HashMap<>();
 	public static long installTime = System.currentTimeMillis(); // plugin install time in millis after epoch
-	public static Boolean colorInBarrels; // color the Lore while in Barrels
-	public static Boolean colorInBrewer; // color the Lore while in Brewer
 
 	private BIngredients ingredients;
 	private int quality;
@@ -72,46 +71,43 @@ public class Brew {
 
 	// returns a Brew by ItemMeta
 	public static Brew get(ItemMeta meta) {
-		if (meta.hasLore()) {
-			if (meta instanceof PotionMeta && ((PotionMeta) meta).hasCustomEffect(PotionEffectType.REGENERATION)) {
-				Brew brew = load(meta);
-				if (brew != null) {
-					// Load Legacy
-					brew = getFromPotionEffect(((PotionMeta) meta), false);
-				}
-				return brew;
-			} else {
-				return load(meta);
+		if (!meta.hasLore()) return null;
+
+		if (meta instanceof PotionMeta && ((PotionMeta) meta).hasCustomEffect(PotionEffectType.REGENERATION)) {
+			Brew brew = load(meta);
+			if (brew != null) {
+				// Load Legacy
+				brew = getFromPotionEffect(((PotionMeta) meta), false);
 			}
+			return brew;
+		} else {
+			return load(meta);
 		}
-		return null;
 	}
 
 	// returns a Brew by ItemStack
 	public static Brew get(ItemStack item) {
-		if (item.getType() == Material.POTION) {
-			if (item.hasItemMeta()) {
-				ItemMeta meta = item.getItemMeta();
-				if (meta.hasLore()) {
-					if (meta instanceof PotionMeta && ((PotionMeta) meta).hasCustomEffect(PotionEffectType.REGENERATION)) {
-						Brew brew = load(meta);
-						if (brew != null) {
-							((PotionMeta) meta).removeCustomEffect(PotionEffectType.REGENERATION);
-						} else {
-							// Load Legacy and convert
-							brew = getFromPotionEffect(((PotionMeta) meta), true);
-							if (brew == null) return null;
-							brew.save(meta);
-						}
-						item.setItemMeta(meta);
-						return brew;
-					} else {
-						return load(meta);
-					}
-				}
+		if (item.getType() != Material.POTION) return null;
+		if (!item.hasItemMeta()) return null;
+
+		ItemMeta meta = item.getItemMeta();
+		if (!meta.hasLore()) return null;
+
+		if (meta instanceof PotionMeta && ((PotionMeta) meta).hasCustomEffect(PotionEffectType.REGENERATION)) {
+			Brew brew = load(meta);
+			if (brew != null) {
+				((PotionMeta) meta).removeCustomEffect(PotionEffectType.REGENERATION);
+			} else {
+				// Load Legacy and convert
+				brew = getFromPotionEffect(((PotionMeta) meta), true);
+				if (brew == null) return null;
+				brew.save(meta);
 			}
+			item.setItemMeta(meta);
+			return brew;
+		} else {
+			return load(meta);
 		}
-		return null;
 	}
 
 	// Legacy Brew Loading
@@ -482,11 +478,11 @@ public class Brew {
 
 		// Distill Lore
 		if (currentRecipe != null) {
-			if (colorInBrewer != BrewLore.hasColorLore(potionMeta)) {
-				lore.convertLore(colorInBrewer);
+			if (BConfig.colorInBrewer != BrewLore.hasColorLore(potionMeta)) {
+				lore.convertLore(BConfig.colorInBrewer);
 			}
 		}
-		lore.updateDistillLore(colorInBrewer);
+		lore.updateDistillLore(BConfig.colorInBrewer);
 		lore.write();
 		touch();
 		BrewModifyEvent modifyEvent = new BrewModifyEvent(this, potionMeta, BrewModifyEvent.Type.DISTILL);
@@ -551,15 +547,15 @@ public class Brew {
 
 		// Lore
 		if (currentRecipe != null) {
-			if (colorInBarrels != BrewLore.hasColorLore(potionMeta)) {
-				lore.convertLore(colorInBarrels);
+			if (BConfig.colorInBarrels != BrewLore.hasColorLore(potionMeta)) {
+				lore.convertLore(BConfig.colorInBarrels);
 			}
 		}
 		if (ageTime >= 1) {
-			lore.updateAgeLore(colorInBarrels);
+			lore.updateAgeLore(BConfig.colorInBarrels);
 		}
 		if (ageTime > 0.5) {
-			if (colorInBarrels && !unlabeled && currentRecipe != null) {
+			if (BConfig.colorInBarrels && !unlabeled && currentRecipe != null) {
 				lore.updateWoodLore(true);
 			}
 		}

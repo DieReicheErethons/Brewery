@@ -1,5 +1,6 @@
 package com.dre.brewery;
 
+import com.dre.brewery.filedata.BConfig;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
@@ -54,7 +55,7 @@ public class BRecipe {
 					if (matParts.length == 2) {
 						durability = (short) P.p.parseInt(matParts[1]);
 					}
-					if (mat == null && P.p.hasVault) {
+					if (mat == null && BConfig.hasVault) {
 						try {
 							net.milkbowl.vault.item.ItemInfo vaultItem = net.milkbowl.vault.item.Items.itemByString(matParts[0]);
 							if (vaultItem != null) {
@@ -247,6 +248,7 @@ public class BRecipe {
 
 	/**
 	 * Create a Potion from this Recipe with best values. Quality can be set, but will reset to 10 if put in a barrel
+	 *
 	 * @param quality The Quality of the Brew
 	 * @return The Created Item
 	 */
@@ -256,6 +258,7 @@ public class BRecipe {
 
 	/**
 	 * Create a Brew from this Recipe with best values. Quality can be set, but will reset to 10 if put in a barrel
+	 *
 	 * @param quality The Quality of the Brew
 	 * @return The created Brew
 	 */

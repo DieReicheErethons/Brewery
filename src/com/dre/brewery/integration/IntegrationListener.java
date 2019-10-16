@@ -1,10 +1,13 @@
 package com.dre.brewery.integration;
 
 import com.dre.brewery.Barrel;
+import com.dre.brewery.LegacyUtil;
 import com.dre.brewery.P;
 import com.dre.brewery.api.events.barrel.BarrelAccessEvent;
 import com.dre.brewery.api.events.barrel.BarrelDestroyEvent;
 import com.dre.brewery.api.events.barrel.BarrelRemoveEvent;
+import com.dre.brewery.filedata.BConfig;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -16,11 +19,11 @@ public class IntegrationListener implements Listener {
 
 	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
 	public void onBarrelAccessLowest(BarrelAccessEvent event) {
-		if (P.p.useWG) {
+		if (BConfig.useWG) {
 			Plugin plugin = P.p.getServer().getPluginManager().getPlugin("WorldGuard");
 			if (plugin != null) {
 				try {
-					if (!P.p.wg.checkAccess(event.getPlayer(), event.getSpigot(), plugin)) {
+					if (!BConfig.wg.checkAccess(event.getPlayer(), event.getSpigot(), plugin)) {
 						event.setCancelled(true);
 					}
 				} catch (Throwable e) {
@@ -43,11 +46,12 @@ public class IntegrationListener implements Listener {
 
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onBarrelAccess(BarrelAccessEvent event) {
-		if (P.p.useGP) {
+		if (BConfig.useGP) {
 			if (P.p.getServer().getPluginManager().isPluginEnabled("GriefPrevention")) {
 				try {
 					if (!GriefPreventionBarrel.checkAccess(event)) {
 						event.setCancelled(true);
+						return;
 					}
 				} catch (Throwable e) {
 					event.setCancelled(true);
@@ -65,11 +69,42 @@ public class IntegrationListener implements Listener {
 				}
 			}
 		}
+
+		if (BConfig.useLWC) {
+			Plugin plugin = P.p.getServer().getPluginManager().getPlugin("LWC");
+			if (plugin != null) {
+
+				// If the Clicked Block was the Sign, LWC already knows and we dont need to do anything here
+				if (!LegacyUtil.isSign(event.getClickedBlock().getType())) {
+					Block sign = event.getBarrel().getSignOfSpigot();
+					// If the Barrel does not have a Sign, it cannot be locked
+					if (!sign.equals(event.getClickedBlock())) {
+						Player player = event.getPlayer();
+						try {
+							if (!LWCBarrel.checkAccess(player, sign, plugin)) {
+								event.setCancelled(true);
+							}
+						} catch (Throwable e) {
+							P.p.errorLog("Failed to Check LWC for Barrel Open Permissions!");
+							P.p.errorLog("Brewery was tested with version 4.5.0 of LWC!");
+							P.p.errorLog("Disable the LWC support in the config and do /brew reload");
+							e.printStackTrace();
+							if (player.hasPermission("brewery.admin") || player.hasPermission("brewery.mod")) {
+								P.p.msg(player, "&cLWC check Error, Brewery was tested with up to v4.5.0 of LWC");
+								P.p.msg(player, "&cSet &7useLWC: false &cin the config and /brew reload");
+							} else {
+								P.p.msg(player, "&cError breaking Barrel, please report to an Admin!");
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
 	public void onBarrelDestroy(BarrelDestroyEvent event) {
-		if (!P.p.useLWC) return;
+		if (!BConfig.useLWC) return;
 
 		if (event.hasPlayer()) {
 			try {
@@ -113,7 +148,7 @@ public class IntegrationListener implements Listener {
 
 	@EventHandler
 	public void onBarrelRemove(BarrelRemoveEvent event) {
-		if (!P.p.useLWC) return;
+		if (!BConfig.useLWC) return;
 
 		try {
 			LWCBarrel.remove(event.getBarrel());
@@ -126,7 +161,7 @@ public class IntegrationListener implements Listener {
 
 	@EventHandler
 	public void onInventoryClose(InventoryCloseEvent event) {
-		if (P.p.useLB) {
+		if (BConfig.useLB) {
 			if (event.getInventory().getHolder() instanceof Barrel) {
 				try {
 					LogBlockBarrel.closeBarrel(event.getPlayer(), event.getInventory());

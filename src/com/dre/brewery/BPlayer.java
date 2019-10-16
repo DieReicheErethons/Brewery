@@ -5,6 +5,7 @@ import com.dre.brewery.api.events.PlayerDrinkEffectEvent;
 import com.dre.brewery.api.events.PlayerPukeEvent;
 import com.dre.brewery.api.events.PlayerPushEvent;
 import com.dre.brewery.api.events.brew.BrewDrinkEvent;
+import com.dre.brewery.filedata.BConfig;
 import org.apache.commons.lang.mutable.MutableInt;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -33,17 +34,6 @@ public class BPlayer {
 	private static Random pukeRand;
 	private static Method gh;
 	private static Field age;
-
-	// Settings
-	public static Map<Material, Integer> drainItems = new HashMap<>();// DrainItem Material and Strength
-	public static Material pukeItem;
-	public static int pukeDespawntime;
-	public static int hangoverTime;
-	public static boolean overdrinkKick;
-	public static boolean enableHome;
-	public static boolean enableLoginDisallow;
-	public static boolean enablePuke;
-	public static String homeType;
 
 	private int quality = 0;// = quality of drunkeness * drunkeness
 	private int drunkeness = 0;// = amount of drunkeness
@@ -191,7 +181,7 @@ public class BPlayer {
 	public void drinkCap(Player player) {
 		quality = getQuality() * 100;
 		drunkeness = 100;
-		if (overdrinkKick && !player.hasPermission("brewery.bypass.overdrink")) {
+		if (BConfig.overdrinkKick && !player.hasPermission("brewery.bypass.overdrink")) {
 			P.p.getServer().getScheduler().scheduleSyncDelayedTask(P.p, () -> passOut(player), 1);
 		} else {
 			addPuke(player, 60 + (int) (Math.random() * 60.0));
@@ -209,7 +199,7 @@ public class BPlayer {
 
 	// Eat something to drain the drunkeness
 	public void drainByItem(Player player, Material mat) {
-		int strength = drainItems.get(mat);
+		int strength = BConfig.drainItems.get(mat);
 		if (drain(player, strength)) {
 			remove(player);
 		}
@@ -233,7 +223,7 @@ public class BPlayer {
 			}
 			quality = getQuality();
 			if (drunkeness <= -offlineDrunk) {
-				return drunkeness <= -hangoverTime;
+				return drunkeness <= -BConfig.hangoverTime;
 			}
 		}
 		return false;
@@ -301,7 +291,7 @@ public class BPlayer {
 		if (drunkeness <= 70) {
 			return 0;
 		}
-		if (!enableLoginDisallow) {
+		if (!BConfig.enableLoginDisallow) {
 			if (drunkeness <= 100) {
 				return 0;
 			} else {
@@ -342,7 +332,7 @@ public class BPlayer {
 	public void login(final Player player) {
 		if (drunkeness < 10) {
 			if (offlineDrunk > 60) {
-				if (enableHome && !player.hasPermission("brewery.bypass.teleport")) {
+				if (BConfig.enableHome && !player.hasPermission("brewery.bypass.teleport")) {
 					goHome(player);
 				}
 			}
@@ -368,6 +358,7 @@ public class BPlayer {
 	}
 
 	public void goHome(final Player player) {
+		String homeType = BConfig.homeType;
 		if (homeType != null) {
 			Location home = null;
 			if (homeType.equalsIgnoreCase("bed")) {
@@ -407,7 +398,7 @@ public class BPlayer {
 
 	// make a Player puke "count" items
 	public static void addPuke(Player player, int count) {
-		if (!enablePuke) {
+		if (!BConfig.enablePuke) {
 			return;
 		}
 
@@ -450,8 +441,8 @@ public class BPlayer {
 		if (pukeRand == null) {
 			pukeRand = new Random();
 		}
-		if (pukeItem == null || pukeItem == Material.AIR) {
-			pukeItem = Material.SOUL_SAND;
+		if (BConfig.pukeItem == null || BConfig.pukeItem == Material.AIR) {
+			BConfig.pukeItem = Material.SOUL_SAND;
 		}
 		Location loc = player.getLocation();
 		loc.setY(loc.getY() + 1.1);
@@ -460,11 +451,12 @@ public class BPlayer {
 		Vector direction = loc.getDirection();
 		direction.multiply(0.5);
 		loc.add(direction);
-		Item item = player.getWorld().dropItem(loc, new ItemStack(pukeItem));
+		Item item = player.getWorld().dropItem(loc, new ItemStack(BConfig.pukeItem));
 		item.setVelocity(direction);
 		item.setPickupDelay(32767); // Item can never be picked up when pickup delay is 32767
 		//item.setTicksLived(6000 - pukeDespawntime); // Well this does not work...
 		if (modAge) {
+			int pukeDespawntime = BConfig.pukeDespawntime;
 			if (pukeDespawntime >= 5800) {
 				return;
 			}
@@ -494,7 +486,7 @@ public class BPlayer {
 				e.printStackTrace();
 			}
 			modAge = false;
-			P.p.errorLog("Failed to set Despawn Time on item " + pukeItem.name());
+			P.p.errorLog("Failed to set Despawn Time on item " + BConfig.pukeItem.name());
 		}
 	}
 
@@ -629,7 +621,7 @@ public class BPlayer {
 
 						bplayer.drunkEffects(player);
 
-						if (enablePuke) {
+						if (BConfig.enablePuke) {
 							bplayer.drunkPuke(player);
 						}
 

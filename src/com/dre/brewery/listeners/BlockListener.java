@@ -4,7 +4,7 @@ import com.dre.brewery.BPlayer;
 import com.dre.brewery.BUtil;
 import com.dre.brewery.Barrel;
 import com.dre.brewery.P;
-import com.dre.brewery.Words;
+import com.dre.brewery.DistortChat;
 import com.dre.brewery.api.events.barrel.BarrelDestroyEvent;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -37,9 +37,9 @@ public class BlockListener implements Listener {
 
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onSignChangeLow(SignChangeEvent event) {
-		if (Words.doSigns) {
+		if (DistortChat.doSigns) {
 			if (BPlayer.hasPlayer(event.getPlayer())) {
-				Words.signWrite(event);
+				DistortChat.signWrite(event);
 			}
 		}
 	}

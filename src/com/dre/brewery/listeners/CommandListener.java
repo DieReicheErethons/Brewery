@@ -2,6 +2,7 @@ package com.dre.brewery.listeners;
 
 import com.dre.brewery.*;
 import com.dre.brewery.api.events.brew.BrewModifyEvent;
+import com.dre.brewery.filedata.BConfig;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -323,7 +324,7 @@ public class CommandListener implements CommandExecutor {
 			if (player != null) {
 				bPlayer.drinkCap(player);
 			} else {
-				if (!BPlayer.overdrinkKick) {
+				if (!BConfig.overdrinkKick) {
 					bPlayer.setData(100, 0);
 				}
 			}
@@ -360,56 +361,55 @@ public class CommandListener implements CommandExecutor {
 	}
 
 	public void cmdItemName(CommandSender sender) {
-		if (sender instanceof Player) {
-
-			Player player = (Player) sender;
-			ItemStack hand = P.use1_9 ? player.getInventory().getItemInMainHand() : player.getItemInHand();
-			if (hand != null) {
-				p.msg(sender, p.languageReader.get("CMD_Configname", hand.getType().name().toLowerCase(Locale.ENGLISH)));
-			} else {
-				p.msg(sender, p.languageReader.get("CMD_Configname_Error"));
-			}
-
-		} else {
+		if (!(sender instanceof Player)) {
 			p.msg(sender, p.languageReader.get("Error_PlayerCommand"));
+			return;
 		}
+
+		Player player = (Player) sender;
+		ItemStack hand = P.use1_9 ? player.getInventory().getItemInMainHand() : player.getItemInHand();
+		if (hand != null) {
+			p.msg(sender, p.languageReader.get("CMD_Configname", hand.getType().name().toLowerCase(Locale.ENGLISH)));
+		} else {
+			p.msg(sender, p.languageReader.get("CMD_Configname_Error"));
+		}
+
 	}
 
 	@Deprecated
 	@SuppressWarnings("deprecation")
 	public void cmdCopy(CommandSender sender, int count) {
 
-		if (sender instanceof Player) {
-			if (count < 1 || count > 36) {
-				p.msg(sender, p.languageReader.get("Etc_Usage"));
-				p.msg(sender, p.languageReader.get("Help_Copy"));
+		if (!(sender instanceof Player)) {
+			p.msg(sender, p.languageReader.get("Error_PlayerCommand"));
+			return;
+		}
+		if (count < 1 || count > 36) {
+			p.msg(sender, p.languageReader.get("Etc_Usage"));
+			p.msg(sender, p.languageReader.get("Help_Copy"));
+			return;
+		}
+		Player player = (Player) sender;
+		ItemStack hand = player.getItemInHand();
+		if (hand != null) {
+			Brew brew = Brew.get(hand);
+			if (brew != null) {
+				while (count > 0) {
+					ItemStack item = hand.clone();
+					if (!(player.getInventory().addItem(item)).isEmpty()) {
+						p.msg(sender, p.languageReader.get("CMD_Copy_Error", "" + count));
+						return;
+					}
+					count--;
+				}
+				if (brew.isPersistent()) {
+					p.msg(sender, p.languageReader.get("CMD_CopyNotPersistent"));
+				}
 				return;
 			}
-			Player player = (Player) sender;
-			ItemStack hand = player.getItemInHand();
-			if (hand != null) {
-				Brew brew = Brew.get(hand);
-				if (brew != null) {
-					while (count > 0) {
-						ItemStack item = hand.clone();
-						if (!(player.getInventory().addItem(item)).isEmpty()) {
-							p.msg(sender, p.languageReader.get("CMD_Copy_Error", "" + count));
-							return;
-						}
-						count--;
-					}
-					if (brew.isPersistent()) {
-						p.msg(sender, p.languageReader.get("CMD_CopyNotPersistent"));
-					}
-					return;
-				}
-			}
-
-			p.msg(sender, p.languageReader.get("Error_ItemNotPotion"));
-
-		} else {
-			p.msg(sender, p.languageReader.get("Error_PlayerCommand"));
 		}
+
+		p.msg(sender, p.languageReader.get("Error_ItemNotPotion"));
 
 	}
 
@@ -417,25 +417,25 @@ public class CommandListener implements CommandExecutor {
 	@SuppressWarnings("deprecation")
 	public void cmdDelete(CommandSender sender) {
 
-		if (sender instanceof Player) {
-			Player player = (Player) sender;
-			ItemStack hand = player.getItemInHand();
-			if (hand != null) {
-				Brew brew = Brew.get(hand);
-				if (brew != null) {
-					if (brew.isPersistent()) {
-						p.msg(sender, p.languageReader.get("CMD_PersistRemove"));
-					} else {
-						//brew.remove(hand);
-						player.setItemInHand(new ItemStack(Material.AIR));
-					}
-					return;
-				}
-			}
-			p.msg(sender, p.languageReader.get("Error_ItemNotPotion"));
-		} else {
+		if (!(sender instanceof Player)) {
 			p.msg(sender, p.languageReader.get("Error_PlayerCommand"));
+			return;
 		}
+		Player player = (Player) sender;
+		ItemStack hand = player.getItemInHand();
+		if (hand != null) {
+			Brew brew = Brew.get(hand);
+			if (brew != null) {
+				if (brew.isPersistent()) {
+					p.msg(sender, p.languageReader.get("CMD_PersistRemove"));
+				} else {
+					//brew.remove(hand);
+					player.setItemInHand(new ItemStack(Material.AIR));
+				}
+				return;
+			}
+		}
+		p.msg(sender, p.languageReader.get("Error_ItemNotPotion"));
 
 	}
 
@@ -443,101 +443,101 @@ public class CommandListener implements CommandExecutor {
 	@SuppressWarnings("deprecation")
 	public void cmdPersist(CommandSender sender) {
 
-		if (sender instanceof Player) {
-			Player player = (Player) sender;
-			ItemStack hand = player.getItemInHand();
-			if (hand != null) {
-				Brew brew = Brew.get(hand);
-				if (brew != null) {
-					if (brew.isPersistent()) {
-						brew.removePersistence();
-						brew.setStatic(false, hand);
-						p.msg(sender, p.languageReader.get("CMD_UnPersist"));
-					} else {
-						brew.makePersistent();
-						brew.setStatic(true, hand);
-						p.msg(sender, p.languageReader.get("CMD_Persistent"));
-					}
-					brew.touch();
-					brew.save(hand);
-					return;
-				}
-			}
-			p.msg(sender, p.languageReader.get("Error_ItemNotPotion"));
-		} else {
+		if (!(sender instanceof Player)) {
 			p.msg(sender, p.languageReader.get("Error_PlayerCommand"));
+			return;
 		}
+		Player player = (Player) sender;
+		ItemStack hand = player.getItemInHand();
+		if (hand != null) {
+			Brew brew = Brew.get(hand);
+			if (brew != null) {
+				if (brew.isPersistent()) {
+					brew.removePersistence();
+					brew.setStatic(false, hand);
+					p.msg(sender, p.languageReader.get("CMD_UnPersist"));
+				} else {
+					brew.makePersistent();
+					brew.setStatic(true, hand);
+					p.msg(sender, p.languageReader.get("CMD_Persistent"));
+				}
+				brew.touch();
+				brew.save(hand);
+				return;
+			}
+		}
+		p.msg(sender, p.languageReader.get("Error_ItemNotPotion"));
 
 	}
 
 	@SuppressWarnings("deprecation")
 	public void cmdStatic(CommandSender sender) {
 
-		if (sender instanceof Player) {
-			Player player = (Player) sender;
-			ItemStack hand = player.getItemInHand();
-			if (hand != null) {
-				Brew brew = Brew.get(hand);
-				if (brew != null) {
-					if (brew.isStatic()) {
-						if (!brew.isPersistent()) {
-							brew.setStatic(false, hand);
-							p.msg(sender, p.languageReader.get("CMD_NonStatic"));
-						} else {
-							p.msg(sender, p.languageReader.get("Error_PersistStatic"));
-						}
+		if (!(sender instanceof Player)) {
+			p.msg(sender, p.languageReader.get("Error_PlayerCommand"));
+			return;
+		}
+		Player player = (Player) sender;
+		ItemStack hand = player.getItemInHand();
+		if (hand != null) {
+			Brew brew = Brew.get(hand);
+			if (brew != null) {
+				if (brew.isStatic()) {
+					if (!brew.isPersistent()) {
+						brew.setStatic(false, hand);
+						p.msg(sender, p.languageReader.get("CMD_NonStatic"));
 					} else {
-						brew.setStatic(true, hand);
-						p.msg(sender, p.languageReader.get("CMD_Static"));
+						p.msg(sender, p.languageReader.get("Error_PersistStatic"));
 					}
-					brew.touch();
-					ItemMeta meta = hand.getItemMeta();
-					BrewModifyEvent modifyEvent = new BrewModifyEvent(brew, meta, BrewModifyEvent.Type.STATIC);
-					P.p.getServer().getPluginManager().callEvent(modifyEvent);
-					if (modifyEvent.isCancelled()) {
-						return;
-					}
-					brew.save(meta);
-					hand.setItemMeta(meta);
+				} else {
+					brew.setStatic(true, hand);
+					p.msg(sender, p.languageReader.get("CMD_Static"));
+				}
+				brew.touch();
+				ItemMeta meta = hand.getItemMeta();
+				BrewModifyEvent modifyEvent = new BrewModifyEvent(brew, meta, BrewModifyEvent.Type.STATIC);
+				P.p.getServer().getPluginManager().callEvent(modifyEvent);
+				if (modifyEvent.isCancelled()) {
 					return;
 				}
+				brew.save(meta);
+				hand.setItemMeta(meta);
+				return;
 			}
-			p.msg(sender, p.languageReader.get("Error_ItemNotPotion"));
-		} else {
-			p.msg(sender, p.languageReader.get("Error_PlayerCommand"));
 		}
+		p.msg(sender, p.languageReader.get("Error_ItemNotPotion"));
 
 	}
 
 	@SuppressWarnings("deprecation")
 	public void cmdUnlabel(CommandSender sender) {
 
-		if (sender instanceof Player) {
-			Player player = (Player) sender;
-			ItemStack hand = player.getItemInHand();
-			if (hand != null) {
-				Brew brew = Brew.get(hand);
-				if (brew != null) {
-					ItemMeta origMeta = hand.getItemMeta();
-					brew.unLabel(hand);
-					brew.touch();
-					ItemMeta meta = hand.getItemMeta();
-					BrewModifyEvent modifyEvent = new BrewModifyEvent(brew, meta, BrewModifyEvent.Type.UNLABEL);
-					P.p.getServer().getPluginManager().callEvent(modifyEvent);
-					if (modifyEvent.isCancelled()) {
-						hand.setItemMeta(origMeta);
-						return;
-					}
-					brew.save(meta);
-					hand.setItemMeta(meta);
-					p.msg(sender, p.languageReader.get("CMD_UnLabel"));
+		if (!(sender instanceof Player)) {
+			p.msg(sender, p.languageReader.get("Error_PlayerCommand"));
+			return;
+		}
+		Player player = (Player) sender;
+		ItemStack hand = player.getItemInHand();
+		if (hand != null) {
+			Brew brew = Brew.get(hand);
+			if (brew != null) {
+				ItemMeta origMeta = hand.getItemMeta();
+				brew.unLabel(hand);
+				brew.touch();
+				ItemMeta meta = hand.getItemMeta();
+				BrewModifyEvent modifyEvent = new BrewModifyEvent(brew, meta, BrewModifyEvent.Type.UNLABEL);
+				P.p.getServer().getPluginManager().callEvent(modifyEvent);
+				if (modifyEvent.isCancelled()) {
+					hand.setItemMeta(origMeta);
 					return;
 				}
+				brew.save(meta);
+				hand.setItemMeta(meta);
+				p.msg(sender, p.languageReader.get("CMD_UnLabel"));
+				return;
 			}
-			p.msg(sender, p.languageReader.get("Error_ItemNotPotion"));
-		} else {
-			p.msg(sender, p.languageReader.get("Error_PlayerCommand"));
 		}
+		p.msg(sender, p.languageReader.get("Error_ItemNotPotion"));
 
 	}
 
@@ -572,54 +572,55 @@ public class CommandListener implements CommandExecutor {
 			player = p.getServer().getPlayer(pName);
 		}
 
-		if (sender instanceof Player || player != null) {
-			if (player == null) {
-				player = ((Player) sender);
-			}
-			int stringLength = args.length - 1;
-			if (pName != null) {
-				stringLength--;
-			}
-			if (hasQuality) {
-				stringLength--;
-			}
-
-			String name;
-			if (stringLength > 1) {
-				StringBuilder builder = new StringBuilder(args[1]);
-
-				for (int i = 2; i < stringLength + 1; i++) {
-					builder.append(" ").append(args[i]);
-				}
-				name = builder.toString();
-			} else {
-				name = args[1];
-			}
-
-			if (player.getInventory().firstEmpty() == -1) {
-				p.msg(sender, p.languageReader.get("CMD_Copy_Error", "1"));
-				return;
-			}
-
-			BRecipe recipe = null;
-			for (BRecipe r : BIngredients.recipes) {
-				if (r.hasName(name)) {
-					recipe = r;
-					break;
-				}
-			}
-			if (recipe != null) {
-				ItemStack item = recipe.create(quality);
-				if (item != null) {
-					player.getInventory().addItem(item);
-				}
-			} else {
-				p.msg(sender, p.languageReader.get("Error_NoBrewName", name));
-			}
-
-		} else {
+		if (!(sender instanceof Player) && player == null) {
 			p.msg(sender, p.languageReader.get("Error_PlayerCommand"));
+			return;
 		}
+
+		if (player == null) {
+			player = ((Player) sender);
+		}
+		int stringLength = args.length - 1;
+		if (pName != null) {
+			stringLength--;
+		}
+		if (hasQuality) {
+			stringLength--;
+		}
+
+		String name;
+		if (stringLength > 1) {
+			StringBuilder builder = new StringBuilder(args[1]);
+
+			for (int i = 2; i < stringLength + 1; i++) {
+				builder.append(" ").append(args[i]);
+			}
+			name = builder.toString();
+		} else {
+			name = args[1];
+		}
+
+		if (player.getInventory().firstEmpty() == -1) {
+			p.msg(sender, p.languageReader.get("CMD_Copy_Error", "1"));
+			return;
+		}
+
+		BRecipe recipe = null;
+		for (BRecipe r : BIngredients.recipes) {
+			if (r.hasName(name)) {
+				recipe = r;
+				break;
+			}
+		}
+		if (recipe != null) {
+			ItemStack item = recipe.create(quality);
+			if (item != null) {
+				player.getInventory().addItem(item);
+			}
+		} else {
+			p.msg(sender, p.languageReader.get("Error_NoBrewName", name));
+		}
+
 	}
 
 }

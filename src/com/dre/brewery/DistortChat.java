@@ -9,11 +9,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Words {
+public class DistortChat {
 
 	// represends Words and letters, that are replaced in drunk players messages
 
-	public static ArrayList<Words> words = new ArrayList<>();
+	public static ArrayList<DistortChat> words = new ArrayList<>();
 	public static List<String> commands;
 	public static List<String[]> ignoreText = new ArrayList<>();
 	public static Boolean doSigns;
@@ -27,7 +27,7 @@ public class Words {
 	private int alcohol = 1;
 	private int percentage = 100;
 
-	public Words(Map<?, ?> part) {
+	public DistortChat(Map<?, ?> part) {
 		for (Map.Entry<?, ?> wordPart : part.entrySet()) {
 			String key = (String) wordPart.getKey();
 
@@ -164,7 +164,7 @@ public class Words {
 	// distorts a message without checking ignoreText letters
 	private static String distortString(String message, int drunkeness) {
 		if (message.length() > 1) {
-			for (Words word : words) {
+			for (DistortChat word : words) {
 				if (word.alcohol <= drunkeness) {
 					message = word.distort(message);
 				}

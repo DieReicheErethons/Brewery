@@ -36,7 +36,7 @@ public class EntityListener implements Listener {
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onEntityCombust(EntityCombustEvent event) {
-		if (!Brew.noLegacy()) return;
+		if (Brew.noLegacy()) return;
 		Entity entity = event.getEntity();
 		if (entity.getType() == EntityType.DROPPED_ITEM) {
 			if (entity instanceof Item) {

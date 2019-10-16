@@ -97,6 +97,26 @@ public class MCBarrel {
 		}
 	}
 
+	public void countBrews() {
+		brews = 0;
+		for (ItemStack item : inv.getContents()) {
+			if (item != null) {
+				Brew brew = Brew.get(item);
+				if (brew != null) {
+					brews++;
+				}
+			}
+		}
+	}
+
+	public Inventory getInventory() {
+		return inv;
+	}
+
+	public static void onUpdate() {
+		mcBarrelTime++;
+	}
+
 	// Used to visually stop Players from placing more than 6 (configurable) brews in the MC Barrels.
 	// There are still methods to place more Brews in that would be too tedious to catch.
 	// This is only for direct visual Notification, the age routine above will never age more than 6 brews in any case.
@@ -182,26 +202,6 @@ public class MCBarrel {
 				brews++;
 			}
 		}
-	}
-
-	public void countBrews() {
-		brews = 0;
-		for (ItemStack item : inv.getContents()) {
-			if (item != null) {
-				Brew brew = Brew.get(item);
-				if (brew != null) {
-					brews++;
-				}
-			}
-		}
-	}
-
-	public Inventory getInventory() {
-		return inv;
-	}
-
-	public static void onUpdate() {
-		mcBarrelTime++;
 	}
 
 }

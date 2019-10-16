@@ -4,11 +4,14 @@ import com.dre.brewery.api.events.barrel.BarrelAccessEvent;
 import com.dre.brewery.api.events.barrel.BarrelCreateEvent;
 import com.dre.brewery.api.events.barrel.BarrelDestroyEvent;
 import com.dre.brewery.api.events.barrel.BarrelRemoveEvent;
+import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.integration.LWCBarrel;
 import com.dre.brewery.integration.LogBlockBarrel;
 import com.dre.brewery.lore.BrewLore;
 import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.HumanEntity;
@@ -130,35 +133,6 @@ public class Barrel implements InventoryHolder {
 			return false;
 		}
 
-		if (event != null && P.p.useLWC) {
-			Plugin plugin = P.p.getServer().getPluginManager().getPlugin("LWC");
-			if (plugin != null) {
-
-				// If the Clicked Block was the Sign, LWC already knows and we dont need to do anything here
-				if (!LegacyUtil.isSign(event.getClickedBlock().getType())) {
-					Block sign = getSignOfSpigot();
-					// If the Barrel does not have a Sign, it cannot be locked
-					if (!sign.equals(event.getClickedBlock())) {
-						try {
-							return LWCBarrel.checkAccess(player, sign, event, plugin);
-						} catch (Throwable e) {
-							P.p.errorLog("Failed to Check LWC for Barrel Open Permissions!");
-							P.p.errorLog("Brewery was tested with version 4.5.0 of LWC!");
-							P.p.errorLog("Disable the LWC support in the config and do /brew reload");
-							e.printStackTrace();
-							if (player.hasPermission("brewery.admin") || player.hasPermission("brewery.mod")) {
-								P.p.msg(player, "&cLWC check Error, Brewery was tested with up to v4.5.0 of LWC");
-								P.p.msg(player, "&cSet &7useLWC: false &cin the config and /brew reload");
-							} else {
-								P.p.msg(player, "&cError breaking Barrel, please report to an Admin!");
-							}
-							return false;
-						}
-					}
-				}
-			}
-		}
-
 		return true;
 	}
 
@@ -204,7 +178,7 @@ public class Barrel implements InventoryHolder {
 		// reset barreltime, potions have new age
 		time = 0;
 
-		if (P.p.useLB) {
+		if (BConfig.useLB) {
 			try {
 				LogBlockBarrel.openBarrel(player, inventory, spigot.getLocation());
 			} catch (Throwable e) {
@@ -214,6 +188,27 @@ public class Barrel implements InventoryHolder {
 			}
 		}
 		player.openInventory(inventory);
+	}
+
+	public void playOpeningSound() {
+		float randPitch = (float) (Math.random() * 0.1);
+		if (isLarge()) {
+			getSpigot().getWorld().playSound(getSpigot().getLocation(), Sound.BLOCK_CHEST_OPEN, SoundCategory.BLOCKS, 0.4f, 0.55f + randPitch);
+			//getSpigot().getWorld().playSound(getSpigot().getLocation(), Sound.ITEM_BUCKET_EMPTY, SoundCategory.BLOCKS, 0.5f, 0.6f + randPitch);
+			getSpigot().getWorld().playSound(getSpigot().getLocation(), Sound.BLOCK_BREWING_STAND_BREW, SoundCategory.BLOCKS, 0.4f, 0.45f + randPitch);
+		} else {
+			getSpigot().getWorld().playSound(getSpigot().getLocation(), Sound.BLOCK_BARREL_OPEN, SoundCategory.BLOCKS, 0.5f, 0.8f + randPitch);
+		}
+	}
+
+	public void playClosingSound() {
+		float randPitch = (float) (Math.random() * 0.1);
+		if (isLarge()) {
+			getSpigot().getWorld().playSound(getSpigot().getLocation(), Sound.BLOCK_BARREL_CLOSE, SoundCategory.BLOCKS, 0.5f, 0.5f + randPitch);
+			getSpigot().getWorld().playSound(getSpigot().getLocation(), Sound.ITEM_BUCKET_EMPTY, SoundCategory.BLOCKS, 0.2f, 0.6f + randPitch);
+		} else {
+			getSpigot().getWorld().playSound(getSpigot().getLocation(), Sound.BLOCK_BARREL_CLOSE, SoundCategory.BLOCKS, 0.5f, 0.8f + randPitch);
+		}
 	}
 
 	@Override
@@ -401,7 +396,7 @@ public class Barrel implements InventoryHolder {
 			}
 			ItemStack[] items = inventory.getContents();
 			inventory.clear();
-			if (P.p.useLB && breaker != null) {
+			if (BConfig.useLB && breaker != null) {
 				try {
 					LogBlockBarrel.breakBarrel(breaker, items, spigot.getLocation());
 				} catch (Throwable e) {
@@ -439,91 +434,9 @@ public class Barrel implements InventoryHolder {
 		barrels.remove(this);
 	}
 
-	//unloads barrels that are in a unloading world
-	public static void onUnload(String name) {
-		for (Barrel barrel : barrels) {
-			if (barrel.spigot.getWorld().getName().equals(name)) {
-				barrels.remove(barrel);
-			}
-		}
-	}
-
 	// If the Sign of a Large Barrel gets destroyed, set signOffset to 0
 	public void destroySign() {
 		signoffset = 0;
-	}
-
-	// Saves all data
-	public static void save(ConfigurationSection config, ConfigurationSection oldData) {
-		BUtil.createWorldSections(config);
-
-		if (!barrels.isEmpty()) {
-			int id = 0;
-			for (Barrel barrel : barrels) {
-
-				String worldName = barrel.spigot.getWorld().getName();
-				String prefix;
-
-				if (worldName.startsWith("DXL_")) {
-					prefix = BUtil.getDxlName(worldName) + "." + id;
-				} else {
-					prefix = barrel.spigot.getWorld().getUID().toString() + "." + id;
-				}
-
-				// block: x/y/z
-				config.set(prefix + ".spigot", barrel.spigot.getX() + "/" + barrel.spigot.getY() + "/" + barrel.spigot.getZ());
-
-				if (barrel.signoffset != 0) {
-					config.set(prefix + ".sign", barrel.signoffset);
-				}
-				if (barrel.stairsloc != null && barrel.stairsloc.length > 0) {
-					StringBuilder st = new StringBuilder();
-					for (int i : barrel.stairsloc) {
-						st.append(i).append(",");
-					}
-					config.set(prefix + ".st", st.substring(0, st.length() - 1));
-				}
-				if (barrel.woodsloc != null && barrel.woodsloc.length > 0) {
-					StringBuilder wo = new StringBuilder();
-					for (int i : barrel.woodsloc) {
-						wo.append(i).append(",");
-					}
-					config.set(prefix + ".wo", wo.substring(0, wo.length() - 1));
-				}
-
-				if (barrel.inventory != null) {
-					int slot = 0;
-					ItemStack item;
-					ConfigurationSection invConfig = null;
-					while (slot < barrel.inventory.getSize()) {
-						item = barrel.inventory.getItem(slot);
-						if (item != null) {
-							if (invConfig == null) {
-								if (barrel.time != 0) {
-									config.set(prefix + ".time", barrel.time);
-								}
-								invConfig = config.createSection(prefix + ".inv");
-							}
-							// ItemStacks are configurationSerializeable, makes them
-							// really easy to save
-							invConfig.set(slot + "", item);
-						}
-
-						slot++;
-					}
-				}
-
-				id++;
-			}
-		}
-		// also save barrels that are not loaded
-		if (oldData != null){
-			for (String uuid : oldData.getKeys(false)) {
-				if (!config.contains(uuid)) {
-					config.set(uuid, oldData.get(uuid));
-				}
-			}
-		}
 	}
 
 	// direction of the barrel from the spigot
@@ -803,6 +716,88 @@ public class Barrel implements InventoryHolder {
 		woodsloc = ArrayUtils.toPrimitive(woods.toArray(new Integer[0]));
 
 		return null;
+	}
+
+	//unloads barrels that are in a unloading world
+	public static void onUnload(String name) {
+		for (Barrel barrel : barrels) {
+			if (barrel.spigot.getWorld().getName().equals(name)) {
+				barrels.remove(barrel);
+			}
+		}
+	}
+
+	// Saves all data
+	public static void save(ConfigurationSection config, ConfigurationSection oldData) {
+		BUtil.createWorldSections(config);
+
+		if (barrels.isEmpty()) {
+			int id = 0;
+			for (Barrel barrel : barrels) {
+
+				String worldName = barrel.spigot.getWorld().getName();
+				String prefix;
+
+				if (worldName.startsWith("DXL_")) {
+					prefix = BUtil.getDxlName(worldName) + "." + id;
+				} else {
+					prefix = barrel.spigot.getWorld().getUID().toString() + "." + id;
+				}
+
+				// block: x/y/z
+				config.set(prefix + ".spigot", barrel.spigot.getX() + "/" + barrel.spigot.getY() + "/" + barrel.spigot.getZ());
+
+				if (barrel.signoffset != 0) {
+					config.set(prefix + ".sign", barrel.signoffset);
+				}
+				if (barrel.stairsloc != null && barrel.stairsloc.length > 0) {
+					StringBuilder st = new StringBuilder();
+					for (int i : barrel.stairsloc) {
+						st.append(i).append(",");
+					}
+					config.set(prefix + ".st", st.substring(0, st.length() - 1));
+				}
+				if (barrel.woodsloc != null && barrel.woodsloc.length > 0) {
+					StringBuilder wo = new StringBuilder();
+					for (int i : barrel.woodsloc) {
+						wo.append(i).append(",");
+					}
+					config.set(prefix + ".wo", wo.substring(0, wo.length() - 1));
+				}
+
+				if (barrel.inventory != null) {
+					int slot = 0;
+					ItemStack item;
+					ConfigurationSection invConfig = null;
+					while (slot < barrel.inventory.getSize()) {
+						item = barrel.inventory.getItem(slot);
+						if (item != null) {
+							if (invConfig == null) {
+								if (barrel.time != 0) {
+									config.set(prefix + ".time", barrel.time);
+								}
+								invConfig = config.createSection(prefix + ".inv");
+							}
+							// ItemStacks are configurationSerializeable, makes them
+							// really easy to save
+							invConfig.set(slot + "", item);
+						}
+
+						slot++;
+					}
+				}
+
+				id++;
+			}
+		}
+		// also save barrels that are not loaded
+		if (oldData != null){
+			for (String uuid : oldData.getKeys(false)) {
+				if (!config.contains(uuid)) {
+					config.set(uuid, oldData.get(uuid));
+				}
+			}
+		}
 	}
 
 	public static class BarrelCheck extends BukkitRunnable {

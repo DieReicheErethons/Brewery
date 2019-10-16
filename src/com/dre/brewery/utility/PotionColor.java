@@ -1,5 +1,6 @@
-package com.dre.brewery;
+package com.dre.brewery.utility;
 
+import com.dre.brewery.P;
 import org.bukkit.Color;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -39,6 +40,7 @@ public class PotionColor {
 
 	// gets the Damage Value, that sets a color on the potion
 	// offset +32 is not accepted by brewer, so not further destillable
+	// Only for minecraft pre 1.9
 	public short getColorId(boolean destillable) {
 		if (destillable) {
 			return (short) (colorId + 64);

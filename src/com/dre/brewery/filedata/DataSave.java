@@ -4,7 +4,7 @@ package com.dre.brewery.filedata;
 import java.io.File;
 
 import com.dre.brewery.MCBarrel;
-import com.dre.brewery.BUtil;
+import com.dre.brewery.utility.BUtil;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;

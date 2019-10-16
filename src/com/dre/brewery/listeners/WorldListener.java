@@ -2,8 +2,7 @@ package com.dre.brewery.listeners;
 
 import com.dre.brewery.BCauldron;
 import com.dre.brewery.Barrel;
-import com.dre.brewery.P;
-import com.dre.brewery.BUtil;
+import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.filedata.BData;
 import com.dre.brewery.filedata.DataSave;
 import org.bukkit.World;

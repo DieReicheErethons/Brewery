@@ -9,7 +9,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-public class WGBarrelNew implements WGBarrel {
+public class WGBarrel6 implements WGBarrel {
 
 	public boolean checkAccess(Player player, Block spigot, Plugin plugin) {
 		WorldGuardPlugin wg = (WorldGuardPlugin) plugin;

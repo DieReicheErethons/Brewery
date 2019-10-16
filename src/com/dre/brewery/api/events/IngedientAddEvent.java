@@ -1,9 +1,8 @@
 package com.dre.brewery.api.events;
 
 import com.dre.brewery.BCauldron;
-import com.dre.brewery.LegacyUtil;
+import com.dre.brewery.utility.LegacyUtil;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockState;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Levelled;
 import org.bukkit.entity.Player;
@@ -11,8 +10,6 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.material.Cauldron;
-import org.bukkit.material.MaterialData;
 
 /*
  * Player adding an ingredient to a cauldron

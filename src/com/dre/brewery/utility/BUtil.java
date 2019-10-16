@@ -1,5 +1,8 @@
-package com.dre.brewery;
+package com.dre.brewery.utility;
 
+import com.dre.brewery.BCauldron;
+import com.dre.brewery.Barrel;
+import com.dre.brewery.P;
 import com.dre.brewery.api.events.barrel.BarrelDestroyEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

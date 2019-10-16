@@ -17,13 +17,13 @@ import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 
 
-public class WGBarrelOld implements WGBarrel {
+public class WGBarrel5 implements WGBarrel {
 
 	private Method allows;
 	private Method canBuild;
 	private Method getApplicableRegions;
 
-	public WGBarrelOld() {
+	public WGBarrel5() {
 		try {
 			allows = ApplicableRegionSet.class.getMethod("allows", StateFlag.class, LocalPlayer.class);
 			canBuild = ApplicableRegionSet.class.getMethod("canBuild", LocalPlayer.class);

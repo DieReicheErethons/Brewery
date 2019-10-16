@@ -1,6 +1,7 @@
 package com.dre.brewery.lore;
 
 import com.dre.brewery.*;
+import com.dre.brewery.utility.BUtil;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;

@@ -3,8 +3,9 @@ package com.dre.brewery.filedata;
 import com.dre.brewery.*;
 import com.dre.brewery.integration.WGBarrel;
 import com.dre.brewery.integration.WGBarrel7;
-import com.dre.brewery.integration.WGBarrelNew;
-import com.dre.brewery.integration.WGBarrelOld;
+import com.dre.brewery.integration.WGBarrel6;
+import com.dre.brewery.integration.WGBarrel5;
+import com.dre.brewery.utility.BUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
@@ -138,9 +139,9 @@ public class BConfig {
 			if (plugin != null) {
 				String wgv = plugin.getDescription().getVersion();
 				if (wgv.startsWith("6.")) {
-					wg = new WGBarrelNew();
+					wg = new WGBarrel6();
 				} else if (wgv.startsWith("5.")) {
-					wg = new WGBarrelOld();
+					wg = new WGBarrel5();
 				} else {
 					wg = new WGBarrel7();
 				}

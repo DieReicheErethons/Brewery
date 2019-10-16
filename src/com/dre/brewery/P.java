@@ -8,6 +8,7 @@ import com.dre.brewery.filedata.UpdateChecker;
 import com.dre.brewery.integration.IntegrationListener;
 import com.dre.brewery.integration.LogBlockBarrel;
 import com.dre.brewery.listeners.*;
+import com.dre.brewery.utility.BUtil;
 import org.apache.commons.lang.math.NumberUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

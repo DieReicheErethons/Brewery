@@ -1,7 +1,7 @@
 package com.dre.brewery.integration;
 
 import com.dre.brewery.Barrel;
-import com.dre.brewery.LegacyUtil;
+import com.dre.brewery.utility.LegacyUtil;
 import com.dre.brewery.P;
 import com.dre.brewery.api.events.barrel.BarrelAccessEvent;
 import com.dre.brewery.api.events.barrel.BarrelDestroyEvent;

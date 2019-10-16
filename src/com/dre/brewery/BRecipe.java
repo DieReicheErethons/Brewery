@@ -1,6 +1,7 @@
 package com.dre.brewery;
 
 import com.dre.brewery.filedata.BConfig;
+import com.dre.brewery.utility.PotionColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;

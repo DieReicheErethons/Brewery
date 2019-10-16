@@ -1,5 +1,6 @@
-package com.dre.brewery;
+package com.dre.brewery.utility;
 
+import com.dre.brewery.P;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;

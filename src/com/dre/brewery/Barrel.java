@@ -7,6 +7,8 @@ import com.dre.brewery.api.events.barrel.BarrelRemoveEvent;
 import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.integration.LogBlockBarrel;
 import com.dre.brewery.lore.BrewLore;
+import com.dre.brewery.utility.BUtil;
+import com.dre.brewery.utility.LegacyUtil;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;

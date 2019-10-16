@@ -1,7 +1,7 @@
 package com.dre.brewery.listeners;
 
 import com.dre.brewery.BPlayer;
-import com.dre.brewery.BUtil;
+import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.Barrel;
 import com.dre.brewery.P;
 import com.dre.brewery.DistortChat;

@@ -3,6 +3,7 @@ package com.dre.brewery.listeners;
 import com.dre.brewery.*;
 import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.filedata.UpdateChecker;
+import com.dre.brewery.utility.LegacyUtil;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;

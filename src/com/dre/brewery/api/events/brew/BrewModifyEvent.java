@@ -6,6 +6,7 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
+import org.jetbrains.annotations.NotNull;
 
 /*
  * A Brew has been created or modified
@@ -19,15 +20,17 @@ public class BrewModifyEvent extends BrewEvent implements Cancellable {
 	private boolean cancelled;
 
 
-	public BrewModifyEvent(Brew brew, ItemMeta meta, Type type) {
+	public BrewModifyEvent(@NotNull Brew brew, @NotNull ItemMeta meta, @NotNull Type type) {
 		super(brew, meta);
 		this.type = type;
 	}
 
+	@NotNull
 	public Type getType() {
 		return type;
 	}
 
+	@NotNull
 	public BrewLore getLore() {
 		return new BrewLore(getBrew(), (PotionMeta) getItemMeta());
 	}
@@ -46,6 +49,7 @@ public class BrewModifyEvent extends BrewEvent implements Cancellable {
 		this.cancelled = cancelled;
 	}
 
+	@NotNull
 	@Override
 	public HandlerList getHandlers() {
 		return handlers;

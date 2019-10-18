@@ -1,5 +1,7 @@
 package com.dre.brewery.lore;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.InputStream;
 import java.util.Arrays;
 
@@ -34,7 +36,7 @@ public class SeedInputStream extends InputStream {
 	}
 
 	@Override
-	public int read(byte[] b, int off, int len) {
+	public int read(@NotNull byte[] b, int off, int len) {
 		for (int i = off; i < len; i++) {
 			if (reader >= 4) {
 				genNext();

@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.Nullable;
 
 public class BreweryApi {
 
@@ -46,6 +47,7 @@ public class BreweryApi {
 	 * Checks if item is actually a Brew
 	 * Returns null if item is not a Brew
 	 */
+	@Nullable
 	public static Brew getBrew(ItemStack item) {
 		return Brew.get(item);
 	}
@@ -56,6 +58,7 @@ public class BreweryApi {
 	 * Checks if meta has a Brew saved
 	 * Returns null if meta is not a Brew
 	 */
+	@Nullable
 	public static Brew getBrew(ItemMeta meta) {
 		return Brew.get(meta);
 	}
@@ -68,6 +71,7 @@ public class BreweryApi {
 	 * May be any Wood, Fence, Sign that is part of a Barrel
 	 * Returns null if block is not part of a Barrel
 	 */
+	@Nullable
 	public static Barrel getBarrel(Block block) {
 		return Barrel.get(block);
 	}
@@ -77,6 +81,7 @@ public class BreweryApi {
 	 * May be any Wood, Fence or Sign that is part of a Barrel
 	 * Returns null if block is not part of a Barrel
 	 */
+	@Nullable
 	public static Inventory getBarrelInventory(Block block) {
 		Barrel barrel = Barrel.get(block);
 		if (barrel != null) {
@@ -115,6 +120,7 @@ public class BreweryApi {
 	 * Get a BCauldron from a Block
 	 * Returns null if block is not a BCauldron
 	 */
+	@Nullable
 	public static BCauldron getCauldron(Block block) {
 		return BCauldron.get(block);
 	}
@@ -136,6 +142,7 @@ public class BreweryApi {
 	 * The name is the middle one of the three if three are set in the config
 	 * Returns null if recipe with that name does not exist
 	 */
+	@Nullable
 	public static BRecipe getRecipe(String name) {
 		return BRecipe.get(name);
 	}

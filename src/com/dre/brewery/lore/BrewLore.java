@@ -179,12 +179,19 @@ public class BrewLore {
 	// Removes all effects
 	public void removeEffects() {
 		if (meta.hasCustomEffects()) {
-			for (PotionEffect effect : meta.getCustomEffects()) {
+			for (PotionEffect effect : new ArrayList<>(meta.getCustomEffects())) {
 				PotionEffectType type = effect.getType();
 				//if (!type.equals(PotionEffectType.REGENERATION)) {
 				meta.removeCustomEffect(type);
 				//}
 			}
+		}
+	}
+
+	public void removeLegacySpacing() {
+		if (lore.size() > 0 && lore.get(0).equals("")) {
+			lore.remove(0);
+			write();
 		}
 	}
 

@@ -21,6 +21,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -53,6 +54,7 @@ public class BPlayer {
 		players.put(name, this);
 	}
 
+	@Nullable
 	public static BPlayer get(Player player) {
 		if (!players.isEmpty()) {
 			return players.get(BUtil.playerString(player));
@@ -61,6 +63,7 @@ public class BPlayer {
 	}
 
 	// This method may be slow and should not be used if not needed
+	@Nullable
 	public static BPlayer getByName(String playerName) {
 		if (P.useUUID) {
 			for (Map.Entry<String, BPlayer> entry : players.entrySet()) {

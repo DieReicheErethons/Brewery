@@ -111,14 +111,14 @@ public class InventoryListener implements Listener {
 				if (P.use1_9 && !potion.hasItemFlag(ItemFlag.HIDE_POTION_EFFECTS)) {
 					Brew brew = Brew.get(potion);
 					if (brew != null) {
-						brew.convertLegacy(item);
+						brew.convertPre19(item);
 					}
 				}
 				Brew brew = Brew.get(item);
 				if (brew != null) {
 					P.p.log(brew.toString());
 					P.p.log(potion.getLore().get(0).replaceAll("§", ""));
-					P.p.log("similar to beispiel? " + BRecipe.get("Beispiel").createBrew(10).isSimilar(brew));
+					//P.p.log("similar to beispiel? " + BRecipe.get("Beispiel").createBrew(10).isSimilar(brew));
 
 					brew.touch();
 

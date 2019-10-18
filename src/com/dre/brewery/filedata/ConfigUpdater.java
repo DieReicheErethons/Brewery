@@ -82,6 +82,31 @@ public class ConfigUpdater {
 
 
 
+	// ---- Updating Scramble Seed ----
+
+	public void setEncodeKey(long key) {
+		int index = indexOfStart("encodeKey:");
+		if (index != -1) {
+			setLine(index, "encodeKey: " + key);
+			return;
+		}
+
+		// Old key not present
+		index = indexOfStart("enableEncode:");
+		if (index == -1) {
+			index = indexOfStart("# So enable this if you want to make recipe cheating harder");
+		}
+		if (index == -1) {
+			index = indexOfStart("version:");
+		}
+		if (index != -1) {
+			addLines(index + 1, "encodeKey: " + key);
+		} else {
+			addLines(1, "encodeKey: " + key);
+		}
+
+	}
+
 	// ---- Updating to newer Versions ----
 
 	// Update from a specified Config version and language to the newest version

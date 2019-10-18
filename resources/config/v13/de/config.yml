@@ -3,7 +3,6 @@
 
 # -- Verschiedene Einstellungen --
 # Standardeinstellungen sind in [] angegeben
-# Löschen einzelner Einstellungen deaktiviert sie
 
 # Sprachedatei die genutzt werden sollte (befindet sich in plugins/Brewery/languages)
 language: de
@@ -57,8 +56,12 @@ openLargeBarrelEverywhere: true
 # Wie viele Brewery Getränke in die Minecraft Fässer getan werden können [6]
 maxBrewsInMCBarrels: 6
 
-# In den Serverlog loggen was der Spieler tatsächlich geschrieben hat, bevor seine Worte verändert wurden [false]
-logRealChat: false
+# Benutzte Zutaten und andere Brau-Daten werden in allen Brewery Tränken gespeichert. Um zu verhindern,
+# dass gehackte clients diese Daten auslesen um Rezepte herauszufinden, können diese encodiert werden.
+# Einziger Nachteil: Tränke können nur auf Servern mit dem gleichen encodeKey benutzt werden.
+# Dies kann also aktiviert werden um Rezept-cheating schwerer zu machen, aber keine Tränke per World Download, Schematic, o.ä. geteilt werden. [false]
+enableEncode: false
+encodeKey: 0
 
 # Aktiviert das Suchen nach Updates für Brewery mit der curseforge api [true]
 # Wenn ein Update gefunden wurde, wird dies bei Serverstart im log angezeigt, sowie OPs benachrichtigt
@@ -276,6 +279,9 @@ useLogBlock: true
 # Wie stark der Chat verändert wird hängt davon ab wie betrunken der Spieler ist
 # Unten kann noch eingestellt werden wie und was verändert wird
 enableChatDistortion: true
+
+# In den Serverlog loggen was der Spieler tatsächlich geschrieben hat, bevor seine Worte verändert wurden [false]
+logRealChat: false
 
 # Text nach den angegebenen Kommandos wird bei Trunkenheit ebenfalls Verändert (Liste) [- /gl]
 distortCommands:

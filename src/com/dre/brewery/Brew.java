@@ -2,6 +2,7 @@ package com.dre.brewery;
 
 import com.dre.brewery.api.events.brew.BrewModifyEvent;
 import com.dre.brewery.filedata.BConfig;
+import com.dre.brewery.filedata.ConfigUpdater;
 import com.dre.brewery.lore.*;
 import com.dre.brewery.utility.PotionColor;
 import org.bukkit.Material;
@@ -12,20 +13,24 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Brew {
-
 	// represents the liquid in the brewed Potions
 	private static long saveSeed;
+	private static List<Long> prevSaveSeeds = new ArrayList<>(); // Save Seeds that have been used in the past, stored to decode brews made at that time
 	public static Map<Integer, Brew> legacyPotions = new HashMap<>();
 	public static long installTime = System.currentTimeMillis(); // plugin install time in millis after epoch
 
@@ -71,22 +76,21 @@ public class Brew {
 	}
 
 	// returns a Brew by ItemMeta
+	@Nullable
 	public static Brew get(ItemMeta meta) {
 		if (!meta.hasLore()) return null;
 
-		if (meta instanceof PotionMeta && ((PotionMeta) meta).hasCustomEffect(PotionEffectType.REGENERATION)) {
-			Brew brew = load(meta);
-			if (brew != null) {
-				// Load Legacy
-				brew = getFromPotionEffect(((PotionMeta) meta), false);
-			}
-			return brew;
-		} else {
-			return load(meta);
+		Brew brew = load(meta);
+
+		if (brew == null && meta instanceof PotionMeta && ((PotionMeta) meta).hasCustomEffect(PotionEffectType.REGENERATION)) {
+			// Load Legacy
+			return getFromPotionEffect(((PotionMeta) meta), false);
 		}
+		return brew;
 	}
 
 	// returns a Brew by ItemStack
+	@Nullable
 	public static Brew get(ItemStack item) {
 		if (item.getType() != Material.POTION) return null;
 		if (!item.hasItemMeta()) return null;
@@ -94,21 +98,17 @@ public class Brew {
 		ItemMeta meta = item.getItemMeta();
 		if (!meta.hasLore()) return null;
 
-		if (meta instanceof PotionMeta && ((PotionMeta) meta).hasCustomEffect(PotionEffectType.REGENERATION)) {
-			Brew brew = load(meta);
-			if (brew != null) {
-				((PotionMeta) meta).removeCustomEffect(PotionEffectType.REGENERATION);
-			} else {
-				// Load Legacy and convert
-				brew = getFromPotionEffect(((PotionMeta) meta), true);
-				if (brew == null) return null;
-				brew.save(meta);
-			}
+		Brew brew = load(meta);
+
+		if (brew == null && meta instanceof PotionMeta && ((PotionMeta) meta).hasCustomEffect(PotionEffectType.REGENERATION)) {
+			// Load Legacy and convert
+			brew = getFromPotionEffect(((PotionMeta) meta), true);
+			if (brew == null) return null;
+			new BrewLore(brew, ((PotionMeta) meta)).removeLegacySpacing();
+			brew.save(meta);
 			item.setItemMeta(meta);
-			return brew;
-		} else {
-			return load(meta);
 		}
+		return brew;
 	}
 
 	// Legacy Brew Loading
@@ -117,7 +117,16 @@ public class Brew {
 			if (effect.getType().equals(PotionEffectType.REGENERATION)) {
 				if (effect.getDuration() < -1) {
 					if (remove) {
-						return legacyPotions.remove(effect.getDuration());
+						Brew b = legacyPotions.get(effect.getDuration());
+						if (b != null) {
+							potionMeta.removeCustomEffect(PotionEffectType.REGENERATION);
+							if (b.persistent) {
+								return b;
+							} else {
+								return legacyPotions.remove(effect.getDuration());
+							}
+						}
+						return null;
 					} else {
 						return legacyPotions.get(effect.getDuration());
 					}
@@ -612,6 +621,7 @@ public class Brew {
 	 * @param event Set event to true if a BrewModifyEvent type CREATE should be called and may be cancelled. Only then may this method return null
 	 * @return The created Item, null if the Event is cancelled
 	 */
+	@Contract("_, false -> !null")
 	public ItemStack createItem(BRecipe recipe, boolean event) {
 		if (recipe == null) {
 			recipe = getCurrentRecipe();
@@ -654,9 +664,10 @@ public class Brew {
 		try {
 			loreStream = new LoreLoadStream(meta, 0);
 		} catch (IllegalArgumentException ignored) {
+			// No Brew data found in Meta
 			return null;
 		}
-		XORUnscrambleStream unscrambler = new XORUnscrambleStream(new Base91DecoderStream(loreStream), saveSeed);
+		XORUnscrambleStream unscrambler = new XORUnscrambleStream(new Base91DecoderStream(loreStream), saveSeed, prevSaveSeeds);
 		try (DataInputStream in = new DataInputStream(unscrambler)) {
 			boolean parityFailed = false;
 			if (in.readByte() != 86) {
@@ -683,7 +694,7 @@ public class Brew {
 			P.p.errorLog("IO Error while loading Brew");
 			e.printStackTrace();
 		} catch (InvalidKeyException e) {
-			P.p.errorLog("Failed to load Brew, has the data key 'BrewDataSeed' in the data.yml been changed?");
+			P.p.errorLog("Failed to load Brew, has the data key 'encodeKey' in the config.yml been changed?");
 			e.printStackTrace();
 		}
 		return null;
@@ -718,7 +729,11 @@ public class Brew {
 		try (DataOutputStream out = new DataOutputStream(scrambler)) {
 			out.writeByte(86); // Parity/sanity
 			out.writeByte(1); // Version
-			scrambler.start();
+			if (BConfig.enableEncode) {
+				scrambler.start();
+			} else {
+				scrambler.startUnscrambled();
+			}
 			saveToStream(out);
 		} catch (IOException e) {
 			P.p.errorLog("IO Error while saving Brew");
@@ -768,17 +783,33 @@ public class Brew {
 		ingredients.save(out);
 	}
 
-	public static void writeSeed(ConfigurationSection section) {
-		section.set("BrewDataSeed", saveSeed);
+	public static void loadPrevSeeds(ConfigurationSection section) {
+		if (section.contains("prevSaveSeeds")) {
+			prevSaveSeeds = section.getLongList("prevSaveSeeds");
+			if (!prevSaveSeeds.contains(saveSeed)) {
+				prevSaveSeeds.add(saveSeed);
+			}
+		}
 	}
 
-	public static void loadSeed(ConfigurationSection section) {
-		if (section.contains("BrewDataSeed")) {
-			saveSeed = section.getLong("BrewDataSeed");
-		} else {
+	public static void writePrevSeeds(ConfigurationSection section) {
+		if (!prevSaveSeeds.isEmpty()) {
+			section.set("prevSaveSeeds", prevSaveSeeds);
+		}
+	}
+
+	public static void loadSeed(ConfigurationSection config, File file) {
+		saveSeed = config.getLong("encodeKey", 0);
+		if (saveSeed == 0) {
 			while (saveSeed == 0) {
 				saveSeed = new SecureRandom().nextLong();
 			}
+			ConfigUpdater updater = new ConfigUpdater(file);
+			updater.setEncodeKey(saveSeed);
+			updater.saveConfig();
+		}
+		if (!prevSaveSeeds.contains(saveSeed)) {
+			prevSaveSeeds.add(saveSeed);
 		}
 	}
 
@@ -793,31 +824,26 @@ public class Brew {
 		legacyPotions.put(uid, brew);
 	}
 
-	// remove legacy potiondata from item
+	// remove legacy potiondata for an item
 	public static void removeLegacy(ItemStack item) {
 		if (legacyPotions.isEmpty()) return;
 		if (!item.hasItemMeta()) return;
 		ItemMeta meta = item.getItemMeta();
 		if (!(meta instanceof PotionMeta)) return;
-		for (PotionEffect effect : ((PotionMeta) meta).getCustomEffects()) {
-			if (effect.getType().equals(PotionEffectType.REGENERATION)) {
-				if (effect.getDuration() < -1) {
-					legacyPotions.remove(effect.getDuration());
-					return;
-				}
-			}
-		}
+		getFromPotionEffect(((PotionMeta) meta), true);
 	}
 
-	public void convertLegacy(ItemStack item) {
+	public void convertPre19(ItemStack item) {
 		removeLegacy(item);
 		PotionMeta potionMeta = ((PotionMeta) item.getItemMeta());
 		if (hasRecipe()) {
 			BrewLore lore = new BrewLore(this, potionMeta);
 			lore.removeEffects();
 			PotionColor.fromString(currentRecipe.getColor()).colorBrew(potionMeta, item, canDistill());
+			lore.removeLegacySpacing();
 		} else {
 			PotionColor.GREY.colorBrew(potionMeta, item, canDistill());
+			new BrewLore(this, potionMeta).removeLegacySpacing();
 		}
 		save(potionMeta);
 		item.setItemMeta(potionMeta);

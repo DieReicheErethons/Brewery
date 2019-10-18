@@ -3,7 +3,6 @@
 
 # -- Settings --
 # Defaults are written in []
-# Deleting of single settings disables them
 
 # Languagefile to be used (found in plugins/Brewery/languages)
 language: en
@@ -56,6 +55,14 @@ openLargeBarrelEverywhere: true
 
 # How many Brewery drinks can be put into the Minecraft barrels [6]
 maxBrewsInMCBarrels: 6
+
+# The used Ingredients and other brewing-data is saved to all Brewery Items. To prevent
+# hacked clients from reading what exactly was used to brew an item, the data can be encoded/scrambled.
+# This is a fast process to stop players from hacking out recipes, once they get hold of a brew.
+# Only drawback: brew items can only be used on another server with the same encodeKey.
+# So enable this if you want to make recipe cheating harder, but don't share any brews by world download, schematics, or other means. [false]
+enableEncode: false
+encodeKey: 0
 
 # Enable checking for Updates, Checks the curseforge api for updates to Brewery [true]
 # If an Update is found a Message is logged on Server-start and displayed to OPs joining the game

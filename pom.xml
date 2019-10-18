@@ -232,6 +232,12 @@
 			<version>1.5</version>
 			<scope>compile</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.jetbrains</groupId>
+			<artifactId>annotations</artifactId>
+			<version>16.0.2</version>
+			<scope>compile</scope>
+		</dependency>
 	</dependencies>
 
 	<distributionManagement>

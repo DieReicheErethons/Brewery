@@ -58,6 +58,14 @@ openLargeBarrelEverywhere: false
 # MC自带的桶内可以存放多少饮品 [6]
 maxBrewsInMCBarrels: 6
 
+# The used Ingredients and other brewing-data is saved to all Brewery Items. To prevent
+# hacked clients from reading what exactly was used to brew an item, the data can be encoded/scrambled.
+# This is a fast process to stop players from hacking out recipes, once they get hold of a brew.
+# Only drawback: brew items can only be used on another server with the same encodeKey.
+# So enable this if you want to make recipe cheating harder, but don't share any brews by world download, schematics, or other means. [false]
+enableEncode: false
+encodeKey: 0
+
 # 是否检查更新.[true]
 # 若有更新, 服务端后台与上线时的管理员会收到通知.
 updateCheck: true

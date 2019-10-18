@@ -31,7 +31,7 @@ public class BData {
 			Brew.installTime = data.getLong("installTime", System.currentTimeMillis());
 			MCBarrel.mcBarrelTime = data.getLong("MCBarrelTime", 0);
 
-			Brew.loadSeed(data);
+			Brew.loadPrevSeeds(data);
 
 			// Check if data is the newest version
 			String version = data.getString("Version", null);

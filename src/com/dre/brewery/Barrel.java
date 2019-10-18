@@ -23,6 +23,7 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +43,11 @@ public class Barrel implements InventoryHolder {
 
 	public Barrel(Block spigot, byte signoffset) {
 		this.spigot = spigot;
+		if (isLarge()) {
+			inventory = P.p.getServer().createInventory(this, 27, P.p.languageReader.get("Etc_Barrel"));
+		} else {
+			inventory = P.p.getServer().createInventory(this, 9, P.p.languageReader.get("Etc_Barrel"));
+		}
 		body = new BarrelBody(this, signoffset);
 	}
 
@@ -163,6 +169,7 @@ public class Barrel implements InventoryHolder {
 	public void playOpeningSound() {
 		float randPitch = (float) (Math.random() * 0.1);
 		Location location = getSpigot().getLocation();
+		if (location.getWorld() == null) return;
 		if (isLarge()) {
 			location.getWorld().playSound(location, Sound.BLOCK_CHEST_OPEN, SoundCategory.BLOCKS, 0.4f, 0.55f + randPitch);
 			//getSpigot().getWorld().playSound(getSpigot().getLocation(), Sound.ITEM_BUCKET_EMPTY, SoundCategory.BLOCKS, 0.5f, 0.6f + randPitch);
@@ -175,6 +182,7 @@ public class Barrel implements InventoryHolder {
 	public void playClosingSound() {
 		float randPitch = (float) (Math.random() * 0.1);
 		Location location = getSpigot().getLocation();
+		if (location.getWorld() == null) return;
 		if (isLarge()) {
 			location.getWorld().playSound(location, Sound.BLOCK_BARREL_CLOSE, SoundCategory.BLOCKS, 0.5f, 0.5f + randPitch);
 			location.getWorld().playSound(location, Sound.ITEM_BUCKET_EMPTY, SoundCategory.BLOCKS, 0.2f, 0.6f + randPitch);
@@ -184,14 +192,17 @@ public class Barrel implements InventoryHolder {
 	}
 
 	@Override
+	@NotNull
 	public Inventory getInventory() {
 		return inventory;
 	}
 
+	@NotNull
 	public Block getSpigot() {
 		return spigot;
 	}
 
+	@NotNull
 	public BarrelBody getBody() {
 		return body;
 	}
@@ -239,7 +250,7 @@ public class Barrel implements InventoryHolder {
 
 		for (Barrel barrel : barrels) {
 			if (barrel.body.isSignOfBarrel(signoffset)) {
-				if (barrel.body.equals(spigot)) {
+				if (barrel.spigot.equals(spigot)) {
 					if (barrel.body.getSignoffset() == 0 && signoffset != 0) {
 						// Barrel has no signOffset even though we clicked a sign, may be old
 						barrel.body.setSignoffset(signoffset);
@@ -316,7 +327,7 @@ public class Barrel implements InventoryHolder {
 		P.p.getServer().getPluginManager().callEvent(event);
 
 		if (inventory != null) {
-			List<HumanEntity> viewers = new ArrayList(inventory.getViewers());
+			List<HumanEntity> viewers = new ArrayList<>(inventory.getViewers());
 			// Copy List to fix ConcModExc
 			for (HumanEntity viewer : viewers) {
 				viewer.closeInventory();
@@ -368,7 +379,7 @@ public class Barrel implements InventoryHolder {
 
 	// is this a Small barrel?
 	public boolean isSmall() {
-		return !LegacyUtil.isSign(spigot.getType());
+		return LegacyUtil.isSign(spigot.getType());
 	}
 
 	// returns the Sign of a large barrel, the spigot if there is none

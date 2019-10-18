@@ -64,7 +64,7 @@ public class DataSave extends BukkitRunnable {
 		configFile.set("installTime", Brew.installTime);
 		configFile.set("MCBarrelTime", MCBarrel.mcBarrelTime);
 
-		Brew.writeSeed(configFile);
+		Brew.writePrevSeeds(configFile);
 
 		if (!Brew.legacyPotions.isEmpty()) {
 			Brew.save(configFile.createSection("Brew"));

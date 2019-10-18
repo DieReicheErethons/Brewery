@@ -54,6 +54,7 @@ public class BConfig {
 	//Brew
 	public static boolean colorInBarrels; // color the Lore while in Barrels
 	public static boolean colorInBrewer; // color the Lore while in Brewer
+	public static boolean enableEncode;
 
 	public static P p = P.p;
 
@@ -173,8 +174,11 @@ public class BConfig {
 		homeType = config.getString("homeType", null);
 		colorInBarrels = config.getBoolean("colorInBarrels", false);
 		colorInBrewer = config.getBoolean("colorInBrewer", false);
+		enableEncode = config.getBoolean("enableEncode", false);
 		openEverywhere = config.getBoolean("openLargeBarrelEverywhere", false);
 		MCBarrel.maxBrews = config.getInt("maxBrewsInMCBarrels", 6);
+
+		Brew.loadSeed(config, file);
 
 		// loading recipes
 		ConfigurationSection configSection = config.getConfigurationSection("recipes");

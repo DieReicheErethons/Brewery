@@ -1,14 +1,11 @@
 package com.dre.brewery.utility;
 
 import com.dre.brewery.P;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.TreeSpecies;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Levelled;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.Cauldron;
 import org.bukkit.material.MaterialData;
 import org.bukkit.material.Tree;
@@ -29,6 +26,8 @@ public class LegacyUtil {
 	private static Method GET_MATERIAL;
 	private static Method GET_BLOCK_TYPE_ID_AT;
 	private static Method SET_DATA;
+
+	public static boolean NewNbtVer;
 
 	static {
 		// <= 1.12.2 methods
@@ -245,6 +244,50 @@ public class LegacyUtil {
 		try {
 			SET_DATA.invoke(block, data);
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ignored) {
+		}
+	}
+
+	/**
+	 * MC 1.13 uses a different NBT API than the newer versions..
+	 * We decide here which to use, the new or the old
+	 *
+	 * @return true if we can use nbt at all
+	 */
+	public static boolean initNbt() {
+		try {
+			Class.forName("org.bukkit.persistence.PersistentDataContainer");
+			NewNbtVer = true;
+			P.p.debugLog("Using the NEW nbt api");
+			return true;
+		} catch (ClassNotFoundException e) {
+			try {
+				Class.forName("org.bukkit.inventory.meta.tags.CustomItemTagContainer");
+				NewNbtVer = false;
+				P.p.debugLog("Using the OLD nbt api");
+				return true;
+			} catch (ClassNotFoundException ex) {
+				NewNbtVer = false;
+				P.p.debugLog("No nbt api found, using Lore Save System");
+				return false;
+			}
+		}
+	}
+
+	@SuppressWarnings("deprecation")
+	public static void writeBytesItem(byte[] bytes, ItemMeta meta, NamespacedKey key) {
+		if (NewNbtVer) {
+			meta.getPersistentDataContainer().set(key, org.bukkit.persistence.PersistentDataType.BYTE_ARRAY, bytes);
+		} else {
+			meta.getCustomTagContainer().setCustomTag(key, org.bukkit.inventory.meta.tags.ItemTagType.BYTE_ARRAY, bytes);
+		}
+	}
+
+	@SuppressWarnings("deprecation")
+	public static byte[] readBytesItem(ItemMeta meta, NamespacedKey key) {
+		if (NewNbtVer) {
+			return meta.getPersistentDataContainer().get(key, org.bukkit.persistence.PersistentDataType.BYTE_ARRAY);
+		} else {
+			return meta.getCustomTagContainer().getCustomTag(key, org.bukkit.inventory.meta.tags.ItemTagType.BYTE_ARRAY);
 		}
 	}
 

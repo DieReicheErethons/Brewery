@@ -23,6 +23,8 @@ public class XORUnscrambleStream extends FilterInputStream {
 	private boolean markRunning;
 	private boolean markxor;
 
+	private SuccessType successType = SuccessType.NONE;
+
 	/**
 	 * Create a new instance of an XORUnscrambler, unscrambling the given inputstream
 	 *
@@ -62,19 +64,24 @@ public class XORUnscrambleStream extends FilterInputStream {
 			short id = (short) (in.read() << 8 | in.read());
 			if (id == 0) {
 				running = false;
+				successType = SuccessType.UNSCRAMBLED;
 				P.p.debugLog("Unscrambled data");
 				return;
 			}
 			int parity = in.read();
 			xorStream = new SeedInputStream(seed ^ id);
 			boolean success = checkParity(parity);
-			if (success) P.p.debugLog("Using main Seed to unscramble");
+			if (success) {
+				successType = SuccessType.MAIN_SEED;
+				P.p.debugLog("Using main Seed to unscramble");
+			}
 
 			if (!success && prevSeeds != null) {
 				for (int i = prevSeeds.size() - 1; i >= 0; i--) {
 					seed = prevSeeds.get(i);
 					xorStream = new SeedInputStream(seed ^ id);
 					if (success = checkParity(parity)) {
+						successType = SuccessType.PREV_SEED;
 						P.p.debugLog("Had to use prevSeed to unscramble");
 						break;
 					}
@@ -116,6 +123,15 @@ public class XORUnscrambleStream extends FilterInputStream {
 			b[i] ^= xorStream.read();
 		}
 		return len;
+	}
+
+	/**
+	 * What was used to unscramble the stream, it was already unscrambled, Main Seed, Prev Seed
+	 *
+	 * @return The Type of Seed used to unscramble this, if any
+	 */
+	public SuccessType getSuccessType() {
+		return successType;
 	}
 
 	@SuppressWarnings("ResultOfMethodCallIgnored")
@@ -162,5 +178,12 @@ public class XORUnscrambleStream extends FilterInputStream {
 			markxor = true;
 		}
 		markRunning = running;
+	}
+
+	public static enum SuccessType {
+		UNSCRAMBLED,
+		MAIN_SEED,
+		PREV_SEED,
+		NONE;
 	}
 }

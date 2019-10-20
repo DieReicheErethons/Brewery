@@ -60,7 +60,9 @@ public class BDistiller {
 		final int fuel = standInv.getHolder().getFuelLevel();
 
 		// Now check if we should bother to track it.
-		trackedDistillers.put(standBlock, new BDistiller(standBlock, fuel)).start();
+		distiller = new BDistiller(standBlock, fuel);
+		trackedDistillers.put(standBlock, distiller);
+		distiller.start();
 	}
 
 	// Returns a Brew or null for every Slot in the BrewerInventory

@@ -16,10 +16,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.security.InvalidKeyException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -44,6 +41,7 @@ public class Brew {
 	private boolean persistent; // Only for legacy
 	private boolean immutable; // static/immutable potions should not be changed
 	private int lastUpdate; // last update in hours after install time
+	private boolean needsSave; // There was a change that has not yet been saved
 
 	public Brew(BIngredients ingredients) {
 		this.ingredients = ingredients;
@@ -78,7 +76,7 @@ public class Brew {
 	// returns a Brew by ItemMeta
 	@Nullable
 	public static Brew get(ItemMeta meta) {
-		if (!meta.hasLore()) return null;
+		if (!P.useNBT && !meta.hasLore()) return null;
 
 		Brew brew = load(meta);
 
@@ -96,7 +94,7 @@ public class Brew {
 		if (!item.hasItemMeta()) return null;
 
 		ItemMeta meta = item.getItemMeta();
-		if (!meta.hasLore()) return null;
+		if (!P.useNBT && !meta.hasLore()) return null;
 
 		Brew brew = load(meta);
 
@@ -104,7 +102,16 @@ public class Brew {
 			// Load Legacy and convert
 			brew = getFromPotionEffect(((PotionMeta) meta), true);
 			if (brew == null) return null;
-			new BrewLore(brew, ((PotionMeta) meta)).removeLegacySpacing();
+			new BrewLore(brew, (PotionMeta) meta).removeLegacySpacing();
+			brew.save(meta);
+			item.setItemMeta(meta);
+		} else if (brew != null && brew.needsSave) {
+			// Brew needs saving from a previous format
+			P.p.debugLog("Brew needs saving from previous format");
+			if (P.useNBT) {
+				new BrewLore(brew, (PotionMeta) meta).removeLoreData();
+				P.p.debugLog("removed Data from Lore");
+			}
 			brew.save(meta);
 			item.setItemMeta(meta);
 		}
@@ -434,6 +441,14 @@ public class Brew {
 		return unlabeled;
 	}
 
+	public boolean needsSave() {
+		return needsSave;
+	}
+
+	public void setNeedsSave(boolean needsSave) {
+		this.needsSave = needsSave;
+	}
+
 	// Set the Static flag, so potion is unchangeable
 	public void setStatic(boolean immutable, ItemStack potion) {
 		this.immutable = immutable;
@@ -660,14 +675,25 @@ public class Brew {
 	}
 
 	private static Brew load(ItemMeta meta) {
-		LoreLoadStream loreStream;
-		try {
-			loreStream = new LoreLoadStream(meta, 0);
-		} catch (IllegalArgumentException ignored) {
-			// No Brew data found in Meta
-			return null;
+		InputStream itemLoadStream = null;
+		if (P.useNBT) {
+			// Try loading the Item Data from PersistentDataContainer
+			NBTLoadStream nbtStream = new NBTLoadStream(meta);
+			if (nbtStream.hasData()) {
+				itemLoadStream = nbtStream;
+			}
 		}
-		XORUnscrambleStream unscrambler = new XORUnscrambleStream(new Base91DecoderStream(loreStream), saveSeed, prevSaveSeeds);
+		if (itemLoadStream == null) {
+			// If either NBT is not supported or no data was found in NBT, try loading from Lore
+			try {
+				itemLoadStream = new Base91DecoderStream(new LoreLoadStream(meta, 0));
+			} catch (IllegalArgumentException ignored) {
+				// No Brew data found in Meta
+				return null;
+			}
+		}
+
+		XORUnscrambleStream unscrambler = new XORUnscrambleStream(itemLoadStream, saveSeed, prevSaveSeeds);
 		try (DataInputStream in = new DataInputStream(unscrambler)) {
 			boolean parityFailed = false;
 			if (in.readByte() != 86) {
@@ -678,8 +704,10 @@ public class Brew {
 			byte ver = in.readByte();
 			switch (ver) {
 				case 1:
+
 					unscrambler.start();
 					brew.loadFromStream(in);
+
 					break;
 				default:
 					if (parityFailed) {
@@ -688,6 +716,18 @@ public class Brew {
 						P.p.errorLog("Brew has data stored in v" + ver + " this Plugin version supports up to v1");
 					}
 					return null;
+			}
+
+			XORUnscrambleStream.SuccessType successType = unscrambler.getSuccessType();
+			if (successType == XORUnscrambleStream.SuccessType.PREV_SEED) {
+				brew.setNeedsSave(true);
+			} else if (BConfig.enableEncode != (successType == XORUnscrambleStream.SuccessType.MAIN_SEED)) {
+				// We have either enabled encode and the data was not encoded or the other way round
+				brew.setNeedsSave(true);
+			} else if (P.useNBT && itemLoadStream instanceof Base91DecoderStream) {
+				// We are on a version that supports nbt but the data is still in the lore of the item
+				// Just save it again so that it gets saved to nbt
+				brew.setNeedsSave(true);
 			}
 			return brew;
 		} catch (IOException e) {
@@ -723,9 +763,15 @@ public class Brew {
 		ingredients = BIngredients.load(in);
 	}
 
-	// Save brew data into meta/lore
+	// Save brew data into meta: lore/nbt
 	public void save(ItemMeta meta) {
-		XORScrambleStream scrambler = new XORScrambleStream(new Base91EncoderStream(new LoreSaveStream(meta, 0)), saveSeed);
+		OutputStream itemSaveStream;
+		if (P.useNBT) {
+			itemSaveStream = new NBTSaveStream(meta);
+		} else {
+			itemSaveStream = new Base91EncoderStream(new LoreSaveStream(meta, 0));
+		}
+		XORScrambleStream scrambler = new XORScrambleStream(itemSaveStream, saveSeed);
 		try (DataOutputStream out = new DataOutputStream(scrambler)) {
 			out.writeByte(86); // Parity/sanity
 			out.writeByte(1); // Version

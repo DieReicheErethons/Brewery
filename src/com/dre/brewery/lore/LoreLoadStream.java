@@ -8,6 +8,8 @@ import java.util.List;
 
 public class LoreLoadStream extends ByteArrayInputStream {
 
+	public static final String IDENTIFIER = "§%";
+
 	public LoreLoadStream(ItemMeta meta) throws IllegalArgumentException {
 		this(meta, -1);
 	}
@@ -21,12 +23,12 @@ public class LoreLoadStream extends ByteArrayInputStream {
 			List<String> lore = meta.getLore();
 			if (lineNum >= 0) {
 				String line = lore.get(lineNum);
-				if (line.startsWith("§%")) {
+				if (line.startsWith(IDENTIFIER)) {
 					return loreLineToBytes(line);
 				}
 			}
 			for (String line : lore) {
-				if (line.startsWith("§%")) {
+				if (line.startsWith(IDENTIFIER)) {
 					return loreLineToBytes(line);
 				}
 			}

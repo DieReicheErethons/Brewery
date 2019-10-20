@@ -10,6 +10,8 @@ import java.util.List;
 
 public class LoreSaveStream extends ByteArrayOutputStream {
 
+	public static final String IDENTIFIER = "§%";
+
 	private ItemMeta meta;
 	private int line;
 	private boolean flushed = false;
@@ -38,7 +40,7 @@ public class LoreSaveStream extends ByteArrayOutputStream {
 		String s = toString();
 
 		StringBuilder loreLineBuilder = new StringBuilder((s.length() * 2) + 6);
-		loreLineBuilder.append("§%");
+		loreLineBuilder.append(IDENTIFIER);
 		for (char c : s.toCharArray()) {
 			loreLineBuilder.append('§').append(c);
 		}
@@ -50,7 +52,7 @@ public class LoreSaveStream extends ByteArrayOutputStream {
 		}
 		int prev = 0;
 		for (Iterator<String> iterator = lore.iterator(); iterator.hasNext(); ) {
-			if (iterator.next().startsWith("§%")) {
+			if (iterator.next().startsWith(IDENTIFIER)) {
 				iterator.remove();
 				break;
 			}

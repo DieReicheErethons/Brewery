@@ -189,8 +189,20 @@ public class BrewLore {
 	}
 
 	public void removeLegacySpacing() {
+		if (P.useNBT) {
+			// Using NBT we don't get the invisible line, so we keep our spacing
+			return;
+		}
 		if (lore.size() > 0 && lore.get(0).equals("")) {
 			lore.remove(0);
+			write();
+		}
+	}
+
+	public void removeLoreData() {
+		int index = BUtil.indexOfStart(lore, LoreSaveStream.IDENTIFIER);
+		if (index != -1) {
+			lore.set(index, "");
 			write();
 		}
 	}

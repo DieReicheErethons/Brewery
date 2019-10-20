@@ -9,6 +9,7 @@ import com.dre.brewery.integration.IntegrationListener;
 import com.dre.brewery.integration.LogBlockBarrel;
 import com.dre.brewery.listeners.*;
 import com.dre.brewery.utility.BUtil;
+import com.dre.brewery.utility.LegacyUtil;
 import org.apache.commons.lang.math.NumberUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -22,6 +23,7 @@ public class P extends JavaPlugin {
 	public static P p;
 	public static boolean debug;
 	public static boolean useUUID;
+	public static boolean useNBT;
 	public static boolean use1_9;
 	public static boolean use1_11;
 	public static boolean use1_13;
@@ -50,6 +52,13 @@ public class P extends JavaPlugin {
 		use1_11 = !v.matches("(^|.*[^.\\d])1\\.10([^\\d].*|$)") && !v.matches("(^|.*[^.\\d])1\\.[0-9]([^\\d].*|$)");
 		use1_13 = !v.matches("(^|.*[^.\\d])1\\.1[0-2]([^\\d].*|$)") && !v.matches("(^|.*[^.\\d])1\\.[0-9]([^\\d].*|$)");
 		use1_14 = !v.matches("(^|.*[^.\\d])1\\.1[0-3]([^\\d].*|$)") && !v.matches("(^|.*[^.\\d])1\\.[0-9]([^\\d].*|$)");
+
+		//MC 1.13 uses a different NBT API than the newer versions..
+		// We decide here which to use, the new or the old or none at all
+		P.debug = true;
+		if (LegacyUtil.initNbt()) {
+			useNBT = true;
+		}
 
 		//P.p.log("§" + (use1_9 ? "a":"c") + "1.9 " + "§" + (use1_11 ? "a":"c") + "1.11 " + "§" + (use1_13 ? "a":"c") + "1.13 " + "§" + (use1_14 ? "a":"c") + "1.14");
 

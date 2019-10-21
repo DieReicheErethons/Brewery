@@ -2,9 +2,13 @@ package com.dre.brewery;
 
 import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.utility.PotionColor;
+import com.dre.brewery.utility.Tuple;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.craftbukkit.libs.jline.internal.Nullable;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +25,7 @@ public class BRecipe {
 	private String color; // color of the destilled/finished potion
 	private int difficulty; // difficulty to brew the potion, how exact the instruction has to be followed
 	private int alcohol; // Alcohol in perfect potion
+	private List<Tuple<Integer, String>> lore; // Custom Lore on the Potion. The int is for Quality Lore, 0 = any, 1,2,3 = Bad,Middle,Good
 	private ArrayList<BEffect> effects = new ArrayList<>(); // Special Effects when drinking
 
 	public BRecipe(ConfigurationSection configSectionRecipes, String recipeId) {
@@ -102,6 +107,38 @@ public class BRecipe {
 		this.color = configSectionRecipes.getString(recipeId + ".color");
 		this.difficulty = configSectionRecipes.getInt(recipeId + ".difficulty", 0);
 		this.alcohol = configSectionRecipes.getInt(recipeId + ".alcohol", 0);
+
+		List<String> load = null;
+		if (configSectionRecipes.isString(recipeId + ".lore")) {
+			load = new ArrayList<>(1);
+			load.add(configSectionRecipes.getString(recipeId + ".lore"));
+		} else if (configSectionRecipes.isList(recipeId + ".lore")) {
+			load = configSectionRecipes.getStringList(recipeId + ".lore");
+		}
+		if (load != null) {
+			for (String line : load) {
+				line = P.p.color(line);
+				int plus = 0;
+				if (line.startsWith("+++")) {
+					plus = 3;
+					line = line.substring(3);
+				} else if (line.startsWith("++")) {
+					plus = 2;
+					line = line.substring(2);
+				} else if (line.startsWith("+")) {
+					plus = 1;
+					line = line.substring(1);
+				}
+				if (line.startsWith(" ")) {
+					line = line.substring(1);
+				}
+				if (!line.startsWith("§")) {
+					line = "§9" + line;
+				}
+				if (lore == null) lore = new ArrayList<>();
+				lore.add(new Tuple<>(plus, line));
+			}
+		}
 
 		List<String> effectStringList = configSectionRecipes.getStringList(recipeId + ".effects");
 		if (effectStringList != null) {
@@ -333,6 +370,7 @@ public class BRecipe {
 		return distillTime;
 	}
 
+	@NotNull
 	public String getColor() {
 		if (color != null) {
 			return color.toUpperCase();
@@ -355,6 +393,35 @@ public class BRecipe {
 
 	public int getAlcohol() {
 		return alcohol;
+	}
+
+	public boolean hasLore() {
+		return lore != null && !lore.isEmpty();
+	}
+
+	@Nullable
+	public List<Tuple<Integer, String>> getLore() {
+		return lore;
+	}
+
+	@Nullable
+	public List<String> getLoreForQuality(int quality) {
+		if (lore == null) return null;
+		int plus;
+		if (quality <= 3) {
+			plus = 1;
+		} else if (quality <= 7) {
+			plus = 2;
+		} else {
+			plus = 3;
+		}
+		List<String> list = new ArrayList<>(lore.size());
+		for (Tuple<Integer, String> line : lore) {
+			if (line.first() == 0 || line.first() == plus) {
+				list.add(line.second());
+			}
+		}
+		return list;
 	}
 
 	public ArrayList<BEffect> getEffects() {

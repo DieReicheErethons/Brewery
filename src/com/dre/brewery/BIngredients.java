@@ -93,6 +93,7 @@ public class BIngredients {
 			P.p.debugLog("cooked potion has Quality: " + quality);
 			brew = new Brew(quality, cookRecipe, this);
 			BrewLore lore = new BrewLore(brew, potionMeta);
+			lore.updateCustomLore();
 			lore.addOrReplaceEffects(brew.getEffects(), brew.getQuality());
 
 			cookedName = cookRecipe.getName(quality);

@@ -96,6 +96,8 @@ oldMat: true
 #   Oder RGB Farben (Hex: also zB '99FF33') (Ohne #) (mit '') (Einfach nach "HTML color" im Internet suchen)
 # difficulty: 1-10 Genauigkeit der Einhaltung der Vorgaben (1 = ungenau/einfach 10 = sehr genau/schwer)
 # alcohol: Alkoholgehalt 0-100 in absoluter Menge bei perfektem Getränk (wird dem Spieler hinzugefügt, bei 100 = tot)
+# lore: Auflistung von zusätzlichem Text auf dem fertigen Trank. (Farbcodes möglich: z.b. &6)
+#   Lore nur für bestimmte Qualität möglich mit + Schlecht, ++ Mittel, +++ Gut, vorne anhängen.
 # effects: Auflistung Effekt/Level/Dauer  Besonderere Trank-Effekte beim Trinken, Dauer in sek.
 #   Ein 'X' an den Namen anhängen, um ihn zu verbergen. Bsp: 'POISONX/2/10' (WEAKNESS, INCREASE_DAMAGE, SLOW und SPEED sind immer verborgen.)
 #   Effekte sind ab der 1.9 immer verborgen, wegen Änderungen an den Tränken.
@@ -124,6 +126,14 @@ recipes:
       color: DARK_RED
       difficulty: 3
       alcohol: 23
+      lore:
+      - Dies ist ein Beispiel Trank
+      - ++Ganz normales Beispiel
+      - Man kann ihn nicht brauen
+      - Aber dies würde auf dem Trank stehen
+      - + Riecht eklig
+      - ++ Riecht ganz ok
+      - +++ Riecht richtig gut
       effects:
       - FIRE_RESISTANCE/20
       - HEAL/1
@@ -162,6 +172,8 @@ recipes:
       color: BLACK
       difficulty: 2
       alcohol: 7
+      lore:
+      - +++ &8Perlt wunderschön
    4:
       name: Scheußlicher Met/Met/&6Goldener Met
       ingredients:
@@ -173,6 +185,8 @@ recipes:
       color: ORANGE
       difficulty: 2
       alcohol: 9
+      lore:
+      - +++ Hat einen goldenen Schein
    5:
       name: Apfelmet/Süßer Apfelmet/&6Goldensüßer Apfelmet
       ingredients:
@@ -185,6 +199,10 @@ recipes:
       color: ORANGE
       difficulty: 4
       alcohol: 12
+      lore:
+      - + Ist da wirklich Apfel drin?
+      - ++ Schmeckt nach süßem Apfel
+      - +++ Hat eine wunderbare Apfelnote
       effects:
       - WATER_BREATHINGX/1-2/150
    6:
@@ -212,6 +230,8 @@ recipes:
       color: BRIGHT_GREY
       difficulty: 4
       alcohol: 20
+      lore:
+      - + &8Fast nicht trinkbar
       effects:
       - WEAKNESS/15
       - POISON/10
@@ -245,6 +265,7 @@ recipes:
       cookingtime: 2
       color: BLACK
       difficulty: 3
+      lore: + &8Bestimmt schon eine Woche alt
       effects:
       - REGENERATION/1/2-5
       - SPEED/1/30-140

@@ -117,7 +117,7 @@ public class InventoryListener implements Listener {
 				Brew brew = Brew.get(item);
 				if (brew != null) {
 					P.p.log(brew.toString());
-					P.p.log(potion.getLore().get(0).replaceAll("§", ""));
+					//P.p.log(potion.getLore().get(0).replaceAll("§", ""));
 					//P.p.log("similar to beispiel? " + BRecipe.get("Beispiel").createBrew(10).isSimilar(brew));
 
 					brew.touch();

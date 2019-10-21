@@ -490,6 +490,7 @@ public class Brew {
 			currentRecipe = recipe;
 			quality = calcQuality();
 
+			lore.updateCustomLore();
 			lore.addOrReplaceEffects(getEffects(), quality);
 			potionMeta.setDisplayName(P.p.color("&f" + recipe.getName(quality)));
 			PotionColor.fromString(recipe.getColor()).colorBrew(potionMeta, slotItem, canDistill());
@@ -559,6 +560,7 @@ public class Brew {
 				currentRecipe = recipe;
 				quality = calcQuality();
 
+				lore.updateCustomLore();
 				lore.addOrReplaceEffects(getEffects(), quality);
 				potionMeta.setDisplayName(P.p.color("&f" + recipe.getName(quality)));
 				PotionColor.fromString(recipe.getColor()).colorBrew(potionMeta, item, canDistill());

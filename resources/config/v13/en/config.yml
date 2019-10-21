@@ -93,6 +93,10 @@ version: '1.8'
 #   Or RGB colors (hex: for example '99FF33') (with '') (search for "HTML color" on the internet)
 # difficulty: 1-10 accuracy needed to get good quality (1 = unaccurate/easy, 10 = very precise/hard)
 # alcohol: Absolute amount of alcohol 0-100 in a perfect potion (will be added directly to the player, where 100 means fainting)
+# lore: List of additional text on the finished brew. (Formatting codes possible: such as &6)
+#   Specific lore for quality possible, using + bad, ++ normal, ++ good, added to the front of the line.
+# lore: Auflistung von zusätzlichem Text auf dem fertigen Trank. (Farbcodes möglich: z.b. &6)
+#   Lore nur für bestimmte Qualität möglich mit + Schlecht, ++ Mittel, +++ Gut, vorne anhängen.
 # effects: List of effect/level/duration  Special potion-effect when drinking, duration in sek.
 #   Possible Effects: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/potion/PotionEffectType.html
 #   Level or Duration ranges may be specified with a "-", ex. 'SPEED/1-2/30-40' = lvl 1 and 30 sec at worst and lvl 2 and 40 sec at best
@@ -117,6 +121,13 @@ recipes:
       color: DARK_RED
       difficulty: 3
       alcohol: 23
+      lore:
+        - This is an examble brew
+        - ++Just a normal Example
+        - This text would be on the brew
+        - + Smells disgusting
+        - ++ Smells alright
+        - +++ Smells really good
       effects:
       - FIRE_RESISTANCE/20
       - HEAL/1
@@ -143,6 +154,8 @@ recipes:
       age: 3
       color: ORANGE
       difficulty: 1
+      lore:
+        - +++ &8Crisp taste
       alcohol: 6
    3:
       name: Skunky Darkbeer/Darkbeer/Fine Darkbeer
@@ -154,6 +167,8 @@ recipes:
       age: 8
       color: BLACK
       difficulty: 2
+      lore:
+        - +++ &8Roasted taste
       alcohol: 7
    4:
       name: Awkward Mead/Mead/&6Golden Mead
@@ -165,6 +180,8 @@ recipes:
       age: 4
       color: ORANGE
       difficulty: 2
+      lore:
+        - +++ Has a golden shine
       alcohol: 9
    5:
       name: Apple Mead/Sweet Apple Mead/&6Sweet Golden Apple Mead
@@ -178,6 +195,10 @@ recipes:
       color: ORANGE
       difficulty: 4
       alcohol: 12
+      lore:
+        - +Is there any Apple in this?
+        - ++Refreshing taste of Apple
+        - +++Sweetest hint of Apple
       effects:
       - WATER_BREATHING/1-2/150
    6:
@@ -205,6 +226,7 @@ recipes:
       color: BRIGHT_GREY
       difficulty: 4
       alcohol: 20
+      lore: +&8Almost undrinkable
       effects:
       - WEAKNESS/15
       - POISON/10
@@ -238,6 +260,7 @@ recipes:
       cookingtime: 2
       color: BLACK
       difficulty: 3
+      lore: + &8Probably a week old
       effects:
       - REGENERATION/1/2-5
       - SPEED/1/30-140

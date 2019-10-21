@@ -5,21 +5,16 @@ import com.dre.brewery.utility.BUtil;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class BrewLore {
-
-	private static final String INGR = "§v";
-	private static final String COOK = "§w";
-	private static final String DISTILL = "§x";
-	private static final String AGE = "§y";
-	private static final String WOOD = "§z";
-
 	private Brew brew;
 	private PotionMeta meta;
 	private List<String> lore;
+	private boolean lineAddedOrRem = false;
 
 	public BrewLore(Brew brew, PotionMeta meta) {
 		this.brew = brew;
@@ -31,21 +26,79 @@ public class BrewLore {
 		}
 	}
 
-	// Write the new lore into the Meta
+	/**
+	 * Write the new lore into the Meta
+	 * Should be called at the end of operation on this Brew Lore
+ 	 */
 	public PotionMeta write() {
+		if (lineAddedOrRem) {
+			updateSpacer();
+		}
 		meta.setLore(lore);
 		return meta;
 	}
 
-	public void updateIngredientLore(boolean qualityColor) {
-		if (qualityColor && brew.hasRecipe()) {
-			String prefix = getQualityColor(brew.getIngredients().getIngredientQuality(brew.getCurrentRecipe()));
-			addOrReplaceLore(INGR, prefix, P.p.languageReader.get("Brew_Ingredients"));
-		} else {
-			removeLore(INGR, P.p.languageReader.get("Brew_Ingredients"));
+	/**
+	 * adds or removes an empty line in lore to space out the text a bit
+	 */
+	public void updateSpacer() {
+		boolean hasCustom = false;
+		boolean hasSpace = false;
+		for (int i = 0; i < lore.size(); i++) {
+			Type t = Type.get(lore.get(i));
+			if (t == Type.CUSTOM) {
+				hasCustom = true;
+			} else if (t == Type.SPACE) {
+				hasSpace = true;
+			} else if (t != null && t.isAfter(Type.SPACE)) {
+				if (hasSpace) return;
+
+				if (hasCustom || P.useNBT) {
+					// We want to add the spacer if we have Custom Lore, to have a space between custom and brew lore.
+					// Also add a space if there is no Custom Lore but we don't already have a invisible data line
+					lore.add(i, Type.SPACE.id);
+				}
+				return;
+			}
+		}
+		if (hasSpace) {
+			// There was a space but nothing after the space
+			removeLore(Type.SPACE);
 		}
 	}
 
+	/*private void addSpacer() {
+		if (!P.useNBT) return;
+
+		for (int i = 0; i < lore.size(); i++) {
+			if (Type.get(lore.get(i)) != null) {
+				if (i == 0 || !lore.get(i - 1).equals("")) {
+					lore.add(i, "");
+				}
+				break;
+			}
+		}
+	}*/
+
+	/**
+	 * updates the IngredientLore
+	 *
+	 * @param qualityColor If the lore should have colors according to quality
+	 */
+	public void updateIngredientLore(boolean qualityColor) {
+		if (qualityColor && brew.hasRecipe()) {
+			String prefix = getQualityColor(brew.getIngredients().getIngredientQuality(brew.getCurrentRecipe()));
+			addOrReplaceLore(Type.INGR, prefix, P.p.languageReader.get("Brew_Ingredients"));
+		} else {
+			removeLore(Type.INGR, P.p.languageReader.get("Brew_Ingredients"));
+		}
+	}
+
+	/**
+	 * updates the CookLore
+	 *
+	 * @param qualityColor If the lore should have colors according to quality
+	 */
 	public void updateCookLore(boolean qualityColor) {
 		if (qualityColor && brew.hasRecipe() && brew.getDistillRuns() > 0 == brew.getCurrentRecipe().needsDistilling()) {
 			BIngredients ingredients = brew.getIngredients();
@@ -54,13 +107,17 @@ public class BrewLore {
 			if (ingredients.getCookedTime() > 1) {
 				prefix = prefix + P.p.languageReader.get("Brew_MinutePluralPostfix");
 			}
-			addOrReplaceLore(COOK, prefix, " " + P.p.languageReader.get("Brew_fermented"));
+			addOrReplaceLore(Type.COOK, prefix, " " + P.p.languageReader.get("Brew_fermented"));
 		} else {
-			removeLore(COOK, P.p.languageReader.get("Brew_fermented"));
+			removeLore(Type.COOK, P.p.languageReader.get("Brew_fermented"));
 		}
 	}
 
-	// sets the DistillLore. Prefix is the color to be used
+	/**
+	 * updates the DistillLore
+	 *
+	 * @param qualityColor If the lore should have colors according to quality
+	 */
 	public void updateDistillLore(boolean qualityColor) {
 		if (brew.getDistillRuns() <= 0) return;
 		String prefix;
@@ -75,10 +132,14 @@ public class BrewLore {
 				prefix = prefix + distillRuns + P.p.languageReader.get("Brew_-times") + " ";
 			}
 		}
-		addOrReplaceLore(DISTILL, prefix, P.p.languageReader.get("Brew_Distilled"));
+		addOrReplaceLore(Type.DISTILL, prefix, P.p.languageReader.get("Brew_Distilled"));
 	}
 
-	// sets the AgeLore. Prefix is the color to be used
+	/**
+	 * updates the AgeLore
+	 *
+	 * @param qualityColor If the lore should have colors according to quality
+	 */
 	public void updateAgeLore(boolean qualityColor) {
 		String prefix;
 		float age = brew.getAgeTime();
@@ -96,24 +157,63 @@ public class BrewLore {
 				prefix = prefix + P.p.languageReader.get("Brew_HundredsOfYears") + " ";
 			}
 		}
-		addOrReplaceLore(AGE, prefix, P.p.languageReader.get("Brew_BarrelRiped"));
+		addOrReplaceLore(Type.AGE, prefix, P.p.languageReader.get("Brew_BarrelRiped"));
 	}
 
-	// updates/sets the color on WoodLore
+	/**
+	 * updates the WoodLore
+	 *
+	 * @param qualityColor If the lore should have colors according to quality
+	 */
 	public void updateWoodLore(boolean qualityColor) {
 		if (qualityColor && brew.hasRecipe()) {
 			int quality = brew.getIngredients().getWoodQuality(brew.getCurrentRecipe(), brew.getWood());
-			addOrReplaceLore(WOOD, getQualityColor(quality), P.p.languageReader.get("Brew_Woodtype"));
+			addOrReplaceLore(Type.WOOD, getQualityColor(quality), P.p.languageReader.get("Brew_Woodtype"));
 		} else {
-			removeLore(WOOD, P.p.languageReader.get("Brew_Woodtype"));
+			removeLore(Type.WOOD, P.p.languageReader.get("Brew_Woodtype"));
 		}
 	}
 
-	// Converts to/from qualitycolored Lore
+	/**
+	 * updates the Custom Lore
+	 */
+	public void updateCustomLore() {
+		int index = Type.CUSTOM.findInLore(lore);
+
+		while (index > -1) {
+			lore.remove(index);
+			index = Type.CUSTOM.findInLore(lore);
+		}
+
+		BRecipe recipe = brew.getCurrentRecipe();
+		if (recipe != null && recipe.hasLore()) {
+			index = -1;
+			for (String line : recipe.getLoreForQuality(brew.getQuality())) {
+				if (index == -1) {
+					index = addLore(Type.CUSTOM, "", line);
+					index++;
+				} else {
+					lore.add(index, Type.CUSTOM.id + line);
+					index++;
+				}
+			}
+
+			/*if (index < lore.size()) {
+				// If there are more lines after this, add a spacer
+				lore.add(index, Type.SPACE.id);
+			}*/
+		}
+	}
+
+	/**
+	 * Converts to/from qualitycolored Lore
+ 	 */
 	public void convertLore(boolean toQuality) {
 		if (!brew.hasRecipe()) {
 			return;
 		}
+
+		updateCustomLore();
 
 		if (!brew.isUnlabeled()) {
 			// Ingredients
@@ -139,33 +239,87 @@ public class BrewLore {
 		}
 	}
 
-	// Adds or replaces a line of Lore.
-	// Searches for type and if not found for Substring lore and replaces it
-	public void addOrReplaceLore(String type, String prefix, String line) {
-		int index = BUtil.indexOfStart(lore, type);
+	/**
+	 * Adds or replaces a line of Lore.
+	 * Searches for type and if not found for Substring lore and replaces it
+	 *
+	 * @param type The Type of BrewLore to replace
+	 * @param prefix The Prefix to add to the line of lore
+	 * @param line The Line of Lore to add or replace
+ 	 */
+	public int addOrReplaceLore(Type type, String prefix, String line) {
+		int index = type.findInLore(lore);
 		if (index == -1) {
 			index = BUtil.indexOfSubstring(lore, line);
 		}
 		if (index > -1) {
-			lore.set(index, type + prefix + line);
+			lore.set(index, type.id + prefix + line);
+			return index;
 		} else {
-			lore.add(type + prefix + line);
+			return addLore(type, prefix, line);
 		}
 	}
 
-	// Adds or replaces a line of Lore.
-	// Searches for type and if not found for Substring lore and replaces it
-	public void removeLore(String type, String line) {
-		int index = BUtil.indexOfStart(lore, type);
+	/**
+	 * Adds a line of Lore in the correct ordering
+	 *
+	 * @param type The Type of BrewLore to add
+	 * @param prefix The Prefix to add to the line of lore
+	 * @param line The Line of Lore to add or add
+ 	 */
+	public int addLore(Type type, String prefix, String line) {
+		lineAddedOrRem = true;
+		for (int i = 0; i < lore.size(); i++) {
+			Type existing = Type.get(lore.get(i));
+			if (existing != null && existing.isAfter(type)) {
+				lore.add(i, type.id + prefix + line);
+				return i;
+			}
+		}
+		lore.add(type.id + prefix + line);
+		return lore.size() - 1;
+	}
+
+	/**
+	 * Searches for type and if not found for Substring lore and removes it
+ 	 */
+	public void removeLore(Type type, String line) {
+		int index = type.findInLore(lore);
 		if (index == -1) {
 			index = BUtil.indexOfSubstring(lore, line);
 		}
 		if (index > -1) {
+			lineAddedOrRem = true;
 			lore.remove(index);
 		}
 	}
 
-	// Adds the Effect names to the Items description
+	/**
+	 * Searches for type and removes it
+ 	 */
+	public void removeLore(Type type) {
+		int index = type.findInLore(lore);
+		if (index > -1) {
+			lineAddedOrRem = true;
+			lore.remove(index);
+		}
+	}
+
+	/**
+	 * Removes all Brew Lore lines
+	 */
+	public void removeAll() {
+		for (Type t : Type.values()) {
+			int index = t.findInLore(lore);
+			if (index > -1) {
+				lore.remove(index);
+			}
+		}
+	}
+
+	/**
+	 * Adds the Effect names to the Items description
+ 	 */
 	public void addOrReplaceEffects(ArrayList<BEffect> effects, int quality) {
 		if (!P.use1_9 && effects != null) {
 			for (BEffect effect : effects) {
@@ -176,7 +330,19 @@ public class BrewLore {
 		}
 	}
 
-	// Removes all effects
+	/**
+	 * If the Lore Line at index is a Brew Lore line
+	 *
+	 * @param index the index in lore to check
+	 * @return true if the line at index is of any Brew Lore type
+	 */
+	public boolean isBrewLore(int index) {
+		return index < lore.size() && Type.get(lore.get(index)) != null;
+	}
+
+	/**
+	 * Removes all effects
+ 	 */
 	public void removeEffects() {
 		if (meta.hasCustomEffects()) {
 			for (PotionEffect effect : new ArrayList<>(meta.getCustomEffects())) {
@@ -188,6 +354,9 @@ public class BrewLore {
 		}
 	}
 
+	/**
+	 * Remove the Old Spacer from the legacy potion data system
+	 */
 	public void removeLegacySpacing() {
 		if (P.useNBT) {
 			// Using NBT we don't get the invisible line, so we keep our spacing
@@ -199,6 +368,9 @@ public class BrewLore {
 		}
 	}
 
+	/**
+	 * Remove any Brew Data from Lore
+	 */
 	public void removeLoreData() {
 		int index = BUtil.indexOfStart(lore, LoreSaveStream.IDENTIFIER);
 		if (index != -1) {
@@ -207,14 +379,16 @@ public class BrewLore {
 		}
 	}
 
-	// True if the PotionMeta has Lore in quality color
+	/**
+	 * True if the PotionMeta has Lore in quality color
+ 	 */
 	public static boolean hasColorLore(PotionMeta meta) {
 		if (!meta.hasLore()) return false;
 		List<String> lore = meta.getLore();
 		if (lore.size() < 2) {
 			return false;
 		}
-		if (BUtil.indexOfStart(lore, INGR) != -1) {
+		if (Type.INGR.findInLore(lore) != -1) {
 			// Ingredient lore present, must be quality colored
 			return true;
 		}
@@ -222,7 +396,12 @@ public class BrewLore {
 		//!meta.getLore().get(1).startsWith("§7");
 	}
 
-	// gets the Color that represents a quality in Lore
+	/**
+	 * gets the Color that represents a quality in Lore
+	 *
+	 * @param quality The Quality for which to find the color code
+	 * @return Color Code for given Quality
+	 */
 	public static String getQualityColor(int quality) {
 		String color;
 		if (quality > 8) {
@@ -237,5 +416,75 @@ public class BrewLore {
 			color = "&4";
 		}
 		return P.p.color(color);
+	}
+
+	public enum Type {
+		CUSTOM("§t", 0),
+		SPACE("§u", 1),
+
+		INGR("§v", 2),
+		COOK("§w", 3),
+		DISTILL("§x", 4),
+		AGE("§y", 5),
+		WOOD("§z", 6);
+
+		public final String id;
+		public final int ordering;
+
+		/**
+		 * @param id Identifier as Prefix of the Loreline
+		 * @param ordering Ordering of the Brew Lore
+		 */
+		Type(String id, int ordering) {
+			this.id = id;
+			this.ordering = ordering;
+		}
+
+		/**
+		 * Find this type in the Lore
+		 *
+		 * @param lore The lore to search in
+		 * @return index of this type in the lore, -1 if not found
+		 */
+		public int findInLore(List<String> lore) {
+			return BUtil.indexOfStart(lore, id);
+		}
+
+		/**
+		 * Is this type after the other in lore
+		 *
+		 * @param other the other type
+		 * @return true if this type should be after the other type in lore
+		 */
+		public boolean isAfter(Type other) {
+			return other.ordering <= ordering;
+		}
+
+		/**
+		 * Get the Type of the given line of Lore
+		 */
+		@Nullable
+		public static Type get(String loreLine) {
+			if (loreLine.length() >= 2) {
+				loreLine = loreLine.substring(0, 2);
+				return getById(loreLine);
+			} else {
+				return null;
+			}
+		}
+
+		/**
+		 * Get the Type of the given Identifier, prefix of a line of lore
+		 */
+		@Nullable
+		public static Type getById(String id) {
+			for (Type t : values()) {
+				if (t.id.equals(id)) {
+					return t;
+				}
+			}
+			return null;
+		}
+
 	}
 }

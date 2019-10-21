@@ -205,6 +205,28 @@ public class BrewLore {
 		}
 	}
 
+	public void updateQualityStars(boolean qualityColor) {
+		if (brew.hasRecipe() && brew.getCurrentRecipe().needsToAge() && brew.getAgeTime() < 0.5) {
+			return;
+		}
+		if (!brew.isUnlabeled()) {
+			int stars = (brew.getQuality() + 1) / 2;
+			StringBuilder b = new StringBuilder(stars);
+			for (; stars > 0; stars--) {
+				b.append("⭑");
+			}
+			String color;
+			if (qualityColor) {
+				color = getQualityColor(brew.getQuality());
+			} else {
+				color = brew.getQuality() >= 10 ? "§6" : "§8";
+			}
+			addOrReplaceLore(Type.STARS, color, b.toString());
+		} else {
+			removeLore(Type.STARS);
+		}
+	}
+
 	/**
 	 * Converts to/from qualitycolored Lore
  	 */
@@ -214,6 +236,7 @@ public class BrewLore {
 		}
 
 		updateCustomLore();
+		updateQualityStars(toQuality);
 
 		if (!brew.isUnlabeled()) {
 			// Ingredients
@@ -419,14 +442,15 @@ public class BrewLore {
 	}
 
 	public enum Type {
-		CUSTOM("§t", 0),
-		SPACE("§u", 1),
+		STARS("§s", 0),
+		CUSTOM("§t", 1),
+		SPACE("§u", 2),
 
-		INGR("§v", 2),
-		COOK("§w", 3),
-		DISTILL("§x", 4),
-		AGE("§y", 5),
-		WOOD("§z", 6);
+		INGR("§v", 3),
+		COOK("§w", 4),
+		DISTILL("§x", 5),
+		AGE("§y", 6),
+		WOOD("§z", 7);
 
 		public final String id;
 		public final int ordering;

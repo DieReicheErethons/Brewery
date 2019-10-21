@@ -374,6 +374,7 @@ public class Brew {
 			if (ageTime >= 1) {
 				lore.updateAgeLore(false);
 			}
+			lore.updateQualityStars(false);
 			lore.write();
 			item.setItemMeta(meta);
 		}
@@ -507,6 +508,7 @@ public class Brew {
 			if (BConfig.colorInBrewer != BrewLore.hasColorLore(potionMeta)) {
 				lore.convertLore(BConfig.colorInBrewer);
 			}
+			lore.updateQualityStars(BConfig.colorInBrewer);
 		}
 		lore.updateDistillLore(BConfig.colorInBrewer);
 		lore.write();
@@ -585,6 +587,7 @@ public class Brew {
 			if (BConfig.colorInBarrels && !unlabeled && currentRecipe != null) {
 				lore.updateWoodLore(true);
 			}
+			lore.updateQualityStars(BConfig.colorInBarrels);
 		}
 		lore.write();
 		touch();

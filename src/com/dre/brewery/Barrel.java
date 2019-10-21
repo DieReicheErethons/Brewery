@@ -8,6 +8,7 @@ import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.integration.LogBlockBarrel;
 import com.dre.brewery.lore.BrewLore;
 import com.dre.brewery.utility.BUtil;
+import com.dre.brewery.utility.BoundingBox;
 import com.dre.brewery.utility.LegacyUtil;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -24,6 +25,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +54,7 @@ public class Barrel implements InventoryHolder {
 	}
 
 	// load from file
-	public Barrel(Block spigot, byte sign, String[] st, String[] wo, Map<String, Object> items, float time) {
+	public Barrel(Block spigot, byte sign, BoundingBox bounds, Map<String, Object> items, float time) {
 		this.spigot = spigot;
 		if (isLarge()) {
 			this.inventory = P.p.getServer().createInventory(this, 27, P.p.languageReader.get("Etc_Barrel"));
@@ -68,7 +70,7 @@ public class Barrel implements InventoryHolder {
 		}
 		this.time = time;
 
-		body = new BarrelBody(this, sign, st, wo);
+		body = new BarrelBody(this, sign, bounds);
 	}
 
 	public static void onUpdate() {
@@ -216,15 +218,24 @@ public class Barrel implements InventoryHolder {
 		return body.hasBlock(block);
 	}
 
+	/**
+	 * Deprecated, just use hasBlock
+	 */
+	@Deprecated
 	public boolean hasWoodBlock(Block block) {
-		return body.hasWoodBlock(block);
+		return body.hasBlock(block);
 	}
 
+	/**
+	 * Deprecated, just use hasBlock
+	 */
+	@Deprecated
 	public boolean hasStairsBlock(Block block) {
-		return body.hasStairsBlock(block);
+		return body.hasBlock(block);
 	}
 
 	// Get the Barrel by Block, null if that block is not part of a barrel
+	@Nullable
 	public static Barrel get(Block block) {
 		if (block == null) {
 			return null;
@@ -232,13 +243,13 @@ public class Barrel implements InventoryHolder {
 		Material type = block.getType();
 		if (LegacyUtil.isFence(type) || LegacyUtil.isSign(type) ) {
 			return getBySpigot(block);
-		} else if (LegacyUtil.isWoodPlanks(type) || LegacyUtil.isWoodStairs(type)) {
+		} else {
 			return getByWood(block);
 		}
-		return null;
 	}
 
 	// Get the Barrel by Sign or Spigot (Fastest)
+	@Nullable
 	public static Barrel getBySpigot(Block sign) {
 		// convert spigot if neccessary
 		Block spigot = BarrelBody.getSpigotOfSign(sign);
@@ -263,16 +274,11 @@ public class Barrel implements InventoryHolder {
 	}
 
 	// Get the barrel by its corpus (Wood Planks, Stairs)
+	@Nullable
 	public static Barrel getByWood(Block wood) {
-		if (LegacyUtil.isWoodPlanks(wood.getType())) {
+		if (LegacyUtil.isWoodPlanks(wood.getType()) || LegacyUtil.isWoodStairs(wood.getType())) {
 			for (Barrel barrel : barrels) {
-				if (barrel.body.hasWoodBlock(wood)) {
-					return barrel;
-				}
-			}
-		} else if (LegacyUtil.isWoodStairs(wood.getType())) {
-			for (Barrel barrel : Barrel.barrels) {
-				if (barrel.body.hasStairsBlock(wood)) {
+				if (barrel.getSpigot().getWorld().equals(wood.getWorld()) && barrel.body.getBounds().contains(wood)) {
 					return barrel;
 				}
 			}

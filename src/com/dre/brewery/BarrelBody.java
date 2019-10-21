@@ -1,57 +1,43 @@
 package com.dre.brewery;
 
 import com.dre.brewery.utility.BUtil;
+import com.dre.brewery.utility.BoundingBox;
 import com.dre.brewery.utility.LegacyUtil;
-import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
+import java.util.Objects;
 
 // The Blocks that make up a Barrel in the World
 public class BarrelBody {
 
 	private final Barrel barrel;
 	private final Block spigot;
-	private int[] woodsloc = null; // location of wood Blocks
-	private int[] stairsloc = null; // location of stair Blocks
+	private BoundingBox bounds;
 	private byte signoffset;
 
 	public BarrelBody(Barrel barrel, byte signoffset) {
 		this.barrel = barrel;
 		this.signoffset = signoffset;
 		spigot = barrel.getSpigot();
+		this.bounds = new BoundingBox(0, 0, 0, 0, 0, 0);
 	}
 
 	// Loading from file
-	public BarrelBody(Barrel barrel, byte signoffset, String[] st, String[] wo) {
+	public BarrelBody(Barrel barrel, byte signoffset, BoundingBox bounds) {
 		this(barrel, signoffset);
 
-		int i = 0;
-		if (wo.length > 1) {
-			woodsloc = new int[wo.length];
-			for (String wos : wo) {
-				woodsloc[i] = P.p.parseInt(wos);
-				i++;
-			}
-			i = 0;
-		}
-		if (st.length > 1) {
-			stairsloc = new int[st.length];
-			for (String sts : st) {
-				stairsloc[i] = P.p.parseInt(sts);
-				i++;
-			}
-		}
-
-		if (woodsloc == null && stairsloc == null) {
-			// If loading from old data, or block locations are missing, regenerate them
+		if (bounds == null || bounds.area() > 64 ) {
+			// If loading from old data, or block locations are missing, or other error, regenerate BoundingBox
 			// This will only be done in those extreme cases.
 			Block broken = getBrokenBlock(true);
 			if (broken != null) {
 				barrel.remove(broken, null);
 			}
+		} else {
+			this.bounds = bounds;
 		}
 	}
 
@@ -63,20 +49,14 @@ public class BarrelBody {
 		return spigot;
 	}
 
-	public int[] getWoodsloc() {
-		return woodsloc;
+	@NotNull
+	public BoundingBox getBounds() {
+		return bounds;
 	}
 
-	public void setWoodsloc(int[] woodsloc) {
-		this.woodsloc = woodsloc;
-	}
-
-	public int[] getStairsloc() {
-		return stairsloc;
-	}
-
-	public void setStairsloc(int[] stairsloc) {
-		this.stairsloc = stairsloc;
+	public void setBounds(@NotNull BoundingBox bounds) {
+		Objects.requireNonNull(bounds);
+		this.bounds = bounds;
 	}
 
 	public byte getSignoffset() {
@@ -162,57 +142,16 @@ public class BarrelBody {
 		}
 	}
 
-	// Returns true if this Block is part of this Barrel
+	/**
+	 * Returns true if this Block is part of this Barrel
+	 *
+	 * @param block the block to check
+	 * @return true if the given block is part of this Barrel
+ 	 */
 	public boolean hasBlock(Block block) {
 		if (block != null) {
-			if (LegacyUtil.isWoodPlanks(block.getType())) {
-				return hasWoodBlock(block);
-			} else if (LegacyUtil.isWoodStairs(block.getType())) {
-				return hasStairsBlock(block);
-			}
-		}
-		return false;
-	}
-
-	public boolean hasWoodBlock(Block block) {
-		if (woodsloc != null) {
-			if (spigot.getWorld() != null && spigot.getWorld().equals(block.getWorld())) {
-				if (woodsloc.length > 2) {
-					int x = block.getX();
-					if (Math.abs(x - woodsloc[0]) < 10) {
-						for (int i = 0; i < woodsloc.length - 2; i += 3) {
-							if (woodsloc[i] == x) {
-								if (woodsloc[i + 1] == block.getY()) {
-									if (woodsloc[i + 2] == block.getZ()) {
-										return true;
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		return false;
-	}
-
-	public boolean hasStairsBlock(Block block) {
-		if (stairsloc != null) {
-			if (spigot.getWorld() != null && spigot.getWorld().equals(block.getWorld())) {
-				if (stairsloc.length > 2) {
-					int x = block.getX();
-					if (Math.abs(x - stairsloc[0]) < 10) {
-						for (int i = 0; i < stairsloc.length - 2; i += 3) {
-							if (stairsloc[i] == x) {
-								if (stairsloc[i + 1] == block.getY()) {
-									if (stairsloc[i + 2] == block.getZ()) {
-										return true;
-									}
-								}
-							}
-						}
-					}
-				}
+			if (spigot.getWorld().equals(block.getWorld())) {
+				return bounds != null && bounds.contains(block.getX(), block.getY(), block.getZ());
 			}
 		}
 		return false;
@@ -280,29 +219,21 @@ public class BarrelBody {
 		int endX;
 		int endZ;
 
-		ArrayList<Integer> stairs = new ArrayList<>();
-
 		if (direction == 1) {
 			startX = 1;
-			endX = startX + 1;
 			startZ = -1;
-			endZ = 0;
 		} else if (direction == 2) {
 			startX = -2;
-			endX = startX + 1;
 			startZ = 0;
-			endZ = 1;
 		} else if (direction == 3) {
 			startX = 0;
-			endX = 1;
 			startZ = 1;
-			endZ = startZ + 1;
 		} else {
 			startX = -1;
-			endX = 0;
 			startZ = -2;
-			endZ = startZ + 1;
 		}
+		endX = startX + 1;
+		endZ = startZ + 1;
 
 		Material type;
 		int x = startX;
@@ -321,9 +252,6 @@ public class BarrelBody {
 								return block;
 							}
 						}
-						stairs.add(block.getX());
-						stairs.add(block.getY());
-						stairs.add(block.getZ());
 						z++;
 					} else {
 						return spigot.getRelative(x, y, z);
@@ -336,7 +264,13 @@ public class BarrelBody {
 			x = startX;
 			y++;
 		}
-		stairsloc = ArrayUtils.toPrimitive(stairs.toArray(new Integer[0]));
+		bounds = new BoundingBox(
+			spigot.getX() + startX,
+			spigot.getY(),
+			spigot.getZ() + startZ,
+			spigot.getX() + endX,
+			spigot.getY() + 1,
+			spigot.getZ() + endZ);
 		return null;
 	}
 
@@ -350,28 +284,24 @@ public class BarrelBody {
 		int endX;
 		int endZ;
 
-		ArrayList<Integer> stairs = new ArrayList<>();
-		ArrayList<Integer> woods = new ArrayList<>();
-
 		if (direction == 1) {
 			startX = 1;
-			endX = startX + 3;
 			startZ = -1;
-			endZ = 1;
 		} else if (direction == 2) {
 			startX = -4;
-			endX = startX + 3;
 			startZ = -1;
-			endZ = 1;
 		} else if (direction == 3) {
 			startX = -1;
-			endX = 1;
 			startZ = 1;
-			endZ = startZ + 3;
 		} else {
 			startX = -1;
-			endX = 1;
 			startZ = -4;
+		}
+		if (direction == 1 || direction == 2) {
+			endX = startX + 3;
+			endZ = startZ + 2;
+		} else {
+			endX = startX + 2;
 			endZ = startZ + 3;
 		}
 
@@ -386,35 +316,16 @@ public class BarrelBody {
 					type = block.getType();
 					if (direction == 1 || direction == 2) {
 						if (y == 1 && z == 0) {
-							if (x == -1 || x == -4 || x == 1 || x == 4) {
-								woods.add(block.getX());
-								woods.add(block.getY());
-								woods.add(block.getZ());
-							}
 							z++;
 							continue;
 						}
 					} else {
 						if (y == 1 && x == 0) {
-							if (z == -1 || z == -4 || z == 1 || z == 4) {
-								woods.add(block.getX());
-								woods.add(block.getY());
-								woods.add(block.getZ());
-							}
 							z++;
 							continue;
 						}
 					}
 					if (LegacyUtil.isWoodPlanks(type) || LegacyUtil.isWoodStairs(type)) {
-						if (LegacyUtil.isWoodPlanks(type)) {
-							woods.add(block.getX());
-							woods.add(block.getY());
-							woods.add(block.getZ());
-						} else {
-							stairs.add(block.getX());
-							stairs.add(block.getY());
-							stairs.add(block.getZ());
-						}
 						z++;
 					} else {
 						return block;
@@ -427,8 +338,13 @@ public class BarrelBody {
 			x = startX;
 			y++;
 		}
-		stairsloc = ArrayUtils.toPrimitive(stairs.toArray(new Integer[0]));
-		woodsloc = ArrayUtils.toPrimitive(woods.toArray(new Integer[0]));
+		bounds = new BoundingBox(
+			spigot.getX() + startX,
+			spigot.getY(),
+			spigot.getZ() + startZ,
+			spigot.getX() + endX,
+			spigot.getY() + 2,
+			spigot.getZ() + endZ);
 
 		return null;
 	}
@@ -437,19 +353,6 @@ public class BarrelBody {
 		if (signoffset != 0) {
 			config.set(prefix + ".sign", signoffset);
 		}
-		if (stairsloc != null && stairsloc.length > 0) {
-			StringBuilder st = new StringBuilder();
-			for (int i : stairsloc) {
-				st.append(i).append(",");
-			}
-			config.set(prefix + ".st", st.substring(0, st.length() - 1));
-		}
-		if (woodsloc != null && woodsloc.length > 0) {
-			StringBuilder wo = new StringBuilder();
-			for (int i : woodsloc) {
-				wo.append(i).append(",");
-			}
-			config.set(prefix + ".wo", wo.substring(0, wo.length() - 1));
-		}
+		config.set(prefix + ".bounds", bounds.serialize());
 	}
 }

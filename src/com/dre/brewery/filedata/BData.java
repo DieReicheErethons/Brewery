@@ -2,6 +2,8 @@ package com.dre.brewery.filedata;
 
 import com.dre.brewery.*;
 import com.dre.brewery.utility.BUtil;
+import com.dre.brewery.utility.BoundingBox;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -14,6 +16,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -209,19 +212,40 @@ public class BData {
 							Block block = world.getBlockAt(P.p.parseInt(splitted[0]), P.p.parseInt(splitted[1]), P.p.parseInt(splitted[2]));
 							float time = (float) section.getDouble(barrel + ".time", 0.0);
 							byte sign = (byte) section.getInt(barrel + ".sign", 0);
-							String[] st = section.getString(barrel + ".st", "").split(",");
-							String[] wo = section.getString(barrel + ".wo", "").split(",");
+
+							BoundingBox box = null;
+							if (section.contains(barrel + ".bounds")) {
+								String[] bds = section.getString(barrel + ".bounds", "").split(",");
+								if (bds.length == 6) {
+									box = new BoundingBox(P.p.parseInt(bds[0]), P.p.parseInt(bds[1]), P.p.parseInt(bds[2]), P.p.parseInt(bds[3]), P.p.parseInt(bds[4]), P.p.parseInt(bds[5]));
+								}
+							} else if (section.contains(barrel + ".st")) {
+								// Convert from Stair and Wood Locations to BoundingBox
+								String[] st = section.getString(barrel + ".st", "").split(",");
+								String[] wo = section.getString(barrel + ".wo", "").split(",");
+								int woLength = wo.length;
+								if (woLength <= 1) {
+									woLength = 0;
+								}
+								String[] points = new String[st.length + woLength];
+								System.arraycopy(st, 0, points, 0, st.length);
+								if (woLength > 1) {
+									System.arraycopy(wo, 0, points, st.length, woLength);
+								}
+								int[] locs = ArrayUtils.toPrimitive(Arrays.stream(points).map(s -> P.p.parseInt(s)).toArray(Integer[]::new));
+								box = BoundingBox.fromPoints(locs);
+							}
 
 							Barrel b;
 							if (invSection != null) {
-								b = new Barrel(block, sign, st, wo, invSection.getValues(true), time);
+								b = new Barrel(block, sign, box, invSection.getValues(true), time);
 							} else {
 								// Barrel has no inventory
-								b = new Barrel(block, sign, st, wo, null, time);
+								b = new Barrel(block, sign, box, null, time);
 							}
 
 							// In case Barrel Block locations were missing and could not be recreated: do not add the barrel
-							if (b.getBody().getStairsloc() != null || b.getBody().getWoodsloc() != null) {
+							if (b.getBody().getBounds() != null) {
 								Barrel.barrels.add(b);
 							}
 

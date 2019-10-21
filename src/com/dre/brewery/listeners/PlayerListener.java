@@ -49,11 +49,11 @@ public class PlayerListener implements Listener {
 		Barrel barrel = null;
 		if (LegacyUtil.isWoodPlanks(type)) {
 			if (BConfig.openEverywhere) {
-				barrel = Barrel.get(clickedBlock);
+				barrel = Barrel.getByWood(clickedBlock);
 			}
 		} else if (LegacyUtil.isWoodStairs(type)) {
 			for (Barrel barrel2 : Barrel.barrels) {
-				if (barrel2.getBody().hasStairsBlock(clickedBlock)) {
+				if (barrel2.getBody().hasBlock(clickedBlock)) {
 					if (BConfig.openEverywhere || !barrel2.isLarge()) {
 						barrel = barrel2;
 					}
@@ -66,6 +66,8 @@ public class PlayerListener implements Listener {
 
 		if (barrel != null) {
 			event.setCancelled(true);
+
+			P.p.debugLog("Barrel has area of: " + barrel.getBody().getBounds().area());
 
 			if (!barrel.hasPermsOpen(player, event)) {
 				return;

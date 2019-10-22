@@ -1,5 +1,6 @@
 package com.dre.brewery;
 
+import com.dre.brewery.lore.BrewLore;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -8,6 +9,7 @@ import org.bukkit.block.BrewingStand;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.BrewerInventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
@@ -137,6 +139,21 @@ public class BDistiller {
 		return 800;
 	}
 
+	public static void showAlc(BrewerInventory inv) {
+		Brew[] contents = getDistillContents(inv);
+		for (int slot = 0; slot < 3; slot++) {
+			if (contents[slot] != null) {
+				// Show Alc in lore
+				ItemStack item = inv.getItem(slot);
+				PotionMeta meta = (PotionMeta) item.getItemMeta();
+				BrewLore brewLore = new BrewLore(contents[slot], meta);
+				brewLore.updateAlc(true);
+				brewLore.write();
+				item.setItemMeta(meta);
+			}
+		}
+	}
+
 	public class DistillRunnable extends BukkitRunnable {
 
 		@Override
@@ -166,6 +183,7 @@ public class BDistiller {
 							// No custom potion, cancel and ignore
 							this.cancel();
 							trackedDistillers.remove(standBlock);
+							showAlc(stand.getInventory());
 							P.p.debugLog("nothing to distill");
 							return;
 						default:

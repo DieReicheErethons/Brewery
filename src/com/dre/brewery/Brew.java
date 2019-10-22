@@ -287,6 +287,7 @@ public class Brew {
 	}*/
 
 	// calculate alcohol from recipe
+	@Contract(pure = true)
 	public int calcAlcohol() {
 		if (quality == 0) {
 			// Give bad potions some alc
@@ -329,6 +330,7 @@ public class Brew {
 	}
 
 	// calculating quality
+	@Contract(pure = true)
 	public int calcQuality() {
 		// calculate quality from all of the factors
 		float quality = ingredients.getIngredientQuality(currentRecipe) + ingredients.getCookingQuality(currentRecipe, distillRuns > 0);
@@ -375,6 +377,7 @@ public class Brew {
 				lore.updateAgeLore(false);
 			}
 			lore.updateQualityStars(false);
+			lore.updateAlc(false);
 			lore.write();
 			item.setItemMeta(meta);
 		}
@@ -491,7 +494,6 @@ public class Brew {
 			currentRecipe = recipe;
 			quality = calcQuality();
 
-			lore.updateCustomLore();
 			lore.addOrReplaceEffects(getEffects(), quality);
 			potionMeta.setDisplayName(P.p.color("&f" + recipe.getName(quality)));
 			PotionColor.fromString(recipe.getColor()).colorBrew(potionMeta, slotItem, canDistill());
@@ -509,8 +511,10 @@ public class Brew {
 				lore.convertLore(BConfig.colorInBrewer);
 			}
 			lore.updateQualityStars(BConfig.colorInBrewer);
+			lore.updateCustomLore();
 		}
 		lore.updateDistillLore(BConfig.colorInBrewer);
+		lore.updateAlc(true);
 		lore.write();
 		touch();
 		BrewModifyEvent modifyEvent = new BrewModifyEvent(this, potionMeta, BrewModifyEvent.Type.DISTILL);
@@ -562,7 +566,6 @@ public class Brew {
 				currentRecipe = recipe;
 				quality = calcQuality();
 
-				lore.updateCustomLore();
 				lore.addOrReplaceEffects(getEffects(), quality);
 				potionMeta.setDisplayName(P.p.color("&f" + recipe.getName(quality)));
 				PotionColor.fromString(recipe.getColor()).colorBrew(potionMeta, item, canDistill());
@@ -588,6 +591,8 @@ public class Brew {
 				lore.updateWoodLore(true);
 			}
 			lore.updateQualityStars(BConfig.colorInBarrels);
+			lore.updateCustomLore();
+			lore.updateAlc(false);
 		}
 		lore.write();
 		touch();

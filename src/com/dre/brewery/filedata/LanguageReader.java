@@ -75,6 +75,7 @@ public class LanguageReader {
 		defaults.put("Brew_HundredsOfYears", "Hundreds of Years");
 		defaults.put("Brew_Woodtype", "Woodtype");
 		defaults.put("Brew_ThickBrew", "Muddy Brew");
+		defaults.put("Brew_Alc", "Alc &v1ml");
 
 		/* Commands */
 		defaults.put("CMD_Reload", "&aConfig was successfully reloaded");

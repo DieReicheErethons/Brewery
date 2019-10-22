@@ -5,6 +5,7 @@ import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.lore.BrewLore;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -204,18 +205,32 @@ public class InventoryListener implements Listener {
 			PotionMeta meta = (PotionMeta) item.getItemMeta();
 			Brew brew = Brew.get(meta);
 			if (brew != null) {
+				BrewLore lore = null;
 				if (BrewLore.hasColorLore(meta)) {
-					BrewLore lore = new BrewLore(brew, meta);
+					lore = new BrewLore(brew, meta);
 					lore.convertLore(false);
+				} else if (!BConfig.alwaysShowAlc && event.getInventory().getType() == InventoryType.BREWING) {
+					lore = new BrewLore(brew, meta);
+					lore.updateAlc(false);
+				}
+				if (lore != null) {
 					lore.write();
 					item.setItemMeta(meta);
+					if (event.getWhoClicked() instanceof Player) {
+						switch (event.getAction()) {
+							case MOVE_TO_OTHER_INVENTORY:
+							case HOTBAR_SWAP:
+								// Fix a Graphical glitch of item still showing colors until clicking it
+								P.p.getServer().getScheduler().runTask(P.p, () -> ((Player) event.getWhoClicked()).updateInventory());
+						}
+					}
 				}
 			}
 		}
 	}
 
 	// Check if the player tries to add more than the allowed amount of brews into an mc-barrel
-	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onInventoryClickMCBarrel(InventoryClickEvent event) {
 		if (!P.use1_14) return;
 		if (event.getInventory().getType() != InventoryType.BARREL) return;

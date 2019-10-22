@@ -55,6 +55,8 @@ public class BConfig {
 	public static boolean colorInBarrels; // color the Lore while in Barrels
 	public static boolean colorInBrewer; // color the Lore while in Brewer
 	public static boolean enableEncode;
+	public static boolean alwaysShowQuality; // Always show quality stars
+	public static boolean alwaysShowAlc; // Always show alc%
 
 	public static P p = P.p;
 
@@ -174,6 +176,8 @@ public class BConfig {
 		homeType = config.getString("homeType", null);
 		colorInBarrels = config.getBoolean("colorInBarrels", false);
 		colorInBrewer = config.getBoolean("colorInBrewer", false);
+		alwaysShowQuality = config.getBoolean("alwaysShowQuality", false);
+		alwaysShowAlc = config.getBoolean("alwaysShowAlc", false);
 		enableEncode = config.getBoolean("enableEncode", false);
 		openEverywhere = config.getBoolean("openLargeBarrelEverywhere", false);
 		MCBarrel.maxBrews = config.getInt("maxBrewsInMCBarrels", 6);

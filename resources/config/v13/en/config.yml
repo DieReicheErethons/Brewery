@@ -50,6 +50,12 @@ hangoverDays: 7
 colorInBarrels: true
 colorInBrewer: true
 
+# Always show the 1-5 stars on the item depending on the quality. If false, they will only appear when brewing [true]
+alwaysShowQuality: true
+
+# Always show the alcohol content on the item. If false, it will only show in the brewing stand [false]
+alwaysShowAlc: false
+
 # If a Large Barrel can be opened by clicking on any of its blocks, not just Spigot or Sign. This is always true for Small Barrels. [true]
 openLargeBarrelEverywhere: true
 

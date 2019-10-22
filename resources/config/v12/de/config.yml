@@ -50,6 +50,12 @@ hangoverDays: 7
 colorInBarrels: true
 colorInBrewer: true
 
+# Ob in den Iteminformationen immer 1-5 Sterne für die Qualität angezeigt werden sollen, oder nur beim brauen [true]
+alwaysShowQuality: true
+
+# Ob in den Iteminformationen immer der Alkoholgehalt angezeigt weden soll, oder nur im Braustand [false]
+alwaysShowAlc: false
+
 # Ob große Fässer an jedem Block geöffnet werden können, nicht nur an Zapfhahn und Schild. Bei kleinen Fässern geht dies immer. [true]
 openLargeBarrelEverywhere: true
 
@@ -160,6 +166,8 @@ recipes:
       age: 3
       color: ORANGE
       difficulty: 1
+      lore:
+      - +++ &8Das perlt
       alcohol: 6
    3:
       name: Ranziges Dunkelbier/Dunkelbier/Feines Dunkelbier
@@ -172,8 +180,6 @@ recipes:
       color: BLACK
       difficulty: 2
       alcohol: 7
-      lore:
-      - +++ &8Perlt wunderschön
    4:
       name: Scheußlicher Met/Met/&6Goldener Met
       ingredients:

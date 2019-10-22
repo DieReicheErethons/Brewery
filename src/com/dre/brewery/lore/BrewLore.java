@@ -1,6 +1,7 @@
 package com.dre.brewery.lore;
 
 import com.dre.brewery.*;
+import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.utility.BUtil;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffect;
@@ -209,7 +210,7 @@ public class BrewLore {
 		if (brew.hasRecipe() && brew.getCurrentRecipe().needsToAge() && brew.getAgeTime() < 0.5) {
 			return;
 		}
-		if (!brew.isUnlabeled()) {
+		if (!brew.isUnlabeled() && brew.getQuality() > 0 && (qualityColor || BConfig.alwaysShowQuality)) {
 			int stars = (brew.getQuality() + 1) / 2;
 			StringBuilder b = new StringBuilder(stars);
 			for (; stars > 0; stars--) {
@@ -224,6 +225,15 @@ public class BrewLore {
 			addOrReplaceLore(Type.STARS, color, b.toString());
 		} else {
 			removeLore(Type.STARS);
+		}
+	}
+
+	public void updateAlc(boolean inDistiller) {
+		if (!brew.isUnlabeled() && (inDistiller || BConfig.alwaysShowAlc)) {
+			int alc = brew.calcAlcohol();
+			addOrReplaceLore(Type.ALC, "§8", P.p.languageReader.get("Brew_Alc", alc + ""));
+		} else {
+			removeLore(Type.ALC);
 		}
 	}
 
@@ -260,6 +270,8 @@ public class BrewLore {
 				updateWoodLore(toQuality);
 			}
 		}
+
+		updateAlc(false);
 	}
 
 	/**
@@ -332,10 +344,9 @@ public class BrewLore {
 	 * Removes all Brew Lore lines
 	 */
 	public void removeAll() {
-		for (Type t : Type.values()) {
-			int index = t.findInLore(lore);
-			if (index > -1) {
-				lore.remove(index);
+		for (int i = lore.size() - 1; i >= 0; i--) {
+			if (Type.get(lore.get(i)) != null) {
+				lore.remove(i);
 			}
 		}
 	}
@@ -442,26 +453,24 @@ public class BrewLore {
 	}
 
 	public enum Type {
-		STARS("§s", 0),
-		CUSTOM("§t", 1),
-		SPACE("§u", 2),
+		STARS("§s"),
+		CUSTOM("§t"),
+		SPACE("§u"),
 
-		INGR("§v", 3),
-		COOK("§w", 4),
-		DISTILL("§x", 5),
-		AGE("§y", 6),
-		WOOD("§z", 7);
+		INGR("§v"),
+		COOK("§w"),
+		DISTILL("§x"),
+		AGE("§y"),
+		WOOD("§z"),
+		ALC("§k");
 
 		public final String id;
-		public final int ordering;
 
 		/**
 		 * @param id Identifier as Prefix of the Loreline
-		 * @param ordering Ordering of the Brew Lore
 		 */
-		Type(String id, int ordering) {
+		Type(String id) {
 			this.id = id;
-			this.ordering = ordering;
 		}
 
 		/**
@@ -481,7 +490,7 @@ public class BrewLore {
 		 * @return true if this type should be after the other type in lore
 		 */
 		public boolean isAfter(Type other) {
-			return other.ordering <= ordering;
+			return other.ordinal() <= ordinal();
 		}
 
 		/**
@@ -490,8 +499,7 @@ public class BrewLore {
 		@Nullable
 		public static Type get(String loreLine) {
 			if (loreLine.length() >= 2) {
-				loreLine = loreLine.substring(0, 2);
-				return getById(loreLine);
+				return getById(loreLine.substring(0, 2));
 			} else {
 				return null;
 			}

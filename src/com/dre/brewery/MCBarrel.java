@@ -81,7 +81,7 @@ public class MCBarrel {
 			for (ItemStack item : inv.getContents()) {
 				if (item != null) {
 					Brew brew = Brew.get(item);
-					if (brew != null) {
+					if (brew != null) { // TODO replace this and others with isBrew
 						// We found a brew, so set time on this Barrel
 						if (inv.getHolder() instanceof org.bukkit.block.Barrel) {
 							Barrel barrel = (Barrel) inv.getHolder();

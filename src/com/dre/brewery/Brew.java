@@ -194,7 +194,7 @@ public class Brew {
 	public boolean setRecipeFromString(String name) {
 		currentRecipe = null;
 		if (name != null && !name.equals("")) {
-			for (BRecipe recipe : BIngredients.recipes) {
+			for (BRecipe recipe : BRecipe.recipes) {
 				if (recipe.getRecipeName().equalsIgnoreCase(name)) {
 					currentRecipe = recipe;
 					return true;
@@ -458,9 +458,9 @@ public class Brew {
 		this.immutable = immutable;
 		if (currentRecipe != null && canDistill()) {
 			if (immutable) {
-				PotionColor.fromString(currentRecipe.getColor()).colorBrew(((PotionMeta) potion.getItemMeta()), potion, false);
+				currentRecipe.getColor().colorBrew(((PotionMeta) potion.getItemMeta()), potion, false);
 			} else {
-				PotionColor.fromString(currentRecipe.getColor()).colorBrew(((PotionMeta) potion.getItemMeta()), potion, true);
+				currentRecipe.getColor().colorBrew(((PotionMeta) potion.getItemMeta()), potion, true);
 			}
 		}
 	}
@@ -488,7 +488,7 @@ public class Brew {
 
 		distillRuns += 1;
 		BrewLore lore = new BrewLore(this, potionMeta);
-		BRecipe recipe = ingredients.getdistillRecipe(wood, ageTime);
+		BRecipe recipe = ingredients.getDistillRecipe(wood, ageTime);
 		if (recipe != null) {
 			// distillRuns will have an effect on the amount of alcohol, not the quality
 			currentRecipe = recipe;
@@ -496,7 +496,7 @@ public class Brew {
 
 			lore.addOrReplaceEffects(getEffects(), quality);
 			potionMeta.setDisplayName(P.p.color("&f" + recipe.getName(quality)));
-			PotionColor.fromString(recipe.getColor()).colorBrew(potionMeta, slotItem, canDistill());
+			recipe.getColor().colorBrew(potionMeta, slotItem, canDistill());
 
 		} else {
 			quality = 0;
@@ -506,14 +506,13 @@ public class Brew {
 		}
 
 		// Distill Lore
-		if (currentRecipe != null) {
-			if (BConfig.colorInBrewer != BrewLore.hasColorLore(potionMeta)) {
-				lore.convertLore(BConfig.colorInBrewer);
-			}
+		if (currentRecipe != null && BConfig.colorInBrewer != BrewLore.hasColorLore(potionMeta)) {
+			lore.convertLore(BConfig.colorInBrewer);
+		} else {
 			lore.updateQualityStars(BConfig.colorInBrewer);
 			lore.updateCustomLore();
+			lore.updateDistillLore(BConfig.colorInBrewer);
 		}
-		lore.updateDistillLore(BConfig.colorInBrewer);
 		lore.updateAlc(true);
 		lore.write();
 		touch();
@@ -538,7 +537,7 @@ public class Brew {
 			return currentRecipe.getDistillTime();
 		}
 
-		BRecipe recipe = ingredients.getdistillRecipe(wood, ageTime);
+		BRecipe recipe = ingredients.getDistillRecipe(wood, ageTime);
 		if (recipe != null) {
 			return recipe.getDistillTime();
 		}
@@ -568,7 +567,7 @@ public class Brew {
 
 				lore.addOrReplaceEffects(getEffects(), quality);
 				potionMeta.setDisplayName(P.p.color("&f" + recipe.getName(quality)));
-				PotionColor.fromString(recipe.getColor()).colorBrew(potionMeta, item, canDistill());
+				recipe.getColor().colorBrew(potionMeta, item, canDistill());
 			} else {
 				quality = 0;
 				lore.removeEffects();
@@ -578,21 +577,20 @@ public class Brew {
 		}
 
 		// Lore
-		if (currentRecipe != null) {
-			if (BConfig.colorInBarrels != BrewLore.hasColorLore(potionMeta)) {
-				lore.convertLore(BConfig.colorInBarrels);
+		if (currentRecipe != null && BConfig.colorInBarrels != BrewLore.hasColorLore(potionMeta)) {
+			lore.convertLore(BConfig.colorInBarrels);
+		} else {
+			if (ageTime >= 1) {
+				lore.updateAgeLore(BConfig.colorInBarrels);
 			}
-		}
-		if (ageTime >= 1) {
-			lore.updateAgeLore(BConfig.colorInBarrels);
-		}
-		if (ageTime > 0.5) {
-			if (BConfig.colorInBarrels && !unlabeled && currentRecipe != null) {
-				lore.updateWoodLore(true);
+			if (ageTime > 0.5) {
+				if (BConfig.colorInBarrels && !unlabeled && currentRecipe != null) {
+					lore.updateWoodLore(true);
+				}
+				lore.updateQualityStars(BConfig.colorInBarrels);
+				lore.updateCustomLore();
+				lore.updateAlc(false);
 			}
-			lore.updateQualityStars(BConfig.colorInBarrels);
-			lore.updateCustomLore();
-			lore.updateAlc(false);
 		}
 		lore.write();
 		touch();
@@ -652,12 +650,12 @@ public class Brew {
 			recipe = getCurrentRecipe();
 		}
 		if (recipe == null) {
-			throw new IllegalArgumentException("Recipe can't be null if the brew doesn't have a currentRecipe");
+			throw new IllegalArgumentException("Argument recipe can't be null if the brew doesn't have a currentRecipe");
 		}
 		ItemStack potion = new ItemStack(Material.POTION);
 		PotionMeta potionMeta = (PotionMeta) potion.getItemMeta();
 
-		PotionColor.fromString(recipe.getColor()).colorBrew(potionMeta, potion, false);
+		recipe.getColor().colorBrew(potionMeta, potion, false);
 		potionMeta.setDisplayName(P.p.color("&f" + recipe.getName(quality)));
 		//if (!P.use1_14) {
 		// Before 1.14 the effects duration would strangely be only a quarter of what we tell it to be
@@ -762,15 +760,15 @@ public class Brew {
 		if ((bools & 4) != 0) {
 			wood = in.readFloat();
 		}
+		String recipe = null;
 		if ((bools & 8) != 0) {
-			setRecipeFromString(in.readUTF());
-		} else {
-			setRecipeFromString(null);
+			recipe = in.readUTF();
 		}
 		unlabeled = (bools & 16) != 0;
 		//persistent = (bools & 32) != 0;
 		immutable = (bools & 32) != 0;
 		ingredients = BIngredients.load(in);
+		setRecipeFromString(recipe);
 	}
 
 	// Save brew data into meta: lore/nbt
@@ -895,7 +893,7 @@ public class Brew {
 		if (hasRecipe()) {
 			BrewLore lore = new BrewLore(this, potionMeta);
 			lore.removeEffects();
-			PotionColor.fromString(currentRecipe.getColor()).colorBrew(potionMeta, item, canDistill());
+			currentRecipe.getColor().colorBrew(potionMeta, item, canDistill());
 			lore.removeLegacySpacing();
 		} else {
 			PotionColor.GREY.colorBrew(potionMeta, item, canDistill());

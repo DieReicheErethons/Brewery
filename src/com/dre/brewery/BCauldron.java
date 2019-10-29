@@ -177,6 +177,7 @@ public class BCauldron {
 		ItemStack item = event.getItem();
 		Player player = event.getPlayer();
 		Block clickedBlock = event.getClickedBlock();
+		assert clickedBlock != null;
 
 		if (materialInHand == null || materialInHand == Material.AIR || materialInHand == Material.BUCKET) {
 			return;
@@ -187,6 +188,7 @@ public class BCauldron {
 
 			// fill a glass bottle with potion
 		} else if (materialInHand == Material.GLASS_BOTTLE) {
+			assert item != null;
 			if (player.getInventory().firstEmpty() != -1 || item.getAmount() == 1) {
 				BCauldron bcauldron = get(clickedBlock);
 				if (bcauldron != null) {
@@ -233,12 +235,7 @@ public class BCauldron {
 				if (event.getHand() == EquipmentSlot.HAND) {
 					final UUID id = player.getUniqueId();
 					plInteracted.add(id);
-					P.p.getServer().getScheduler().runTask(P.p, new Runnable() {
-						@Override
-						public void run() {
-							plInteracted.remove(id);
-						}
-					});
+					P.p.getServer().getScheduler().runTask(P.p, () -> plInteracted.remove(id));
 				} else if (event.getHand() == EquipmentSlot.OFF_HAND) {
 					if (!plInteracted.remove(player.getUniqueId())) {
 						item = player.getInventory().getItemInMainHand();
@@ -254,29 +251,30 @@ public class BCauldron {
 			if (item == null) return;
 
 			// add ingredient to cauldron that meet the previous conditions
-			if (BIngredients.possibleIngredients.contains(materialInHand)) {
+			if (BCauldronRecipe.acceptedMaterials.contains(materialInHand)) {
 
-				if (player.hasPermission("brewery.cauldron.insert")) {
-					if (ingredientAdd(clickedBlock, item, player)) {
-						boolean isBucket = item.getType().equals(Material.WATER_BUCKET)
-							|| item.getType().equals(Material.LAVA_BUCKET)
-							|| item.getType().equals(Material.MILK_BUCKET);
-						if (item.getAmount() > 1) {
-							item.setAmount(item.getAmount() - 1);
+				if (!player.hasPermission("brewery.cauldron.insert")) {
+					P.p.msg(player, P.p.languageReader.get("Perms_NoCauldronInsert"));
+					return;
+				}
 
-							if (isBucket) {
-								giveItem(player, new ItemStack(Material.BUCKET));
-							}
+				if (ingredientAdd(clickedBlock, item, player)) {
+					boolean isBucket = item.getType().equals(Material.WATER_BUCKET)
+						|| item.getType().equals(Material.LAVA_BUCKET)
+						|| item.getType().equals(Material.MILK_BUCKET);
+					if (item.getAmount() > 1) {
+						item.setAmount(item.getAmount() - 1);
+
+						if (isBucket) {
+							giveItem(player, new ItemStack(Material.BUCKET));
+						}
+					} else {
+						if (isBucket) {
+							setItemInHand(event, Material.BUCKET, handSwap);
 						} else {
-							if (isBucket) {
-								setItemInHand(event, Material.BUCKET, handSwap);
-							} else {
-								setItemInHand(event, Material.AIR, handSwap);
-							}
+							setItemInHand(event, Material.AIR, handSwap);
 						}
 					}
-				} else {
-					P.p.msg(player, P.p.languageReader.get("Perms_NoCauldronInsert"));
 				}
 			}
 		}
@@ -353,11 +351,7 @@ public class BCauldron {
 	// bukkit bug not updating the inventory while executing event, have to
 	// schedule the give
 	public static void giveItem(final Player player, final ItemStack item) {
-		P.p.getServer().getScheduler().runTaskLater(P.p, new Runnable() {
-			public void run() {
-				player.getInventory().addItem(item);
-			}
-		}, 1L);
+		P.p.getServer().getScheduler().runTaskLater(P.p, () -> player.getInventory().addItem(item), 1L);
 	}
 
 }

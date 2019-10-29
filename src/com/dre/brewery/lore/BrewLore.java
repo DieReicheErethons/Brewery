@@ -1,6 +1,10 @@
 package com.dre.brewery.lore;
 
-import com.dre.brewery.*;
+import com.dre.brewery.BEffect;
+import com.dre.brewery.BIngredients;
+import com.dre.brewery.BRecipe;
+import com.dre.brewery.Brew;
+import com.dre.brewery.P;
 import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.utility.BUtil;
 import org.bukkit.inventory.meta.PotionMeta;
@@ -80,6 +84,22 @@ public class BrewLore {
 			}
 		}
 	}*/
+
+	/**
+	 * Add the list of strings as custom lore for the base potion coming out of the cauldron
+	 */
+	public void addCauldronLore(List<String> l) {
+		int index = -1;
+		for (String line : l) {
+			if (index == -1) {
+				index = addLore(Type.CUSTOM, "", line);
+				index++;
+			} else {
+				lore.add(index, Type.CUSTOM.id + line);
+				index++;
+			}
+		}
+	}
 
 	/**
 	 * updates the IngredientLore
@@ -179,16 +199,11 @@ public class BrewLore {
 	 * updates the Custom Lore
 	 */
 	public void updateCustomLore() {
-		int index = Type.CUSTOM.findInLore(lore);
-
-		while (index > -1) {
-			lore.remove(index);
-			index = Type.CUSTOM.findInLore(lore);
-		}
+		removeLore(Type.CUSTOM);
 
 		BRecipe recipe = brew.getCurrentRecipe();
 		if (recipe != null && recipe.hasLore()) {
-			index = -1;
+			int index = -1;
 			for (String line : recipe.getLoreForQuality(brew.getQuality())) {
 				if (index == -1) {
 					index = addLore(Type.CUSTOM, "", line);
@@ -198,11 +213,6 @@ public class BrewLore {
 					index++;
 				}
 			}
-
-			/*if (index < lore.size()) {
-				// If there are more lines after this, add a spacer
-				lore.add(index, Type.SPACE.id);
-			}*/
 		}
 	}
 
@@ -229,7 +239,7 @@ public class BrewLore {
 	}
 
 	public void updateAlc(boolean inDistiller) {
-		if (!brew.isUnlabeled() && (inDistiller || BConfig.alwaysShowAlc)) {
+		if (!brew.isUnlabeled() && (inDistiller || BConfig.alwaysShowAlc) && (!brew.hasRecipe() || brew.getCurrentRecipe().getAlcohol() > 0)) {
 			int alc = brew.calcAlcohol();
 			addOrReplaceLore(Type.ALC, "§8", P.p.languageReader.get("Brew_Alc", alc + ""));
 		} else {
@@ -333,10 +343,20 @@ public class BrewLore {
 	 * Searches for type and removes it
  	 */
 	public void removeLore(Type type) {
-		int index = type.findInLore(lore);
-		if (index > -1) {
-			lineAddedOrRem = true;
-			lore.remove(index);
+		if (type != Type.CUSTOM) {
+			int index = type.findInLore(lore);
+			if (index > -1) {
+				lineAddedOrRem = true;
+				lore.remove(index);
+			}
+		} else {
+			// Lore could have multiple lines of this type
+			for (int i = lore.size() - 1; i >= 0; i--) {
+				if (Type.get(lore.get(i)) == type) {
+					lore.remove(i);
+					lineAddedOrRem = true;
+				}
+			}
 		}
 	}
 
@@ -347,6 +367,7 @@ public class BrewLore {
 		for (int i = lore.size() - 1; i >= 0; i--) {
 			if (Type.get(lore.get(i)) != null) {
 				lore.remove(i);
+				lineAddedOrRem = true;
 			}
 		}
 	}

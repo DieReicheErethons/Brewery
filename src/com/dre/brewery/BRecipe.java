@@ -1,121 +1,195 @@
 package com.dre.brewery;
 
 import com.dre.brewery.filedata.BConfig;
+import com.dre.brewery.utility.CustomItem;
 import com.dre.brewery.utility.PotionColor;
 import com.dre.brewery.utility.Tuple;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.craftbukkit.libs.jline.internal.Nullable;
 import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class BRecipe {
 
+	public static List<BRecipe> recipes = new ArrayList<>();
+
 	private String[] name;
-	private ArrayList<ItemStack> ingredients = new ArrayList<>(); // material and amount
+	private List<Tuple<CustomItem, Integer>> ingredients = new ArrayList<>(); // Items and amounts
 	private int cookingTime; // time to cook in cauldron
 	private byte distillruns; // runs through the brewer
 	private int distillTime; // time for one distill run in seconds
 	private byte wood; // type of wood the barrel has to consist of
 	private int age; // time in minecraft days for the potions to age in barrels
-	private String color; // color of the destilled/finished potion
+	private PotionColor color; // color of the destilled/finished potion
 	private int difficulty; // difficulty to brew the potion, how exact the instruction has to be followed
 	private int alcohol; // Alcohol in perfect potion
 	private List<Tuple<Integer, String>> lore; // Custom Lore on the Potion. The int is for Quality Lore, 0 = any, 1,2,3 = Bad,Middle,Good
 	private ArrayList<BEffect> effects = new ArrayList<>(); // Special Effects when drinking
 
-	public BRecipe(ConfigurationSection configSectionRecipes, String recipeId) {
+	public BRecipe() {
+	}
+
+	@Nullable
+	public static BRecipe fromConfig(ConfigurationSection configSectionRecipes, String recipeId) {
+		BRecipe recipe = new BRecipe();
 		String nameList = configSectionRecipes.getString(recipeId + ".name");
 		if (nameList != null) {
 			String[] name = nameList.split("/");
 			if (name.length > 2) {
-				this.name = name;
+				recipe.name = name;
 			} else {
-				this.name = new String[1];
-				this.name[0] = name[0];
+				recipe.name = new String[1];
+				recipe.name[0] = name[0];
 			}
 		} else {
-			return;
+			P.p.errorLog(recipeId + ": Recipe Name missing or invalid!");
+			return null;
 		}
-		List<String> ingredientsList = configSectionRecipes.getStringList(recipeId + ".ingredients");
-		if (ingredientsList != null) {
-			for (String item : ingredientsList) {
-				String[] ingredParts = item.split("/");
-				if (ingredParts.length == 2) {
-					String[] matParts;
-					if (ingredParts[0].contains(",")) {
-						matParts = ingredParts[0].split(",");
-					} else if (ingredParts[0].contains(":")) {
-						matParts = ingredParts[0].split(":");
-					} else if (ingredParts[0].contains(";")) {
-						matParts = ingredParts[0].split(";");
-					} else {
-						matParts = ingredParts[0].split("\\.");
-					}
-					Material mat = Material.matchMaterial(matParts[0]);
-					short durability = -1;
-					if (matParts.length == 2) {
-						durability = (short) P.p.parseInt(matParts[1]);
-					}
-					if (mat == null && BConfig.hasVault) {
-						try {
-							net.milkbowl.vault.item.ItemInfo vaultItem = net.milkbowl.vault.item.Items.itemByString(matParts[0]);
-							if (vaultItem != null) {
-								mat = vaultItem.getType();
-								if (durability == -1 && vaultItem.getSubTypeId() != 0) {
-									durability = vaultItem.getSubTypeId();
-								}
-								if (mat.name().contains("LEAVES")) {
-									if (durability > 3) {
-										durability -= 4; // Vault has leaves with higher durability
-									}
-								}
-							}
-						} catch (Exception e) {
-							P.p.errorLog("Could not check vault for Item Name");
-							e.printStackTrace();
-						}
-					}
-					if (mat != null) {
-						ItemStack stack = new ItemStack(mat, P.p.parseInt(ingredParts[1]), durability);
-						this.ingredients.add(stack);
-						BIngredients.possibleIngredients.add(mat);
-					} else {
-						P.p.errorLog("Unknown Material: " + ingredParts[0]);
-						this.ingredients = null;
-						return;
-					}
+		if (recipe.getRecipeName() == null || recipe.getRecipeName().length() < 1) {
+			P.p.errorLog(recipeId + ": Recipe Name invalid");
+			return null;
+		}
+
+		recipe.ingredients = loadIngredients(configSectionRecipes, recipeId);
+		if (recipe.ingredients == null || recipe.ingredients.isEmpty()) {
+			P.p.errorLog("No ingredients for: " + recipe.getRecipeName());
+			return null;
+		}
+		recipe.cookingTime = configSectionRecipes.getInt(recipeId + ".cookingtime", 1);
+		int dis = configSectionRecipes.getInt(recipeId + ".distillruns", 0);
+		if (dis > Byte.MAX_VALUE) {
+			recipe.distillruns = Byte.MAX_VALUE;
+		} else {
+			recipe.distillruns = (byte) dis;
+		}
+		recipe.distillTime = configSectionRecipes.getInt(recipeId + ".distilltime", 0) * 20;
+		recipe.wood = (byte) configSectionRecipes.getInt(recipeId + ".wood", 0);
+		recipe.age = configSectionRecipes.getInt(recipeId + ".age", 0);
+		recipe.difficulty = configSectionRecipes.getInt(recipeId + ".difficulty", 0);
+		recipe.alcohol = configSectionRecipes.getInt(recipeId + ".alcohol", 0);
+
+		String col = configSectionRecipes.getString(recipeId + ".color", "BLUE");
+		recipe.color = PotionColor.fromString(col);
+		if (recipe.color == PotionColor.WATER && !col.equals("WATER")) {
+			P.p.errorLog("Invalid Color '" + col + "' in Recipe: " + recipe.getRecipeName());
+			return null;
+		}
+
+		recipe.lore = loadLore(configSectionRecipes, recipeId + ".lore");
+
+		List<String> effectStringList = configSectionRecipes.getStringList(recipeId + ".effects");
+		if (effectStringList != null) {
+			for (String effectString : effectStringList) {
+				BEffect effect = new BEffect(effectString);
+				if (effect.isValid()) {
+					recipe.effects.add(effect);
 				} else {
-					return;
+					P.p.errorLog("Error adding Effect to Recipe: " + recipe.getRecipeName());
 				}
 			}
 		}
-		this.cookingTime = configSectionRecipes.getInt(recipeId + ".cookingtime", 1);
-		int dis = configSectionRecipes.getInt(recipeId + ".distillruns", 0);
-		if (dis > Byte.MAX_VALUE) {
-			this.distillruns = Byte.MAX_VALUE;
-		} else {
-			this.distillruns = (byte) dis;
-		}
-		this.distillTime = configSectionRecipes.getInt(recipeId + ".distilltime", 0) * 20;
-		this.wood = (byte) configSectionRecipes.getInt(recipeId + ".wood", 0);
-		this.age = configSectionRecipes.getInt(recipeId + ".age", 0);
-		this.color = configSectionRecipes.getString(recipeId + ".color");
-		this.difficulty = configSectionRecipes.getInt(recipeId + ".difficulty", 0);
-		this.alcohol = configSectionRecipes.getInt(recipeId + ".alcohol", 0);
+		return recipe;
+	}
 
+	public static List<Tuple<CustomItem, Integer>> loadIngredients(ConfigurationSection cfg, String recipeId) {
+		List<String> ingredientsList;
+		if (cfg.isString(recipeId + ".ingredients")) {
+			ingredientsList = new ArrayList<>(1);
+			ingredientsList.add(cfg.getString(recipeId + ".ingredients", "x"));
+		} else {
+			ingredientsList = cfg.getStringList(recipeId + ".ingredients");
+		}
+		if (ingredientsList == null) {
+			return null;
+		}
+		List<Tuple<CustomItem, Integer>> ingredients = new ArrayList<>(ingredientsList.size());
+		listLoop: for (String item : ingredientsList) {
+			String[] ingredParts = item.split("/");
+			int amount = 1;
+			if (ingredParts.length == 2) {
+				amount = P.p.parseInt(ingredParts[1]);
+				if (amount < 1) {
+					P.p.errorLog(recipeId + ": Invalid Item Amount: " + ingredParts[1]);
+					return null;
+				}
+			}
+			String[] matParts;
+			if (ingredParts[0].contains(",")) {
+				matParts = ingredParts[0].split(",");
+			} else if (ingredParts[0].contains(":")) {
+				matParts = ingredParts[0].split(":");
+			} else if (ingredParts[0].contains(";")) {
+				matParts = ingredParts[0].split(";");
+			} else {
+				matParts = ingredParts[0].split("\\.");
+			}
+
+			// Try to find this Ingredient as Custom Item
+			for (CustomItem custom : BConfig.customItems) {
+				if (custom.getId().equalsIgnoreCase(matParts[0])) {
+					ingredients.add(new Tuple<>(custom, amount));
+					BCauldronRecipe.acceptedMaterials.addAll(custom.getMaterials());
+					continue listLoop;
+				}
+			}
+
+			Material mat = Material.matchMaterial(matParts[0]);
+			short durability = -1;
+			if (matParts.length == 2) {
+				durability = (short) P.p.parseInt(matParts[1]);
+			}
+			if (mat == null && BConfig.hasVault) {
+				try {
+					net.milkbowl.vault.item.ItemInfo vaultItem = net.milkbowl.vault.item.Items.itemByString(matParts[0]);
+					if (vaultItem != null) {
+						mat = vaultItem.getType();
+						if (durability == -1 && vaultItem.getSubTypeId() != 0) {
+							durability = vaultItem.getSubTypeId();
+						}
+						if (mat.name().contains("LEAVES")) {
+							if (durability > 3) {
+								durability -= 4; // Vault has leaves with higher durability
+							}
+						}
+					}
+				} catch (Exception e) {
+					P.p.errorLog("Could not check vault for Item Name");
+					e.printStackTrace();
+				}
+			}
+			if (mat != null) {
+				CustomItem custom;
+				if (durability > -1) {
+					custom = CustomItem.asSimpleItem(mat, durability);
+				} else {
+					custom = CustomItem.asSimpleItem(mat);
+				}
+				ingredients.add(new Tuple<>(custom, amount));
+				BCauldronRecipe.acceptedMaterials.add(mat);
+			} else {
+				P.p.errorLog(recipeId + ": Unknown Material: " + ingredParts[0]);
+				return null;
+			}
+		}
+		return ingredients;
+	}
+
+	@Nullable
+	public static List<Tuple<Integer, String>> loadLore(ConfigurationSection cfg, String path) {
 		List<String> load = null;
-		if (configSectionRecipes.isString(recipeId + ".lore")) {
+		if (cfg.isString(path)) {
 			load = new ArrayList<>(1);
-			load.add(configSectionRecipes.getString(recipeId + ".lore"));
-		} else if (configSectionRecipes.isList(recipeId + ".lore")) {
-			load = configSectionRecipes.getStringList(recipeId + ".lore");
+			load.add(cfg.getString(path));
+		} else if (cfg.isList(path)) {
+			load = cfg.getStringList(path);
 		}
 		if (load != null) {
+			List<Tuple<Integer, String>> lore = new ArrayList<>(load.size());
 			for (String line : load) {
 				line = P.p.color(line);
 				int plus = 0;
@@ -135,34 +209,15 @@ public class BRecipe {
 				if (!line.startsWith("§")) {
 					line = "§9" + line;
 				}
-				if (lore == null) lore = new ArrayList<>();
 				lore.add(new Tuple<>(plus, line));
 			}
+			return lore;
 		}
-
-		List<String> effectStringList = configSectionRecipes.getStringList(recipeId + ".effects");
-		if (effectStringList != null) {
-			for (String effectString : effectStringList) {
-				BEffect effect = new BEffect(effectString);
-				if (effect.isValid()) {
-					effects.add(effect);
-				} else {
-					P.p.errorLog("Error adding Effect to Recipe: " + getRecipeName());
-				}
-			}
-		}
+		return null;
 	}
 
 	// check every part of the recipe for validity
 	public boolean isValid() {
-		if (name == null || name.length < 1) {
-			P.p.errorLog("Recipe Name missing or invalid!");
-			return false;
-		}
-		if (getRecipeName() == null || getRecipeName().length() < 1) {
-			P.p.errorLog("Recipe Name invalid");
-			return false;
-		}
 		if (ingredients == null || ingredients.isEmpty()) {
 			P.p.errorLog("No ingredients could be loaded for Recipe: " + getRecipeName());
 			return false;
@@ -185,11 +240,6 @@ public class BRecipe {
 		}
 		if (age < 0) {
 			P.p.errorLog("Invalid age time '" + age + "' in Recipe: " + getRecipeName());
-			return false;
-		}
-		String c = getColor();
-		if (!c.equals("WATER") && PotionColor.fromString(c) == PotionColor.WATER) {
-			P.p.errorLog("Invalid Color '" + color + "' in Recipe: " + getRecipeName());
 			return false;
 		}
 		if (difficulty < 0 || difficulty > 10) {
@@ -251,10 +301,10 @@ public class BRecipe {
 		if (list.size() < ingredients.size()) {
 			return true;
 		}
-		for (ItemStack ingredient : ingredients) {
+		for (Tuple<CustomItem, Integer> ingredient : ingredients) {
 			boolean matches = false;
 			for (ItemStack used : list) {
-				if (ingredientsMatch(used, ingredient)) {
+				if (ingredient.a().matches(used)) {
 					matches = true;
 					break;
 				}
@@ -264,24 +314,6 @@ public class BRecipe {
 			}
 		}
 		return false;
-	}
-
-	// Returns true if this ingredient cares about durability
-	public boolean hasExactData(ItemStack item) {
-		for (ItemStack ingredient : ingredients) {
-			if (ingredient.getType().equals(item.getType())) {
-				return ingredient.getDurability() != -1;
-			}
-		}
-		return true;
-	}
-
-	// Returns true if this item matches the item from a recipe
-	public static boolean ingredientsMatch(ItemStack usedItem, ItemStack recipeItem) {
-		if (!recipeItem.getType().equals(usedItem.getType())) {
-			return false;
-		}
-		return recipeItem.getDurability() == -1 || recipeItem.getDurability() == usedItem.getDurability();
 	}
 
 	/**
@@ -301,14 +333,7 @@ public class BRecipe {
 	 * @return The created Brew
 	 */
 	public Brew createBrew(int quality) {
-		ArrayList<ItemStack> list = new ArrayList<>(ingredients.size());
-		for (ItemStack item : ingredients) {
-			if (item.getDurability() == -1) {
-				list.add(new ItemStack(item.getType(), item.getAmount()));
-			} else {
-				list.add(item.clone());
-			}
-		}
+		List<ItemStack> list = ingredients.stream().map(ing -> ing.a().createDummy(ing.b())).collect(Collectors.toList());
 
 		BIngredients bIngredients = new BIngredients(list, cookingTime);
 
@@ -320,9 +345,9 @@ public class BRecipe {
 
 	// how many of a specific ingredient in the recipe
 	public int amountOf(ItemStack item) {
-		for (ItemStack ingredient : ingredients) {
-			if (ingredientsMatch(item, ingredient)) {
-				return ingredient.getAmount();
+		for (Tuple<CustomItem, Integer> ingredient : ingredients) {
+			if (ingredient.a().matches(item)) {
+				return ingredient.b();
 			}
 		}
 		return 0;
@@ -371,11 +396,8 @@ public class BRecipe {
 	}
 
 	@NotNull
-	public String getColor() {
-		if (color != null) {
-			return color.toUpperCase();
-		}
-		return "BLUE";
+	public PotionColor getColor() {
+		return color;
 	}
 
 	// get the woodtype
@@ -434,7 +456,7 @@ public class BRecipe {
 	}
 
 	public static BRecipe get(String name) {
-		for (BRecipe recipe : BIngredients.recipes) {
+		for (BRecipe recipe : recipes) {
 			if (recipe.getRecipeName().equalsIgnoreCase(name)) {
 				return recipe;
 			}

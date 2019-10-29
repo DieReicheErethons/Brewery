@@ -27,21 +27,21 @@
  */
 package com.dre.brewery.utility;
 
-public class Tuple<X, Y> {
+public class Tuple<A, B> {
 
 	/**
 	 * The first value in the tuple
 	 */
-	private final X x;
+	private final A a;
 
 	/**
 	 * The second value in the tuple
 	 */
-	private final Y y;
+	private final B b;
 
-	public Tuple(X x, Y y) {
-		this.x = x;
-		this.y = y;
+	public Tuple(A a, B b) {
+		this.a = a;
+		this.b = b;
 	}
 
 	/**
@@ -49,8 +49,8 @@ public class Tuple<X, Y> {
 	 *
 	 * @return
 	 */
-	public X first() {
-		return x;
+	public A first() {
+		return a;
 	}
 
 	/**
@@ -58,8 +58,26 @@ public class Tuple<X, Y> {
 	 *
 	 * @return
 	 */
-	public Y second() {
-		return y;
+	public B second() {
+		return b;
+	}
+
+	/**
+	 * Gets the first value in the tuple, Synonym for first()
+	 *
+	 * @return
+	 */
+	public A a() {
+		return a;
+	}
+
+	/**
+	 * Gets the second value in the tuple, Synonym for second()
+	 *
+	 * @return
+	 */
+	public B b() {
+		return b;
 	}
 
 	@Override
@@ -69,12 +87,12 @@ public class Tuple<X, Y> {
 		}
 
 		Tuple<?, ?> tuple = (Tuple<?, ?>) object;
-		return tuple.x == x && tuple.y == y;
+		return tuple.a == a && tuple.b == b;
 	}
 
 	@Override
 	public int hashCode() {
-		return x.hashCode() ^ y.hashCode();
+		return a.hashCode() ^ b.hashCode();
 	}
 
 }

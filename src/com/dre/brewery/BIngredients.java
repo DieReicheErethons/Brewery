@@ -7,21 +7,21 @@ import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class BIngredients {
-	public static Set<Material> possibleIngredients = new HashSet<>();
-	public static ArrayList<BRecipe> recipes = new ArrayList<>();
-	public static Map<Material, String> cookedNames = new HashMap<>();
 	private static int lastId = 0;
 
 	private int id; // Legacy
 	private List<ItemStack> ingredients = new ArrayList<>();
-	private Map<Material, Integer> materials = new HashMap<>(); // Merged List Of ingredients that doesnt consider Durability
 	private int cookedTime;
 
 	// Represents ingredients in Cauldron, Brew
@@ -37,10 +37,6 @@ public class BIngredients {
 		this.cookedTime = cookedTime;
 		//this.id = lastId;
 		//lastId++;
-
-		for (ItemStack item : ingredients) {
-			addMaterial(item);
-		}
 	}
 
 	// Load from legacy Brew section
@@ -54,7 +50,6 @@ public class BIngredients {
 
 	// Add an ingredient to this
 	public void add(ItemStack ingredient) {
-		addMaterial(ingredient);
 		for (ItemStack item : ingredients) {
 			if (item.isSimilar(ingredient)) {
 				item.setAmount(item.getAmount() + ingredient.getAmount());
@@ -64,20 +59,12 @@ public class BIngredients {
 		ingredients.add(ingredient);
 	}
 
-	private void addMaterial(ItemStack ingredient) {
-		if (materials.containsKey(ingredient.getType())) {
-			int newAmount = materials.get(ingredient.getType()) + ingredient.getAmount();
-			materials.put(ingredient.getType(), newAmount);
-		} else {
-			materials.put(ingredient.getType(), ingredient.getAmount());
-		}
-	}
-
 	// returns an Potion item with cooked ingredients
 	public ItemStack cook(int state) {
 
 		ItemStack potion = new ItemStack(Material.POTION);
 		PotionMeta potionMeta = (PotionMeta) potion.getItemMeta();
+		assert potionMeta != null;
 
 		// cookedTime is always time in minutes, state may differ with number of ticks
 		cookedTime = state;
@@ -96,11 +83,11 @@ public class BIngredients {
 			lore.updateQualityStars(false);
 			lore.updateCustomLore();
 			lore.updateAlc(false);
-
 			lore.addOrReplaceEffects(brew.getEffects(), brew.getQuality());
+			lore.write();
 
 			cookedName = cookRecipe.getName(quality);
-			PotionColor.fromString(cookRecipe.getColor()).colorBrew(potionMeta, potion, false);
+			cookRecipe.getColor().colorBrew(potionMeta, potion, false);
 
 		} else {
 			// new base potion
@@ -110,14 +97,16 @@ public class BIngredients {
 				cookedName = P.p.languageReader.get("Brew_ThickBrew");
 				PotionColor.BLUE.colorBrew(potionMeta, potion, false);
 			} else {
-				for (Material ingredient : materials.keySet()) {
-					if (cookedNames.containsKey(ingredient)) {
-						// if more than half of the ingredients is of one kind
-						if (materials.get(ingredient) > (getIngredientsCount() / 2)) {
-							cookedName = cookedNames.get(ingredient);
-							PotionColor.CYAN.colorBrew(potionMeta, potion, true);
-						}
+				BCauldronRecipe cauldronRecipe = getCauldronRecipe();
+				if (cauldronRecipe != null) {
+					P.p.debugLog("Found Cauldron Recipe: " + cauldronRecipe.getName());
+					cookedName = cauldronRecipe.getName();
+					if (cauldronRecipe.getLore() != null) {
+						BrewLore lore = new BrewLore(brew, potionMeta);
+						lore.addCauldronLore(cauldronRecipe.getLore());
+						lore.write();
 					}
+					cauldronRecipe.getColor().colorBrew(potionMeta, potion, true);
 				}
 			}
 		}
@@ -174,7 +163,7 @@ public class BIngredients {
 		int woodQuality;
 		int ageQuality;
 		BRecipe bestRecipe = null;
-		for (BRecipe recipe : recipes) {
+		for (BRecipe recipe : BRecipe.recipes) {
 			ingredientQuality = getIngredientQuality(recipe);
 			cookingQuality = getCookingQuality(recipe, distilled);
 
@@ -221,9 +210,29 @@ public class BIngredients {
 		return null;
 	}
 
-	// returns the currently best matching recipe for distilling for the
-	// ingredients and cooking time
-	public BRecipe getdistillRecipe(float wood, float time) {
+	/**
+	 * Get Cauldron Recipe that matches the contents of the cauldron
+	 */
+	@Nullable
+	public BCauldronRecipe getCauldronRecipe() {
+		BCauldronRecipe best = null;
+		float bestMatch = 0;
+		float match;
+		for (BCauldronRecipe recipe : BCauldronRecipe.recipes) {
+			match = recipe.getIngredientMatch(ingredients);
+			if (match >= 10) {
+				return recipe;
+			}
+			if (match > bestMatch) {
+				best = recipe;
+				bestMatch = match;
+			}
+		}
+		return best;
+	}
+
+	// returns the currently best matching recipe for distilling for the ingredients and cooking time
+	public BRecipe getDistillRecipe(float wood, float time) {
 		BRecipe bestRecipe = getBestRecipe(wood, time, true);
 
 		// Check if best recipe needs to be destilled
@@ -235,8 +244,7 @@ public class BIngredients {
 		return null;
 	}
 
-	// returns currently best matching recipe for ingredients, cooking- and
-	// ageingtime
+	// returns currently best matching recipe for ingredients, cooking- and ageingtime
 	public BRecipe getAgeRecipe(float wood, float time, boolean distilled) {
 		BRecipe bestRecipe = getBestRecipe(wood, time, distilled);
 
@@ -248,8 +256,7 @@ public class BIngredients {
 		return null;
 	}
 
-	// returns the quality of the ingredients conditioning given recipe, -1 if
-	// no recipe is near them
+	// returns the quality of the ingredients conditioning given recipe, -1 if no recipe is near them
 	public int getIngredientQuality(BRecipe recipe) {
 		float quality = 10;
 		int count;
@@ -258,20 +265,9 @@ public class BIngredients {
 			// when ingredients are not complete
 			return -1;
 		}
-		ArrayList<Material> mergedChecked = new ArrayList<>();
 		for (ItemStack ingredient : ingredients) {
-			if (mergedChecked.contains(ingredient.getType())) {
-				// This ingredient type was already checked as part of a merged material
-				continue;
-			}
 			int amountInRecipe = recipe.amountOf(ingredient);
-			// If we dont consider durability for this ingredient, check the merged material
-			if (recipe.hasExactData(ingredient)) {
-				count = ingredient.getAmount();
-			} else {
-				mergedChecked.add(ingredient.getType());
-				count = materials.get(ingredient.getType());
-			}
+			count = ingredient.getAmount();
 			if (amountInRecipe == 0) {
 				// this ingredient doesnt belong into the recipe
 				if (count > (getIngredientsCount() / 2)) {
@@ -346,8 +342,7 @@ public class BIngredients {
 		if (!(obj instanceof BIngredients)) return false;
 		BIngredients other = ((BIngredients) obj);
 		return cookedTime == other.cookedTime &&
-				ingredients.equals(other.ingredients) &&
-				materials.equals(other.materials);
+				ingredients.equals(other.ingredients);
 	}
 
 	// Creates a copy ingredients
@@ -355,11 +350,10 @@ public class BIngredients {
 	public BIngredients clone() {
 		try {
 			super.clone();
-		} catch (CloneNotSupportedException ingored) {
+		} catch (CloneNotSupportedException ignored) {
 		}
 		BIngredients copy = new BIngredients();
 		copy.ingredients.addAll(ingredients);
-		copy.materials.putAll(materials);
 		copy.cookedTime = cookedTime;
 		return copy;
 	}

@@ -440,9 +440,10 @@ public class P extends JavaPlugin {
 		// delete Data from Ram
 		Barrel.barrels.clear();
 		BCauldron.bcauldrons.clear();
-		BIngredients.possibleIngredients.clear();
-		BIngredients.recipes.clear();
-		BIngredients.cookedNames.clear();
+		BRecipe.recipes.clear();
+		BCauldronRecipe.acceptedMaterials.clear();
+		BCauldronRecipe.recipes.clear();
+		BConfig.customItems.clear();
 		BPlayer.clear();
 		Brew.legacyPotions.clear();
 		Wakeup.wakeups.clear();
@@ -458,9 +459,10 @@ public class P extends JavaPlugin {
 			BConfig.reloader = sender;
 		}
 		// clear all existent config Data
-		BIngredients.possibleIngredients.clear();
-		BIngredients.recipes.clear();
-		BIngredients.cookedNames.clear();
+		BRecipe.recipes.clear();
+		BCauldronRecipe.acceptedMaterials.clear();
+		BCauldronRecipe.recipes.clear();
+		BConfig.customItems.clear();
 		DistortChat.words.clear();
 		DistortChat.ignoreText.clear();
 		DistortChat.commands = null;

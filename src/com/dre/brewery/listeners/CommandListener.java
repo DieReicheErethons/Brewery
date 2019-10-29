@@ -378,7 +378,6 @@ public class CommandListener implements CommandExecutor {
 	}
 
 	@Deprecated
-	@SuppressWarnings("deprecation")
 	public void cmdCopy(CommandSender sender, int count) {
 
 		if (!(sender instanceof Player)) {
@@ -415,7 +414,6 @@ public class CommandListener implements CommandExecutor {
 	}
 
 	@Deprecated
-	@SuppressWarnings("deprecation")
 	public void cmdDelete(CommandSender sender) {
 
 		if (!(sender instanceof Player)) {
@@ -441,7 +439,6 @@ public class CommandListener implements CommandExecutor {
 	}
 
 	@Deprecated
-	@SuppressWarnings("deprecation")
 	public void cmdPersist(CommandSender sender) {
 
 		if (!(sender instanceof Player)) {
@@ -496,6 +493,7 @@ public class CommandListener implements CommandExecutor {
 				}
 				brew.touch();
 				ItemMeta meta = hand.getItemMeta();
+				assert meta != null;
 				BrewModifyEvent modifyEvent = new BrewModifyEvent(brew, meta, BrewModifyEvent.Type.STATIC);
 				P.p.getServer().getPluginManager().callEvent(modifyEvent);
 				if (modifyEvent.isCancelled()) {
@@ -526,6 +524,7 @@ public class CommandListener implements CommandExecutor {
 				brew.unLabel(hand);
 				brew.touch();
 				ItemMeta meta = hand.getItemMeta();
+				assert meta != null;
 				BrewModifyEvent modifyEvent = new BrewModifyEvent(brew, meta, BrewModifyEvent.Type.UNLABEL);
 				P.p.getServer().getPluginManager().callEvent(modifyEvent);
 				if (modifyEvent.isCancelled()) {
@@ -607,7 +606,7 @@ public class CommandListener implements CommandExecutor {
 		}
 
 		BRecipe recipe = null;
-		for (BRecipe r : BIngredients.recipes) {
+		for (BRecipe r : BRecipe.recipes) {
 			if (r.hasName(name)) {
 				recipe = r;
 				break;

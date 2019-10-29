@@ -2,10 +2,11 @@ package com.dre.brewery.filedata;
 
 import com.dre.brewery.*;
 import com.dre.brewery.integration.WGBarrel;
-import com.dre.brewery.integration.WGBarrel7;
-import com.dre.brewery.integration.WGBarrel6;
 import com.dre.brewery.integration.WGBarrel5;
+import com.dre.brewery.integration.WGBarrel6;
+import com.dre.brewery.integration.WGBarrel7;
 import com.dre.brewery.utility.BUtil;
+import com.dre.brewery.utility.CustomItem;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
@@ -18,6 +19,7 @@ import org.bukkit.plugin.PluginManager;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,6 +59,9 @@ public class BConfig {
 	public static boolean enableEncode;
 	public static boolean alwaysShowQuality; // Always show quality stars
 	public static boolean alwaysShowAlc; // Always show alc%
+
+	//Item
+	public static List<CustomItem> customItems = new ArrayList<>();
 
 	public static P p = P.p;
 
@@ -184,40 +189,41 @@ public class BConfig {
 
 		Brew.loadSeed(config, file);
 
+		// Loading custom items
+		ConfigurationSection configSection = config.getConfigurationSection("customItems");
+		if (configSection != null) {
+			for (String custId : configSection.getKeys(false)) {
+				CustomItem custom = CustomItem.fromConfig(configSection, custId);
+				if (custom != null) {
+					customItems.add(custom);
+				} else {
+					p.errorLog("Loading the Custom Item with id: '" + custId + "' failed!");
+				}
+			}
+		}
+
 		// loading recipes
-		ConfigurationSection configSection = config.getConfigurationSection("recipes");
+		configSection = config.getConfigurationSection("recipes");
 		if (configSection != null) {
 			for (String recipeId : configSection.getKeys(false)) {
-				BRecipe recipe = new BRecipe(configSection, recipeId);
-				if (recipe.isValid()) {
-					BIngredients.recipes.add(recipe);
+				BRecipe recipe = BRecipe.fromConfig(configSection, recipeId);
+				if (recipe != null && recipe.isValid()) {
+					BRecipe.recipes.add(recipe);
 				} else {
 					p.errorLog("Loading the Recipe with id: '" + recipeId + "' failed!");
 				}
 			}
 		}
 
-		// loading cooked names and possible ingredients
-		configSection = config.getConfigurationSection("cooked");
+		// Loading Cauldron Recipes
+		configSection = config.getConfigurationSection("cauldron");
 		if (configSection != null) {
-			for (String ingredient : configSection.getKeys(false)) {
-				Material mat = Material.matchMaterial(ingredient);
-				if (mat == null && hasVault) {
-					try {
-						net.milkbowl.vault.item.ItemInfo vaultItem = net.milkbowl.vault.item.Items.itemByString(ingredient);
-						if (vaultItem != null) {
-							mat = vaultItem.getType();
-						}
-					} catch (Exception e) {
-						P.p.errorLog("Could not check vault for Item Name");
-						e.printStackTrace();
-					}
-				}
-				if (mat != null) {
-					BIngredients.cookedNames.put(mat, (configSection.getString(ingredient, null)));
-					BIngredients.possibleIngredients.add(mat);
+			for (String id : configSection.getKeys(false)) {
+				BCauldronRecipe recipe = BCauldronRecipe.fromConfig(configSection, id);
+				if (recipe != null) {
+					BCauldronRecipe.recipes.add(recipe);
 				} else {
-					p.errorLog("Unknown Material: " + ingredient);
+					p.errorLog("Loading the Cauldron-Recipe with id: '" + id + "' failed!");
 				}
 			}
 		}

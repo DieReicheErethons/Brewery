@@ -67,7 +67,7 @@ public class DataSave extends BukkitRunnable {
 		Brew.writePrevSeeds(configFile);
 
 		if (!Brew.legacyPotions.isEmpty()) {
-			Brew.save(configFile.createSection("Brew"));
+			Brew.saveLegacy(configFile.createSection("Brew"));
 		}
 
 		if (!BCauldron.bcauldrons.isEmpty() || oldData.contains("BCauldron")) {

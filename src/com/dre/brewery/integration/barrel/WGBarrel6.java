@@ -1,4 +1,4 @@
-package com.dre.brewery.integration;
+package com.dre.brewery.integration.barrel;
 
 
 import com.sk89q.worldguard.bukkit.RegionQuery;

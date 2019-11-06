@@ -1,7 +1,7 @@
 package com.dre.brewery.api;
 
 import com.dre.brewery.BCauldron;
-import com.dre.brewery.BRecipe;
+import com.dre.brewery.recipe.BRecipe;
 import com.dre.brewery.Barrel;
 import com.dre.brewery.Brew;
 import org.apache.commons.lang.NotImplementedException;

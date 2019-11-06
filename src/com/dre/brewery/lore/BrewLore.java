@@ -1,8 +1,8 @@
 package com.dre.brewery.lore;
 
-import com.dre.brewery.BEffect;
+import com.dre.brewery.recipe.BEffect;
 import com.dre.brewery.BIngredients;
-import com.dre.brewery.BRecipe;
+import com.dre.brewery.recipe.BRecipe;
 import com.dre.brewery.Brew;
 import com.dre.brewery.P;
 import com.dre.brewery.filedata.BConfig;

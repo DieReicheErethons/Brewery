@@ -4,6 +4,8 @@ import com.dre.brewery.api.events.brew.BrewModifyEvent;
 import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.filedata.ConfigUpdater;
 import com.dre.brewery.lore.*;
+import com.dre.brewery.recipe.BEffect;
+import com.dre.brewery.recipe.BRecipe;
 import com.dre.brewery.utility.PotionColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -26,6 +28,7 @@ import java.util.Map;
 
 public class Brew {
 	// represents the liquid in the brewed Potions
+	public static final byte SAVE_VER = 1;
 	private static long saveSeed;
 	private static List<Long> prevSaveSeeds = new ArrayList<>(); // Save Seeds that have been used in the past, stored to decode brews made at that time
 	public static Map<Integer, Brew> legacyPotions = new HashMap<>();
@@ -207,10 +210,10 @@ public class Brew {
 					if (!immutable) {
 						this.quality = calcQuality();
 					}
-					P.p.log("Brew was made from Recipe: '" + name + "' which could not be found. '" + currentRecipe.getRecipeName() + "' used instead!");
+					P.p.log("A Brew was made from Recipe: '" + name + "' which could not be found. '" + currentRecipe.getRecipeName() + "' used instead!");
 					return true;
 				} else {
-					P.p.errorLog("Brew was made from Recipe: '" + name + "' which could not be found!");
+					P.p.errorLog("A Brew was made from Recipe: '" + name + "' which could not be found!");
 				}
 			}
 		}
@@ -570,7 +573,9 @@ public class Brew {
 				recipe.getColor().colorBrew(potionMeta, item, canDistill());
 			} else {
 				quality = 0;
+				lore.convertLore(false);
 				lore.removeEffects();
+				currentRecipe = null;
 				potionMeta.setDisplayName(P.p.color("&f" + P.p.languageReader.get("Brew_BadPotion")));
 				PotionColor.GREY.colorBrew(potionMeta, item, canDistill());
 			}
@@ -714,7 +719,7 @@ public class Brew {
 				case 1:
 
 					unscrambler.start();
-					brew.loadFromStream(in);
+					brew.loadFromStream(in, ver);
 
 					break;
 				default:
@@ -748,7 +753,7 @@ public class Brew {
 		return null;
 	}
 
-	private void loadFromStream(DataInputStream in) throws IOException {
+	private void loadFromStream(DataInputStream in, byte dataVersion) throws IOException {
 		quality = in.readByte();
 		int bools = in.readUnsignedByte();
 		if ((bools & 1) != 0) {
@@ -767,7 +772,7 @@ public class Brew {
 		unlabeled = (bools & 16) != 0;
 		//persistent = (bools & 32) != 0;
 		immutable = (bools & 32) != 0;
-		ingredients = BIngredients.load(in);
+		ingredients = BIngredients.load(in, dataVersion);
 		setRecipeFromString(recipe);
 	}
 
@@ -782,7 +787,7 @@ public class Brew {
 		XORScrambleStream scrambler = new XORScrambleStream(itemSaveStream, saveSeed);
 		try (DataOutputStream out = new DataOutputStream(scrambler)) {
 			out.writeByte(86); // Parity/sanity
-			out.writeByte(1); // Version
+			out.writeByte(SAVE_VER); // Version
 			if (BConfig.enableEncode) {
 				scrambler.start();
 			} else {
@@ -890,6 +895,7 @@ public class Brew {
 	public void convertPre19(ItemStack item) {
 		removeLegacy(item);
 		PotionMeta potionMeta = ((PotionMeta) item.getItemMeta());
+		assert potionMeta != null;
 		if (hasRecipe()) {
 			BrewLore lore = new BrewLore(this, potionMeta);
 			lore.removeEffects();
@@ -905,8 +911,7 @@ public class Brew {
 
 	// Saves all data
 	// Legacy method to save to data file
-	@Deprecated
-	public static void save(ConfigurationSection config) {
+	public static void saveLegacy(ConfigurationSection config) {
 		for (Map.Entry<Integer, Brew> entry : legacyPotions.entrySet()) {
 			int uid = entry.getKey();
 			Brew brew = entry.getValue();
@@ -940,7 +945,7 @@ public class Brew {
 				idConfig.set("lastUpdate", brew.lastUpdate);
 			}
 			// save the ingredients
-			idConfig.set("ingId", brew.ingredients.save(config.getParent()));
+			idConfig.set("ingId", brew.ingredients.saveLegacy(config.getParent()));
 		}
 	}
 

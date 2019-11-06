@@ -1,4 +1,4 @@
-package com.dre.brewery.integration;
+package com.dre.brewery.integration.barrel;
 
 import com.dre.brewery.P;
 import com.dre.brewery.api.events.barrel.BarrelAccessEvent;

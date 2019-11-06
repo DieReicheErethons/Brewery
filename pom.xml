@@ -14,6 +14,7 @@
 
 	<build>
 		<sourceDirectory>src</sourceDirectory>
+		<testSourceDirectory>test</testSourceDirectory>
 
 		<resources>
 			<!-- Static resources -->
@@ -87,7 +88,7 @@
 			<url>http://maven.sk89q.com/repo/</url>
 		</repository>
 		<repository>
-			<!-- GriefPrevention -->
+			<!-- GriefPrevention, SlimeFun -->
 			<id>jitpack.io</id>
 			<url>https://jitpack.io</url>
 		</repository>
@@ -225,6 +226,19 @@
 					<groupId>*</groupId>
 				</exclusion>
 			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>com.github.TheBusyBiscuit</groupId>
+			<artifactId>Slimefun4</artifactId>
+			<version>4bb9abd247</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<!-- Contains proprietary api that we use for integration -->
+			<groupId>com.dre</groupId>
+			<artifactId>ExtPluginBridge</artifactId>
+			<version>1.0</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.bstats</groupId>

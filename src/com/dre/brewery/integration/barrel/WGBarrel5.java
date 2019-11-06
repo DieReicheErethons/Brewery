@@ -1,4 +1,4 @@
-package com.dre.brewery.integration;
+package com.dre.brewery.integration.barrel;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

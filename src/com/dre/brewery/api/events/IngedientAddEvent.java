@@ -1,6 +1,7 @@
 package com.dre.brewery.api.events;
 
 import com.dre.brewery.BCauldron;
+import com.dre.brewery.recipe.RecipeItem;
 import com.dre.brewery.utility.LegacyUtil;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
@@ -21,14 +22,16 @@ public class IngedientAddEvent extends PlayerEvent implements Cancellable {
 	private final Block block;
 	private final BCauldron cauldron;
 	private ItemStack ingredient;
+	private RecipeItem rItem;
 	private boolean cancelled;
 	private boolean takeItem = true;
 
-	public IngedientAddEvent(Player who, Block block, BCauldron bCauldron, ItemStack ingredient) {
+	public IngedientAddEvent(Player who, Block block, BCauldron bCauldron, ItemStack ingredient, RecipeItem rItem) {
 		super(who);
 		this.block = block;
 		cauldron = bCauldron;
-		this.ingredient = ingredient.clone();
+		this.rItem = rItem;
+		this.ingredient = ingredient;
 	}
 
 	public Block getBlock() {
@@ -37,6 +40,15 @@ public class IngedientAddEvent extends PlayerEvent implements Cancellable {
 
 	public BCauldron getCauldron() {
 		return cauldron;
+	}
+
+	/**
+	 * The Recipe item that matches the ingredient.
+	 * This might not be the only recipe item that will match the ingredient
+	 * Will be recalculated if the Ingredient is changed with the setIngredient Method
+	 */
+	public RecipeItem getRecipeItem() {
+		return rItem;
 	}
 
 	// Get the item currently being added to the cauldron by the player
@@ -49,8 +61,11 @@ public class IngedientAddEvent extends PlayerEvent implements Cancellable {
 	// Set the ingredient added to the cauldron to something else
 	// Will always be accepted, even when not in a recipe or the cooked list
 	// The amount is ignored and always one added
+	// This also recalculates the recipeItem!
 	public void setIngredient(ItemStack ingredient) {
 		this.ingredient = ingredient;
+		// The Ingredient has been changed. Recalculate RecipeItem!
+		rItem = RecipeItem.getMatchingRecipeItem(ingredient, true);
 	}
 
 	// If the amount of the item in the players hand should be decreased

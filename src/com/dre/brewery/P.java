@@ -6,8 +6,10 @@ import com.dre.brewery.filedata.DataSave;
 import com.dre.brewery.filedata.LanguageReader;
 import com.dre.brewery.filedata.UpdateChecker;
 import com.dre.brewery.integration.IntegrationListener;
-import com.dre.brewery.integration.LogBlockBarrel;
+import com.dre.brewery.integration.barrel.LogBlockBarrel;
 import com.dre.brewery.listeners.*;
+import com.dre.brewery.recipe.BCauldronRecipe;
+import com.dre.brewery.recipe.BRecipe;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.LegacyUtil;
 import org.apache.commons.lang.math.NumberUtils;
@@ -442,8 +444,12 @@ public class P extends JavaPlugin {
 		BCauldron.bcauldrons.clear();
 		BRecipe.recipes.clear();
 		BCauldronRecipe.acceptedMaterials.clear();
+		BCauldronRecipe.acceptedCustom.clear();
+		BCauldronRecipe.acceptedSimple.clear();
 		BCauldronRecipe.recipes.clear();
 		BConfig.customItems.clear();
+		BConfig.hasSlimefun = null;
+		BConfig.hasMMOItems = null;
 		BPlayer.clear();
 		Brew.legacyPotions.clear();
 		Wakeup.wakeups.clear();
@@ -461,8 +467,12 @@ public class P extends JavaPlugin {
 		// clear all existent config Data
 		BRecipe.recipes.clear();
 		BCauldronRecipe.acceptedMaterials.clear();
+		BCauldronRecipe.acceptedCustom.clear();
+		BCauldronRecipe.acceptedSimple.clear();
 		BCauldronRecipe.recipes.clear();
 		BConfig.customItems.clear();
+		BConfig.hasSlimefun = null;
+		BConfig.hasMMOItems = null;
 		DistortChat.words.clear();
 		DistortChat.ignoreText.clear();
 		DistortChat.commands = null;

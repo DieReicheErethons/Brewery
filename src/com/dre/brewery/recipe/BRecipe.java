@@ -1,7 +1,9 @@
-package com.dre.brewery;
+package com.dre.brewery.recipe;
 
+import com.dre.brewery.BIngredients;
+import com.dre.brewery.Brew;
+import com.dre.brewery.P;
 import com.dre.brewery.filedata.BConfig;
-import com.dre.brewery.utility.CustomItem;
 import com.dre.brewery.utility.PotionColor;
 import com.dre.brewery.utility.Tuple;
 import org.bukkit.Material;
@@ -12,14 +14,13 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class BRecipe {
 
 	public static List<BRecipe> recipes = new ArrayList<>();
 
 	private String[] name;
-	private List<Tuple<CustomItem, Integer>> ingredients = new ArrayList<>(); // Items and amounts
+	private List<RecipeItem> ingredients = new ArrayList<>(); // Items and amounts
 	private int cookingTime; // time to cook in cauldron
 	private byte distillruns; // runs through the brewer
 	private int distillTime; // time for one distill run in seconds
@@ -96,7 +97,7 @@ public class BRecipe {
 		return recipe;
 	}
 
-	public static List<Tuple<CustomItem, Integer>> loadIngredients(ConfigurationSection cfg, String recipeId) {
+	public static List<RecipeItem> loadIngredients(ConfigurationSection cfg, String recipeId) {
 		List<String> ingredientsList;
 		if (cfg.isString(recipeId + ".ingredients")) {
 			ingredientsList = new ArrayList<>(1);
@@ -107,7 +108,7 @@ public class BRecipe {
 		if (ingredientsList == null) {
 			return null;
 		}
-		List<Tuple<CustomItem, Integer>> ingredients = new ArrayList<>(ingredientsList.size());
+		List<RecipeItem> ingredients = new ArrayList<>(ingredientsList.size());
 		listLoop: for (String item : ingredientsList) {
 			String[] ingredParts = item.split("/");
 			int amount = 1;
@@ -121,19 +122,51 @@ public class BRecipe {
 			String[] matParts;
 			if (ingredParts[0].contains(",")) {
 				matParts = ingredParts[0].split(",");
-			} else if (ingredParts[0].contains(":")) {
-				matParts = ingredParts[0].split(":");
 			} else if (ingredParts[0].contains(";")) {
 				matParts = ingredParts[0].split(";");
 			} else {
 				matParts = ingredParts[0].split("\\.");
 			}
 
+			// Check if this is a Plugin Item
+			String[] pluginItem = matParts[0].split(":");
+			if (pluginItem.length > 1) {
+				RecipeItem custom = PluginItem.fromConfig(pluginItem[0], pluginItem[1]);
+				if (custom != null) {
+					custom.setAmount(amount);
+					custom.makeImmutable();
+					ingredients.add(custom);
+					BCauldronRecipe.acceptedCustom.add(custom);
+					continue;
+				} else {
+					// TODO Maybe load later ie on first use of recipe?
+					P.p.errorLog(recipeId + ": Could not Find Plugin: " + ingredParts[1]);
+					return null;
+				}
+			}
+
 			// Try to find this Ingredient as Custom Item
-			for (CustomItem custom : BConfig.customItems) {
-				if (custom.getId().equalsIgnoreCase(matParts[0])) {
-					ingredients.add(new Tuple<>(custom, amount));
-					BCauldronRecipe.acceptedMaterials.addAll(custom.getMaterials());
+			for (RecipeItem custom : BConfig.customItems) {
+				if (custom.getConfigId().equalsIgnoreCase(matParts[0])) {
+					custom = custom.getMutableCopy();
+					custom.setAmount(amount);
+					custom.makeImmutable();
+					ingredients.add(custom);
+					if (custom.hasMaterials()) {
+						BCauldronRecipe.acceptedMaterials.addAll(custom.getMaterials());
+					}
+					// Add it as acceptedCustom
+					if (!BCauldronRecipe.acceptedCustom.contains(custom)) {
+						BCauldronRecipe.acceptedCustom.add(custom);
+						/*if (custom instanceof PluginItem || !custom.hasMaterials()) {
+							BCauldronRecipe.acceptedCustom.add(custom);
+						} else if (custom instanceof CustomMatchAnyItem) {
+							CustomMatchAnyItem ma = (CustomMatchAnyItem) custom;
+							if (ma.hasNames() || ma.hasLore()) {
+								BCauldronRecipe.acceptedCustom.add(ma);
+							}
+						}*/
+					}
 					continue listLoop;
 				}
 			}
@@ -163,14 +196,17 @@ public class BRecipe {
 				}
 			}
 			if (mat != null) {
-				CustomItem custom;
+				RecipeItem rItem;
 				if (durability > -1) {
-					custom = CustomItem.asSimpleItem(mat, durability);
+					rItem = new SimpleItem(mat, durability);
 				} else {
-					custom = CustomItem.asSimpleItem(mat);
+					rItem = new SimpleItem(mat);
 				}
-				ingredients.add(new Tuple<>(custom, amount));
+				rItem.setAmount(amount);
+				rItem.makeImmutable();
+				ingredients.add(rItem);
 				BCauldronRecipe.acceptedMaterials.add(mat);
+				BCauldronRecipe.acceptedSimple.add(mat);
 			} else {
 				P.p.errorLog(recipeId + ": Unknown Material: " + ingredParts[0]);
 				return null;
@@ -297,14 +333,14 @@ public class BRecipe {
 	}
 
 	// true if given list misses an ingredient
-	public boolean isMissingIngredients(List<ItemStack> list) {
+	public boolean isMissingIngredients(List<Ingredient> list) {
 		if (list.size() < ingredients.size()) {
 			return true;
 		}
-		for (Tuple<CustomItem, Integer> ingredient : ingredients) {
+		for (RecipeItem rItem : ingredients) {
 			boolean matches = false;
-			for (ItemStack used : list) {
-				if (ingredient.a().matches(used)) {
+			for (Ingredient used : list) {
+				if (rItem.matches(used)) {
 					matches = true;
 					break;
 				}
@@ -327,13 +363,18 @@ public class BRecipe {
 	}
 
 	/**
-	 * Create a Brew from this Recipe with best values. Quality can be set, but will reset to 10 if put in a barrel
+	 * Create a Brew from this Recipe with best values. Quality can be set, but will reset to 10 if unset immutable and put in a barrel
 	 *
 	 * @param quality The Quality of the Brew
 	 * @return The created Brew
 	 */
 	public Brew createBrew(int quality) {
-		List<ItemStack> list = ingredients.stream().map(ing -> ing.a().createDummy(ing.b())).collect(Collectors.toList());
+		List<Ingredient> list = new ArrayList<>(ingredients.size());
+		for (RecipeItem rItem : ingredients) {
+			Ingredient ing = rItem.toIngredientGeneric();
+			ing.setAmount(rItem.getAmount());
+			list.add(ing);
+		}
 
 		BIngredients bIngredients = new BIngredients(list, cookingTime);
 
@@ -344,10 +385,20 @@ public class BRecipe {
 	// Getter
 
 	// how many of a specific ingredient in the recipe
+	public int amountOf(Ingredient ing) {
+		for (RecipeItem rItem : ingredients) {
+			if (rItem.matches(ing)) {
+				return rItem.getAmount();
+			}
+		}
+		return 0;
+	}
+
+	// how many of a specific ingredient in the recipe
 	public int amountOf(ItemStack item) {
-		for (Tuple<CustomItem, Integer> ingredient : ingredients) {
-			if (ingredient.a().matches(item)) {
-				return ingredient.b();
+		for (RecipeItem rItem : ingredients) {
+			if (rItem.matches(item)) {
+				return rItem.getAmount();
 			}
 		}
 		return 0;

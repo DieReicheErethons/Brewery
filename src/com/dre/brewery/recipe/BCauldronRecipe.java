@@ -1,11 +1,10 @@
-package com.dre.brewery;
+package com.dre.brewery.recipe;
 
-import com.dre.brewery.utility.CustomItem;
+import com.dre.brewery.P;
 import com.dre.brewery.utility.PotionColor;
 import com.dre.brewery.utility.Tuple;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,10 +16,12 @@ import java.util.stream.Collectors;
 
 public class BCauldronRecipe {
 	public static List<BCauldronRecipe> recipes = new ArrayList<>();
-	public static Set<Material> acceptedMaterials = EnumSet.noneOf(Material.class);
+	public static List<RecipeItem> acceptedCustom = new ArrayList<>(); // All accepted custom and other items
+	public static Set<Material> acceptedSimple = EnumSet.noneOf(Material.class); // All accepted simple items
+	public static Set<Material> acceptedMaterials = EnumSet.noneOf(Material.class); // Fast cache for all accepted Materials
 
 	private String name;
-	private List<Tuple<CustomItem, Integer>> ingredients; // Item and amount
+	private List<RecipeItem> ingredients;
 	//private List<String> particles
 	private PotionColor color;
 	private List<String> lore;
@@ -72,7 +73,7 @@ public class BCauldronRecipe {
 	}
 
 	@NotNull
-	public List<Tuple<CustomItem, Integer>> getIngredients() {
+	public List<RecipeItem> getIngredients() {
 		return ingredients;
 	}
 
@@ -92,28 +93,26 @@ public class BCauldronRecipe {
 	 * If all Ingredients and their amounts are equal, returns 10
 	 * Returns something between 0 and 10 if all ingredients present, but differing amounts, depending on how much the amount differs.
 	 */
-	public float getIngredientMatch(List<ItemStack> items) {
+	public float getIngredientMatch(List<Ingredient> items) {
 		if (items.size() < ingredients.size()) {
 			return 0;
 		}
 		float match = 10;
-		search: for (Tuple<CustomItem, Integer> ing : ingredients) {
-			for (ItemStack item : items) {
-				if (ing.a().matches(item)) {
-					double difference = Math.abs(ing.b() - item.getAmount());
+		search: for (RecipeItem recipeIng : ingredients) {
+			for (Ingredient ing : items) {
+				if (recipeIng.matches(ing)) {
+					double difference = Math.abs(recipeIng.getAmount() - ing.getAmount());
 					if (difference >= 1000) {
 						return 0;
 					}
 					// The Item Amount is the determining part here, the higher the better.
 					// But let the difference in amount to what the recipe expects have a tiny factor as well.
 					// This way for the same amount, the recipe with the lower difference wins.
-					double factor = item.getAmount() * (1.0 - (difference / 1000.0)) ;
+					double factor = ing.getAmount() * (1.0 - (difference / 1000.0)) ;
 					//double mod = 0.1 + (0.9 * Math.exp(-0.03 * difference)); // logarithmic curve from 1 to 0.1
 					double mod = 1 + (0.9 * -Math.exp(-0.03 * factor)); // logarithmic curve from 0.1 to 1, small for a low factor
 
-					P.p.debugLog("Mod for " + ing.a() + "/" + ing.b() + ": " + mod);
-					assert mod >= 0.1;
-					assert mod <= 1; // TODO Test
+					P.p.debugLog("Mod for " + recipeIng + ": " + mod);
 
 
 
@@ -138,4 +137,40 @@ public class BCauldronRecipe {
 	public String toString() {
 		return "BCauldronRecipe{" + name + '}';
 	}
+
+	/*public static boolean acceptItem(ItemStack item) {
+		if (acceptedMaterials.contains(item.getType())) {
+			// Extremely fast way to check for most items
+			return true;
+		}
+		if (!item.hasItemMeta()) {
+			return false;
+		}
+		// If the Item is not on the list, but customized, we have to do more checks
+		ItemMeta meta = item.getItemMeta();
+		assert meta != null;
+		if (meta.hasDisplayName() || meta.hasLore()) {
+			for (BItem bItem : acceptedCustom) {
+				if (bItem.matches(item)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	@Nullable
+	public static RecipeItem acceptItem(ItemStack item) {
+		if (!acceptedMaterials.contains(item.getType()) && !item.hasItemMeta()) {
+			// Extremely fast way to check for most items
+			return null;
+		}
+		// If the Item is on the list, or customized, we have to do more checks
+		for (RecipeItem rItem : acceptedItems) {
+			if (rItem.matches(item)) {
+				return rItem;
+			}
+		}
+		return null;
+	}*/
 }

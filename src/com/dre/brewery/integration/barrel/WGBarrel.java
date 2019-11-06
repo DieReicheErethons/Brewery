@@ -1,4 +1,4 @@
-package com.dre.brewery.integration;
+package com.dre.brewery.integration.barrel;
 
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;

@@ -19,9 +19,9 @@ public class WorldListener implements Listener {
 		World world = event.getWorld();
 
 		if (world.getName().startsWith("DXL_")) {
-			BData.loadWorldData(BUtil.getDxlName(world.getName()), world);
+			BData.loadWorldData(BUtil.getDxlName(world.getName()), world, null);
 		} else {
-			BData.loadWorldData(world.getUID().toString(), world);
+			BData.loadWorldData(world.getUID().toString(), world, null);
 		}
 	}
 

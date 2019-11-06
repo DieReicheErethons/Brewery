@@ -1,5 +1,6 @@
-package com.dre.brewery;
+package com.dre.brewery.recipe;
 
+import com.dre.brewery.P;
 import com.dre.brewery.utility.BUtil;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.PotionMeta;

@@ -1,7 +1,13 @@
 package com.dre.brewery;
 
 import com.dre.brewery.api.events.brew.BrewModifyEvent;
+import com.dre.brewery.lore.Base91EncoderStream;
 import com.dre.brewery.lore.BrewLore;
+import com.dre.brewery.recipe.BCauldronRecipe;
+import com.dre.brewery.recipe.BRecipe;
+import com.dre.brewery.recipe.Ingredient;
+import com.dre.brewery.recipe.ItemLoader;
+import com.dre.brewery.recipe.RecipeItem;
 import com.dre.brewery.utility.PotionColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -9,19 +15,18 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class BIngredients {
-	private static int lastId = 0;
+	private static int lastId = 0; // Legacy
 
 	private int id; // Legacy
-	private List<ItemStack> ingredients = new ArrayList<>();
+	private List<Ingredient> ingredients = new ArrayList<>();
 	private int cookedTime;
 
 	// Represents ingredients in Cauldron, Brew
@@ -32,7 +37,7 @@ public class BIngredients {
 	}
 
 	// Load from File
-	public BIngredients(List<ItemStack> ingredients, int cookedTime) {
+	public BIngredients(List<Ingredient> ingredients, int cookedTime) {
 		this.ingredients = ingredients;
 		this.cookedTime = cookedTime;
 		//this.id = lastId;
@@ -40,7 +45,7 @@ public class BIngredients {
 	}
 
 	// Load from legacy Brew section
-	public BIngredients(List<ItemStack> ingredients, int cookedTime, boolean legacy) {
+	public BIngredients(List<Ingredient> ingredients, int cookedTime, boolean legacy) {
 		this(ingredients, cookedTime);
 		if (legacy) {
 			this.id = lastId;
@@ -48,15 +53,32 @@ public class BIngredients {
 		}
 	}
 
-	// Add an ingredient to this
+	// Force add an ingredient to this
+	// Will not check if item is acceptable
 	public void add(ItemStack ingredient) {
-		for (ItemStack item : ingredients) {
-			if (item.isSimilar(ingredient)) {
-				item.setAmount(item.getAmount() + ingredient.getAmount());
+		for (Ingredient existing : ingredients) {
+			if (existing.matches(ingredient)) {
+				existing.setAmount(existing.getAmount() + 1);
 				return;
 			}
 		}
-		ingredients.add(ingredient);
+
+		Ingredient ing = RecipeItem.getMatchingRecipeItem(ingredient, true).toIngredient(ingredient);
+		ing.setAmount(1);
+		ingredients.add(ing);
+	}
+
+	// Add an ingredient to this with corresponding RecipeItem
+	public void add(ItemStack ingredient, RecipeItem rItem) {
+		Ingredient ingredientItem = rItem.toIngredient(ingredient);
+		for (Ingredient existing : ingredients) {
+			if (existing.isSimilar(ingredientItem)) {
+				existing.setAmount(existing.getAmount() + 1);
+				return;
+			}
+		}
+		ingredientItem.setAmount(1);
+		ingredients.add(ingredientItem);
 	}
 
 	// returns an Potion item with cooked ingredients
@@ -140,8 +162,8 @@ public class BIngredients {
 	// returns amount of ingredients
 	public int getIngredientsCount() {
 		int count = 0;
-		for (ItemStack item : ingredients) {
-			count += item.getAmount();
+		for (Ingredient ing : ingredients) {
+			count += ing.getAmount();
 		}
 		return count;
 	}
@@ -265,7 +287,7 @@ public class BIngredients {
 			// when ingredients are not complete
 			return -1;
 		}
-		for (ItemStack ingredient : ingredients) {
+		for (Ingredient ingredient : ingredients) {
 			int amountInRecipe = recipe.amountOf(ingredient);
 			count = ingredient.getAmount();
 			if (amountInRecipe == 0) {
@@ -346,12 +368,7 @@ public class BIngredients {
 	}
 
 	// Creates a copy ingredients
-	@Override
-	public BIngredients clone() {
-		try {
-			super.clone();
-		} catch (CloneNotSupportedException ignored) {
-		}
+	public BIngredients copy() {
 		BIngredients copy = new BIngredients();
 		copy.ingredients.addAll(ingredients);
 		copy.cookedTime = cookedTime;
@@ -399,21 +416,25 @@ public class BIngredients {
 	public void save(DataOutputStream out) throws IOException {
 		out.writeInt(cookedTime);
 		out.writeByte(ingredients.size());
-		for (ItemStack item : ingredients) {
-			out.writeUTF(item.getType().name());
-			out.writeShort(item.getAmount());
-			out.writeShort(item.getDurability());
+		for (Ingredient ing : ingredients) {
+			ing.saveTo(out);
+			out.writeShort(Math.min(ing.getAmount(), Short.MAX_VALUE));
 		}
 	}
 
-	public static BIngredients load(DataInputStream in) throws IOException {
+	public static BIngredients load(DataInputStream in, short dataVersion) throws IOException {
 		int cookedTime = in.readInt();
 		byte size = in.readByte();
-		List<ItemStack> ing = new ArrayList<>(size);
+		List<Ingredient> ing = new ArrayList<>(size);
 		for (; size > 0; size--) {
-			Material mat = Material.getMaterial(in.readUTF());
-			if (mat != null) {
-				ing.add(new ItemStack(mat, in.readShort(), in.readShort()));
+			ItemLoader itemLoader = new ItemLoader(dataVersion, in, in.readUTF());
+			if (Ingredient.LOADERS.containsKey(itemLoader.getSaveID())) {
+				Ingredient loaded = Ingredient.LOADERS.get(itemLoader.getSaveID()).apply(itemLoader);
+				int amount = in.readShort();
+				if (loaded != null) {
+					loaded.setAmount(amount);
+					ing.add(loaded);
+				}
 			}
 		}
 		return new BIngredients(ing, cookedTime);
@@ -421,8 +442,7 @@ public class BIngredients {
 
 	// saves data into main Ingredient section. Returns the save id
 	// Only needed for legacy potions
-	@Deprecated
-	public int save(ConfigurationSection config) {
+	public int saveLegacy(ConfigurationSection config) {
 		String path = "Ingredients." + id;
 		if (cookedTime != 0) {
 			config.set(path + ".cookedTime", cookedTime);
@@ -432,13 +452,26 @@ public class BIngredients {
 	}
 
 	//convert the ingredient Material to String
-	public Map<String, Integer> serializeIngredients() {
+	/*public Map<String, Integer> serializeIngredients() {
 		Map<String, Integer> mats = new HashMap<>();
 		for (ItemStack item : ingredients) {
 			String mat = item.getType().name() + "," + item.getDurability();
 			mats.put(mat, item.getAmount());
 		}
 		return mats;
+	}*/
+
+	// Serialize Ingredients to String for storing in yml, ie for Cauldrons
+	public String serializeIngredients() {
+		ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+		try (DataOutputStream out = new DataOutputStream(new Base91EncoderStream(byteStream))) {
+			out.writeByte(Brew.SAVE_VER);
+			save(out);
+		} catch (IOException e) {
+			e.printStackTrace();
+			return "";
+		}
+		return byteStream.toString();
 	}
 
 }

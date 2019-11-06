@@ -1,18 +1,29 @@
 package com.dre.brewery.filedata;
 
-import com.dre.brewery.*;
-import com.dre.brewery.integration.WGBarrel;
-import com.dre.brewery.integration.WGBarrel5;
-import com.dre.brewery.integration.WGBarrel6;
-import com.dre.brewery.integration.WGBarrel7;
+import com.dre.brewery.Brew;
+import com.dre.brewery.DistortChat;
+import com.dre.brewery.MCBarrel;
+import com.dre.brewery.P;
+import com.dre.brewery.integration.barrel.WGBarrel;
+import com.dre.brewery.integration.barrel.WGBarrel5;
+import com.dre.brewery.integration.barrel.WGBarrel6;
+import com.dre.brewery.integration.barrel.WGBarrel7;
+import com.dre.brewery.integration.item.BreweryPluginItem;
+import com.dre.brewery.integration.item.MMOItemsPluginItem;
+import com.dre.brewery.integration.item.SlimefunPluginItem;
+import com.dre.brewery.recipe.BCauldronRecipe;
+import com.dre.brewery.recipe.BRecipe;
+import com.dre.brewery.recipe.PluginItem;
+import com.dre.brewery.recipe.RecipeItem;
 import com.dre.brewery.utility.BUtil;
-import com.dre.brewery.utility.CustomItem;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 
@@ -38,6 +49,8 @@ public class BConfig {
 	public static boolean useGP; //GriefPrevention
 	public static boolean hasVault; // Vault
 	public static boolean useCitadel; // CivCraft/DevotedMC Citadel
+	public static Boolean hasSlimefun = null; // Slimefun ; Null if not checked
+	public static Boolean hasMMOItems = null; // MMOItems ; Null if not checked
 
 	// Barrel
 	public static boolean openEverywhere;
@@ -61,7 +74,7 @@ public class BConfig {
 	public static boolean alwaysShowAlc; // Always show alc%
 
 	//Item
-	public static List<CustomItem> customItems = new ArrayList<>();
+	public static List<RecipeItem> customItems = new ArrayList<>();
 
 	public static P p = P.p;
 
@@ -189,12 +202,18 @@ public class BConfig {
 
 		Brew.loadSeed(config, file);
 
+		PluginItem.registerForConfig("brewery", BreweryPluginItem::new);
+		PluginItem.registerForConfig("mmoitems", MMOItemsPluginItem::new);
+		PluginItem.registerForConfig("slimefun", SlimefunPluginItem::new);
+		PluginItem.registerForConfig("exoticgarden", SlimefunPluginItem::new);
+
 		// Loading custom items
 		ConfigurationSection configSection = config.getConfigurationSection("customItems");
 		if (configSection != null) {
 			for (String custId : configSection.getKeys(false)) {
-				CustomItem custom = CustomItem.fromConfig(configSection, custId);
+				RecipeItem custom = RecipeItem.fromConfigCustom(configSection, custId);
 				if (custom != null) {
+					custom.makeImmutable();
 					customItems.add(custom);
 				} else {
 					p.errorLog("Loading the Custom Item with id: '" + custId + "' failed!");

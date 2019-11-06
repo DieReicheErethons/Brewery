@@ -1,5 +1,10 @@
 package com.dre.brewery;
 
+import com.dre.brewery.recipe.BCauldronRecipe;
+import com.dre.brewery.recipe.BRecipe;
+import com.dre.brewery.recipe.Ingredient;
+import com.dre.brewery.recipe.RecipeItem;
+import com.dre.brewery.recipe.SimpleItem;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -24,9 +29,12 @@ public class RecipeTests {
 		int y = recipe.amountOf(new ItemStack(Material.NETHER_BRICK));
 
 
-		List<ItemStack> list = new ArrayList<>();
-		list.add(new ItemStack(Material.DIAMOND_HOE, 3));
-		list.add(new ItemStack(Material.RED_MUSHROOM, 1));
+		List<Ingredient> list = new ArrayList<>();
+		Ingredient ing = new SimpleItem(Material.DIAMOND_HOE);
+		ing.setAmount(3);
+		list.add(ing);
+		ing = new SimpleItem(Material.RED_MUSHROOM);
+		list.add(ing);
 		for (int i = 1; i < 20; i++) {
 			list.get(0).setAmount(i + 3);
 			list.get(1).setAmount(i);
@@ -46,5 +54,16 @@ public class RecipeTests {
 			}
 			P.p.debugLog("Found best for i:" + i + " " + best);
 		}
+
+		item = new ItemStack(Material.BARRIER);
+		itemMeta = item.getItemMeta();
+		l = new ArrayList<>();
+		l.add("Eine Tür");
+		l.add("§6Besonders gut geschützt");
+		itemMeta.setLore(l);
+		itemMeta.setDisplayName("Mauer");
+		item.setItemMeta(itemMeta);
+
+		RecipeItem.getMatchingRecipeItem(item, false);
 	}
 }

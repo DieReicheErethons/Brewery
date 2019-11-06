@@ -1,18 +1,30 @@
 package com.dre.brewery.integration;
 
 import com.dre.brewery.Barrel;
-import com.dre.brewery.utility.LegacyUtil;
 import com.dre.brewery.P;
 import com.dre.brewery.api.events.barrel.BarrelAccessEvent;
 import com.dre.brewery.api.events.barrel.BarrelDestroyEvent;
 import com.dre.brewery.api.events.barrel.BarrelRemoveEvent;
 import com.dre.brewery.filedata.BConfig;
+import com.dre.brewery.integration.barrel.GriefPreventionBarrel;
+import com.dre.brewery.integration.barrel.LWCBarrel;
+import com.dre.brewery.integration.barrel.LogBlockBarrel;
+import com.dre.brewery.integration.item.MMOItemsPluginItem;
+import com.dre.brewery.recipe.BCauldronRecipe;
+import com.dre.brewery.recipe.RecipeItem;
+import com.dre.brewery.utility.LegacyUtil;
+import net.Indyuce.mmoitems.MMOItems;
+import net.Indyuce.mmoitems.api.item.NBTItem;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.plugin.Plugin;
 
 public class IntegrationListener implements Listener {
@@ -171,6 +183,38 @@ public class IntegrationListener implements Listener {
 					e.printStackTrace();
 				}
 			}
+		}
+	}
+
+	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+	public void onInteract(PlayerInteractEvent event) {
+		// Cancel the Interact Event early, so MMOItems does not act before us and consume the item when trying to add item to Cauldron
+		if (!P.use1_9) return;
+		if (BConfig.hasMMOItems == null) {
+			BConfig.hasMMOItems = P.p.getServer().getPluginManager().isPluginEnabled("MMOItems");
+		}
+		if (!BConfig.hasMMOItems) return;
+		try {
+			if (event.getAction() == Action.RIGHT_CLICK_BLOCK && event.hasItem() && event.getHand() == EquipmentSlot.HAND) {
+				if (event.getClickedBlock() != null && event.getClickedBlock().getType() == Material.CAULDRON) {
+					NBTItem item = MMOItems.plugin.getNMS().getNBTItem(event.getItem());
+					if (item.hasType()) {
+						for (RecipeItem rItem : BCauldronRecipe.acceptedCustom) {
+							if (rItem instanceof MMOItemsPluginItem) {
+								MMOItemsPluginItem mmo = ((MMOItemsPluginItem) rItem);
+								if (mmo.matches(event.getItem())) {
+									event.setCancelled(true);
+									P.p.playerListener.onPlayerInteract(event);
+									return;
+								}
+							}
+						}
+					}
+				}
+			}
+		} catch (Throwable e) {
+			P.p.errorLog("Could not check MMOItems for Item");
+			e.printStackTrace();
 		}
 	}
 }

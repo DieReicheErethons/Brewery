@@ -1,6 +1,8 @@
 package com.dre.brewery;
 
 import com.dre.brewery.api.events.IngedientAddEvent;
+import com.dre.brewery.recipe.BCauldronRecipe;
+import com.dre.brewery.recipe.RecipeItem;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.LegacyUtil;
 import org.bukkit.Effect;
@@ -28,7 +30,7 @@ public class BCauldron {
 	private BIngredients ingredients = new BIngredients();
 	private final Block block;
 	private int state = 1;
-	private boolean someRemoved = false;
+	private boolean changed = false;
 
 	public BCauldron(Block block) {
 		this.block = block;
@@ -48,22 +50,22 @@ public class BCauldron {
 		if (!BUtil.isChunkLoaded(block) || LegacyUtil.isFireForCauldron(block.getRelative(BlockFace.DOWN))) {
 			// add a minute to cooking time
 			state++;
-			if (someRemoved) {
-				ingredients = ingredients.clone();
-				someRemoved = false;
+			if (changed) {
+				ingredients = ingredients.copy();
+				changed = false;
 			}
 		}
 	}
 
 	// add an ingredient to the cauldron
-	public void add(ItemStack ingredient) {
+	public void add(ItemStack ingredient, RecipeItem rItem) {
 		if (ingredient == null || ingredient.getType() == Material.AIR) return;
-		if (someRemoved) { // TODO no need to clone
-			ingredients = ingredients.clone();
-			someRemoved = false;
+		if (changed) {
+			ingredients = ingredients.copy();
+			changed = false;
 		}
-		ingredient = new ItemStack(ingredient.getType(), 1, ingredient.getDurability());
-		ingredients.add(ingredient);
+
+		ingredients.add(ingredient, rItem);
 		block.getWorld().playEffect(block.getLocation(), Effect.EXTINGUISH, 0);
 		if (state > 1) {
 			state--;
@@ -90,10 +92,20 @@ public class BCauldron {
 				bcauldron = new BCauldron(block);
 			}
 
-			IngedientAddEvent event = new IngedientAddEvent(player, block, bcauldron, ingredient);
+			if (!BCauldronRecipe.acceptedMaterials.contains(ingredient.getType()) && !ingredient.hasItemMeta()) {
+				// Extremely fast way to check for most items
+				return false;
+			}
+			// If the Item is on the list, or customized, we have to do more checks
+			RecipeItem rItem = RecipeItem.getMatchingRecipeItem(ingredient, false);
+			if (rItem == null) {
+				return false;
+			}
+
+			IngedientAddEvent event = new IngedientAddEvent(player, block, bcauldron, ingredient.clone(), rItem);
 			P.p.getServer().getPluginManager().callEvent(event);
 			if (!event.isCancelled()) {
-				bcauldron.add(event.getIngredient());
+				bcauldron.add(event.getIngredient(), event.getRecipeItem());
 				return event.willTakeItem();
 			} else {
 				return false;
@@ -127,7 +139,7 @@ public class BCauldron {
 			if (cauldron.getLevel() <= 0) {
 				bcauldrons.remove(this);
 			} else {
-				someRemoved = true;
+				changed = true;
 			}
 
 		} else {
@@ -144,7 +156,7 @@ public class BCauldron {
 			if (data == 0) {
 				bcauldrons.remove(this);
 			} else {
-				someRemoved = true;
+				changed = true;
 			}
 		}
 		// Bukkit Bug, inventory not updating while in event so this
@@ -250,30 +262,25 @@ public class BCauldron {
 			}
 			if (item == null) return;
 
-			// add ingredient to cauldron that meet the previous conditions
-			if (BCauldronRecipe.acceptedMaterials.contains(materialInHand)) {
+			if (!player.hasPermission("brewery.cauldron.insert")) {
+				P.p.msg(player, P.p.languageReader.get("Perms_NoCauldronInsert"));
+				return;
+			}
+			if (ingredientAdd(clickedBlock, item, player)) {
+				boolean isBucket = item.getType().equals(Material.WATER_BUCKET)
+					|| item.getType().equals(Material.LAVA_BUCKET)
+					|| item.getType().equals(Material.MILK_BUCKET);
+				if (item.getAmount() > 1) {
+					item.setAmount(item.getAmount() - 1);
 
-				if (!player.hasPermission("brewery.cauldron.insert")) {
-					P.p.msg(player, P.p.languageReader.get("Perms_NoCauldronInsert"));
-					return;
-				}
-
-				if (ingredientAdd(clickedBlock, item, player)) {
-					boolean isBucket = item.getType().equals(Material.WATER_BUCKET)
-						|| item.getType().equals(Material.LAVA_BUCKET)
-						|| item.getType().equals(Material.MILK_BUCKET);
-					if (item.getAmount() > 1) {
-						item.setAmount(item.getAmount() - 1);
-
-						if (isBucket) {
-							giveItem(player, new ItemStack(Material.BUCKET));
-						}
+					if (isBucket) {
+						giveItem(player, new ItemStack(Material.BUCKET));
+					}
+				} else {
+					if (isBucket) {
+						setItemInHand(event, Material.BUCKET, handSwap);
 					} else {
-						if (isBucket) {
-							setItemInHand(event, Material.BUCKET, handSwap);
-						} else {
-							setItemInHand(event, Material.AIR, handSwap);
-						}
+						setItemInHand(event, Material.AIR, handSwap);
 					}
 				}
 			}

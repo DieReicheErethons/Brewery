@@ -192,6 +192,8 @@ cauldron:
 #   Halte ein Item in der Hand und benutze /brew ItemName um dessen Material herauszufinden und für ein Rezept zu benutzen
 #   (Item-ids anstatt Material können in Bukkit nicht mehr benutzt werden)
 #   Eine Liste von allen Materialien kann hier gefunden werden: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
+#   Plugin Items mit 'Plugin:Id' (Im Moment ExoticGarden, Slimefun, MMOItems, Brewery)
+#   Oder ein oben definiertes Custom Item
 # cookingtime: Zeit in Echtminuten die die Zutaten kochen müssen
 # distillruns: Wie oft destilliert werden muss für vollen Alkoholgehalt (0=ohne Destillieren)
 # distilltime: Wie lange (in sekunden) ein Destillations-Durchlauf braucht (0=Standard Zeit von 40 sek) MC Standard wäre 20 sek
@@ -219,8 +221,8 @@ recipes:
       - Diamond/1
       - Spruce_Planks/8
       - Bedrock/1
-#     - Brewery:Weißbier/2
-#     - ExoticGarden:Grape/3
+      - Brewery:Weißbier/2
+#      - ExoticGarden:Grape/3
       - bsp-item/1
     cookingtime: 3
     distillruns: 2

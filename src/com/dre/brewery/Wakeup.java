@@ -8,10 +8,11 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 public class Wakeup {
 
-	public static ArrayList<Wakeup> wakeups = new ArrayList<>();
+	public static List<Wakeup> wakeups = new ArrayList<>();
 	public static P p = P.p;
 	public static int checkId = -1;
 	public static Player checkPlayer = null;

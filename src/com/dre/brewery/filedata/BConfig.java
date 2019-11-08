@@ -22,8 +22,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 
@@ -274,6 +272,8 @@ public class BConfig {
 		}
 
 		// Loading Words
+		DistortChat.words = new ArrayList<>();
+		DistortChat.ignoreText = new ArrayList<>();
 		if (config.getBoolean("enableChatDistortion", false)) {
 			for (Map<?, ?> map : config.getMapList("words")) {
 				new DistortChat(map);

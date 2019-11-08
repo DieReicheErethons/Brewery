@@ -13,12 +13,12 @@ import org.bukkit.material.Wood;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.EnumSet;
+import java.util.Set;
 
 import static com.dre.brewery.BCauldron.EMPTY;
-import static com.dre.brewery.BCauldron.SOME;
 import static com.dre.brewery.BCauldron.FULL;
+import static com.dre.brewery.BCauldron.SOME;
 
 @SuppressWarnings("JavaReflectionMemberAccess")
 public class LegacyUtil {
@@ -42,7 +42,7 @@ public class LegacyUtil {
 		} catch (ClassNotFoundException | NoSuchMethodException | SecurityException ignored) {
 		}
 
-		List<Material> planks = new ArrayList<>(6);
+		Set<Material> planks = EnumSet.noneOf(Material.class);
 		for (Material m : Material.values()) {
 			if (m.name().endsWith("PLANKS")) {
 				planks.add(m);
@@ -50,7 +50,7 @@ public class LegacyUtil {
 		}
 		PLANKS = planks;
 
-		List<Material> fences = new ArrayList<>(7);
+		Set<Material> fences = EnumSet.noneOf(Material.class);
 		for (Material m : Material.values()) {
 			if (m.name().endsWith("FENCE")) {
 				fences.add(m);
@@ -68,8 +68,8 @@ public class LegacyUtil {
 	public static final Material JUNGLE_STAIRS = get("JUNGLE_STAIRS", "JUNGLE_WOOD_STAIRS");
 	public static final Material ACACIA_STAIRS = get("ACACIA_STAIRS");
 	public static final Material DARK_OAK_STAIRS = get("DARK_OAK_STAIRS");
-	public static final List<Material> PLANKS;
-	public static final List<Material> FENCES;
+	public static final Set<Material> PLANKS;
+	public static final Set<Material> FENCES;
 
 	// Materials removed in 1.13
 	public static final Material STATIONARY_LAVA = get("STATIONARY_LAVA");

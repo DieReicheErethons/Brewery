@@ -5,12 +5,7 @@ import org.bukkit.block.Block;
 
 public class BoundingBox {
 
-	private final int x1;
-	private final int y1;
-	private final int z1;
-	private final int x2;
-	private final int y2;
-	private final int z2;
+	private final int x1, y1, z1, x2, y2, z2;
 
 	public BoundingBox(int x1, int y1, int z1, int x2, int y2, int z2) {
 		this.x1 = Math.min(x1, x2);

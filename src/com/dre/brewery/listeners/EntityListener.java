@@ -18,9 +18,9 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.ItemDespawnEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ListIterator;
-import java.util.Set;
 
 public class EntityListener implements Listener {
 
@@ -54,7 +54,7 @@ public class EntityListener implements Listener {
 	public void onExplode(EntityExplodeEvent event) {
 		ListIterator<Block> iter = event.blockList().listIterator();
 		if (!iter.hasNext()) return;
-		Set<BarrelDestroyEvent> breakEvents = new HashSet<>(6);
+		List<BarrelDestroyEvent> breakEvents = new ArrayList<>(6);
 		Block block;
 		blocks: while (iter.hasNext()) {
 			block = iter.next();

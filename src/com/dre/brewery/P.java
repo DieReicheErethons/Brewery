@@ -436,9 +436,6 @@ public class P extends JavaPlugin {
 		// save Data to Disk
 		DataSave.save(true);
 
-		// save LanguageReader
-		languageReader.save();
-
 		// delete Data from Ram
 		Barrel.barrels.clear();
 		BCauldron.bcauldrons.clear();
@@ -473,8 +470,6 @@ public class P extends JavaPlugin {
 		BConfig.customItems.clear();
 		BConfig.hasSlimefun = null;
 		BConfig.hasMMOItems = null;
-		DistortChat.words.clear();
-		DistortChat.ignoreText.clear();
 		DistortChat.commands = null;
 		BConfig.drainItems.clear();
 		if (BConfig.useLB) {
@@ -499,8 +494,7 @@ public class P extends JavaPlugin {
 			return;
 		}
 
-		// save and load LanguageReader
-		languageReader.save();
+		// load LanguageReader
 		languageReader = new LanguageReader(new File(p.getDataFolder(), "languages/" + language + ".yml"));
 
 		// Reload Recipes
@@ -563,7 +557,7 @@ public class P extends JavaPlugin {
 		@Override
 		public void run() {
 			BConfig.reloader = null;
-			for (BCauldron cauldron : BCauldron.bcauldrons) {
+			for (BCauldron cauldron : BCauldron.bcauldrons.values()) {
 				cauldron.onUpdate();// runs every min to update cooking time
 			}
 			Barrel.onUpdate();// runs every min to check and update ageing time

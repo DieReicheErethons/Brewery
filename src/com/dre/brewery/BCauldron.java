@@ -16,16 +16,18 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public class BCauldron {
 	public static final byte EMPTY = 0, SOME = 1, FULL = 2;
 	private static Set<UUID> plInteracted = new HashSet<>();
-	public static CopyOnWriteArrayList<BCauldron> bcauldrons = new CopyOnWriteArrayList<>(); // TODO find best Collection
+	public static Map<Block, BCauldron> bcauldrons = new HashMap<>(); // All active cauldrons. Mapped to their block for fast retrieve
 
 	private BIngredients ingredients = new BIngredients();
 	private final Block block;
@@ -34,7 +36,7 @@ public class BCauldron {
 
 	public BCauldron(Block block) {
 		this.block = block;
-		bcauldrons.add(this);
+		bcauldrons.put(block, this);
 	}
 
 	// loading from file
@@ -42,7 +44,7 @@ public class BCauldron {
 		this.block = block;
 		this.state = state;
 		this.ingredients = ingredients;
-		bcauldrons.add(this);
+		bcauldrons.put(block, this);
 	}
 
 	public void onUpdate() {
@@ -73,13 +75,9 @@ public class BCauldron {
 	}
 
 	// get cauldron by Block
+	@Nullable
 	public static BCauldron get(Block block) {
-		for (BCauldron bcauldron : bcauldrons) {
-			if (bcauldron.block.equals(block)) {
-				return bcauldron;
-			}
-		}
-		return null;
+		return bcauldrons.get(block);
 	}
 
 	// get cauldron from block and add given ingredient
@@ -87,10 +85,6 @@ public class BCauldron {
 	public static boolean ingredientAdd(Block block, ItemStack ingredient, Player player) {
 		// if not empty
 		if (LegacyUtil.getFillLevel(block) != EMPTY) {
-			BCauldron bcauldron = get(block);
-			if (bcauldron == null) {
-				bcauldron = new BCauldron(block);
-			}
 
 			if (!BCauldronRecipe.acceptedMaterials.contains(ingredient.getType()) && !ingredient.hasItemMeta()) {
 				// Extremely fast way to check for most items
@@ -102,10 +96,16 @@ public class BCauldron {
 				return false;
 			}
 
+			BCauldron bcauldron = get(block);
+			if (bcauldron == null) {
+				bcauldron = new BCauldron(block);
+			}
+
 			IngedientAddEvent event = new IngedientAddEvent(player, block, bcauldron, ingredient.clone(), rItem);
 			P.p.getServer().getPluginManager().callEvent(event);
 			if (!event.isCancelled()) {
 				bcauldron.add(event.getIngredient(), event.getRecipeItem());
+				//P.p.debugLog("Cauldron add: t2 " + ((t2 - t1) / 1000) + " t3: " + ((t3 - t2) / 1000) + " t4: " + ((t4 - t3) / 1000) + " t5: " + ((t5 - t4) / 1000) + "µs");
 				return event.willTakeItem();
 			} else {
 				return false;
@@ -127,7 +127,7 @@ public class BCauldron {
 			BlockData data = block.getBlockData();
 			Levelled cauldron = ((Levelled) data);
 			if (cauldron.getLevel() <= 0) {
-				bcauldrons.remove(this);
+				bcauldrons.remove(block);
 				return false;
 			}
 			cauldron.setLevel(cauldron.getLevel() - 1);
@@ -137,7 +137,7 @@ public class BCauldron {
 			block.setBlockData(data);
 
 			if (cauldron.getLevel() <= 0) {
-				bcauldrons.remove(this);
+				bcauldrons.remove(block);
 			} else {
 				changed = true;
 			}
@@ -147,14 +147,14 @@ public class BCauldron {
 			if (data > 3) {
 				data = 3;
 			} else if (data <= 0) {
-				bcauldrons.remove(this);
+				bcauldrons.remove(block);
 				return false;
 			}
 			data -= 1;
 			LegacyUtil.setData(block, data);
 
 			if (data == 0) {
-				bcauldrons.remove(this);
+				bcauldrons.remove(block);
 			} else {
 				changed = true;
 			}
@@ -303,11 +303,7 @@ public class BCauldron {
 	// reset to normal cauldron
 	public static boolean remove(Block block) {
 		if (LegacyUtil.getFillLevel(block) != EMPTY) {
-			BCauldron bcauldron = get(block);
-			if (bcauldron != null) {
-				bcauldrons.remove(bcauldron);
-				return true;
-			}
+			return bcauldrons.remove(block) != null;
 		}
 		return false;
 	}
@@ -315,11 +311,7 @@ public class BCauldron {
 	// unloads cauldrons that are in a unloading world
 	// as they were written to file just before, this is safe to do
 	public static void onUnload(String name) {
-		for (BCauldron bcauldron : bcauldrons) {
-			if (bcauldron.block.getWorld().getName().equals(name)) {
-				bcauldrons.remove(bcauldron);
-			}
-		}
+		bcauldrons.keySet().removeIf(block -> block.getWorld().getName().equals(name));
 	}
 
 	public static void save(ConfigurationSection config, ConfigurationSection oldData) {
@@ -327,7 +319,7 @@ public class BCauldron {
 
 		if (!bcauldrons.isEmpty()) {
 			int id = 0;
-			for (BCauldron cauldron : bcauldrons) {
+			for (BCauldron cauldron : bcauldrons.values()) {
 				String worldName = cauldron.block.getWorld().getName();
 				String prefix;
 

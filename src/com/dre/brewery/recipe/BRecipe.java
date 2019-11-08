@@ -4,7 +4,6 @@ import com.dre.brewery.BIngredients;
 import com.dre.brewery.Brew;
 import com.dre.brewery.P;
 import com.dre.brewery.filedata.BConfig;
-import com.dre.brewery.utility.PotionColor;
 import com.dre.brewery.utility.Tuple;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -30,7 +29,7 @@ public class BRecipe {
 	private int difficulty; // difficulty to brew the potion, how exact the instruction has to be followed
 	private int alcohol; // Alcohol in perfect potion
 	private List<Tuple<Integer, String>> lore; // Custom Lore on the Potion. The int is for Quality Lore, 0 = any, 1,2,3 = Bad,Middle,Good
-	private ArrayList<BEffect> effects = new ArrayList<>(); // Special Effects when drinking
+	private List<BEffect> effects = new ArrayList<>(); // Special Effects when drinking
 
 	public BRecipe() {
 	}
@@ -497,7 +496,7 @@ public class BRecipe {
 		return list;
 	}
 
-	public ArrayList<BEffect> getEffects() {
+	public List<BEffect> getEffects() {
 		return effects;
 	}
 

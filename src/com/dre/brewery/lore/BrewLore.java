@@ -375,7 +375,7 @@ public class BrewLore {
 	/**
 	 * Adds the Effect names to the Items description
  	 */
-	public void addOrReplaceEffects(ArrayList<BEffect> effects, int quality) {
+	public void addOrReplaceEffects(List<BEffect> effects, int quality) {
 		if (!P.use1_9 && effects != null) {
 			for (BEffect effect : effects) {
 				if (!effect.isHidden()) {

@@ -1,4 +1,4 @@
-package com.dre.brewery.utility;
+package com.dre.brewery.recipe;
 
 import com.dre.brewery.P;
 import org.bukkit.Color;

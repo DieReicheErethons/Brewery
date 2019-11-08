@@ -6,7 +6,7 @@ import com.dre.brewery.filedata.ConfigUpdater;
 import com.dre.brewery.lore.*;
 import com.dre.brewery.recipe.BEffect;
 import com.dre.brewery.recipe.BRecipe;
-import com.dre.brewery.utility.PotionColor;
+import com.dre.brewery.recipe.PotionColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.BrewerInventory;
@@ -360,7 +360,7 @@ public class Brew {
 	}
 
 	// return special effect
-	public ArrayList<BEffect> getEffects() {
+	public List<BEffect> getEffects() {
 		if (currentRecipe != null && quality > 0) {
 			return currentRecipe.getEffects();
 		}

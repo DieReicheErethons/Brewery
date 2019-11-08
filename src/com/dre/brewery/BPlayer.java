@@ -35,7 +35,7 @@ public class BPlayer {
 	private static int taskId;
 	private static boolean modAge = true;
 	private static Random pukeRand;
-	private static Method gh;
+	private static Method itemHandle;
 	private static Field age;
 
 	private int quality = 0;// = quality of drunkeness * drunkeness
@@ -326,11 +326,7 @@ public class BPlayer {
 			return;
 		}
 		// delayed login event as the player is not fully accessible pre login
-		P.p.getServer().getScheduler().runTaskLater(P.p, new Runnable() {
-			public void run() {
-				login(player);
-			}
-		}, 1L);
+		P.p.getServer().getScheduler().runTaskLater(P.p, () -> login(player), 1L);
 	}
 
 	// he may be having a hangover
@@ -390,11 +386,11 @@ public class BPlayer {
 	public void drunkPuke(Player player) {
 		if (drunkeness >= 80) {
 			if (drunkeness >= 90) {
-				if (Math.random() < 0.15 - (getQuality() / 100)) {
+				if (Math.random() < 0.15f - (getQuality() / 100f)) {
 					addPuke(player, 20 + (int) (Math.random() * 40));
 				}
 			} else {
-				if (Math.random() < 0.08 - (getQuality() / 100)) {
+				if (Math.random() < 0.08f - (getQuality() / 100f)) {
 					addPuke(player, 10 + (int) (Math.random() * 30));
 				}
 			}
@@ -414,11 +410,7 @@ public class BPlayer {
 		}
 
 		if (pTasks.isEmpty()) {
-			taskId = P.p.getServer().getScheduler().scheduleSyncRepeatingTask(P.p, new Runnable() {
-				public void run() {
-					pukeTask();
-				}
-			}, 1L, 1L);
+			taskId = P.p.getServer().getScheduler().scheduleSyncRepeatingTask(P.p, BPlayer::pukeTask, 1L, 1L);
 		}
 		pTasks.put(player, new MutableInt(event.getCount()));
 	}
@@ -466,10 +458,10 @@ public class BPlayer {
 				return;
 			}
 			try {
-				if (gh == null) {
-					gh = Class.forName(P.p.getServer().getClass().getPackage().getName() + ".entity.CraftItem").getMethod("getHandle", (Class<?>[]) null);
+				if (itemHandle == null) {
+					itemHandle = Class.forName(P.p.getServer().getClass().getPackage().getName() + ".entity.CraftItem").getMethod("getHandle", (Class<?>[]) null);
 				}
-				Object entityItem = gh.invoke(item, (Object[]) null);
+				Object entityItem = itemHandle.invoke(item, (Object[]) null);
 				if (age == null) {
 					age = entityItem.getClass().getDeclaredField("age");
 					age.setAccessible(true);
@@ -592,7 +584,7 @@ public class BPlayer {
 	}
 
 	public static void addBrewEffects(Brew brew, Player player) {
-		ArrayList<BEffect> effects = brew.getEffects();
+		List<BEffect> effects = brew.getEffects();
 		if (effects != null) {
 			for (BEffect effect : effects) {
 				effect.apply(brew.getQuality(), player);

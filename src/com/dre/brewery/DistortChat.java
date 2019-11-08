@@ -13,7 +13,7 @@ public class DistortChat {
 
 	// represends Words and letters, that are replaced in drunk players messages
 
-	public static ArrayList<DistortChat> words = new ArrayList<>();
+	public static List<DistortChat> words = new ArrayList<>();
 	public static List<String> commands;
 	public static List<String[]> ignoreText = new ArrayList<>();
 	public static Boolean doSigns;
@@ -164,6 +164,8 @@ public class DistortChat {
 	// distorts a message without checking ignoreText letters
 	private static String distortString(String message, int drunkeness) {
 		if (message.length() > 1) {
+			// Create our own reference to the words list, in case of config reload
+			List<DistortChat> words = DistortChat.words;
 			for (DistortChat word : words) {
 				if (word.alcohol <= drunkeness) {
 					message = word.distort(message);

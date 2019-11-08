@@ -1,7 +1,6 @@
 package com.dre.brewery.recipe;
 
 import com.dre.brewery.P;
-import com.dre.brewery.utility.PotionColor;
 import com.dre.brewery.utility.Tuple;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;

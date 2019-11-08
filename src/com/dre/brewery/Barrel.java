@@ -30,11 +30,10 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Barrel implements InventoryHolder {
 
-	public static CopyOnWriteArrayList<Barrel> barrels = new CopyOnWriteArrayList<>(); // TODO find best collection
+	public static List<Barrel> barrels = new ArrayList<>();
 	private static int check = 0;
 
 	private final Block spigot;
@@ -407,11 +406,7 @@ public class Barrel implements InventoryHolder {
 
 	//unloads barrels that are in a unloading world
 	public static void onUnload(String name) {
-		for (Barrel barrel : barrels) {
-			if (barrel.spigot.getWorld().getName().equals(name)) {
-				barrels.remove(barrel);
-			}
-		}
+		barrels.removeIf(barrel -> barrel.spigot.getWorld().getName().equals(name));
 	}
 
 	// Saves all data

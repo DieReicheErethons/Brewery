@@ -8,7 +8,7 @@ import com.dre.brewery.recipe.BRecipe;
 import com.dre.brewery.recipe.Ingredient;
 import com.dre.brewery.recipe.ItemLoader;
 import com.dre.brewery.recipe.RecipeItem;
-import com.dre.brewery.utility.PotionColor;
+import com.dre.brewery.recipe.PotionColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
@@ -22,6 +22,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Represents ingredients in Cauldron, Brew
+ */
 public class BIngredients {
 	private static int lastId = 0; // Legacy
 
@@ -29,14 +32,17 @@ public class BIngredients {
 	private List<Ingredient> ingredients = new ArrayList<>();
 	private int cookedTime;
 
-	// Represents ingredients in Cauldron, Brew
-	// Init a new BIngredients
+	/**
+	 * Init a new BIngredients
+ 	 */
 	public BIngredients() {
 		//this.id = lastId;
 		//lastId++;
 	}
 
-	// Load from File
+	/**
+	 * Load from File
+	 */
 	public BIngredients(List<Ingredient> ingredients, int cookedTime) {
 		this.ingredients = ingredients;
 		this.cookedTime = cookedTime;
@@ -44,7 +50,9 @@ public class BIngredients {
 		//lastId++;
 	}
 
-	// Load from legacy Brew section
+	/**
+	 * Load from legacy Brew section
+ 	 */
 	public BIngredients(List<Ingredient> ingredients, int cookedTime, boolean legacy) {
 		this(ingredients, cookedTime);
 		if (legacy) {
@@ -53,8 +61,12 @@ public class BIngredients {
 		}
 	}
 
-	// Force add an ingredient to this
-	// Will not check if item is acceptable
+	/**
+	 * Force add an ingredient to this
+	 * Will not check if item is acceptable
+	 *
+	 * @param ingredient the item to add
+	 */
 	public void add(ItemStack ingredient) {
 		for (Ingredient existing : ingredients) {
 			if (existing.matches(ingredient)) {
@@ -68,7 +80,12 @@ public class BIngredients {
 		ingredients.add(ing);
 	}
 
-	// Add an ingredient to this with corresponding RecipeItem
+	/**
+	 * Add an ingredient to this with corresponding RecipeItem
+	 *
+	 * @param ingredient the item to add
+	 * @param rItem the RecipeItem that matches the ingredient
+ 	 */
 	public void add(ItemStack ingredient, RecipeItem rItem) {
 		Ingredient ingredientItem = rItem.toIngredient(ingredient);
 		for (Ingredient existing : ingredients) {

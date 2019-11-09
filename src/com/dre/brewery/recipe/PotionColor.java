@@ -101,4 +101,8 @@ public class PotionColor {
 		}
 	}
 
+	public static PotionColor fromColor(Color color) {
+		return new PotionColor(color);
+	}
+
 }

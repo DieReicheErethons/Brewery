@@ -607,7 +607,7 @@ public class CommandListener implements CommandExecutor {
 		}
 
 		BRecipe recipe = null;
-		for (BRecipe r : BRecipe.recipes) {
+		for (BRecipe r : BRecipe.getAllRecipes()) {
 			if (r.hasName(name)) {
 				recipe = r;
 				break;

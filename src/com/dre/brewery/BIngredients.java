@@ -203,7 +203,7 @@ public class BIngredients {
 		int woodQuality;
 		int ageQuality;
 		BRecipe bestRecipe = null;
-		for (BRecipe recipe : BRecipe.recipes) {
+		for (BRecipe recipe : BRecipe.getAllRecipes()) {
 			ingredientQuality = getIngredientQuality(recipe);
 			cookingQuality = getCookingQuality(recipe, distilled);
 
@@ -258,7 +258,7 @@ public class BIngredients {
 		BCauldronRecipe best = null;
 		float bestMatch = 0;
 		float match;
-		for (BCauldronRecipe recipe : BCauldronRecipe.recipes) {
+		for (BCauldronRecipe recipe : BCauldronRecipe.getAllRecipes()) {
 			match = recipe.getIngredientMatch(ingredients);
 			if (match >= 10) {
 				return recipe;

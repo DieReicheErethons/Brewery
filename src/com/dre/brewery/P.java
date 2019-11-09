@@ -439,11 +439,13 @@ public class P extends JavaPlugin {
 		// delete Data from Ram
 		Barrel.barrels.clear();
 		BCauldron.bcauldrons.clear();
-		BRecipe.recipes.clear();
+		BRecipe.getConfigRecipes().clear();
+		BRecipe.numConfigRecipes = 0;
 		BCauldronRecipe.acceptedMaterials.clear();
 		BCauldronRecipe.acceptedCustom.clear();
 		BCauldronRecipe.acceptedSimple.clear();
-		BCauldronRecipe.recipes.clear();
+		BCauldronRecipe.getConfigRecipes().clear();
+		BCauldronRecipe.numConfigRecipes = 0;
 		BConfig.customItems.clear();
 		BConfig.hasSlimefun = null;
 		BConfig.hasMMOItems = null;
@@ -462,11 +464,13 @@ public class P extends JavaPlugin {
 			BConfig.reloader = sender;
 		}
 		// clear all existent config Data
-		BRecipe.recipes.clear();
+		BRecipe.getConfigRecipes().clear();
+		BRecipe.numConfigRecipes = 0;
 		BCauldronRecipe.acceptedMaterials.clear();
 		BCauldronRecipe.acceptedCustom.clear();
 		BCauldronRecipe.acceptedSimple.clear();
-		BCauldronRecipe.recipes.clear();
+		BCauldronRecipe.getConfigRecipes().clear();
+		BCauldronRecipe.numConfigRecipes = 0;
 		BConfig.customItems.clear();
 		BConfig.hasSlimefun = null;
 		BConfig.hasMMOItems = null;

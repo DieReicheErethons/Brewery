@@ -4,6 +4,7 @@ import com.dre.brewery.Brew;
 import com.dre.brewery.DistortChat;
 import com.dre.brewery.MCBarrel;
 import com.dre.brewery.P;
+import com.dre.brewery.api.events.ConfigLoadEvent;
 import com.dre.brewery.integration.barrel.WGBarrel;
 import com.dre.brewery.integration.barrel.WGBarrel5;
 import com.dre.brewery.integration.barrel.WGBarrel6;
@@ -222,27 +223,39 @@ public class BConfig {
 		// loading recipes
 		configSection = config.getConfigurationSection("recipes");
 		if (configSection != null) {
+			List<BRecipe> configRecipes = BRecipe.getConfigRecipes();
 			for (String recipeId : configSection.getKeys(false)) {
 				BRecipe recipe = BRecipe.fromConfig(configSection, recipeId);
 				if (recipe != null && recipe.isValid()) {
-					BRecipe.recipes.add(recipe);
+					configRecipes.add(recipe);
 				} else {
 					p.errorLog("Loading the Recipe with id: '" + recipeId + "' failed!");
 				}
 			}
+			BRecipe.numConfigRecipes = configRecipes.size();
 		}
 
 		// Loading Cauldron Recipes
 		configSection = config.getConfigurationSection("cauldron");
 		if (configSection != null) {
+			List<BCauldronRecipe> configRecipes = BCauldronRecipe.getConfigRecipes();
 			for (String id : configSection.getKeys(false)) {
 				BCauldronRecipe recipe = BCauldronRecipe.fromConfig(configSection, id);
 				if (recipe != null) {
-					BCauldronRecipe.recipes.add(recipe);
+					configRecipes.add(recipe);
 				} else {
 					p.errorLog("Loading the Cauldron-Recipe with id: '" + id + "' failed!");
 				}
 			}
+			BCauldronRecipe.numConfigRecipes = configRecipes.size();
+		}
+
+		// Recalculating Cauldron-Accepted Items for non-config recipes
+		for (BRecipe recipe : BRecipe.getAddedRecipes()) {
+			recipe.updateAcceptedLists();
+		}
+		for (BCauldronRecipe recipe : BCauldronRecipe.getAddedRecipes()) {
+			recipe.updateAcceptedLists();
 		}
 
 		// loading drainItems
@@ -285,6 +298,10 @@ public class BConfig {
 		}
 		DistortChat.log = config.getBoolean("logRealChat", false);
 		DistortChat.doSigns = config.getBoolean("distortSignText", false);
+
+		// The Config was reloaded, call Event
+		ConfigLoadEvent event = new ConfigLoadEvent();
+		P.p.getServer().getPluginManager().callEvent(event);
 
 		return true;
 	}

@@ -1,6 +1,7 @@
 package com.dre.brewery.api;
 
 import com.dre.brewery.BCauldron;
+import com.dre.brewery.recipe.BCauldronRecipe;
 import com.dre.brewery.recipe.BRecipe;
 import com.dre.brewery.Barrel;
 import com.dre.brewery.Brew;
@@ -12,13 +13,14 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.Nullable;
 
-public class BreweryApi {
+import java.util.List;
 
-/*
+/**
  * Convenience methods to get common objects or do common things
  */
+public class BreweryApi {
 
-	/*
+	/**
 	 * Remove any data that this Plugin may associate with the given Block
 	 * Currently Cauldrons and Barrels (Cauldron, Wood, Woodstairs, Fence, Sign)
 	 * Does not remove any actual Blocks
@@ -29,7 +31,7 @@ public class BreweryApi {
 		return removeBarrel(block);
 	}
 
-	/*
+	/**
 	 * Like removeAny() but removes data as if the given player broke the Block
 	 * Currently only makes a difference for Logging
 	 */
@@ -39,9 +41,11 @@ public class BreweryApi {
 	}
 
 
+	// # # # # # #        # # # # # #
 	// # # # # #    Brew    # # # # #
+	// # # # # # #        # # # # # #
 
-	/*
+	/**
 	 * Get a Brew from an ItemStack
 	 * Reads the Brew data from the saved data on the item
 	 * Checks if item is actually a Brew
@@ -52,7 +56,7 @@ public class BreweryApi {
 		return Brew.get(item);
 	}
 
-	/*
+	/**
 	 * Get a Brew from an ItemMeta
 	 * Reads the Brew data from the saved data in the Meta
 	 * Checks if meta has a Brew saved
@@ -64,9 +68,11 @@ public class BreweryApi {
 	}
 
 
+	// # # # # # #          # # # # # #
 	// # # # # #    Barrel    # # # # #
+	// # # # # # #          # # # # # #
 
-	/*
+	/**
 	 * Get a Barrel from a Block
 	 * May be any Wood, Fence, Sign that is part of a Barrel
 	 * Returns null if block is not part of a Barrel
@@ -76,7 +82,7 @@ public class BreweryApi {
 		return Barrel.get(block);
 	}
 
-	/*
+	/**
 	 * Get the Inventory of a Block part of a Barrel
 	 * May be any Wood, Fence or Sign that is part of a Barrel
 	 * Returns null if block is not part of a Barrel
@@ -90,7 +96,7 @@ public class BreweryApi {
 		return null;
 	}
 
-	/*
+	/**
 	 * Remove any Barrel that this Block may be Part of
 	 * Returns true if a Barrel was removed
 	 * Does not remove any actual Block
@@ -99,10 +105,10 @@ public class BreweryApi {
 		return removeBarrelByPlayer(block, null);
 	}
 
-	/*
+	/**
 	 * Remove any Barrel that this Block may be Part of, as if broken by the Player
 	 * Returns true if a Barrel was removed
-	 * Does not remove any actual Block
+	 * Does not remove any actual Block from the World
 	 */
 	public static boolean removeBarrelByPlayer(Block block, Player player) {
 		Barrel barrel = Barrel.get(block);
@@ -113,10 +119,11 @@ public class BreweryApi {
 		return false;
 	}
 
-
+	// # # # # # #            # # # # # #
 	// # # # # #    Cauldron    # # # # #
+	// # # # # # #            # # # # # #
 
-	/*
+	/**
 	 * Get a BCauldron from a Block
 	 * Returns null if block is not a BCauldron
 	 */
@@ -125,19 +132,21 @@ public class BreweryApi {
 		return BCauldron.get(block);
 	}
 
-	/*
+	/**
 	 * Remove any data associated with a Cauldron at that given Block
 	 * Returns true if a Cauldron was removed
-	 * Does not actually remove the Block
+	 * Does not remove the Block from the World
 	 */
 	public static boolean removeCauldron(Block block) {
 		return BCauldron.remove(block);
 	}
 
 
+	// # # # # # #          # # # # # #
 	// # # # # #    Recipe    # # # # #
+	// # # # # # #          # # # # # #
 
-	/*
+	/**
 	 * Get a BRecipe by its name
 	 * The name is the middle one of the three if three are set in the config
 	 * Returns null if recipe with that name does not exist
@@ -147,11 +156,125 @@ public class BreweryApi {
 		return BRecipe.get(name);
 	}
 
-	/*
-	 * Add a new recipe
-	 * Not Implemented yet
+	/**
+	 * Add a New Recipe.
+	 * Brews can be made out of this Recipe.
+	 * The recipe can be changed or removed later.
+	 *
+	 * @param recipe The Recipe to add
+	 * @param saveForever If the recipe should be saved forever, even after the Server restarts
+	 *                    If True: Recipe will be saved until removed manually
+	 *                    If False: Recipe will be removed when the Server restarts, existing potions using
+	 *                    this Recipe will become bad after continued aging, if the recipe is not added again.
 	 */
-	public static boolean addRecipe(BRecipe recipe) {
-		throw new NotImplementedException(); // TODO implement
+	public static void addRecipe(BRecipe recipe, boolean saveForever) {
+		//recipe.setSaveInData(saveForever);
+		if (saveForever) {
+			throw new NotImplementedException();
+		}
+		BRecipe.getAddedRecipes().add(recipe);
+		recipe.updateAcceptedLists();
 	}
+
+	/**
+	 * Removes a Recipe from the List of all Recipes.
+	 * This can also remove Recipes that were loaded from config, though these will be readded when reloading the config
+	 *
+	 * @param name The name of the recipe to remove
+	 * @return The Recipe that was removed, null if none was removed
+	 */
+	@Nullable
+	public static BRecipe removeRecipe(String name) {
+		List<BRecipe> recipes = BRecipe.getAllRecipes();
+		for (int i = 0; i < recipes.size(); i++) {
+			if (recipes.get(i).getRecipeName().equalsIgnoreCase(name)) {
+				BRecipe remove = recipes.remove(i);
+				if (i < BRecipe.numConfigRecipes) {
+					// We removed one of the Config Recipes
+					BRecipe.numConfigRecipes--;
+				}
+				return remove;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Create a New Recipe with a Recipe Builder.
+	 *
+	 * @param recipeNames Either 1 or 3 names. Sets the Name for Quality (Bad, Normal, Good)
+	 * @return A Recipe Builder
+	 */
+	public static BRecipe.Builder recipeBuilder(String... recipeNames) {
+		return new BRecipe.Builder(recipeNames);
+	}
+
+
+
+	// # # # # # #                   # # # # # #
+	// # # # # #    Cauldron Recipe    # # # # #
+	// # # # # # #                   # # # # # #
+
+	/**
+	 * Get A BCauldronRecipe by its name
+	 * Returns null if recipe with that name does not exist
+	 */
+	@Nullable
+	public static BCauldronRecipe getCauldronRecipe(String name) {
+		return BCauldronRecipe.get(name);
+	}
+
+	/**
+	 * Add a New Cauldron Recipe.
+	 * Base Brews coming out of the Cauldron can be made from this recipe
+	 * The recipe can be changed or removed later.
+	 *
+	 * @param recipe The Cauldron Recipe to add
+	 * @param saveForever If the recipe should be saved forever, even after the Server restarts
+	 *                    If True: Recipe will be saved until removed manually
+	 *                    If False: Recipe will be removed when the Server restarts
+	 */
+	public static void addCauldronRecipe(BCauldronRecipe recipe, boolean saveForever) {
+		//recipe.setSaveInData(saveForever);
+		if (saveForever) {
+			throw new NotImplementedException();
+		}
+		BCauldronRecipe.getAddedRecipes().add(recipe);
+		recipe.updateAcceptedLists();
+	}
+
+	/**
+	 * Removes a Cauldron Recipe from the List of all Cauldron Recipes.
+	 * This can also remove Cauldron Recipes that were loaded from config, though these will be readded when reloading the config
+	 *
+	 * @param name The name of the cauldron recipe to remove
+	 * @return The Cauldron Recipe that was removed, null if none was removed
+	 */
+	@Nullable
+	public static BCauldronRecipe removeCauldronRecipe(String name) {
+		List<BCauldronRecipe> recipes = BCauldronRecipe.getAllRecipes();
+		for (int i = 0; i < recipes.size(); i++) {
+			if (recipes.get(i).getName().equalsIgnoreCase(name)) {
+				BCauldronRecipe remove = recipes.remove(i);
+				if (i < BCauldronRecipe.numConfigRecipes) {
+					// We removed one of the Config Recipes
+					BCauldronRecipe.numConfigRecipes--;
+				}
+				return remove;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Create a New Cauldron Recipe with a Recipe Builder.
+	 *
+	 * @param name The name of the new Cauldron Recipe
+	 * @return A Cauldron Recipe Builder
+	 */
+	public static BCauldronRecipe.Builder cauldronRecipeBuilder(String name) {
+		return new BCauldronRecipe.Builder(name);
+	}
+
+
 }

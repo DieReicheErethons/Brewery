@@ -5,6 +5,8 @@ import com.dre.brewery.Brew;
 import com.dre.brewery.P;
 import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.utility.Tuple;
+import org.apache.commons.lang.NotImplementedException;
+import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
@@ -12,11 +14,13 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class BRecipe {
 
 	public static List<BRecipe> recipes = new ArrayList<>();
+	public static int numConfigRecipes; // The number of recipes in the list that are from config
 
 	private String[] name;
 	private List<RecipeItem> ingredients = new ArrayList<>(); // Items and amounts
@@ -30,8 +34,33 @@ public class BRecipe {
 	private int alcohol; // Alcohol in perfect potion
 	private List<Tuple<Integer, String>> lore; // Custom Lore on the Potion. The int is for Quality Lore, 0 = any, 1,2,3 = Bad,Middle,Good
 	private List<BEffect> effects = new ArrayList<>(); // Special Effects when drinking
+	private boolean saveInData; // If this recipe should be saved in data and loaded again when the server restarts. Applicable to non-config recipes
 
-	public BRecipe() {
+	private BRecipe() {
+	}
+
+	/**
+	 * New BRecipe with Name
+	 * Use new BRecipe.Builder() for easier Recipe Creation
+	 *
+	 * @param name The name for all qualities
+	 */
+	public BRecipe(String name, @NotNull PotionColor color) {
+		this.name = new String[] {name};
+		this.color = color;
+		difficulty = 5;
+	}
+
+	/**
+	 * New BRecipe with Names
+	 * Use new BRecipe.Builder() for easier Recipe Creation
+	 *
+	 * @param names {name bad, name normal, name good}
+	 */
+	public BRecipe(String[] names, @NotNull PotionColor color) {
+		this.name = names;
+		this.color = color;
+		difficulty = 5;
 	}
 
 	@Nullable
@@ -380,6 +409,22 @@ public class BRecipe {
 		return new Brew(bIngredients, quality, 0, distillruns, getAge(), wood, getRecipeName(), false, true, 0);
 	}
 
+	public void updateAcceptedLists() {
+		for (RecipeItem ingredient : getIngredients()) {
+			if (ingredient.hasMaterials()) {
+				BCauldronRecipe.acceptedMaterials.addAll(ingredient.getMaterials());
+			}
+			if (ingredient instanceof SimpleItem) {
+				BCauldronRecipe.acceptedSimple.add(((SimpleItem) ingredient).getMaterial());
+			} else {
+				// Add it as acceptedCustom
+				if (!BCauldronRecipe.acceptedCustom.contains(ingredient)) {
+					BCauldronRecipe.acceptedCustom.add(ingredient);
+				}
+			}
+		}
+	}
+
 
 	// Getter
 
@@ -431,6 +476,13 @@ public class BRecipe {
 			}
 		}
 		return false;
+	}
+
+
+	// Getters
+
+	public List<RecipeItem> getIngredients() {
+		return ingredients;
 	}
 
 	public int getCookingTime() {
@@ -500,9 +552,95 @@ public class BRecipe {
 		return effects;
 	}
 
+	public boolean isSaveInData() {
+		return saveInData;
+	}
+
+	// Setters
+
+	/**
+	 * When Changing ingredients, Accepted Lists have to be updated in BCauldronRecipe
+	 */
+	public void setIngredients(List<RecipeItem> ingredients) {
+		this.ingredients = ingredients;
+	}
+
+	public void setCookingTime(int cookingTime) {
+		this.cookingTime = cookingTime;
+	}
+
+	public void setDistillruns(byte distillruns) {
+		this.distillruns = distillruns;
+	}
+
+	public void setDistillTime(int distillTime) {
+		this.distillTime = distillTime;
+	}
+
+	public void setWood(byte wood) {
+		this.wood = wood;
+	}
+
+	public void setAge(int age) {
+		this.age = age;
+	}
+
+	public void setColor(@NotNull PotionColor color) {
+		this.color = color;
+	}
+
+	public void setDifficulty(int difficulty) {
+		this.difficulty = difficulty;
+	}
+
+	public void setAlcohol(int alcohol) {
+		this.alcohol = alcohol;
+	}
+
+	public void setLore(List<Tuple<Integer, String>> lore) {
+		this.lore = lore;
+	}
+
+	public void setEffects(List<BEffect> effects) {
+		this.effects = effects;
+	}
+
+	public void setSaveInData(boolean saveInData) {
+		throw new NotImplementedException();
+		//this.saveInData = saveInData;
+	}
+
+
 	@Override
 	public String toString() {
 		return "BRecipe{" + getRecipeName() + '}';
+	}
+
+	/**
+	 * Gets a Modifiable Sublist of the Recipes that are loaded by config
+	 * Changes are directly reflected by the main list of all recipes
+	 * Changes to the main List of all recipes will make the reference to this sublist invalid
+	 *
+	 * After adding or removing elements, BRecipe.numConfigRecipes MUST be updated!
+	 */
+	public static List<BRecipe> getConfigRecipes() {
+		return recipes.subList(0, numConfigRecipes);
+	}
+
+	/**
+	 * Gets a Modifiable Sublist of the Recipes that are added by plugins
+	 * Changes are directly reflected by the main list of all recipes
+	 * Changes to the main List of all recipes will make the reference to this sublist invalid
+	 */
+	public static List<BRecipe> getAddedRecipes() {
+		return recipes.subList(numConfigRecipes, recipes.size());
+	}
+
+	/**
+	 * Gets the main List of all recipes
+	 */
+	public static List<BRecipe> getAllRecipes() {
+		return recipes;
 	}
 
 	public static BRecipe get(String name) {
@@ -512,5 +650,136 @@ public class BRecipe {
 			}
 		}
 		return null;
+	}
+
+	/*public static void saveAddedRecipes(ConfigurationSection cfg) {
+		int i = 0;
+		for (BRecipe recipe : getAddedRecipes()) {
+			if (recipe.isSaveInData()) {
+				cfg.set(i + ".name", recipe.name);
+			}
+		}
+	}*/
+
+
+	public static class Builder {
+		private BRecipe recipe;
+
+		public Builder(String name) {
+			recipe = new BRecipe(name, PotionColor.WATER);
+		}
+
+		public Builder(String... names) {
+			recipe = new BRecipe(names, PotionColor.WATER);
+		}
+
+
+		public Builder addIngredient(RecipeItem... item) {
+			Collections.addAll(recipe.ingredients, item);
+			return this;
+		}
+
+		public Builder addIngredient(ItemStack... item) {
+			for (ItemStack i : item) {
+				CustomItem customItem = new CustomItem(i);
+				customItem.setAmount(i.getAmount());
+				recipe.ingredients.add(customItem);
+			}
+			return this;
+		}
+
+		public Builder difficulty(int difficulty) {
+			recipe.difficulty = difficulty;
+			return this;
+		}
+
+		public Builder color(String colorString) {
+			recipe.color = PotionColor.fromString(colorString);
+			return this;
+		}
+
+		public Builder color(PotionColor color) {
+			recipe.color = color;
+			return this;
+		}
+
+		public Builder color(Color color) {
+			recipe.color = PotionColor.fromColor(color);
+			return this;
+		}
+
+		public Builder cook(int cookTime) {
+			recipe.cookingTime = cookTime;
+			return this;
+		}
+
+		public Builder distill(byte distillRuns, int distillTime) {
+			recipe.distillruns = distillRuns;
+			recipe.distillTime = distillTime;
+			return this;
+		}
+
+		public Builder age(int age, byte wood) {
+			recipe.age = age;
+			recipe.wood = wood;
+			return this;
+		}
+
+		public Builder alcohol(int alcohol) {
+			recipe.alcohol = alcohol;
+			return this;
+		}
+
+		public Builder addLore(String line) {
+			return addLore(0, line);
+		}
+
+		/**
+		 * Add a Line of Lore
+		 *
+		 * @param quality 0 for any quality, 1: bad, 2: normal, 3: good
+		 * @param line The Line for custom lore to add
+		 * @return this
+		 */
+		public Builder addLore(int quality, String line) {
+			if (quality < 0 || quality > 3) {
+				throw new IllegalArgumentException("Lore Quality must be 0 - 3");
+			}
+			if (recipe.lore == null) {
+				recipe.lore = new ArrayList<>();
+			}
+			recipe.lore.add(new Tuple<>(quality, line));
+			return this;
+		}
+
+		public Builder addEffects(BEffect... effects) {
+			Collections.addAll(recipe.effects, effects);
+			return this;
+		}
+
+		public BRecipe get() {
+			if (recipe.name == null) {
+				throw new IllegalArgumentException("Recipe name is null");
+			}
+			if (recipe.name.length != 1 && recipe.name.length != 3) {
+				throw new IllegalArgumentException("Recipe name neither 1 nor 3");
+			}
+			if (BRecipe.get(recipe.getRecipeName()) != null) {
+				throw new IllegalArgumentException("Recipe with name " + recipe.getRecipeName() + " already exists");
+			}
+			if (recipe.color == null) {
+				throw new IllegalArgumentException("Recipe has no color");
+			}
+			if (recipe.ingredients == null || recipe.ingredients.isEmpty()) {
+				throw new IllegalArgumentException("Recipe has no ingredients");
+			}
+			if (!recipe.isValid()) {
+				throw new IllegalArgumentException("Recipe has not valid");
+			}
+			for (RecipeItem ingredient : recipe.ingredients) {
+				ingredient.makeImmutable();
+			}
+			return recipe;
+		}
 	}
 }

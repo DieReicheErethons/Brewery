@@ -17,6 +17,15 @@ public class BEffect {
 	private boolean hidden = false;
 
 
+	public BEffect(PotionEffectType type, short minlvl, short maxlvl, short minduration, short maxduration, boolean hidden) {
+		this.type = type;
+		this.minlvl = minlvl;
+		this.maxlvl = maxlvl;
+		this.minduration = minduration;
+		this.maxduration = maxduration;
+		this.hidden = hidden;
+	}
+
 	public BEffect(String effectString) {
 		String[] effectSplit = effectString.split("/");
 		String effect = effectSplit[0];

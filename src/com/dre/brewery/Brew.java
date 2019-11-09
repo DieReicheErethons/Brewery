@@ -36,6 +36,7 @@ public class Brew {
 
 	private BIngredients ingredients;
 	private int quality;
+	private int alc;
 	private byte distillRuns;
 	private float ageTime;
 	private float wood;
@@ -52,17 +53,19 @@ public class Brew {
 	}
 
 	// quality already set
-	public Brew(int quality, BRecipe recipe, BIngredients ingredients) {
+	public Brew(int quality, int alc, BRecipe recipe, BIngredients ingredients) {
 		this.ingredients = ingredients;
 		this.quality = quality;
+		this.alc = alc;
 		this.currentRecipe = recipe;
 		touch();
 	}
 
 	// loading with all values set
-	public Brew(BIngredients ingredients, int quality, byte distillRuns, float ageTime, float wood, String recipe, boolean unlabeled, boolean immutable, int lastUpdate) {
+	public Brew(BIngredients ingredients, int quality, int alc, byte distillRuns, float ageTime, float wood, String recipe, boolean unlabeled, boolean immutable, int lastUpdate) {
 		this.ingredients = ingredients;
 		this.quality = quality;
+		this.alc = alc;
 		this.distillRuns = distillRuns;
 		this.ageTime = ageTime;
 		this.wood = wood;
@@ -97,6 +100,7 @@ public class Brew {
 		if (!item.hasItemMeta()) return null;
 
 		ItemMeta meta = item.getItemMeta();
+		assert meta != null;
 		if (!P.useNBT && !meta.hasLore()) return null;
 
 		Brew brew = load(meta);
@@ -207,9 +211,9 @@ public class Brew {
 			if (quality > 0) {
 				currentRecipe = ingredients.getBestRecipe(wood, ageTime, distillRuns > 0);
 				if (currentRecipe != null) {
-					if (!immutable) {
+					/*if (!immutable) {
 						this.quality = calcQuality();
-					}
+					}*/
 					P.p.log("A Brew was made from Recipe: '" + name + "' which could not be found. '" + currentRecipe.getRecipeName() + "' used instead!");
 					return true;
 				} else {
@@ -244,6 +248,7 @@ public class Brew {
 		if (brew == null) return false;
 		if (equals(brew)) return true;
 		return quality == brew.quality &&
+				alc == brew.alc &&
 				distillRuns == brew.distillRuns &&
 				Float.compare(brew.ageTime, ageTime) == 0 &&
 				Float.compare(brew.wood, wood) == 0 &&
@@ -258,7 +263,7 @@ public class Brew {
 	@Override
 	public Brew clone() throws CloneNotSupportedException {
 		super.clone();
-		Brew brew = new Brew(quality, currentRecipe, ingredients);
+		Brew brew = new Brew(quality, alc, currentRecipe, ingredients);
 		brew.distillRuns = distillRuns;
 		brew.ageTime = ageTime;
 		brew.unlabeled = unlabeled;
@@ -272,6 +277,7 @@ public class Brew {
 		return "Brew{" +
 				ingredients + " ingredients" +
 				", quality=" + quality +
+				", alc=" + alc +
 				", distillRuns=" + distillRuns +
 				", ageTime=" + ageTime +
 				", wood=" + wood +
@@ -317,13 +323,13 @@ public class Brew {
 					return 0;
 				}
 				// bad quality can decrease alc by up to 40%
-				alc *= 1 - ((float) (10 - quality) * 0.04);
+				alc *= 1 - ((float) (10 - quality) * 0.04f);
 				// distillable Potions should have half alc after one and full alc after all needed distills
 				alc /= 2;
 				alc *= 1.0F + ((float) distillRuns / currentRecipe.getDistillRuns());
 			} else {
 				// quality decides 10% - 100%
-				alc *= ((float) quality / 10.0);
+				alc *= ((float) quality / 10.0f);
 			}
 			if (alc > 0) {
 				return alc;
@@ -389,6 +395,14 @@ public class Brew {
 	// Do some regular updates
 	public void touch() {
 		lastUpdate = (int) ((double) (System.currentTimeMillis() - installTime) / 3600000D);
+	}
+
+	public int getOrCalcAlc() {
+		return alc > 0 ? alc : (alc = calcAlcohol());
+	}
+
+	public void setAlc(int alc) {
+		this.alc = alc;
 	}
 
 	public byte getDistillRuns() {
@@ -507,6 +521,7 @@ public class Brew {
 			potionMeta.setDisplayName(P.p.color("&f" + P.p.languageReader.get("Brew_DistillUndefined")));
 			PotionColor.GREY.colorBrew(potionMeta, slotItem, canDistill());
 		}
+		alc = calcAlcohol();
 
 		// Distill Lore
 		if (currentRecipe != null && BConfig.colorInBrewer != BrewLore.hasColorLore(potionMeta)) {
@@ -580,6 +595,7 @@ public class Brew {
 				PotionColor.GREY.colorBrew(potionMeta, item, canDistill());
 			}
 		}
+		alc = calcAlcohol();
 
 		// Lore
 		if (currentRecipe != null && BConfig.colorInBarrels != BrewLore.hasColorLore(potionMeta)) {
@@ -756,6 +772,9 @@ public class Brew {
 	private void loadFromStream(DataInputStream in, byte dataVersion) throws IOException {
 		quality = in.readByte();
 		int bools = in.readUnsignedByte();
+		if ((bools & 64) != 0) {
+			alc = in.readShort();
+		}
 		if ((bools & 1) != 0) {
 			distillRuns = in.readByte();
 		}
@@ -817,6 +836,7 @@ public class Brew {
 		if (quality > 10) {
 			quality = 10;
 		}
+		alc = Math.min(alc, Short.MAX_VALUE);
 		out.writeByte((byte) quality);
 		int bools = 0;
 		bools |= ((distillRuns != 0) ? 1 : 0);
@@ -824,9 +844,12 @@ public class Brew {
 		bools |= (wood != -1 ? 4 : 0);
 		bools |= (currentRecipe != null ? 8 : 0);
 		bools |= (unlabeled ? 16 : 0);
-		//bools |= (persistent ? 32 : 0);
 		bools |= (immutable ? 32 : 0);
+		bools |= (alc > 0 ? 64 : 0);
 		out.writeByte(bools);
+		if (alc > 0) {
+			out.writeShort(alc);
+		}
 		if (distillRuns != 0) {
 			out.writeByte(distillRuns);
 		}
@@ -877,8 +900,8 @@ public class Brew {
 	}
 
 	// Load potion data from data file for backwards compatibility
-	public static void loadLegacy(BIngredients ingredients, int uid, int quality, byte distillRuns, float ageTime, float wood, String recipe, boolean unlabeled, boolean persistent, boolean stat, int lastUpdate) {
-		Brew brew = new Brew(ingredients, quality, distillRuns, ageTime, wood, recipe, unlabeled, stat, lastUpdate);
+	public static void loadLegacy(BIngredients ingredients, int uid, int quality, int alc, byte distillRuns, float ageTime, float wood, String recipe, boolean unlabeled, boolean persistent, boolean stat, int lastUpdate) {
+		Brew brew = new Brew(ingredients, quality, alc, distillRuns, ageTime, wood, recipe, unlabeled, stat, lastUpdate);
 		brew.persistent = persistent;
 		legacyPotions.put(uid, brew);
 	}
@@ -919,6 +942,9 @@ public class Brew {
 			// not saving unneccessary data
 			if (brew.quality != 0) {
 				idConfig.set("quality", brew.quality);
+			}
+			if (brew.alc > 0) {
+				idConfig.set("alc", brew.alc);
 			}
 			if (brew.distillRuns != 0) {
 				idConfig.set("distillRuns", brew.distillRuns);

@@ -24,7 +24,7 @@ public class BrewDrinkEvent extends BrewEvent implements Cancellable {
 		super(brew, meta);
 		this.player = player;
 		this.bPlayer = bPlayer;
-		alc = brew.calcAlcohol();
+		alc = brew.getOrCalcAlc();
 		quality = brew.getQuality();
 	}
 

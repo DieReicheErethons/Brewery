@@ -240,7 +240,7 @@ public class BrewLore {
 
 	public void updateAlc(boolean inDistiller) {
 		if (!brew.isUnlabeled() && (inDistiller || BConfig.alwaysShowAlc) && (!brew.hasRecipe() || brew.getCurrentRecipe().getAlcohol() > 0)) {
-			int alc = brew.calcAlcohol();
+			int alc = brew.getOrCalcAlc();
 			addOrReplaceLore(Type.ALC, "§8", P.p.languageReader.get("Brew_Alc", alc + ""));
 		} else {
 			removeLore(Type.ALC);

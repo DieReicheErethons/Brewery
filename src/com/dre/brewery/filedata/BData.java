@@ -85,6 +85,7 @@ public class BData {
 				for (String uid : section.getKeys(false)) {
 					BIngredients ingredients = getIngredients(ingMap, section.getString(uid + ".ingId"));
 					int quality = section.getInt(uid + ".quality", 0);
+					int alc = section.getInt(uid + ".alc", 0);
 					byte distillRuns = (byte) section.getInt(uid + ".distillRuns", 0);
 					float ageTime = (float) section.getDouble(uid + ".ageTime", 0.0);
 					float wood = (float) section.getDouble(uid + ".wood", -1.0);
@@ -94,7 +95,7 @@ public class BData {
 					boolean stat = section.getBoolean(uid + ".stat", false);
 					int lastUpdate = section.getInt("lastUpdate", 0);
 
-					Brew.loadLegacy(ingredients, P.p.parseInt(uid), quality, distillRuns, ageTime, wood, recipe, unlabeled, persistent, stat, lastUpdate);
+					Brew.loadLegacy(ingredients, P.p.parseInt(uid), quality, alc, distillRuns, ageTime, wood, recipe, unlabeled, persistent, stat, lastUpdate);
 				}
 			}
 

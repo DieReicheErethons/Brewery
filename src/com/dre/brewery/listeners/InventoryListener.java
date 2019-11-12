@@ -249,6 +249,27 @@ public class InventoryListener implements Listener {
 
 	//public static boolean opening = false;
 
+	@SuppressWarnings("deprecation")
+	@EventHandler(ignoreCancelled = false)
+	public void onInventoryOpenLegacyConvert(InventoryOpenEvent event) {
+		if (Brew.noLegacy()) {
+			return;
+		}
+		if (event.getInventory().getType() == InventoryType.PLAYER) {
+			return;
+		}
+		for (ItemStack item : event.getInventory().getContents()) {
+			if (item != null && item.getType() == Material.POTION) {
+				int uid = Brew.getUID(item);
+				// Check if the uid exists first, otherwise it will log that it can't find the id
+				if (uid < 0 && Brew.legacyPotions.containsKey(uid)) {
+					// This will convert the Brew
+					Brew.get(item);
+				}
+			}
+		}
+	}
+
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onInventoryOpen(InventoryOpenEvent event) {
 		if (!P.use1_14) return;

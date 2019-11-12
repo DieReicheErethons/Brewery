@@ -93,9 +93,28 @@ public class BData {
 					boolean unlabeled = section.getBoolean(uid + ".unlabeled", false);
 					boolean persistent = section.getBoolean(uid + ".persist", false);
 					boolean stat = section.getBoolean(uid + ".stat", false);
-					int lastUpdate = section.getInt("lastUpdate", 0);
+					int lastUpdate = section.getInt(uid + ".lastUpdate", 0);
 
 					Brew.loadLegacy(ingredients, P.p.parseInt(uid), quality, alc, distillRuns, ageTime, wood, recipe, unlabeled, persistent, stat, lastUpdate);
+				}
+			}
+
+			// Remove Legacy Potions that haven't been touched in a long time, these may have been lost
+			if (!Brew.noLegacy()) {
+				int currentHoursAfterInstall = (int) ((double) (System.currentTimeMillis() - Brew.installTime) / 3600000D);
+				int purgeTime = currentHoursAfterInstall - (24 * 30 * 4); // Purge Time is 4 Months ago
+				if (purgeTime > 0) {
+					int removed = 0;
+					for (Iterator<Brew> iterator = Brew.legacyPotions.values().iterator(); iterator.hasNext(); ) {
+						Brew brew = iterator.next();
+						if (brew.getLastUpdate() < purgeTime) {
+							iterator.remove();
+							removed++;
+						}
+					}
+					if (removed > 0) {
+						P.p.log("Removed " + removed + " Legacy Brews older than 3 months");
+					}
 				}
 			}
 
@@ -133,7 +152,7 @@ public class BData {
 			}
 
 		} else {
-			P.p.errorLog("No data.yml found, will create new one!");
+			P.p.log("No data.yml found, will create new one!");
 		}
 	}
 

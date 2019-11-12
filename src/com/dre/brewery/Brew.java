@@ -903,6 +903,10 @@ public class Brew {
 	public static void loadLegacy(BIngredients ingredients, int uid, int quality, int alc, byte distillRuns, float ageTime, float wood, String recipe, boolean unlabeled, boolean persistent, boolean stat, int lastUpdate) {
 		Brew brew = new Brew(ingredients, quality, alc, distillRuns, ageTime, wood, recipe, unlabeled, stat, lastUpdate);
 		brew.persistent = persistent;
+		if (brew.lastUpdate <= 0) {
+			// We failed to save the lastUpdate, restart the countdown
+			brew.touch();
+		}
 		legacyPotions.put(uid, brew);
 	}
 

@@ -6,8 +6,9 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 
-/*
+/**
  * The Players movement is hindered because of drunkeness
  * Called each time before pushing the Player with the Vector push 10 times
  * The Push Vector can be changed or multiplied
@@ -30,12 +31,23 @@ public class PlayerPushEvent extends PlayerEvent implements Cancellable {
 
 	// The Vector in which direction and magnitude the player is Pushed
 	// Can be changed directly or through setPush
+
+	/**
+	 * Get the Vector in which direction and magnitude the player is pushed
+	 * Can be changed directly or through setPush
+	 *
+	 * @return The current push vector
+	 */
 	public Vector getPush() {
 		return push;
 	}
 
-	// Set the Push vector, can not be null
-	public void setPush(Vector push) {
+	/**
+	 * Set the Push vector
+	 *
+	 * @param push The new push vector, not null
+	 */
+	public void setPush(@NotNull Vector push) {
 		if (push == null) {
 			throw new NullPointerException("Push Vector is null");
 		}
@@ -52,11 +64,13 @@ public class PlayerPushEvent extends PlayerEvent implements Cancellable {
 		this.cancelled = cancelled;
 	}
 
+	@NotNull
 	@Override
 	public HandlerList getHandlers() {
 		return handlers;
 	}
 
+	// Required by Bukkit
 	public static HandlerList getHandlerList() {
 		return handlers;
 	}

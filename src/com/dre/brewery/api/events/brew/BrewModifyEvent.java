@@ -8,7 +8,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.jetbrains.annotations.NotNull;
 
-/*
+/**
  * A Brew has been created or modified
  * Usually happens on Filling from cauldron, distilling and aging.
  * Modifications to the Brew or the PotionMeta can be done now
@@ -40,7 +40,7 @@ public class BrewModifyEvent extends BrewEvent implements Cancellable {
 		return cancelled;
 	}
 
-	/*
+	/**
 	 * Setting the Event cancelled cancels all modificatons to the brew.
 	 * Modifications to the Brew or ItemMeta will not be applied
 	 */
@@ -55,6 +55,7 @@ public class BrewModifyEvent extends BrewEvent implements Cancellable {
 		return handlers;
 	}
 
+	// Required by Bukkit
 	public static HandlerList getHandlerList() {
 		return handlers;
 	}

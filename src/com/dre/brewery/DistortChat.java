@@ -1,5 +1,6 @@
 package com.dre.brewery;
 
+import com.dre.brewery.api.events.PlayerChatDistortEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
@@ -79,9 +80,15 @@ public class DistortChat {
 										P.p.log(P.p.languageReader.get("Player_TriedToSay", name, chat));
 									}
 									String message = chat.substring(command.length() + 1);
-									message = distortMessage(message, bPlayer.getDrunkeness());
+									String distorted = distortMessage(message, bPlayer.getDrunkeness());
+									PlayerChatDistortEvent call = new PlayerChatDistortEvent(event.isAsynchronous(), event.getPlayer(), bPlayer, message, distorted);
+									P.p.getServer().getPluginManager().callEvent(call);
+									if (call.isCancelled()) {
+										return;
+									}
+									distorted = call.getDistortedMessage();
 
-									event.setMessage(chat.substring(0, command.length() + 1) + message);
+									event.setMessage(chat.substring(0, command.length() + 1) + distorted);
 									waitPlayers.put(name, System.currentTimeMillis());
 									return;
 								}
@@ -101,12 +108,17 @@ public class DistortChat {
 				int index = 0;
 				for (String message : event.getLines()) {
 					if (message.length() > 1) {
-						message = distortMessage(message, bPlayer.getDrunkeness());
+						String distorted = distortMessage(message, bPlayer.getDrunkeness());
+						PlayerChatDistortEvent call = new PlayerChatDistortEvent(event.isAsynchronous(), event.getPlayer(), bPlayer, message, distorted);
+						P.p.getServer().getPluginManager().callEvent(call);
+						if (!call.isCancelled()) {
+							distorted = call.getDistortedMessage();
 
-						if (message.length() > 15) {
-							message = message.substring(0, 14);
+							if (distorted.length() > 15) {
+								distorted = distorted.substring(0, 14);
+							}
+							event.setLine(index, distorted);
 						}
-						event.setLine(index, message);
 					}
 					index++;
 				}
@@ -123,7 +135,16 @@ public class DistortChat {
 				if (log) {
 					P.p.log(P.p.languageReader.get("Player_TriedToSay", event.getPlayer().getName(), message));
 				}
-				event.setMessage(distortMessage(message, bPlayer.getDrunkeness()));
+
+				String distorted = distortMessage(message, bPlayer.getDrunkeness());
+				PlayerChatDistortEvent call = new PlayerChatDistortEvent(event.isAsynchronous(), event.getPlayer(), bPlayer, message, distorted);
+				P.p.getServer().getPluginManager().callEvent(call);
+				if (call.isCancelled()) {
+					return;
+				}
+				distorted = call.getDistortedMessage();
+
+				event.setMessage(distorted);
 			}
 		}
 	}

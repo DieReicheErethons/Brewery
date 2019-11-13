@@ -1,10 +1,13 @@
 package com.dre.brewery.api;
 
 import com.dre.brewery.BCauldron;
+import com.dre.brewery.BPlayer;
+import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.recipe.BCauldronRecipe;
 import com.dre.brewery.recipe.BRecipe;
 import com.dre.brewery.Barrel;
 import com.dre.brewery.Brew;
+import com.dre.brewery.utility.Tuple;
 import org.apache.commons.lang.NotImplementedException;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -28,7 +31,7 @@ public class BreweryApi {
 	 */
 	public static boolean removeAny(Block block) {
 		if (removeCauldron(block)) return true;
-		return removeBarrel(block);
+		return removeBarrel(block, true);
 	}
 
 	/**
@@ -37,7 +40,59 @@ public class BreweryApi {
 	 */
 	public static boolean removeAnyByPlayer(Block block, Player player) {
 		if (removeCauldron(block)) return true;
-		return removeBarrelByPlayer(block, player);
+		return removeBarrelByPlayer(block, player, true);
+	}
+
+
+	// # # # # # #        # # # # # #
+	// # # # # #    Player    # # # # #
+	// # # # # # #        # # # # # #
+
+	public static BPlayer getBPlayer(Player player) {
+		return BPlayer.get(player);
+	}
+
+	/**
+	 * Set the Players drunkeness state
+	 *
+	 * @param player The Player to set the drunkeness on
+	 * @param drunkeness The amount of drunkeness 0-100 to apply to the player
+	 * @param quality The Quality 1-10 the drunkeness of the player should have
+	 *                zero Quality keeps the players current quality
+	 */
+	public static void setPlayerDrunk(Player player, int drunkeness, int quality) {
+		if (drunkeness < 0) {
+			throw new IllegalArgumentException("Drunkeness can not be <0");
+		}
+		if (quality > 10) {
+			throw new IllegalArgumentException("Quality can not be >10");
+		}
+		BPlayer bPlayer = BPlayer.get(player);
+		if (bPlayer == null && player != null) {
+			if (drunkeness == 0) {
+				return;
+			}
+			bPlayer = BPlayer.addPlayer(player);
+		}
+		if (bPlayer == null) {
+			return;
+		}
+
+		if (drunkeness == 0) {
+			bPlayer.remove();
+		} else {
+			bPlayer.setData(drunkeness, quality);
+		}
+
+		if (drunkeness > 100) {
+			if (player != null) {
+				bPlayer.drinkCap(player);
+			} else {
+				if (!BConfig.overdrinkKick) {
+					bPlayer.setData(100, 0);
+				}
+			}
+		}
 	}
 
 
@@ -65,6 +120,24 @@ public class BreweryApi {
 	@Nullable
 	public static Brew getBrew(ItemMeta meta) {
 		return Brew.get(meta);
+	}
+
+	/**
+	 * Performant way to check if an item is a brew.
+	 * Does not give any guarantees that getBrew() will return notnull for this item, i.e. if it is a brew but couldn't be loaded
+	 */
+	public static boolean isBrew(ItemStack item) {
+		return Brew.isBrew(item);
+	}
+
+	/**
+	 * Create a Brew from the given Recipe
+	 *
+	 * @param recipe The Recipe to create a brew from
+	 * @return The Brew that was created. Can use brew.createItem() to get an ItemStack
+	 */
+	public static Brew createBrew(BRecipe recipe, int quality) {
+		return recipe.createBrew(quality);
 	}
 
 
@@ -98,22 +171,29 @@ public class BreweryApi {
 
 	/**
 	 * Remove any Barrel that this Block may be Part of
-	 * Returns true if a Barrel was removed
 	 * Does not remove any actual Block
+	 *
+	 * @param block The Block thats part of the barrel, potions will drop there
+	 * @param dropItems If the items in the barrels inventory should drop to the ground
+	 * @return True if a Barrel was removed
 	 */
-	public static boolean removeBarrel(Block block) { // TODO add dropItems flag
-		return removeBarrelByPlayer(block, null);
+	public static boolean removeBarrel(Block block, boolean dropItems) {
+		return removeBarrelByPlayer(block, null, dropItems);
 	}
 
 	/**
 	 * Remove any Barrel that this Block may be Part of, as if broken by the Player
-	 * Returns true if a Barrel was removed
 	 * Does not remove any actual Block from the World
+	 *
+	 * @param block The Block thats part of the barrel, potions will drop there
+	 * @param player The Player that broke the Block
+	 * @param dropItems If the items in the barrels inventory should drop to the ground
+	 * @return True if a Barrel was removed
 	 */
-	public static boolean removeBarrelByPlayer(Block block, Player player) {
+	public static boolean removeBarrelByPlayer(Block block, Player player, boolean dropItems) {
 		Barrel barrel = Barrel.get(block);
 		if (barrel != null) {
-			barrel.remove(block, player);
+			barrel.remove(block, player, dropItems);
 			return true;
 		}
 		return false;
@@ -170,7 +250,7 @@ public class BreweryApi {
 	public static void addRecipe(BRecipe recipe, boolean saveForever) {
 		//recipe.setSaveInData(saveForever);
 		if (saveForever) {
-			throw new NotImplementedException();
+			throw new NotImplementedException("SaveForever is not implemented yet");
 		}
 		BRecipe.getAddedRecipes().add(recipe);
 		recipe.updateAcceptedLists();

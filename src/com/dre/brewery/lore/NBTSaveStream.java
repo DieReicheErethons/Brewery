@@ -10,6 +10,8 @@ import java.io.IOException;
 
 public class NBTSaveStream extends ByteArrayOutputStream {
 	private static final String TAG = "brewdata";
+	private static final NamespacedKey KEY = new NamespacedKey(P.p, TAG);
+
 	private final ItemMeta meta;
 
 	public NBTSaveStream(ItemMeta meta) {
@@ -21,6 +23,6 @@ public class NBTSaveStream extends ByteArrayOutputStream {
 	public void flush() throws IOException {
 		super.flush();
 		if (size() <= 0) return;
-		LegacyUtil.writeBytesItem(toByteArray(), meta, new NamespacedKey(P.p, TAG));
+		LegacyUtil.writeBytesItem(toByteArray(), meta, KEY);
 	}
 }

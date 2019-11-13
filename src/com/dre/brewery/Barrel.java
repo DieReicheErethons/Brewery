@@ -325,9 +325,15 @@ public class Barrel implements InventoryHolder {
 		return false;
 	}
 
-	// removes a barrel, throwing included potions to the ground
-	public void remove(Block broken, Player breaker) {
-		BarrelRemoveEvent event = new BarrelRemoveEvent(this);
+	/**
+	 * Removes a barrel, throwing included potions to the ground
+	 *
+	 * @param broken The Block that was broken
+	 * @param breaker The Player that broke it, or null if not known
+	 * @param dropItems If the items in the barrels inventory should drop to the ground
+	 */
+	public void remove(@Nullable Block broken, @Nullable Player breaker, boolean dropItems) {
+		BarrelRemoveEvent event = new BarrelRemoveEvent(this, dropItems);
 		// Listened to by LWCBarrel (IntegrationListener)
 		P.p.getServer().getPluginManager().callEvent(event);
 
@@ -348,7 +354,7 @@ public class Barrel implements InventoryHolder {
 					e.printStackTrace();
 				}
 			}
-			if (event.willItemsDrop()) {
+			if (event.willDropItems()) {
 				for (ItemStack item : items) {
 					if (item != null) {
 						Brew brew = Brew.get(item);
@@ -480,7 +486,7 @@ public class Barrel implements InventoryHolder {
 							P.p.debugLog("Barrel at " + broken.getWorld().getName() + "/" + broken.getX() + "/" + broken.getY() + "/" + broken.getZ()
 									+ " has been destroyed unexpectedly, contents will drop");
 							// remove the barrel if it was destroyed
-							barrel.remove(broken, null);
+							barrel.remove(broken, null, true);
 						} else {
 							// Dont check this barrel again, its enough to check it once after every restart
 							// as now this is only the backup if we dont register the barrel breaking, as sample

@@ -34,7 +34,7 @@ public class BarrelBody {
 			// This will only be done in those extreme cases.
 			Block broken = getBrokenBlock(true);
 			if (broken != null) {
-				barrel.remove(broken, null);
+				barrel.remove(broken, null, true);
 			}
 		} else {
 			this.bounds = bounds;
@@ -150,6 +150,9 @@ public class BarrelBody {
  	 */
 	public boolean hasBlock(Block block) {
 		if (block != null) {
+			if (spigot.equals(block)) {
+				return true;
+			}
 			if (spigot.getWorld().equals(block.getWorld())) {
 				return bounds != null && bounds.contains(block.getX(), block.getY(), block.getZ());
 			}

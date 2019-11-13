@@ -9,6 +9,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+/**
+ * The Brewery Config was reloaded
+ */
 public class ConfigLoadEvent extends Event {
 	private static final HandlerList handlers = new HandlerList();
 
@@ -37,6 +40,11 @@ public class ConfigLoadEvent extends Event {
 	@NotNull
 	@Override
 	public HandlerList getHandlers() {
+		return handlers;
+	}
+
+	// Required by Bukkit
+	public static HandlerList getHandlerList() {
 		return handlers;
 	}
 }

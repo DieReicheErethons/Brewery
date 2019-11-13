@@ -4,8 +4,9 @@ import com.dre.brewery.Barrel;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
+import org.jetbrains.annotations.NotNull;
 
-/*
+/**
  * Called when a Barrel is created by a Player by placing a Sign
  * Cancelling this will silently fail the Barrel creation
  */
@@ -33,11 +34,13 @@ public class BarrelCreateEvent extends BarrelEvent implements Cancellable {
 		this.cancelled = cancelled;
 	}
 
+	@NotNull
 	@Override
 	public HandlerList getHandlers() {
 		return handlers;
 	}
 
+	// Required by Bukkit
 	public static HandlerList getHandlerList() {
 		return handlers;
 	}

@@ -53,7 +53,9 @@ public class BlockListener implements Listener {
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onBlockBurn(BlockBurnEvent event) {
-		BUtil.blockDestroy(event.getBlock(), null, BarrelDestroyEvent.Reason.BURNED);
+		if (!BUtil.blockDestroy(event.getBlock(), null, BarrelDestroyEvent.Reason.BURNED)) {
+			event.setCancelled(true);
+		}
 	}
 
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)

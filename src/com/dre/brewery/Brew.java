@@ -7,6 +7,7 @@ import com.dre.brewery.lore.*;
 import com.dre.brewery.recipe.BEffect;
 import com.dre.brewery.recipe.BRecipe;
 import com.dre.brewery.recipe.PotionColor;
+import com.dre.brewery.utility.BUtil;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.BrewerInventory;
@@ -25,9 +26,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
-public class Brew {
-	// represents the liquid in the brewed Potions
+/**
+ * Represents the liquid in the brewed Potions
+ */
+public class Brew implements Cloneable {
 	public static final byte SAVE_VER = 1;
 	private static long saveSeed;
 	private static List<Long> prevSaveSeeds = new ArrayList<>(); // Save Seeds that have been used in the past, stored to decode brews made at that time
@@ -47,12 +51,17 @@ public class Brew {
 	private int lastUpdate; // last update in hours after install time
 	private boolean needsSave; // There was a change that has not yet been saved
 
+	/**
+	 * A new Brew with only ingredients
+	 */
 	public Brew(BIngredients ingredients) {
 		this.ingredients = ingredients;
 		touch();
 	}
 
-	// quality already set
+	/**
+	 * A Brew with quality, alc and recipe already set
+	 */
 	public Brew(int quality, int alc, BRecipe recipe, BIngredients ingredients) {
 		this.ingredients = ingredients;
 		this.quality = quality;
@@ -61,7 +70,9 @@ public class Brew {
 		touch();
 	}
 
-	// loading with all values set
+	/**
+	 * Loading a Brew with all values set
+	 */
 	public Brew(BIngredients ingredients, int quality, int alc, byte distillRuns, float ageTime, float wood, String recipe, boolean unlabeled, boolean immutable, int lastUpdate) {
 		this.ingredients = ingredients;
 		this.quality = quality;
@@ -79,7 +90,12 @@ public class Brew {
 	private Brew() {
 	}
 
-	// returns a Brew by ItemMeta
+	/**
+	 * returns a Brew by ItemMeta
+	 *
+	 * @param meta The meta to get the brew from
+	 * @return The Brew if meta is a brew, null if not
+	 */
 	@Nullable
 	public static Brew get(ItemMeta meta) {
 		if (!P.useNBT && !meta.hasLore()) return null;
@@ -93,7 +109,12 @@ public class Brew {
 		return brew;
 	}
 
-	// returns a Brew by ItemStack
+	/**
+	 * returns a Brew by ItemStack
+	 *
+	 * @param item The Item to get the brew from
+	 * @return The Brew if item is a brew, null if not
+	 */
 	@Nullable
 	public static Brew get(ItemStack item) {
 		if (item.getType() != Material.POTION) return null;
@@ -197,7 +218,9 @@ public class Brew {
 		return uid;
 	}*/
 
-	//returns the recipe with the given name, recalculates if not found
+	/**
+	 * returns the recipe with the given name, recalculates if not found
+	 */
 	public boolean setRecipeFromString(String name) {
 		currentRecipe = null;
 		if (name != null && !name.equals("")) {
@@ -256,20 +279,21 @@ public class Brew {
 				persistent == brew.persistent &&
 				immutable == brew.immutable &&
 				ingredients.equals(brew.ingredients) &&
-				(currentRecipe != null ? currentRecipe.equals(brew.currentRecipe) : brew.currentRecipe == null);
+				(Objects.equals(currentRecipe, brew.currentRecipe));
 	}
 
-	// Clones this instance
+	/**
+	 * Clones this instance
+	 */
 	@Override
-	public Brew clone() throws CloneNotSupportedException {
-		super.clone();
-		Brew brew = new Brew(quality, alc, currentRecipe, ingredients);
-		brew.distillRuns = distillRuns;
-		brew.ageTime = ageTime;
-		brew.unlabeled = unlabeled;
-		brew.persistent = persistent;
-		brew.immutable = immutable;
-		return brew;
+	public Brew clone() {
+		try {
+			Brew brew = (Brew) super.clone();
+			brew.ingredients = ingredients.copy();
+			return brew;
+		} catch (CloneNotSupportedException e) {
+			throw new InternalError(e);
+		}
 	}
 
 	@Override
@@ -295,7 +319,9 @@ public class Brew {
 		}
 	}*/
 
-	// calculate alcohol from recipe
+	/**
+	 * calculate alcohol from recipe
+	 */
 	@Contract(pure = true)
 	public int calcAlcohol() {
 		if (quality == 0) {
@@ -338,7 +364,9 @@ public class Brew {
 		return 0;
 	}
 
-	// calculating quality
+	/**
+	 * calculating quality
+	 */
 	@Contract(pure = true)
 	public int calcQuality() {
 		// calculate quality from all of the factors
@@ -373,7 +401,11 @@ public class Brew {
 		return null;
 	}
 
-	// Set unlabeled to true to hide the numbers in Lore
+	/**
+	 * Set unlabeled to true to hide the numbers in Lore
+	 *
+	 * @param item The Item this Brew is on
+	 */
 	public void unLabel(ItemStack item) {
 		unlabeled = true;
 		ItemMeta meta = item.getItemMeta();
@@ -392,7 +424,9 @@ public class Brew {
 		}
 	}
 
-	// Do some regular updates
+	/**
+	 * Do some regular updates
+	 */
 	public void touch() {
 		lastUpdate = (int) ((double) (System.currentTimeMillis() - installTime) / 3600000D);
 	}
@@ -470,7 +504,9 @@ public class Brew {
 		this.needsSave = needsSave;
 	}
 
-	// Set the Static flag, so potion is unchangeable
+	/**
+	 * Set the Static flag, so potion is unchangeable
+	 */
 	public void setStatic(boolean immutable, ItemStack potion) {
 		this.immutable = immutable;
 		if (currentRecipe != null && canDistill()) {
@@ -488,7 +524,12 @@ public class Brew {
 
 	// Distilling section ---------------
 
-	// distill all custom potions in the brewer
+	/**
+	 * distill all custom potions in the brewer
+	 *
+	 * @param inv The Inventory of the Distiller
+	 * @param contents The Brews in the 3 slots of the Inventory
+	 */
 	public static void distillAll(BrewerInventory inv, Brew[] contents) {
 		for (int slot = 0; slot < 3; slot++) {
 			if (contents[slot] != null) {
@@ -499,7 +540,12 @@ public class Brew {
 		}
 	}
 
-	// distill custom potion in given slot
+	/**
+	 * distill custom potion in a distiller slot
+	 *
+	 * @param slotItem The item in the slot
+	 * @param potionMeta The meta of the item
+	 */
 	public void distillSlot(ItemStack slotItem, PotionMeta potionMeta) {
 		if (immutable) return;
 
@@ -626,7 +672,9 @@ public class Brew {
 		item.setItemMeta(potionMeta);
 	}
 
-	// Slowly shift the wood of the Brew to the new Type
+	/**
+	 * Slowly shift the wood of the Brew to the new Type
+	 */
 	public void woodShift(float time, byte to) {
 		float factor = 1;
 		if (ageTime > 5) {
@@ -701,6 +749,35 @@ public class Brew {
 		save(potionMeta);
 		potion.setItemMeta(potionMeta);
 		return potion;
+	}
+
+	/**
+	 * Performant way of checking if this item is a Brew
+	 * Does not give any guarantees that get() will return notnull for this item, i.e. if it is a brew but the data is corrupt
+	 *
+	 * @param item The Item to check
+	 * @return True if the item is a brew
+	 */
+	public static boolean isBrew(ItemStack item) {
+		if (item == null || item.getType() != Material.POTION) return false;
+		if (!item.hasItemMeta()) return false;
+
+		ItemMeta meta = item.getItemMeta();
+		assert meta != null;
+		if (!P.useNBT && !meta.hasLore()) return false;
+
+		if (P.useNBT) {
+			// Check for Data on PersistentDataContainer
+			if (NBTLoadStream.hasDataInMeta(meta)) {
+				return true;
+			}
+		}
+		// If either NBT is not supported or no data was found in NBT, try finding data in lore
+		if (meta.hasLore()) {
+			// Find the Data Identifier in Lore
+			return BUtil.indexOfStart(meta.getLore(), LoreLoadStream.IDENTIFIER) > -1;
+		}
+		return false;
 	}
 
 	private static Brew load(ItemMeta meta) {
@@ -795,7 +872,10 @@ public class Brew {
 		setRecipeFromString(recipe);
 	}
 
-	// Save brew data into meta: lore/nbt
+	/**
+	 * Save brew data into meta: lore/nbt
+	 * Should be called after any changes made to the brew
+	 */
 	public void save(ItemMeta meta) {
 		OutputStream itemSaveStream;
 		if (P.useNBT) {
@@ -819,8 +899,12 @@ public class Brew {
 		}
 	}
 
-	// Save brew data into the meta/lore of the specified item
-	// The meta on the item changes, so to make further changes to the meta, item.getItemMeta() has to be called again after this
+	/**
+	 * Save brew data into the meta/lore of the specified item
+	 * 	The meta on the item changes, so to make further changes to the meta, item.getItemMeta() has to be called again after this
+	 *
+	 * @param item The item to save this brew into
+	 */
 	public void save(ItemStack item) {
 		ItemMeta meta;
 		if (!item.hasItemMeta()) {
@@ -899,7 +983,9 @@ public class Brew {
 		return legacyPotions.isEmpty();
 	}
 
-	// Load potion data from data file for backwards compatibility
+	/**
+	 * Load potion data from data file for backwards compatibility
+	 */
 	public static void loadLegacy(BIngredients ingredients, int uid, int quality, int alc, byte distillRuns, float ageTime, float wood, String recipe, boolean unlabeled, boolean persistent, boolean stat, int lastUpdate) {
 		Brew brew = new Brew(ingredients, quality, alc, distillRuns, ageTime, wood, recipe, unlabeled, stat, lastUpdate);
 		brew.persistent = persistent;
@@ -910,7 +996,9 @@ public class Brew {
 		legacyPotions.put(uid, brew);
 	}
 
-	// remove legacy potiondata for an item
+	/**
+	 * remove legacy potiondata for an item
+	 */
 	public static void removeLegacy(ItemStack item) {
 		if (legacyPotions.isEmpty()) return;
 		if (!item.hasItemMeta()) return;
@@ -936,8 +1024,10 @@ public class Brew {
 		item.setItemMeta(potionMeta);
 	}
 
-	// Saves all data
-	// Legacy method to save to data file
+	/**
+	 * Saves all data
+	 * 	Legacy method to save to data file
+	 */
 	public static void saveLegacy(ConfigurationSection config) {
 		for (Map.Entry<Integer, Brew> entry : legacyPotions.entrySet()) {
 			int uid = entry.getKey();

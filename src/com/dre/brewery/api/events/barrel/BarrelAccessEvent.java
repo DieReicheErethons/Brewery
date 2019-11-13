@@ -5,8 +5,9 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
+import org.jetbrains.annotations.NotNull;
 
-/*
+/**
  * A Player opens a Barrel by rightclicking it
  * The PlayerInteractEvent on the Barrel may be cancelled. In that case this never gets called
  * Can be cancelled to silently deny opening the Barrel
@@ -23,8 +24,10 @@ public class BarrelAccessEvent extends BarrelEvent implements Cancellable {
 		this.clickedBlock = clickedBlock;
 	}
 
-	// Gets the Block that was actually clicked.
-	// For access Permissions getSpigot() should be used
+	/**
+	 * Gets the Block that was actually clicked.
+	 * For access Permissions getSpigot() should be used
+	 */
 	public Block getClickedBlock() {
 		return clickedBlock;
 	}
@@ -43,11 +46,13 @@ public class BarrelAccessEvent extends BarrelEvent implements Cancellable {
 		return player;
 	}
 
+	@NotNull
 	@Override
 	public HandlerList getHandlers() {
 		return handlers;
 	}
 
+	// Required by Bukkit
 	public static HandlerList getHandlerList() {
 		return handlers;
 	}

@@ -514,6 +514,10 @@ public class P extends JavaPlugin {
 		BConfig.reloader = null;
 	}
 
+	public P getInstance() {
+		return p;
+	}
+
 	// Utility
 
 	public void msg(CommandSender sender, String msg) {

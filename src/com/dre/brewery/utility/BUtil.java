@@ -169,7 +169,7 @@ public class BUtil {
 			Barrel barrel = Barrel.getBySpigot(block);
 			if (barrel != null) {
 				if (barrel.hasPermsDestroy(player, block, reason)) {
-					barrel.remove(null, player);
+					barrel.remove(null, player, true);
 					return true;
 				} else {
 					return false;
@@ -183,7 +183,7 @@ public class BUtil {
 			if (barrel2 != null) {
 				if (!barrel2.isLarge()) {
 					if (barrel2.hasPermsDestroy(player, block, reason)) {
-						barrel2.remove(null, player);
+						barrel2.remove(null, player, true);
 						return true;
 					} else {
 						return false;
@@ -198,7 +198,7 @@ public class BUtil {
 			Barrel barrel3 = Barrel.getByWood(block);
 			if (barrel3 != null) {
 				if (barrel3.hasPermsDestroy(player, block, reason)) {
-					barrel3.remove(block, player);
+					barrel3.remove(block, player, true);
 				} else {
 					return false;
 				}

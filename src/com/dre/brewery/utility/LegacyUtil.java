@@ -291,4 +291,13 @@ public class LegacyUtil {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
+	public static boolean hasBytesItem(ItemMeta meta, NamespacedKey key) {
+		if (NewNbtVer) {
+			return meta.getPersistentDataContainer().has(key, org.bukkit.persistence.PersistentDataType.BYTE_ARRAY);
+		} else {
+			return meta.getCustomTagContainer().hasCustomTag(key, org.bukkit.inventory.meta.tags.ItemTagType.BYTE_ARRAY);
+		}
+	}
+
 }

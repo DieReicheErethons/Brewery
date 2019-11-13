@@ -9,13 +9,14 @@ import java.io.ByteArrayInputStream;
 
 public class NBTLoadStream extends ByteArrayInputStream {
 	private static final String TAG = "brewdata";
+	private static final NamespacedKey KEY = new NamespacedKey(P.p, TAG);
 
 	public NBTLoadStream(ItemMeta meta) {
 		super(getNBTBytes(meta));
 	}
 
 	private static byte[] getNBTBytes(ItemMeta meta) {
-		byte[] bytes = LegacyUtil.readBytesItem(meta, new NamespacedKey(P.p, TAG));
+		byte[] bytes = LegacyUtil.readBytesItem(meta, KEY);
 		if (bytes == null) {
 			return new byte[0];
 		}
@@ -24,5 +25,9 @@ public class NBTLoadStream extends ByteArrayInputStream {
 
 	public boolean hasData() {
 		return count > 0;
+	}
+
+	public static boolean hasDataInMeta(ItemMeta meta) {
+		return LegacyUtil.hasBytesItem(meta, KEY);
 	}
 }

@@ -24,7 +24,7 @@ import java.util.ListIterator;
 
 public class EntityListener implements Listener {
 
-	// Remove the Potion from Brew when it despawns
+	// Legacy Brew removal
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onItemDespawn(ItemDespawnEvent event) {
 		if (Brew.noLegacy()) return;
@@ -77,7 +77,7 @@ public class EntityListener implements Listener {
 				if (breakEvent.isCancelled()) {
 					iter.remove();
 				} else {
-					barrel.remove(block, null);
+					barrel.remove(block, null, true);
 				}
 			}
 		}

@@ -463,27 +463,6 @@ public class Brew implements Cloneable {
 		return currentRecipe;
 	}
 
-	// Not needed anymore
-	// TODO remove
-	@Deprecated
-	public boolean isPersistent() {
-		return persistent;
-	}
-
-	// Make a potion persistent to not delete it when drinking it
-	// Not needed anymore
-	@Deprecated
-	public void makePersistent() {
-		persistent = true;
-	}
-
-	// Remove the Persistence Flag from a brew, so it will be normally deleted when drinking it
-	// Not needed anymore
-	@Deprecated
-	public void removePersistence() {
-		persistent = false;
-	}
-
 	public boolean isStatic() {
 		return immutable;
 	}
@@ -866,7 +845,6 @@ public class Brew implements Cloneable {
 			recipe = in.readUTF();
 		}
 		unlabeled = (bools & 16) != 0;
-		//persistent = (bools & 32) != 0;
 		immutable = (bools & 32) != 0;
 		ingredients = BIngredients.load(in, dataVersion);
 		setRecipeFromString(recipe);

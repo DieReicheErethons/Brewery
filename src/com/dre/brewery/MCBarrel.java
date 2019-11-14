@@ -80,8 +80,7 @@ public class MCBarrel {
 			// This is the last viewer
 			for (ItemStack item : inv.getContents()) {
 				if (item != null) {
-					Brew brew = Brew.get(item);
-					if (brew != null) { // TODO replace this and others with isBrew
+					if (Brew.isBrew(item)) {
 						// We found a brew, so set time on this Barrel
 						if (inv.getHolder() instanceof org.bukkit.block.Barrel) {
 							Barrel barrel = (Barrel) inv.getHolder();
@@ -101,8 +100,7 @@ public class MCBarrel {
 		brews = 0;
 		for (ItemStack item : inv.getContents()) {
 			if (item != null) {
-				Brew brew = Brew.get(item);
-				if (brew != null) {
+				if (Brew.isBrew(item)) {
 					brews++;
 				}
 			}
@@ -112,6 +110,7 @@ public class MCBarrel {
 	public Inventory getInventory() {
 		return inv;
 	}
+
 
 	public static void onUpdate() {
 		mcBarrelTime++;
@@ -133,11 +132,9 @@ public class MCBarrel {
 			case SWAP_WITH_CURSOR:
 				// Placing Brew in MC Barrel
 				if (event.getCursor() != null && event.getClickedInventory() != null && event.getClickedInventory().getType() == InventoryType.BARREL && event.getCursor().getType() == Material.POTION) {
-					Brew b = Brew.get(event.getCursor());
-					if (b != null) {
+					if (Brew.isBrew(event.getCursor())) {
 						if (event.getAction() == InventoryAction.SWAP_WITH_CURSOR && event.getCurrentItem() != null && event.getCurrentItem().getType() == Material.POTION) {
-							Brew bb = Brew.get(event.getCurrentItem());
-							if (bb != null) {
+							if (Brew.isBrew(event.getCurrentItem())) {
 								// The item we are swapping with is also a brew, dont change the count and allow
 								break;
 							}
@@ -150,8 +147,7 @@ public class MCBarrel {
 				if (event.getCurrentItem() != null && event.getCurrentItem().getType() == Material.POTION && event.getClickedInventory() != null) {
 					if (event.getClickedInventory().getType() == InventoryType.BARREL) {
 						// Moving Brew out of MC Barrel
-						Brew b = Brew.get(event.getCurrentItem());
-						if (b != null) {
+						if (Brew.isBrew(event.getCurrentItem())) {
 							if (brews == -1) {
 								countBrews();
 							}
@@ -160,8 +156,7 @@ public class MCBarrel {
 						break;
 					} else if (event.getClickedInventory().getType() == InventoryType.PLAYER) {
 						// Moving Brew into MC Barrel
-						Brew b = Brew.get(event.getCurrentItem());
-						if (b != null) {
+						if (Brew.isBrew(event.getCurrentItem())) {
 							adding = true;
 						}
 					}
@@ -175,8 +170,7 @@ public class MCBarrel {
 			case COLLECT_TO_CURSOR:
 				// Pickup Brew from MC Barrel
 				if (event.getCurrentItem() != null && event.getClickedInventory() != null && event.getClickedInventory().getType() == InventoryType.BARREL && event.getCurrentItem().getType() == Material.POTION) {
-					Brew b = Brew.get(event.getCurrentItem());
-					if (b != null) {
+					if (Brew.isBrew(event.getCurrentItem())) {
 						if (brews == -1) {
 							countBrews();
 						}

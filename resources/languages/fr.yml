@@ -16,13 +16,10 @@ Brew_fermented: fermenté
 Brew_minute: minute
 
 # CMD
-CMD_CopyNotPersistent: '&eLes copies de cette boisson ne seront pas persistantes ou statiques!'
 CMD_Copy_Error: '&6&v1 &cCes potions ne rentrent pas dans votre inventaire.'
 CMD_Info_Drunk: '&v1 est &6&v2% &fivre, avec une qualité de &6&v3'
 CMD_Info_NotDrunk: '&v1 nest pas ivre'
 CMD_NonStatic: '&eLa boisson n´est plus statique et vieillira normalement dans les barils.'
-CMD_PersistRemove: '&cLes boissons persisitantes ne peuvent pas être supprimées de la base de donnée. Cela rendrait toute copie inutile!'
-CMD_Persistent: '&aLa boisson est maintenant Persistante et Statique et peut être copiée comme n´importe quel autre objet. Vous pouvez enlever la persistance avec la même commande.'
 CMD_Player: '&a&v1 est maintenant &6&v2% &aivre, avec une qualité de &6&v3'
 CMD_Player_Error: '&cLa qualité doit être comprise entre 1 et 10 !'
 CMD_Reload: '&aLa config a été reload avec succès.'
@@ -30,7 +27,6 @@ CMD_Configname: '&aName for the Config is: &f&v1'
 CMD_Configname_Error: '&cCould not find item in your hand'
 CMD_Static: '&aLa boisson est maintenant statique et ne changera pas dans les barils ou les stands d´alchimie.'
 CMD_UnLabel: '&aLabel supprimé!'
-CMD_UnPersist: '&aPersistance et staticité supprimées. &eChaque copie potentionelle NON crée avec /brew copy deviendra inutile maintenant!'
 
 # Erreurs
 Error_ConfigUpdate: 'La version de la configuration de Brewery est inconnue: v&v1, la config n´a pas été mise à jour !'
@@ -38,7 +34,6 @@ Error_ItemNotPotion: '&cL´item dans votre main n´a pas pu être identifié com
 Error_NoBarrelAccess: '&cVous n´avez pas la permission d´acceder à ce baril !'
 Error_NoBrewName: '&cAucune recette avec le nom: &v1&c n´a été trouvée!'
 Error_NoPermissions: '&cVous ne pouvez pas faire ça !'
-Error_PersistStatic: '&cLes boissons persistantes sont toujours statiques!'
 Error_PlayerCommand: '&cCette commande ne peut être executée que par un joueur !'
 Error_Recipeload: '&cToutes les recettes n´ont pu être restaurées: Plus d´informations dans les logs du serveur !'
 Error_ShowHelp: Utilisez &6/brew help &fpour regarder l´aide
@@ -56,7 +51,6 @@ Help_Delete: '&6/brew delete &9Supprime la potion qui est dans votre main'
 Help_Help: '&6/brew help [Page] &9Affiche une page spécifique de l´aide'
 Help_Info: '&6/brew info&9 Affiche votre ivresse actuelle ainsi que sa qualité'
 Help_InfoOther: '&6/brew info [Player]&9 Affiche l´ivresse actuelle de <PLAYER>, cette commande affiche aussi sa qualité.<Player>'
-Help_Persist: '&6/brew persist &9Crée une boisson persistante -> peut être copiée par n´importe quel plugin et technique'
 Help_Player: '&6/brew <Player> <%Drunkeness> [Quality]&9 Définit l´ivresse (et la qualité) du joueur'
 Help_Reload: '&6/brew reload &9Reload la config'
 Help_Configname: '&6/brew ItemName &9Display name of item in hand for the config'

@@ -16,13 +16,10 @@ Brew_fermented: 發酵
 Brew_minute: 分鐘
 
 # CMD
-CMD_CopyNotPersistent: '&e這個釀造的副本不會持久或靜態!'
 CMD_Copy_Error: '&6&v1 &c藥水不適合你的庫存'
 CMD_Info_Drunk: '&v1 是 &6&v2% &f醉酒,酒的品質為 &6&v3'
 CMD_Info_NotDrunk: '&v1 沒有醉酒'
 CMD_NonStatic: '&e藥水不再是靜止的,會在桶木中老化.'
-CMD_PersistRemove: '&c無法從數據庫中刪除持久性釀造.它會使任何副本無用！'
-CMD_Persistent: '&a藥水現在是持久性和靜態,現在可以像任何其他項一樣被複製.您可以使用相同的命令刪除持久性.'
 CMD_Player: '&a&v1 現在是 &6&v2% &a醉酒,酒的品質為 &6&v3'
 CMD_Player_Error: '&c酒的品質必須在1到10之間！'
 CMD_Reload: '&a設定檔已成功重新加載'
@@ -30,7 +27,6 @@ CMD_Configname: '&aName for the Config is: &f&v1'
 CMD_Configname_Error: '&cCould not find item in your hand'
 CMD_Static: '&a藥水現在是靜止的,不會在桶或釀造台上變化.'
 CMD_UnLabel: '&a標籤已刪除！'
-CMD_UnPersist: '&a持久性和靜態刪除.&e每個隱藏的副本都不用''/brew copy'',現在可能變得無用了！'
 
 # Error
 Error_ConfigUpdate: '未知 釀酒 設定檔版本: v&v1,設定檔沒有更新!'
@@ -38,7 +34,6 @@ Error_ItemNotPotion: '&c你手上的物品不能確定為藥水'
 Error_NoBarrelAccess: '&c你沒有權限存取！'
 Error_NoBrewName: '&c沒有這個配方: ''&v1&c'' 找到!'
 Error_NoPermissions: '&c你沒有權限這樣做！'
-Error_PersistStatic: '&c持久藥水總是靜止的！'
 Error_PlayerCommand: '&c這個指令只能由玩家執行！'
 Error_Recipeload: '&c並非所有配方都可以有用：服務器日誌中的更多信息！'
 Error_ShowHelp: 使用 &6/brew help &f顯示幫助
@@ -56,7 +51,6 @@ Help_Delete: '&6/brew delete &9刪除你手中的藥水'
 Help_Help: '&6/brew help [頁數] &9顯示幫助的頁面'
 Help_Info: '&6/brew info&9 顯示您當前的醉酒和酒的品質'
 Help_InfoOther: '&6/brew info [玩家]&9 顯示 [玩家] 當前醉酒程度和酒的品質程度'
-Help_Persist: '&6/brew persist &9使釀造持久化 - >可通過任何插件和技術進行複制'
 Help_Player: '&6/brew <玩家> <%醉酒> [數量]&9 設置玩家的醉酒度（和酒的品質）'
 Help_Reload: '&6/brew reload &9重新加載設定檔'
 Help_Configname: '&6/brew ItemName &9Display name of item in hand for the config'

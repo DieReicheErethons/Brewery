@@ -101,14 +101,6 @@ public class CommandListener implements CommandExecutor {
 				p.msg(sender, p.languageReader.get("Error_NoPermissions"));
 			}
 
-		} else if (cmd.equalsIgnoreCase("persist") || cmd.equalsIgnoreCase("persistent")) {
-
-			if (sender.hasPermission("brewery.cmd.persist")) {
-				cmdPersist(sender);
-			} else {
-				p.msg(sender, p.languageReader.get("Error_NoPermissions"));
-			}
-
 		} else if (cmd.equalsIgnoreCase("static")) {
 
 			if (sender.hasPermission("brewery.cmd.static")) {
@@ -186,16 +178,17 @@ public class CommandListener implements CommandExecutor {
 			cmds.add (p.languageReader.get("Help_UnLabel"));
 		}
 
-		if (sender.hasPermission("brewery.cmd.copy")) {
-			cmds.add (p.languageReader.get("Help_Copy"));
-		}
-
-		if (sender.hasPermission("brewery.cmd.delete")) {
-			cmds.add (p.languageReader.get("Help_Delete"));
-		}
-
 		if (sender.hasPermission("brewery.cmd.infoOther")) {
 			cmds.add (p.languageReader.get("Help_InfoOther"));
+		}
+
+		if (sender.hasPermission("brewery.cmd.create")) {
+			cmds.add(p.languageReader.get("Help_Create"));
+		}
+
+		if (sender.hasPermission("brewery.cmd.reload")) {
+			cmds.add(p.languageReader.get("Help_Configname"));
+			cmds.add(p.languageReader.get("Help_Reload"));
 		}
 
 		if (sender.hasPermission("brewery.cmd.wakeup")) {
@@ -207,21 +200,16 @@ public class CommandListener implements CommandExecutor {
 			cmds.add(p.languageReader.get("Help_WakeupRemove"));
 		}
 
-		if (sender.hasPermission("brewery.cmd.reload")) {
-			cmds.add(p.languageReader.get("Help_Configname"));
-			cmds.add(p.languageReader.get("Help_Reload"));
-		}
-
-		if (sender.hasPermission("brewery.cmd.persist")) {
-			cmds.add(p.languageReader.get("Help_Persist"));
-		}
-
 		if (sender.hasPermission("brewery.cmd.static")) {
 			cmds.add(p.languageReader.get("Help_Static"));
 		}
 
-		if (sender.hasPermission("brewery.cmd.create")) {
-			cmds.add(p.languageReader.get("Help_Create"));
+		if (sender.hasPermission("brewery.cmd.copy")) {
+			cmds.add (p.languageReader.get("Help_Copy"));
+		}
+
+		if (sender.hasPermission("brewery.cmd.delete")) {
+			cmds.add (p.languageReader.get("Help_Delete"));
 		}
 
 		return cmds;
@@ -393,8 +381,7 @@ public class CommandListener implements CommandExecutor {
 		Player player = (Player) sender;
 		ItemStack hand = player.getItemInHand();
 		if (hand != null) {
-			Brew brew = Brew.get(hand);
-			if (brew != null) {
+			if (Brew.isBrew(hand)) {
 				while (count > 0) {
 					ItemStack item = hand.clone();
 					if (!(player.getInventory().addItem(item)).isEmpty()) {
@@ -402,9 +389,6 @@ public class CommandListener implements CommandExecutor {
 						return;
 					}
 					count--;
-				}
-				if (brew.isPersistent()) {
-					p.msg(sender, p.languageReader.get("CMD_CopyNotPersistent"));
 				}
 				return;
 			}
@@ -424,44 +408,8 @@ public class CommandListener implements CommandExecutor {
 		Player player = (Player) sender;
 		ItemStack hand = player.getItemInHand();
 		if (hand != null) {
-			Brew brew = Brew.get(hand);
-			if (brew != null) {
-				if (brew.isPersistent()) {
-					p.msg(sender, p.languageReader.get("CMD_PersistRemove"));
-				} else {
-					//brew.remove(hand);
-					player.setItemInHand(new ItemStack(Material.AIR));
-				}
-				return;
-			}
-		}
-		p.msg(sender, p.languageReader.get("Error_ItemNotPotion"));
-
-	}
-
-	@Deprecated
-	public void cmdPersist(CommandSender sender) {
-
-		if (!(sender instanceof Player)) {
-			p.msg(sender, p.languageReader.get("Error_PlayerCommand"));
-			return;
-		}
-		Player player = (Player) sender;
-		ItemStack hand = player.getItemInHand();
-		if (hand != null) {
-			Brew brew = Brew.get(hand);
-			if (brew != null) {
-				if (brew.isPersistent()) {
-					brew.removePersistence();
-					brew.setStatic(false, hand);
-					p.msg(sender, p.languageReader.get("CMD_UnPersist"));
-				} else {
-					brew.makePersistent();
-					brew.setStatic(true, hand);
-					p.msg(sender, p.languageReader.get("CMD_Persistent"));
-				}
-				brew.touch();
-				brew.save(hand);
+			if (Brew.isBrew(hand)) {
+				player.setItemInHand(new ItemStack(Material.AIR));
 				return;
 			}
 		}
@@ -482,12 +430,8 @@ public class CommandListener implements CommandExecutor {
 			Brew brew = Brew.get(hand);
 			if (brew != null) {
 				if (brew.isStatic()) {
-					if (!brew.isPersistent()) {
-						brew.setStatic(false, hand);
-						p.msg(sender, p.languageReader.get("CMD_NonStatic"));
-					} else {
-						p.msg(sender, p.languageReader.get("Error_PersistStatic"));
-					}
+					brew.setStatic(false, hand);
+					p.msg(sender, p.languageReader.get("CMD_NonStatic"));
 				} else {
 					brew.setStatic(true, hand);
 					p.msg(sender, p.languageReader.get("CMD_Static"));

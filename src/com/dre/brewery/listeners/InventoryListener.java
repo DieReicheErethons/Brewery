@@ -31,7 +31,6 @@ public class InventoryListener implements Listener {
 
 	/**
 	 * Start tracking distillation for a person when they open the brewer window.
-	 * @param event
 	 */
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onBrewerOpen(InventoryOpenEvent event) {
@@ -46,7 +45,6 @@ public class InventoryListener implements Listener {
 
 	/**
 	 * Stop tracking distillation for a person when they close the brewer window.
-	 * @param event
 	 */
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onBrewerClose(InventoryCloseEvent event) {
@@ -72,8 +70,6 @@ public class InventoryListener implements Listener {
 	 * Clicking can either start or stop the new brew distillation tracking.
 	 * Note that server restart will halt any ongoing brewing processes and
 	 * they will _not_ restart until a new click event.
-	 *
-	 * @param event the Click event.
 	 */
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onBrewerClick(InventoryClickEvent event) {
@@ -306,9 +302,41 @@ public class InventoryListener implements Listener {
 
 	// block the pickup of items where getPickupDelay is > 1000 (puke)
 	@EventHandler(ignoreCancelled = true)
-	public void onInventoryPickupItem(InventoryPickupItemEvent event){
+	public void onHopperPickupPuke(InventoryPickupItemEvent event){
 		if (event.getItem().getPickupDelay() > 1000 && event.getItem().getItemStack().getType() == BConfig.pukeItem) {
 			event.setCancelled(true);
+		}
+	}
+
+	// Block taking out items from running distillers,
+	// Convert Color Lore from MC Barrels back into normal color on taking out
+	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
+	public void onHopperMove(InventoryMoveItemEvent event){
+		if (event.getSource() instanceof BrewerInventory) {
+			if (BDistiller.isTrackingDistiller(((BrewerInventory) event.getSource()).getHolder().getBlock())) {
+				event.setCancelled(true);
+			}
+			return;
+		}
+
+		if (!P.use1_14) return;
+
+		if (event.getSource().getType() == InventoryType.BARREL) {
+			ItemStack item = event.getItem();
+			if (item.getType() == Material.POTION && Brew.isBrew(item)) {
+				PotionMeta meta = (PotionMeta) item.getItemMeta();
+				if (BrewLore.hasColorLore(meta)) {
+					// has color lore, convert lore back to normal
+					Brew brew = Brew.get(meta);
+					if (brew != null) {
+						BrewLore lore = new BrewLore(brew, meta);
+						lore.convertLore(false);
+						lore.write();
+						item.setItemMeta(meta);
+						event.setItem(item);
+					}
+				}
+			}
 		}
 	}
 

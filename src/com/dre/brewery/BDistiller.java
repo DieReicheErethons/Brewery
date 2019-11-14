@@ -67,6 +67,10 @@ public class BDistiller {
 		distiller.start();
 	}
 
+	public static boolean isTrackingDistiller(Block block) {
+		return trackedDistillers.containsKey(block);
+	}
+
 	// Returns a Brew or null for every Slot in the BrewerInventory
 	public static Brew[] getDistillContents(BrewerInventory inv) {
 		ItemStack item;

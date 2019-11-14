@@ -26,10 +26,6 @@ CMD_Reload: '&aConfig wurde neu eingelesen'
 CMD_Configname: '&aName für Config ist: &f&v1'
 CMD_Configname_Error: '&cDu hast kein Item in der Hand'
 CMD_UnLabel: '&aDas Label wurde entfernt'
-CMD_Persistent: '&aTrankdaten sind nun permanent und unveränderlich und so kann der Trank nun wie jedes andere Item kopiert werden'
-CMD_PersistRemove: '&cPermanente Tränke können nicht aus der Datenbank gelöscht werden, evtl. Kopien würden sonst unbrauchbar werden!'
-CMD_UnPersist: '&aTrankdaten nicht mehr permanent und unveränderlich. &ePotentielle Kopien dieses Trankes, die nicht mit "/brew copy" gemacht wurden, könnten nun unbrauchbar werden!'
-CMD_CopyNotPersistent: '&eDiese Kopien dieses Trankes werden nicht die permanenten und unveränderlichen Trankdaten haben!'
 CMD_Static: '&aTrank ist nun unveränderlich und kann nicht weiter gereift oder destilliert werden.'
 CMD_NonStatic: '&eTrank ist wieder veränderlich und kann normal gereift oder destilliert werden'
 
@@ -41,7 +37,6 @@ Error_Recipeload: '&cEs konnten nicht alle Rezepte wiederhergesellt werden: Sieh
 Error_ShowHelp: 'Benutze &6/brew help &fum die Hilfe anzuzeigen'
 Error_UnknownCommand: Unbekannter Befehl
 Error_ConfigUpdate: 'Unbekannte Brewery Config Version: v&v1, Config wurde nicht geupdated!'
-Error_PersistStatic: '&cTränke mit permanenten Trankdaten sind immer unveränderlich!'
 
 # Permission
 Error_NoPermissions: '&cDu hast keine Rechte dies zu tun!'
@@ -73,7 +68,6 @@ Help_WakeupCheck: '&6/brew Wakeup Check &9Teleportiert zu allen Aufwachpunkten'
 Help_WakeupCheckSpecific: '&6/brew Wakeup Check <id> &9Teleportiert zu einem Aufwachpunkt'
 Help_WakeupList: '&6/brew Wakeup List <Seite> [Welt]&9 Listet die Aufwachpunkte einer Welt auf'
 Help_WakeupRemove: '&6/brew Wakeup Remove <id> &9Entfernt einen Aufwachpunkt'
-Help_Persist: '&6/brew Persist &9Trankdaten permanent machen -> Kopierbar durch andere Plugins'
 Help_Static: '&6/brew Static &9Trank unveränderlich machen -> Kein weiteres reifen oder destillieren möglich'
 Help_Create: '&6/brew Create <Rezept> [Qualität] [Spieler] &9Erstellt einen Trank mit optionaler Qualität (1-10)'
 

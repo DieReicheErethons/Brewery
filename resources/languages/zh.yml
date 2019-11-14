@@ -16,13 +16,10 @@ Brew_fermented: 炖煮发酵
 Brew_minute: 分钟
 
 # CMD
-CMD_CopyNotPersistent: '&e复制饮品的数据并未静滞或固定! 请多加注意!'
 CMD_Copy_Error: '&6&v1&r, &c你的背包塞不下了.'
 CMD_Info_Drunk: '&v1醉酒程度为&6&v2%&f, 醉酒质量为&6&v3.'
 CMD_Info_NotDrunk: '&v1没醉.'
 CMD_NonStatic: '&e饮品已被取消静滞, 现在可以正常地进行蒸馏或进行木桶熟成了.'
-CMD_PersistRemove: '&c当前饮品的数据已被固定, 无法从数据库中移除, 否则将使得任何该饮品的复制品无效!'
-CMD_Persistent: '&a当前饮品的数据已被固定. 现在你可以正常地对该饮品进行复制. 再执行一次该命令将会撤销固定.'
 CMD_Player: '&a&v1醉酒程度为&6&v2%&f, 醉酒质量为&6&v3.'
 CMD_Player_Error: '&c醉酒质量必须在1到10之间.'
 CMD_Reload: '&a配置文件重载成功.'
@@ -30,7 +27,6 @@ CMD_Configname: '配置文件中&aName的名字是: &f&v1'
 CMD_Configname_Error: '&c无法找到物品名称'
 CMD_Static: '&a饮品已被静滞, 现在其无法被蒸馏或进行木桶熟成.'
 CMD_UnLabel: '&a标签已被去除!'
-CMD_UnPersist: '&a当前饮品的数据已被撤销固定, 通过非指令方式(/brew copy)复制的饮品将可能无效!'
 
 # Error
 Error_ConfigUpdate: '未知的配置版本:v&v1, 插件配置未更新!'
@@ -38,7 +34,6 @@ Error_ItemNotPotion: '&c你手上的物品并未成功地被认定为饮品!'
 Error_NoBarrelAccess: '&c你没有权限与该木桶互动!'
 Error_NoBrewName: '&c未找到名字为''&v1&c''的饮品!'
 Error_NoPermissions: '&c你没有权限这样做.'
-Error_PersistStatic: '&c数据固定的饮品一定是静滞化饮品!'
 Error_PlayerCommand: '&c该命令必须由玩家执行.'
 Error_Recipeload: '&c加载饮品配方时出现问题, 请查看控制台以获得详细信息!'
 Error_ShowHelp: 使用&6/brew help&f以查看帮助
@@ -56,7 +51,6 @@ Help_Delete: '&6/brew delete &9删除手中的饮品.'
 Help_Help: '&6/brew help [页数] &9显示某一页的帮助.'
 Help_Info: '&6/brew info &9显示你目前的醉酒程度与质量, 醉酒质量将会影响宿醉程度.'
 Help_InfoOther: '&6/brew info [指定玩家] &9显示指定玩家目前的醉酒程度与质量.'
-Help_Persist: '&6/brew persist &9将手中的饮品数据固定在服务端, 这将允许其被任何手段复制并饮用而不影响原饮品本体.'
 Help_Player: '&6/brew <目标玩家> <%醉酒程度> [醉酒质量] &9设定目标玩家的醉酒程度与质量.'
 Help_Reload: '&6/brew reload &9重载插件配置, 可用以重载饮品配方.'
 Help_Configname: '&6/brew ItemName &9显示手中物品的配置名称'

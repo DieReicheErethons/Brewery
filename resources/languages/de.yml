@@ -37,6 +37,7 @@ Error_Recipeload: '&cEs konnten nicht alle Rezepte wiederhergesellt werden: Sieh
 Error_ShowHelp: 'Benutze &6/brew help &fum die Hilfe anzuzeigen'
 Error_UnknownCommand: Unbekannter Befehl
 Error_ConfigUpdate: 'Unbekannte Brewery Config Version: v&v1, Config wurde nicht geupdated!'
+Error_YmlRead: 'config.yml konnte nicht gelesen werden, ist die Datei im korrekten yml-Format (korrekte Leerzeichen usw.)?'
 
 # Permission
 Error_NoPermissions: '&cDu hast keine Rechte dies zu tun!'

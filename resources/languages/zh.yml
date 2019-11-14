@@ -38,6 +38,7 @@ Error_PlayerCommand: '&c该命令必须由玩家执行.'
 Error_Recipeload: '&c加载饮品配方时出现问题, 请查看控制台以获得详细信息!'
 Error_ShowHelp: 使用&6/brew help&f以查看帮助
 Error_UnknownCommand: 未知命令.
+Error_YmlRead: 'Could not read file config.yml, please make sure the file is in valid yml format (correct spaces etc.)'
 
 # Etc
 Etc_Barrel: 木桶

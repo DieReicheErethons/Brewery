@@ -119,13 +119,31 @@ public class BConfig {
 		}
 	}
 
-	public static boolean readConfig() {
+	public static FileConfiguration loadConfigFile() {
 		File file = new File(P.p.getDataFolder(), "config.yml");
 		if (!checkConfigs()) {
-			return false;
+			return null;
 		}
-		FileConfiguration config = YamlConfiguration.loadConfiguration(file);
 
+		try {
+			YamlConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+			if (cfg.contains("version") && cfg.contains("language")) {
+				return cfg;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		// Failed to load
+		if (p.languageReader != null) {
+			P.p.errorLog(p.languageReader.get("Error_YmlRead"));
+		} else {
+			P.p.errorLog("Could not read file config.yml, please make sure the file is in valid yml format (correct spaces etc.)");
+		}
+		return null;
+	}
+
+	public static boolean readConfig(FileConfiguration config) {
 		// Set the Language
 		p.language = config.getString("language", "en");
 
@@ -139,6 +157,7 @@ public class BConfig {
 		String version = config.getString("version", null);
 		if (version != null) {
 			if (!version.equals(configVersion) || (oldMat && P.use1_13)) {
+				File file = new File(P.p.getDataFolder(), "config.yml");
 				copyDefaultConfigs(true);
 				new ConfigUpdater(file).update(version, oldMat, p.language);
 				P.p.log("Config Updated to version: " + configVersion);
@@ -199,7 +218,7 @@ public class BConfig {
 		openEverywhere = config.getBoolean("openLargeBarrelEverywhere", false);
 		MCBarrel.maxBrews = config.getInt("maxBrewsInMCBarrels", 6);
 
-		Brew.loadSeed(config, file);
+		Brew.loadSeed(config, new File(P.p.getDataFolder(), "config.yml"));
 
 		PluginItem.registerForConfig("brewery", BreweryPluginItem::new);
 		PluginItem.registerForConfig("mmoitems", MMOItemsPluginItem::new);

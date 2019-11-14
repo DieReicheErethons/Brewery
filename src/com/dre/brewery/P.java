@@ -16,6 +16,7 @@ import org.apache.commons.lang.math.NumberUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -313,7 +314,8 @@ public class P extends JavaPlugin {
 
 		// load the Config
 		try {
-			if (!BConfig.readConfig()) {
+			FileConfiguration cfg = BConfig.loadConfigFile();
+			if (cfg == null || !BConfig.readConfig(cfg)) {
 				p = null;
 				getServer().getPluginManager().disablePlugin(this);
 				return;
@@ -463,6 +465,12 @@ public class P extends JavaPlugin {
 		if (sender != null && !sender.equals(getServer().getConsoleSender())) {
 			BConfig.reloader = sender;
 		}
+		FileConfiguration cfg = BConfig.loadConfigFile();
+		if (cfg == null) {
+			// Could not read yml file, do not proceed
+			return;
+		}
+
 		// clear all existent config Data
 		BRecipe.getConfigRecipes().clear();
 		BRecipe.numConfigRecipes = 0;
@@ -486,7 +494,7 @@ public class P extends JavaPlugin {
 
 		// load the Config
 		try {
-			if (!BConfig.readConfig()) {
+			if (!BConfig.readConfig(cfg)) {
 				p = null;
 				getServer().getPluginManager().disablePlugin(this);
 				return;
@@ -510,6 +518,8 @@ public class P extends JavaPlugin {
 		}
 		if (!successful && sender != null) {
 			msg(sender, p.languageReader.get("Error_Recipeload"));
+		} else {
+			p.msg(sender, p.languageReader.get("CMD_Reload"));
 		}
 		BConfig.reloader = null;
 	}

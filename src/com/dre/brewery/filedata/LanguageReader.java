@@ -104,6 +104,7 @@ public class LanguageReader {
 		defaults.add(new Tuple<>("Error_NoBrewName", "&cNo Recipe with Name: '&v1&c' found!"));
 		defaults.add(new Tuple<>("Error_Recipeload", "&cNot all recipes could be restored: More information in the server log!"));
 		defaults.add(new Tuple<>("Error_ConfigUpdate", "Unknown Brewery config version: v&v1, config was not updated!"));
+		defaults.add(new Tuple<>("Error_YmlRead", "Could not read File config.yml, please make sure the file is in valid yml format (correct spaces etc.)"));
 
 		/* Permissions */
 		defaults.add(new Tuple<>("Error_NoPermissions", "&cYou don't have permissions to do this!"));

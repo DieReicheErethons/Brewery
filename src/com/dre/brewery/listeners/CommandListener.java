@@ -36,7 +36,6 @@ public class CommandListener implements CommandExecutor {
 
 			if (sender.hasPermission("brewery.cmd.reload")) {
 				p.reload(sender);
-				p.msg(sender, p.languageReader.get("CMD_Reload"));
 			} else {
 				p.msg(sender, p.languageReader.get("Error_NoPermissions"));
 			}

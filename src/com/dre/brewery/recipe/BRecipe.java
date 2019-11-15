@@ -19,7 +19,7 @@ import java.util.List;
 
 public class BRecipe {
 
-	public static List<BRecipe> recipes = new ArrayList<>();
+	private static List<BRecipe> recipes = new ArrayList<>();
 	public static int numConfigRecipes; // The number of recipes in the list that are from config
 
 	private String[] name;

@@ -108,11 +108,22 @@ public class InventoryListener implements Listener {
 			ItemStack item = event.getCurrentItem();
 			if (item.hasItemMeta()) {
 				PotionMeta potion = ((PotionMeta) item.getItemMeta());
-				// convert potions from 1.8 to 1.9 for color and to remove effect descriptions
-				if (P.use1_9 && !potion.hasItemFlag(ItemFlag.HIDE_POTION_EFFECTS)) {
-					Brew brew = Brew.get(potion);
-					if (brew != null) {
-						brew.convertPre19(item);
+				assert potion != null;
+				if (P.use1_11) {
+					// Convert potions from 1.10 to 1.11 for new color
+					if (potion.getColor() == null) {
+						Brew brew = Brew.get(potion);
+						if (brew != null) {
+							brew.convertPre1_11(item);
+						}
+					}
+				} else {
+					// convert potions from 1.8 to 1.9 for color and to remove effect descriptions
+					if (P.use1_9 && !potion.hasItemFlag(ItemFlag.HIDE_POTION_EFFECTS)) {
+						Brew brew = Brew.get(potion);
+						if (brew != null) {
+							brew.convertPre1_9(item);
+						}
 					}
 				}
 				Brew brew = Brew.get(item);
@@ -203,6 +214,7 @@ public class InventoryListener implements Listener {
 		ItemStack item = event.getCurrentItem();
 		if (item != null && item.getType() == Material.POTION && item.hasItemMeta()) {
 			PotionMeta meta = (PotionMeta) item.getItemMeta();
+			assert meta != null;
 			Brew brew = Brew.get(meta);
 			if (brew != null) {
 				BrewLore lore = null;
@@ -325,6 +337,7 @@ public class InventoryListener implements Listener {
 			ItemStack item = event.getItem();
 			if (item.getType() == Material.POTION && Brew.isBrew(item)) {
 				PotionMeta meta = (PotionMeta) item.getItemMeta();
+				assert meta != null;
 				if (BrewLore.hasColorLore(meta)) {
 					// has color lore, convert lore back to normal
 					Brew brew = Brew.get(meta);

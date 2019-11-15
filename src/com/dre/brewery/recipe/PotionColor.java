@@ -59,6 +59,7 @@ public class PotionColor {
 	@SuppressWarnings("deprecation")
 	public void colorBrew(PotionMeta meta, ItemStack potion, boolean destillable) {
 		if (P.use1_9) {
+			// We need to Hide Potion Effects even in 1.12, as it would otherwise show "No Effects"
 			meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
 			if (P.use1_11) {
 				// BasePotionData was only used for the Color, so starting with 1.12 we can use setColor instead

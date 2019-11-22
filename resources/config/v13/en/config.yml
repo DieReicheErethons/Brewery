@@ -208,6 +208,10 @@ cauldron:
 # alcohol: Absolute amount of alcohol 0-100 in a perfect potion (will be added directly to the player, where 100 means fainting)
 # lore: List of additional text on the finished brew. (Formatting codes possible: such as &6)
 #   Specific lore for quality possible, using + bad, ++ normal, ++ good, added to the front of the line.
+# servercommands: List of Commands executed by the Server when drinking the brew
+# playercommands: List of Commands executed by the Player when drinking the brew
+# drinkmessage: Chat-message to the Player when drinking the Brew
+# drinktitle: Title on Screen to the Player when drinking the Brew
 # effects: List of effect/level/duration  Special potion-effect when drinking, duration in sek.
 #   Possible Effects: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/potion/PotionEffectType.html
 #   Level or Duration ranges may be specified with a "-", ex. 'SPEED/1-2/30-40' = lvl 1 and 30 sec at worst and lvl 2 and 40 sec at best
@@ -224,6 +228,7 @@ recipes:
       - Bedrock/1
       - Brewery:Wheatbeer/2
 #      - ExoticGarden:Grape/3
+      - ex-item/4
     cookingtime: 3
     distillruns: 2
     distilltime: 60
@@ -239,6 +244,12 @@ recipes:
       - + Smells disgusting
       - ++ Smells alright
       - +++ Smells really good
+    servercommands:
+      - weather clear
+    playercommands:
+      - homes
+    drinkmessage: Tastes good
+    drinktitle: Warms you from inside
     effects:
       - FIRE_RESISTANCE/20
       - HEAL/1

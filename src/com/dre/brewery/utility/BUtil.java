@@ -14,6 +14,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -93,6 +94,37 @@ public class BUtil {
 			}
 		}
 		effect.apply(player);
+	}
+
+	/**
+	 * Load A List of Strings from config. If found a single String, will convert to List
+	 */
+	@Nullable
+	public static List<String> loadCfgStringList(ConfigurationSection cfg, String path) {
+		if (cfg.isString(path)) {
+			List<String> list = new ArrayList<>(1);
+			list.add(cfg.getString(path));
+			return list;
+		} else if (cfg.isList(path)) {
+			return cfg.getStringList(path);
+		}
+		return null;
+	}
+
+	/**
+	 * Load a String from config. If found a List, will return the first String
+	 */
+	@Nullable
+	public static String loadCfgString(ConfigurationSection cfg, String path) {
+		if (cfg.isString(path)) {
+			return cfg.getString(path);
+		} else if (cfg.isList(path)) {
+			List<String> list = cfg.getStringList(path);
+			if (!list.isEmpty()) {
+				return list.get(0);
+			}
+		}
+		return null;
 	}
 
 	/* **************************************** */

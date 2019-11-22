@@ -207,6 +207,10 @@ cauldron:
 # alcohol: Alkoholgehalt 0-100 in absoluter Menge bei perfektem Getränk (wird dem Spieler hinzugefügt, bei 100 = tot)
 # lore: Auflistung von zusätzlichem Text auf dem fertigen Trank. (Farbcodes möglich: z.b. &6)
 #   Lore nur für bestimmte Qualität möglich mit + Schlecht, ++ Mittel, +++ Gut, vorne anhängen.
+# servercommands: Liste von Befehlen ausgeführt vom Server wenn der Trank getrunken wird
+# playercommands: Liste von Befehlen ausgeführt vom Spieler wenn der Trank getrunken wird
+# drinkmessage: Nachricht im Chat beim trinken des Trankes
+# drinktitle: Nachricht als Titel auf dem Bildschirm an den Spieler beim trinken des Trankes
 # effects: Auflistung Effekt/Level/Dauer  Besonderere Trank-Effekte beim Trinken, Dauer in sek.
 #   Mögliche Effekte: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/potion/PotionEffectType.html
 #   Minimale und Maximale Level/Dauer können durch "-" festgelegt werden, Bsp: 'SPEED/1-2/30-40' = Level 1 und 30 sek minimal, Level 2 und 40 sek maximal
@@ -223,7 +227,7 @@ recipes:
       - Bedrock/1
       - Brewery:Weißbier/2
 #      - ExoticGarden:Grape/3
-      - bsp-item/1
+      - bsp-item/4
     cookingtime: 3
     distillruns: 2
     distilltime: 60
@@ -239,6 +243,12 @@ recipes:
       - + Riecht eklig
       - ++ Riecht ganz ok
       - +++ Riecht richtig gut
+    servercommands:
+      - weather clear
+    playercommands:
+      - homes
+    drinkmessage: Schmeckt toll
+    drinktitle: Wärmt dich von innen
     effects:
       - FIRE_RESISTANCE/20
       - HEAL/1

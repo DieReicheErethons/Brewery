@@ -4,11 +4,13 @@ import com.dre.brewery.BIngredients;
 import com.dre.brewery.Brew;
 import com.dre.brewery.P;
 import com.dre.brewery.filedata.BConfig;
+import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.Tuple;
 import org.apache.commons.lang.NotImplementedException;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -16,25 +18,37 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.ListIterator;
 
 public class BRecipe {
 
 	private static List<BRecipe> recipes = new ArrayList<>();
 	public static int numConfigRecipes; // The number of recipes in the list that are from config
 
+	// info
 	private String[] name;
+	private boolean saveInData; // If this recipe should be saved in data and loaded again when the server restarts. Applicable to non-config recipes
+
+	// brewing
 	private List<RecipeItem> ingredients = new ArrayList<>(); // Items and amounts
+	private int difficulty; // difficulty to brew the potion, how exact the instruction has to be followed
 	private int cookingTime; // time to cook in cauldron
 	private byte distillruns; // runs through the brewer
 	private int distillTime; // time for one distill run in seconds
 	private byte wood; // type of wood the barrel has to consist of
 	private int age; // time in minecraft days for the potions to age in barrels
-	private PotionColor color; // color of the destilled/finished potion
-	private int difficulty; // difficulty to brew the potion, how exact the instruction has to be followed
+
+	// outcome
+	private PotionColor color; // color of the distilled/finished potion
 	private int alcohol; // Alcohol in perfect potion
 	private List<Tuple<Integer, String>> lore; // Custom Lore on the Potion. The int is for Quality Lore, 0 = any, 1,2,3 = Bad,Middle,Good
+
+	// drinking
 	private List<BEffect> effects = new ArrayList<>(); // Special Effects when drinking
-	private boolean saveInData; // If this recipe should be saved in data and loaded again when the server restarts. Applicable to non-config recipes
+	private List<String> playercmds; // Commands executed as the player when drinking
+	private List<String> servercmds; // Commands executed as the server when drinking
+	private String drinkMsg; // Message when drinking
+	private String drinkTitle; // Title to show when drinking
 
 	private BRecipe() {
 	}
@@ -110,6 +124,29 @@ public class BRecipe {
 		}
 
 		recipe.lore = loadLore(configSectionRecipes, recipeId + ".lore");
+
+		recipe.servercmds = BUtil.loadCfgStringList(configSectionRecipes, recipeId + ".servercommands");
+		recipe.playercmds = BUtil.loadCfgStringList(configSectionRecipes, recipeId + ".playercommands");
+
+		if (recipe.servercmds != null && !recipe.servercmds.isEmpty()) {
+			for (ListIterator<String> iter = recipe.servercmds.listIterator(); iter.hasNext(); ) {
+				String cmd = iter.next();
+				if (cmd.startsWith("/")) {
+					iter.set(cmd.substring(1));
+				}
+			}
+		}
+		if (recipe.playercmds != null && !recipe.playercmds.isEmpty()) {
+			for (ListIterator<String> iter = recipe.playercmds.listIterator(); iter.hasNext(); ) {
+				String cmd = iter.next();
+				if (cmd.startsWith("/")) {
+					iter.set(cmd.substring(1));
+				}
+			}
+		}
+
+		recipe.drinkMsg = P.p.color(BUtil.loadCfgString(configSectionRecipes, recipeId + ".drinkmessage"));
+		recipe.drinkTitle = P.p.color(BUtil.loadCfgString(configSectionRecipes, recipeId + ".drinktitle"));
 
 		List<String> effectStringList = configSectionRecipes.getStringList(recipeId + ".effects");
 		if (effectStringList != null) {
@@ -245,13 +282,7 @@ public class BRecipe {
 
 	@Nullable
 	public static List<Tuple<Integer, String>> loadLore(ConfigurationSection cfg, String path) {
-		List<String> load = null;
-		if (cfg.isString(path)) {
-			load = new ArrayList<>(1);
-			load.add(cfg.getString(path));
-		} else if (cfg.isList(path)) {
-			load = cfg.getStringList(path);
-		}
+		List<String> load = BUtil.loadCfgStringList(cfg, path);
 		if (load != null) {
 			List<Tuple<Integer, String>> lore = new ArrayList<>(load.size());
 			for (String line : load) {
@@ -380,6 +411,25 @@ public class BRecipe {
 		return false;
 	}
 
+	public void applyDrinkFeatures(Player player) {
+		if (playercmds != null && !playercmds.isEmpty()) {
+			for (String cmd : playercmds) {
+				player.performCommand(cmd.replaceAll("%player_name%", player.getName()));
+			}
+		}
+		if (servercmds != null && !servercmds.isEmpty()) {
+			for (String cmd : servercmds) {
+				P.p.getServer().dispatchCommand(P.p.getServer().getConsoleSender(), cmd.replaceAll("%player_name%", player.getName()));
+			}
+		}
+		if (drinkMsg != null) {
+			player.sendMessage(drinkMsg.replaceAll("%player_name%", player.getName()));
+		}
+		if (drinkTitle != null) {
+			player.sendTitle("", drinkTitle.replaceAll("%player_name%", player.getName()), 10, 90, 30);
+		}
+	}
+
 	/**
 	 * Create a Potion from this Recipe with best values. Quality can be set, but will reset to 10 if put in a barrel
 	 *
@@ -478,9 +528,6 @@ public class BRecipe {
 		return false;
 	}
 
-
-	// Getters
-
 	public List<RecipeItem> getIngredients() {
 		return ingredients;
 	}
@@ -546,6 +593,22 @@ public class BRecipe {
 			}
 		}
 		return list;
+	}
+
+	public List<String> getPlayercmds() {
+		return playercmds;
+	}
+
+	public List<String> getServercmds() {
+		return servercmds;
+	}
+
+	public String getDrinkMsg() {
+		return drinkMsg;
+	}
+
+	public String getDrinkTitle() {
+		return drinkTitle;
 	}
 
 	public List<BEffect> getEffects() {
@@ -749,6 +812,44 @@ public class BRecipe {
 				recipe.lore = new ArrayList<>();
 			}
 			recipe.lore.add(new Tuple<>(quality, line));
+			return this;
+		}
+
+		/**
+		 * Add Commands that are executed by the player on drinking
+		 */
+		public Builder addPlayerCmds(String... cmds) {
+			if (recipe.playercmds == null) {
+				recipe.playercmds = new ArrayList<>(cmds.length);
+			}
+			Collections.addAll(recipe.playercmds, cmds);
+			return this;
+		}
+
+		/**
+		 * Add Commands that are executed by the server on drinking
+		 */
+		public Builder addServerCmds(String... cmds) {
+			if (recipe.servercmds == null) {
+				recipe.servercmds = new ArrayList<>(cmds.length);
+			}
+			Collections.addAll(recipe.servercmds, cmds);
+			return this;
+		}
+
+		/**
+		 * Add Message that is sent to the player in chat when he drinks the brew
+		 */
+		public Builder drinkMsg(String msg) {
+			recipe.drinkMsg = msg;
+			return this;
+		}
+
+		/**
+		 * Add Message that is sent to the player as a small title when he drinks the brew
+		 */
+		public Builder drinkTitle(String title) {
+			recipe.drinkTitle = title;
 			return this;
 		}
 

@@ -2,6 +2,7 @@ package com.dre.brewery.recipe;
 
 import com.dre.brewery.P;
 import com.dre.brewery.filedata.BConfig;
+import com.dre.brewery.utility.BUtil;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
@@ -188,14 +189,7 @@ public abstract class RecipeItem implements Cloneable {
 		List<String> names;
 		List<String> lore;
 
-		List<String> load = null;
-		String path = id + ".material";
-		if (cfg.isString(path)) {
-			load = new ArrayList<>(1);
-			load.add(cfg.getString(path));
-		} else if (cfg.isList(path)) {
-			load = cfg.getStringList(path);
-		}
+		List<String> load = BUtil.loadCfgStringList(cfg, id + ".material");
 		if (load != null && !load.isEmpty()) {
 			if ((materials = loadMaterials(load)) == null) {
 				return null;
@@ -204,14 +198,7 @@ public abstract class RecipeItem implements Cloneable {
 			materials = new ArrayList<>(0);
 		}
 
-		load = null;
-		path = id + ".name";
-		if (cfg.isString(path)) {
-			load = new ArrayList<>(1);
-			load.add(cfg.getString(path));
-		} else if (cfg.isList(path)) {
-			load = cfg.getStringList(path);
-		}
+		load = BUtil.loadCfgStringList(cfg, id + ".name");
 		if (load != null && !load.isEmpty()) {
 			names = load.stream().map(l -> P.p.color(l)).collect(Collectors.toList());
 			if (P.use1_13) {
@@ -222,14 +209,7 @@ public abstract class RecipeItem implements Cloneable {
 			names = new ArrayList<>(0);
 		}
 
-		load = null;
-		path = id + ".lore";
-		if (cfg.isString(path)) {
-			load = new ArrayList<>(1);
-			load.add(cfg.getString(path));
-		} else if (cfg.isList(path)) {
-			load = cfg.getStringList(path);
-		}
+		load = BUtil.loadCfgStringList(cfg, id + ".lore");
 		if (load != null && !load.isEmpty()) {
 			lore = load.stream().map(l -> P.p.color(l)).collect(Collectors.toList());
 		} else {

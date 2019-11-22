@@ -153,6 +153,10 @@ public class BPlayer {
 			return false;
 		}
 
+		if (brew.hasRecipe()) {
+			brew.getCurrentRecipe().applyDrinkFeatures(player);
+		}
+
 		int brewAlc = drinkEvent.getAddedAlcohol();
 		int quality = drinkEvent.getQuality();
 		List<PotionEffect> effects = getBrewEffects(brew.getEffects(), quality);
@@ -173,7 +177,7 @@ public class BPlayer {
 			bPlayer.quality += brewAlc;
 		}
 		applyEffects(effects, player, PlayerEffectEvent.EffectType.DRINK);
-		applyEffects(getQualityEffects(drinkEvent.getQuality(), brewAlc), player, PlayerEffectEvent.EffectType.QUALITY);
+		applyEffects(getQualityEffects(quality, brewAlc), player, PlayerEffectEvent.EffectType.QUALITY);
 
 		if (bPlayer.drunkeness > 100) {
 			bPlayer.drinkCap(player);

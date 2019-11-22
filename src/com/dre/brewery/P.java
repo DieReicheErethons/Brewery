@@ -524,7 +524,7 @@ public class P extends JavaPlugin {
 		BConfig.reloader = null;
 	}
 
-	public P getInstance() {
+	public static P getInstance() {
 		return p;
 	}
 

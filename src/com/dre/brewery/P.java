@@ -44,6 +44,10 @@ public class P extends JavaPlugin {
 	public String language;
 	public LanguageReader languageReader;
 
+	// Metrics
+	public int brewsCreated;
+	public int exc, good, norm, bad, terr;
+
 	@Override
 	public void onEnable() {
 		p = this;
@@ -332,30 +336,11 @@ public class P extends JavaPlugin {
 		/*try {
 			Metrics metrics = new Metrics(this);
 			metrics.addCustomChart(new Metrics.SingleLineChart("drunk_players", BPlayer::numDrunkPlayers));
-			metrics.addCustomChart(new Metrics.SingleLineChart("brews_in_existence", () -> Brew.potions.size()));
+			metrics.addCustomChart(new Metrics.SingleLineChart("brews_in_existence", () -> brewsCreated));
 			metrics.addCustomChart(new Metrics.SingleLineChart("barrels_built", () -> Barrel.barrels.size()));
 			metrics.addCustomChart(new Metrics.SingleLineChart("cauldrons_boiling", () -> BCauldron.bcauldrons.size()));
 			metrics.addCustomChart(new Metrics.AdvancedPie("brew_quality", () -> {
 				Map<String, Integer> map = new HashMap<>(5);
-				int exc = 0;
-				int good = 0;
-				int norm = 0;
-				int bad = 0;
-				int terr = 0;
-				for (Brew brew : Brew.potions.values()) {
-					if (brew.getQuality() >= 9) {
-						exc++;
-					} else if (brew.getQuality() >= 7) {
-						good++;
-					} else if (brew.getQuality() >= 5) {
-						norm++;
-					} else if (brew.getQuality() >= 3) {
-						bad++;
-					} else {
-						terr++;
-					}
-				}
-
 				map.put("excellent", exc);
 				map.put("good", good);
 				map.put("normal", norm);
@@ -364,7 +349,7 @@ public class P extends JavaPlugin {
 				return map;
 			}));
 			metrics.addCustomChart(new Metrics.SimplePie("number_of_recipes", () -> {
-				int recipes = BIngredients.recipes.size();
+				int recipes = BRecipe.getAllRecipes().size();
 				if (recipes < 7) {
 					return "Less than 7";
 				} else if (recipes < 11) {
@@ -526,6 +511,22 @@ public class P extends JavaPlugin {
 
 	public static P getInstance() {
 		return p;
+	}
+
+	public void metricsForCreate(Brew brew) {
+		if (brewsCreated == Integer.MAX_VALUE) return;
+		brewsCreated++;
+		if (brew.getQuality() >= 9) {
+			exc++;
+		} else if (brew.getQuality() >= 7) {
+			good++;
+		} else if (brew.getQuality() >= 5) {
+			norm++;
+		} else if (brew.getQuality() >= 3) {
+			bad++;
+		} else {
+			terr++;
+		}
 	}
 
 	// Utility

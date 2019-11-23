@@ -2,6 +2,9 @@ package com.dre.brewery.filedata;
 
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 import com.dre.brewery.MCBarrel;
 import com.dre.brewery.utility.BUtil;
@@ -65,6 +68,16 @@ public class DataSave extends BukkitRunnable {
 		configFile.set("MCBarrelTime", MCBarrel.mcBarrelTime);
 
 		Brew.writePrevSeeds(configFile);
+
+		List<Integer> brewsCreated = new ArrayList<>(6);
+		brewsCreated.add(P.p.brewsCreated);
+		brewsCreated.add(P.p.exc);
+		brewsCreated.add(P.p.good);
+		brewsCreated.add(P.p.norm);
+		brewsCreated.add(P.p.bad);
+		brewsCreated.add(P.p.terr);
+		configFile.set("brewsCreated", brewsCreated);
+		configFile.set("brewsCreatedH", brewsCreated.hashCode());
 
 		if (!Brew.legacyPotions.isEmpty()) {
 			Brew.saveLegacy(configFile.createSection("Brew"));

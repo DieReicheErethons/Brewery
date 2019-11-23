@@ -39,6 +39,20 @@ public class BData {
 
 			Brew.loadPrevSeeds(data);
 
+			List<Integer> brewsCreated = data.getIntegerList("brewsCreated");
+			if (brewsCreated != null && brewsCreated.size() == 6) {
+				int hash = data.getInt("brewsCreatedH");
+				// Check the hash to prevent tampering with statistics
+				if (brewsCreated.hashCode() == hash) {
+					P.p.brewsCreated = brewsCreated.get(0);
+					P.p.exc = brewsCreated.get(1);
+					P.p.good = brewsCreated.get(2);
+					P.p.norm = brewsCreated.get(3);
+					P.p.bad = brewsCreated.get(4);
+					P.p.terr = brewsCreated.get(5);
+				}
+			}
+
 			// Check if data is the newest version
 			String version = data.getString("Version", null);
 			if (version != null) {
@@ -96,6 +110,21 @@ public class BData {
 					int lastUpdate = section.getInt(uid + ".lastUpdate", 0);
 
 					Brew.loadLegacy(ingredients, P.p.parseInt(uid), quality, alc, distillRuns, ageTime, wood, recipe, unlabeled, persistent, stat, lastUpdate);
+				}
+			}
+
+			// Store how many legacy brews were created
+			if (P.p.brewsCreated <= 0) {
+				P.p.brewsCreated = 0;
+				P.p.exc = 0;
+				P.p.good = 0;
+				P.p.norm = 0;
+				P.p.bad = 0;
+				P.p.terr = 0;
+				if (!Brew.noLegacy()) {
+					for (Brew brew : Brew.legacyPotions.values()) {
+						P.p.metricsForCreate(brew);
+					}
 				}
 			}
 

@@ -61,8 +61,9 @@ public class DataSave extends BukkitRunnable {
 
 		Brew.writePrevSeeds(configFile);
 
-		List<Integer> brewsCreated = new ArrayList<>(6);
+		List<Integer> brewsCreated = new ArrayList<>(7);
 		brewsCreated.add(P.p.brewsCreated);
+		brewsCreated.add(P.p.brewsCreatedCmd);
 		brewsCreated.add(P.p.exc);
 		brewsCreated.add(P.p.good);
 		brewsCreated.add(P.p.norm);

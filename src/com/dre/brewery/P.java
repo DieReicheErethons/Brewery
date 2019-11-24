@@ -13,6 +13,7 @@ import com.dre.brewery.recipe.BRecipe;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.LegacyUtil;
 import org.apache.commons.lang.math.NumberUtils;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -22,6 +23,8 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 public class P extends JavaPlugin {
 	public static P p;
@@ -47,7 +50,8 @@ public class P extends JavaPlugin {
 
 	// Metrics
 	public int brewsCreated;
-	public int exc, good, norm, bad, terr;
+	public int brewsCreatedCmd; // Created by command
+	public int exc, good, norm, bad, terr; // Brews drunken with quality
 
 	@Override
 	public void onEnable() {
@@ -346,7 +350,7 @@ public class P extends JavaPlugin {
 			metrics.addCustomChart(new Metrics.SingleLineChart("barrels_built", () -> Barrel.barrels.size()));
 			metrics.addCustomChart(new Metrics.SingleLineChart("cauldrons_boiling", () -> BCauldron.bcauldrons.size()));
 			metrics.addCustomChart(new Metrics.AdvancedPie("brew_quality", () -> {
-				Map<String, Integer> map = new HashMap<>(5);
+				Map<String, Integer> map = new HashMap<>(8);
 				map.put("excellent", exc);
 				map.put("good", good);
 				map.put("normal", norm);
@@ -354,6 +358,13 @@ public class P extends JavaPlugin {
 				map.put("terrible", terr);
 				return map;
 			}));
+			metrics.addCustomChart(new Metrics.AdvancedPie("brews_created", () -> {
+				Map<String, Integer> map = new HashMap<>(4);
+				map.put("by command", brewsCreatedCmd);
+				map.put("brewing", brewsCreated - brewsCreatedCmd);
+				return map;
+			}));
+
 			metrics.addCustomChart(new Metrics.SimplePie("number_of_recipes", () -> {
 				int recipes = BRecipe.getAllRecipes().size();
 				if (recipes < 7) {
@@ -373,6 +384,63 @@ public class P extends JavaPlugin {
 					return "More than 31";
 				}
 
+			}));
+			metrics.addCustomChart(new Metrics.SimplePie("v2_mc_version", () -> {
+				String mcv = Bukkit.getBukkitVersion();
+				mcv = mcv.substring(0, mcv.indexOf('.', 2));
+				if (mcv.matches("^\\d\\.\\d{1,2}$")) {
+					// Start, digit, dot, 1-2 digits, end
+					return mcv;
+				} else {
+					return "undef";
+				}
+			}));
+			metrics.addCustomChart(new Metrics.DrilldownPie("plugin_mc_version", () -> {
+				Map<String, Map<String, Integer>> map = new HashMap<>(3);
+				String mcv = Bukkit.getBukkitVersion();
+				mcv = mcv.substring(0, mcv.indexOf('.', 2));
+				if (mcv.matches("^\\d\\.\\d{1,2}$")) {
+					// Start, digit, dot, 1-2 digits, end
+					mcv = "MC " + mcv;
+				} else {
+					mcv = "undef";
+				}
+				Map<String, Integer> innerMap = new HashMap<>(3);
+				innerMap.put(mcv, 1);
+				map.put(getDescription().getVersion(), innerMap);
+				return map;
+			}));
+			metrics.addCustomChart(new Metrics.SimplePie("language", () -> language));
+			metrics.addCustomChart(new Metrics.SimplePie("config_scramble", () -> BConfig.enableEncode ? "enabled" : "disabled"));
+			metrics.addCustomChart(new Metrics.SimplePie("config_lore_color", () -> {
+				if (BConfig.colorInBarrels) {
+					if (BConfig.colorInBrewer) {
+						return "both";
+					} else {
+						return "in barrels";
+					}
+				} else {
+					if (BConfig.colorInBrewer) {
+						return "in distiller";
+					} else {
+						return "none";
+					}
+				}
+			}));
+			metrics.addCustomChart(new Metrics.SimplePie("config_always_show", () -> {
+				if (BConfig.alwaysShowQuality) {
+					if (BConfig.alwaysShowAlc) {
+						return "both";
+					} else {
+						return "quality stars";
+					}
+				} else {
+					if (BConfig.alwaysShowAlc) {
+						return "alc content";
+					} else {
+						return "none";
+					}
+				}
 			}));
 		} catch (Throwable e) {
 			e.printStackTrace();
@@ -519,9 +587,16 @@ public class P extends JavaPlugin {
 		return p;
 	}
 
-	public void metricsForCreate(Brew brew) {
+	public void metricsForCreate(boolean byCmd) {
 		if (brewsCreated == Integer.MAX_VALUE) return;
 		brewsCreated++;
+		if (byCmd) {
+			if (brewsCreatedCmd == Integer.MAX_VALUE) return;
+			brewsCreatedCmd++;
+		}
+	}
+
+	public void metricsForDrink(Brew brew) {
 		if (brew.getQuality() >= 9) {
 			exc++;
 		} else if (brew.getQuality() >= 7) {

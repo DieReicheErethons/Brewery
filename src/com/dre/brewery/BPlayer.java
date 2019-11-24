@@ -156,6 +156,7 @@ public class BPlayer {
 		if (brew.hasRecipe()) {
 			brew.getCurrentRecipe().applyDrinkFeatures(player);
 		}
+		P.p.metricsForDrink(brew);
 
 		int brewAlc = drinkEvent.getAddedAlcohol();
 		int quality = drinkEvent.getQuality();

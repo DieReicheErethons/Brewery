@@ -32,7 +32,17 @@ public class BData {
 		File file = new File(P.p.getDataFolder(), "data.yml");
 		if (file.exists()) {
 
+			long t1 = System.currentTimeMillis();
+
 			FileConfiguration data = YamlConfiguration.loadConfiguration(file);
+
+			long t2 = System.currentTimeMillis();
+
+			if (t2 - t1 > 5000) {
+				// Spigot is very slow at loading inventories from yml. Notify Admin that loading Data took long
+				P.p.log("Bukkit took " + (t2 - t1) / 1000.0 + "s to load the Data File,");
+				P.p.log("consider switching to Paper, or have less items in Barrels");
+			}
 
 			Brew.installTime = data.getLong("installTime", System.currentTimeMillis());
 			MCBarrel.mcBarrelTime = data.getLong("MCBarrelTime", 0);

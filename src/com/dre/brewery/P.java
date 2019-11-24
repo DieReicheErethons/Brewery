@@ -15,6 +15,7 @@ import com.dre.brewery.utility.LegacyUtil;
 import org.apache.commons.lang.math.NumberUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.HandlerList;
@@ -315,6 +316,11 @@ public class P extends JavaPlugin {
 			e.printStackTrace();
 		}*/
 
+		if (use1_14) {
+			// Campfires are weird
+			// Initialize once now so it doesn't lag later when we check for campfires under Cauldrons
+			getServer().createBlockData(Material.CAMPFIRE);
+		}
 
 		// load the Config
 		try {
@@ -575,17 +581,32 @@ public class P extends JavaPlugin {
 	public class BreweryRunnable implements Runnable {
 		@Override
 		public void run() {
+			//long t1 = System.nanoTime();
 			BConfig.reloader = null;
 			for (BCauldron cauldron : BCauldron.bcauldrons.values()) {
 				cauldron.onUpdate();// runs every min to update cooking time
 			}
+			//long t2 = System.nanoTime();
 			Barrel.onUpdate();// runs every min to check and update ageing time
+			//long t3 = System.nanoTime();
 			if (use1_14) MCBarrel.onUpdate();
+			//long t4 = System.nanoTime();
 			BPlayer.onUpdate();// updates players drunkeness
+			//long t5 = System.nanoTime();
 
 			debugLog("Update");
 
+			//long t6 = System.nanoTime();
 			DataSave.autoSave();
+			//long t7 = System.nanoTime();
+
+			/*P.p.log("BreweryRunnable: " +
+				"t1: " + (t2 - t1) / 1000000.0 + "ms" +
+				" | t2: " + (t3 - t2) / 1000000.0 + "ms" +
+				" | t3: " + (t4 - t3) / 1000000.0 + "ms" +
+				" | t4: " + (t5 - t4) / 1000000.0 + "ms" +
+				" | t5: " + (t6 - t5) / 1000000.0 + "ms" +
+				" | t6: " + (t7 - t6) / 1000000.0 + "ms" );*/
 		}
 
 	}

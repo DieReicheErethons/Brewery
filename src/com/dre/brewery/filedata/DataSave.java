@@ -1,12 +1,7 @@
 package com.dre.brewery.filedata;
 
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
-import com.dre.brewery.MCBarrel;
+import com.dre.brewery.*;
 import com.dre.brewery.utility.BUtil;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
@@ -14,12 +9,8 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.dre.brewery.BCauldron;
-import com.dre.brewery.BPlayer;
-import com.dre.brewery.Barrel;
-import com.dre.brewery.Brew;
-import com.dre.brewery.P;
-import com.dre.brewery.Wakeup;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DataSave extends BukkitRunnable {
 
@@ -42,6 +33,7 @@ public class DataSave extends BukkitRunnable {
 
 	@Override
 	public void run() {
+		long saveTime = System.nanoTime();
 		FileConfiguration oldData;
 		if (read != null) {
 			if (!read.done) {
@@ -103,6 +95,9 @@ public class DataSave extends BukkitRunnable {
 		configFile.set("Version", dataVersion);
 
 		collected = true;
+
+		P.p.debugLog("saving: " + ((System.nanoTime() - saveTime) / 1000000.0) + "ms");
+
 		if (P.p.isEnabled()) {
 			P.p.getServer().getScheduler().runTaskAsynchronously(P.p, new WriteData(configFile));
 		} else {
@@ -126,7 +121,6 @@ public class DataSave extends BukkitRunnable {
 
 	// Save all data. Takes a boolean whether all data should be collected in instantly
 	public static void save(boolean collectInstant) {
-		long time = System.nanoTime();
 		if (running != null) {
 			P.p.log("Another Save was started while a Save was in Progress");
 			if (collectInstant) {
@@ -134,24 +128,17 @@ public class DataSave extends BukkitRunnable {
 			}
 			return;
 		}
-		File datafile = new File(P.p.getDataFolder(), "data.yml");
 
-		if (datafile.exists()) {
-			ReadOldData read = new ReadOldData();
-			if (collectInstant) {
-				read.run();
-				running = new DataSave(read);
-				running.run();
-			} else {
-				read.runTaskAsynchronously(P.p);
-				running = new DataSave(read);
-				running.runTaskTimer(P.p, 1, 2);
-			}
-		} else {
-			running = new DataSave(null);
+		ReadOldData read = new ReadOldData();
+		if (collectInstant) {
+			read.run();
+			running = new DataSave(read);
 			running.run();
+		} else {
+			read.runTaskAsynchronously(P.p);
+			running = new DataSave(read);
+			running.runTaskTimer(P.p, 1, 2);
 		}
-		P.p.debugLog("saving: " + ((System.nanoTime() - time) / 1000000.0) + "ms");
 	}
 
 	public static void autoSave() {

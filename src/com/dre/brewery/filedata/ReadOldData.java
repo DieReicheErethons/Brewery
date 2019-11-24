@@ -18,6 +18,12 @@ public class ReadOldData extends BukkitRunnable {
 	@Override
 	public void run() {
 		File datafile = new File(P.p.getDataFolder(), "data.yml");
+		if (!datafile.exists()) {
+			data = new YamlConfiguration();
+			done = true;
+			return;
+		}
+
 		data = YamlConfiguration.loadConfiguration(datafile);
 
 		if (DataSave.lastBackup > 10) {

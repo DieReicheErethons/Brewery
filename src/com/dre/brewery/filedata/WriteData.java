@@ -8,6 +8,9 @@ import org.bukkit.configuration.file.FileConfiguration;
 
 import com.dre.brewery.P;
 
+/**
+ * Writes the collected Data to file in Async Thread
+ */
 public class WriteData implements Runnable {
 
 	private FileConfiguration data;

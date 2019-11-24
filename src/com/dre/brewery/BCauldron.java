@@ -26,7 +26,7 @@ import java.util.UUID;
 
 public class BCauldron {
 	public static final byte EMPTY = 0, SOME = 1, FULL = 2;
-	private static Set<UUID> plInteracted = new HashSet<>();
+	private static Set<UUID> plInteracted = new HashSet<>(); // Interact Event helper
 	public static Map<Block, BCauldron> bcauldrons = new HashMap<>(); // All active cauldrons. Mapped to their block for fast retrieve
 
 	private BIngredients ingredients = new BIngredients();

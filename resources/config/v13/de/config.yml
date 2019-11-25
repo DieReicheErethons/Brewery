@@ -76,6 +76,9 @@ updateCheck: true
 # Autosave Intervall in Minuten [3]
 autosave: 3
 
+# Debug Nachrichten im Log anzeigen [false]
+debug: false
+
 # Config Version
 version: '1.8'
 

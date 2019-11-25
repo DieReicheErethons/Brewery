@@ -7,7 +7,6 @@ import com.dre.brewery.recipe.BCauldronRecipe;
 import com.dre.brewery.recipe.BRecipe;
 import com.dre.brewery.Barrel;
 import com.dre.brewery.Brew;
-import com.dre.brewery.utility.Tuple;
 import org.apache.commons.lang.NotImplementedException;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -242,7 +241,8 @@ public class BreweryApi {
 	 * The recipe can be changed or removed later.
 	 *
 	 * @param recipe The Recipe to add
-	 * @param saveForever If the recipe should be saved forever, even after the Server restarts
+	 * @param saveForever Not Implemented yet
+	 *                    If the recipe should be saved forever, even after the Server restarts
 	 *                    If True: Recipe will be saved until removed manually
 	 *                    If False: Recipe will be removed when the Server restarts, existing potions using
 	 *                    this Recipe will become bad after continued aging, if the recipe is not added again.
@@ -310,7 +310,8 @@ public class BreweryApi {
 	 * The recipe can be changed or removed later.
 	 *
 	 * @param recipe The Cauldron Recipe to add
-	 * @param saveForever If the recipe should be saved forever, even after the Server restarts
+	 * @param saveForever Not Implemented yet
+	 *                    If the recipe should be saved forever, even after the Server restarts
 	 *                    If True: Recipe will be saved until removed manually
 	 *                    If False: Recipe will be removed when the Server restarts
 	 */

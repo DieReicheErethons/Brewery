@@ -91,12 +91,12 @@ public class InventoryListener implements Listener {
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onBrew(BrewEvent event) {
 		if (P.use1_9) {
-			if (BDistiller.hasBrew(event.getContents()) != 0) {
+			if (BDistiller.hasBrew(event.getContents(), BDistiller.getDistillContents(event.getContents())) != 0) {
 				event.setCancelled(true);
 			}
 			return;
 		}
-		if (BDistiller.runDistill(event.getContents())) {
+		if (BDistiller.runDistill(event.getContents(), BDistiller.getDistillContents(event.getContents()))) {
 			event.setCancelled(true);
 		}
 	}
@@ -126,75 +126,15 @@ public class InventoryListener implements Listener {
 						}
 					}
 				}
+				//long t1 = System.nanoTime();
 				Brew brew = Brew.get(item);
+				//long t2 = System.nanoTime();
 				if (brew != null) {
 					P.p.log(brew.toString());
-					//P.p.log(potion.getLore().get(0).replaceAll("§", ""));
-					//P.p.log("similar to beispiel? " + BRecipe.get("Beispiel").createBrew(10).isSimilar(brew));
 
-					brew.touch();
+					//P.p.log("Brew.get(): " + (t2 - t1) / 1000000.0 + "ms");
 
-					/*try {
-						DataInputStream in = new DataInputStream(new Base91DecoderStream(new LoreLoadStream(potion)));
-
-						brew.testLoad(in);
-
-						*//*if (in.readByte() == 27 && in.skip(48) > 0) {
-							in.mark(100);
-							if (in.readUTF().equals("TESTHalloª∆Ω") && in.readInt() == 34834 && in.skip(4) > 0 && in.readLong() == Long.MAX_VALUE) {
-								in.reset();
-								if (in.readUTF().equals("TESTHalloª∆Ω")) {
-									P.p.log("true");
-								} else {
-									P.p.log("false3");
-								}
-							} else {
-								P.p.log("false2");
-							}
-						} else {
-							P.p.log("false1");
-						}*//*
-
-						in.close();
-					} catch (IllegalArgumentException argExc) {
-						P.p.log("No Data in Lore");
-
-						try {
-
-							DataOutputStream out = new DataOutputStream(new Base91EncoderStream(new LoreSaveStream(potion, 2)));
-
-							brew.testStore(out);
-
-
-							*//*out.writeByte(27);
-							out.writeLong(1111); //skip
-							out.writeLong(1111); //skip
-							out.writeLong(1111); //skip
-							out.writeLong(1111); //skip
-							out.writeLong(1111); //skip
-							out.writeLong(1111); //skip
-							out.writeUTF("TESTHalloª∆Ω");
-							out.writeInt(34834);
-							out.writeInt(6436); //skip
-							out.writeLong(Long.MAX_VALUE);*//*
-
-							out.close();
-							*//*StringBuilder b = new StringBuilder();
-							for (char c : "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!$%&()*+,-./:;<=>?@[]^_`{|}~\"".toCharArray()) {
-								b.append('§').append(c);
-							}
-							List<String> lore = potion.getLore();
-							lore.add(b.toString());
-							potion.setLore(lore);*//*
-							item.setItemMeta(potion);
-
-						} catch (IOException h) {
-							h.printStackTrace();
-						}
-
-					} catch (IOException e) {
-						e.printStackTrace();
-					}*/
+					//brew.touch();
 				}
 			}
 		}

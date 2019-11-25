@@ -72,254 +72,6 @@ public class P extends JavaPlugin {
 			useNBT = true;
 		}
 
-		//P.p.log("§" + (use1_9 ? "a":"c") + "1.9 " + "§" + (use1_11 ? "a":"c") + "1.11 " + "§" + (use1_13 ? "a":"c") + "1.13 " + "§" + (use1_14 ? "a":"c") + "1.14");
-
-		/*long master = new SecureRandom().nextLong();
-		ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-		XORScrambleStream scramble = new XORScrambleStream(new Base91EncoderStream(byteStream), master);
-		DataOutputStream data = new DataOutputStream(scramble);
-		DataInputStream dataIn = null;
-		try {
-			scramble.start();
-			data.writeLong(12345L);
-			scramble.stop();
-			data.writeInt(1);
-			data.writeInt(1);
-			scramble.start();
-			data.writeDouble(0.55555D);
-			data.writeInt(234323);
-			//data.writeUTF("Hallo Peter");
-			data.writeLong(5419L); // Skip
-			data.writeDouble(0.55555D);
-
-			data.close();
-
-			XORUnscrambleStream unscramble = new XORUnscrambleStream(new Base91DecoderStream(new ByteArrayInputStream(byteStream.toByteArray())), master);
-			dataIn = new DataInputStream(unscramble);
-			unscramble.start();
-			P.p.log(dataIn.readLong() + "");
-			unscramble.stop();
-			P.p.log(dataIn.readInt() + "");
-			P.p.log(dataIn.readInt() + "");
-			unscramble.start();
-			P.p.log(dataIn.readDouble() + "");
-			dataIn.mark(1000);
-			P.p.log(dataIn.readInt() + "");
-			//P.p.log(dataIn.readUTF());
-			dataIn.skip(8);
-			P.p.log(dataIn.readDouble() + "");
-			P.p.log("reset");
-			dataIn.reset();
-			P.p.log(dataIn.readInt() + "");
-			//P.p.log(dataIn.readUTF());
-			dataIn.skip(8);
-			P.p.log(dataIn.readDouble() + "");
-
-			dataIn.close();
-
-			*//*for (int i = 0; i < 10; i++) {
-				byteStream = new ByteArrayOutputStream();
-				scramble = new XORScrambleStream(new Base91EncoderStream(byteStream));
-				data = new DataOutputStream(scramble);
-				data.writeInt(i);
-				scramble.start();
-				data.writeLong(12345L);
-				data.writeLong(12345L);
-				scramble.stop();
-				data.writeInt(1);
-				data.writeInt(1);
-				scramble.start();
-				data.writeInt(234323);
-				data.writeDouble(0.55555D);
-
-				P.p.log(byteStream.toString());
-				data.close();
-			}*//*
-
-
-			long time = System.currentTimeMillis();
-			for (int i = 0; i < 100000; i++) {
-				unscramble = new XORUnscrambleStream(new Base91DecoderStream(new ByteArrayInputStream(byteStream.toByteArray())), master);
-				dataIn = new DataInputStream(unscramble);
-				unscramble.start();
-				dataIn.readLong();
-				unscramble.stop();
-				dataIn.readInt();
-				dataIn.readInt();
-				unscramble.start();
-				dataIn.readDouble();
-				dataIn.mark(1000);
-				dataIn.readInt();
-				//dataIn.readUTF();
-				dataIn.skip(8);
-				dataIn.readDouble();
-				dataIn.reset();
-				dataIn.readInt();
-				//dataIn.readUTF();
-				dataIn.skip(8);
-				dataIn.readDouble();
-
-				dataIn.close();
-			}
-			long time2 = System.currentTimeMillis();
-
-			for (int i = 0; i < 100000; i++) {
-				unscramble = new XORUnscrambleStream(new ByteArrayInputStream(byteStream.toByteArray()), master);
-				dataIn = new DataInputStream(unscramble);
-				unscramble.start();
-				dataIn.skip(2);
-				dataIn.readLong();
-				unscramble.stop();
-				dataIn.readInt();
-				dataIn.readInt();
-				unscramble.start();
-				dataIn.readDouble();
-				dataIn.mark(1000);
-				dataIn.readInt();
-				//dataIn.readUTF();
-				dataIn.skip(8);
-				dataIn.readDouble();
-				dataIn.reset();
-				dataIn.readInt();
-				//dataIn.readUTF();
-				dataIn.skip(8);
-				dataIn.readDouble();
-
-				dataIn.close();
-			}
-			long time3 = System.currentTimeMillis();
-
-			P.p.log("Time with base91: " + (time2 - time));
-			P.p.log("Time without base91: " + (time3 - time2));
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (InvalidKeyException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				data.close();
-				if (dataIn != null) {
-					dataIn.close();
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}*/
-
-		/*try {
-			ItemMeta meta = new ItemStack(Material.POTION).getItemMeta();
-			DataOutputStream data = new DataOutputStream(new Base91EncoderStream(new LoreSaveStream(meta, 3)));
-
-			data.writeInt(2);
-			data.writeLong(5);
-
-			byte[] test = new byte[128];
-			test[1] = 6;
-			test[2] = 12;
-			test[3] = 21;
-			test[127] = 99;
-			data.write(test);
-
-			data.writeInt(123324);
-			data.writeLong(12343843);
-
-			data.close();
-			meta.getLore();
-
-			DataInputStream dataIn = new DataInputStream(new Base91DecoderStream(new LoreLoadStream(meta)));
-
-			P.p.log(dataIn.readInt() + ", " + dataIn.readLong() + ", ");
-
-			byte[] testIn = new byte[128];
-			dataIn.read(testIn);
-			P.p.log(testIn[1] + ", " + testIn[2] + ", " + testIn[3] + ", " + testIn[127]);
-
-			P.p.log(dataIn.readInt() + ", " + dataIn.readLong() + ", ");
-
-			dataIn.close();
-
-
-
-			basE91 basE91 = new basE91();
-			int[] input = new int[] {12, 65, 324, 5, 12, 129459, 1234567, Integer.MIN_VALUE, Integer.MAX_VALUE};
-			ByteArrayOutputStream stream = new ByteArrayOutputStream();
-			DataOutputStream data = new DataOutputStream(stream);
-			for (int i = 0; i < input.length; i++) {
-				data.writeInt(input[i]);
-			}
-			data.flush();
-			data.close();
-			byte[] in = stream.toByteArray();
-			byte[] out = new byte[4096];
-			int lenght = basE91.encode(in, in.length, out);
-			basE91.encEnd(out);
-			String done = new String(out, 0, lenght);
-
-			byte[] tin = done.getBytes();
-
-			byte[] tout = new byte[4096];
-			lenght = basE91.decode(tin, tin.length, tout);
-			basE91.decEnd(tout);
-
-
-			ByteArrayInputStream tstream = new ByteArrayInputStream(tout, 0, lenght);
-			DataInputStream tdata = new DataInputStream(tstream);
-			int[] test = new int[4096];
-			for (int j = 0; j < 6; j++) {
-				if (tstream.available() <= 0) break;
-				test[j] = tdata.readInt();
-
-			}
-			tdata.close();
-			test = test;*/
-
-
-
-			/*basE91 basE91 = new basE91();
-			int[] input = new int[] {12, 65, 324, 5, 12, 129459, 1234567, Integer.MIN_VALUE, Integer.MAX_VALUE};
-			ByteArrayOutputStream stream = new ByteArrayOutputStream();
-			DataOutputStream data = new DataOutputStream(stream);
-			for (int i = 0; i < input.length; i++) {
-				data.writeInt(input[i]);
-			}
-			data.flush();
-			data.close();
-			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			ByteArrayInputStream in = new ByteArrayInputStream(stream.toByteArray());
-
-			encode(in, out, in.available());
-
-			in.close();
-			out.flush();
-			out.close();
-
-			String done = new String(out.toByteArray());
-
-			ByteArrayInputStream tin = new ByteArrayInputStream(done.getBytes());
-			ByteArrayOutputStream tout = new ByteArrayOutputStream();
-
-			decode(tin, tout, tin.available());
-
-			tin.close();
-			tout.flush();
-			tout.close();
-
-			ByteArrayInputStream tstream = new ByteArrayInputStream(tout.toByteArray());
-			DataInputStream tdata = new DataInputStream(tstream);
-			int[] test = new int[4096];
-			for (int j = 0; j < 9; j++) {
-				if (tstream.available() <= 0) break;
-				test[j] = tdata.readInt();
-
-			}
-			tdata.close();
-			test = test;
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}*/
-
 		if (use1_14) {
 			// Campfires are weird
 			// Initialize once now so it doesn't lag later when we check for campfires under Cauldrons
@@ -343,108 +95,7 @@ public class P extends JavaPlugin {
 		BData.readData();
 
 		// Setup Metrics
-		/*try {
-			Metrics metrics = new Metrics(this);
-			metrics.addCustomChart(new Metrics.SingleLineChart("drunk_players", BPlayer::numDrunkPlayers));
-			metrics.addCustomChart(new Metrics.SingleLineChart("brews_in_existence", () -> brewsCreated));
-			metrics.addCustomChart(new Metrics.SingleLineChart("barrels_built", () -> Barrel.barrels.size()));
-			metrics.addCustomChart(new Metrics.SingleLineChart("cauldrons_boiling", () -> BCauldron.bcauldrons.size()));
-			metrics.addCustomChart(new Metrics.AdvancedPie("brew_quality", () -> {
-				Map<String, Integer> map = new HashMap<>(8);
-				map.put("excellent", exc);
-				map.put("good", good);
-				map.put("normal", norm);
-				map.put("bad", bad);
-				map.put("terrible", terr);
-				return map;
-			}));
-			metrics.addCustomChart(new Metrics.AdvancedPie("brews_created", () -> {
-				Map<String, Integer> map = new HashMap<>(4);
-				map.put("by command", brewsCreatedCmd);
-				map.put("brewing", brewsCreated - brewsCreatedCmd);
-				return map;
-			}));
-
-			metrics.addCustomChart(new Metrics.SimplePie("number_of_recipes", () -> {
-				int recipes = BRecipe.getAllRecipes().size();
-				if (recipes < 7) {
-					return "Less than 7";
-				} else if (recipes < 11) {
-					return "7-10";
-				} else if (recipes == 11) {
-					// There are 11 default recipes, so show this as its own slice
-					return "11";
-				} else if (recipes <= 31) {
-					if (recipes % 2 == 0) {
-						return recipes + "-" + (recipes + 1);
-					} else {
-						return (recipes - 1) + "-" + recipes;
-					}
-				} else {
-					return "More than 31";
-				}
-
-			}));
-			metrics.addCustomChart(new Metrics.SimplePie("v2_mc_version", () -> {
-				String mcv = Bukkit.getBukkitVersion();
-				mcv = mcv.substring(0, mcv.indexOf('.', 2));
-				if (mcv.matches("^\\d\\.\\d{1,2}$")) {
-					// Start, digit, dot, 1-2 digits, end
-					return mcv;
-				} else {
-					return "undef";
-				}
-			}));
-			metrics.addCustomChart(new Metrics.DrilldownPie("plugin_mc_version", () -> {
-				Map<String, Map<String, Integer>> map = new HashMap<>(3);
-				String mcv = Bukkit.getBukkitVersion();
-				mcv = mcv.substring(0, mcv.indexOf('.', 2));
-				if (mcv.matches("^\\d\\.\\d{1,2}$")) {
-					// Start, digit, dot, 1-2 digits, end
-					mcv = "MC " + mcv;
-				} else {
-					mcv = "undef";
-				}
-				Map<String, Integer> innerMap = new HashMap<>(3);
-				innerMap.put(mcv, 1);
-				map.put(getDescription().getVersion(), innerMap);
-				return map;
-			}));
-			metrics.addCustomChart(new Metrics.SimplePie("language", () -> language));
-			metrics.addCustomChart(new Metrics.SimplePie("config_scramble", () -> BConfig.enableEncode ? "enabled" : "disabled"));
-			metrics.addCustomChart(new Metrics.SimplePie("config_lore_color", () -> {
-				if (BConfig.colorInBarrels) {
-					if (BConfig.colorInBrewer) {
-						return "both";
-					} else {
-						return "in barrels";
-					}
-				} else {
-					if (BConfig.colorInBrewer) {
-						return "in distiller";
-					} else {
-						return "none";
-					}
-				}
-			}));
-			metrics.addCustomChart(new Metrics.SimplePie("config_always_show", () -> {
-				if (BConfig.alwaysShowQuality) {
-					if (BConfig.alwaysShowAlc) {
-						return "both";
-					} else {
-						return "quality stars";
-					}
-				} else {
-					if (BConfig.alwaysShowAlc) {
-						return "alc content";
-					} else {
-						return "none";
-					}
-				}
-			}));
-		} catch (Throwable e) {
-			e.printStackTrace();
-		}*/
+		setupMetrics();
 
 		// Listeners
 		blockListener = new BlockListener();
@@ -584,6 +235,111 @@ public class P extends JavaPlugin {
 		return p;
 	}
 
+	private void setupMetrics() {
+		/*try {
+			Metrics metrics = new Metrics(this);
+			metrics.addCustomChart(new Metrics.SingleLineChart("drunk_players", BPlayer::numDrunkPlayers));
+			metrics.addCustomChart(new Metrics.SingleLineChart("brews_in_existence", () -> brewsCreated));
+			metrics.addCustomChart(new Metrics.SingleLineChart("barrels_built", () -> Barrel.barrels.size()));
+			metrics.addCustomChart(new Metrics.SingleLineChart("cauldrons_boiling", () -> BCauldron.bcauldrons.size()));
+			metrics.addCustomChart(new Metrics.AdvancedPie("brew_quality", () -> {
+				Map<String, Integer> map = new HashMap<>(8);
+				map.put("excellent", exc);
+				map.put("good", good);
+				map.put("normal", norm);
+				map.put("bad", bad);
+				map.put("terrible", terr);
+				return map;
+			}));
+			metrics.addCustomChart(new Metrics.AdvancedPie("brews_created", () -> {
+				Map<String, Integer> map = new HashMap<>(4);
+				map.put("by command", brewsCreatedCmd);
+				map.put("brewing", brewsCreated - brewsCreatedCmd);
+				return map;
+			}));
+
+			metrics.addCustomChart(new Metrics.SimplePie("number_of_recipes", () -> {
+				int recipes = BRecipe.getAllRecipes().size();
+				if (recipes < 7) {
+					return "Less than 7";
+				} else if (recipes < 11) {
+					return "7-10";
+				} else if (recipes == 11) {
+					// There are 11 default recipes, so show this as its own slice
+					return "11";
+				} else if (recipes <= 31) {
+					if (recipes % 2 == 0) {
+						return recipes + "-" + (recipes + 1);
+					} else {
+						return (recipes - 1) + "-" + recipes;
+					}
+				} else {
+					return "More than 31";
+				}
+
+			}));
+			metrics.addCustomChart(new Metrics.SimplePie("v2_mc_version", () -> {
+				String mcv = Bukkit.getBukkitVersion();
+				mcv = mcv.substring(0, mcv.indexOf('.', 2));
+				if (mcv.matches("^\\d\\.\\d{1,2}$")) {
+					// Start, digit, dot, 1-2 digits, end
+					return mcv;
+				} else {
+					return "undef";
+				}
+			}));
+			metrics.addCustomChart(new Metrics.DrilldownPie("plugin_mc_version", () -> {
+				Map<String, Map<String, Integer>> map = new HashMap<>(3);
+				String mcv = Bukkit.getBukkitVersion();
+				mcv = mcv.substring(0, mcv.indexOf('.', 2));
+				if (mcv.matches("^\\d\\.\\d{1,2}$")) {
+					// Start, digit, dot, 1-2 digits, end
+					mcv = "MC " + mcv;
+				} else {
+					mcv = "undef";
+				}
+				Map<String, Integer> innerMap = new HashMap<>(3);
+				innerMap.put(mcv, 1);
+				map.put(getDescription().getVersion(), innerMap);
+				return map;
+			}));
+			metrics.addCustomChart(new Metrics.SimplePie("language", () -> language));
+			metrics.addCustomChart(new Metrics.SimplePie("config_scramble", () -> BConfig.enableEncode ? "enabled" : "disabled"));
+			metrics.addCustomChart(new Metrics.SimplePie("config_lore_color", () -> {
+				if (BConfig.colorInBarrels) {
+					if (BConfig.colorInBrewer) {
+						return "both";
+					} else {
+						return "in barrels";
+					}
+				} else {
+					if (BConfig.colorInBrewer) {
+						return "in distiller";
+					} else {
+						return "none";
+					}
+				}
+			}));
+			metrics.addCustomChart(new Metrics.SimplePie("config_always_show", () -> {
+				if (BConfig.alwaysShowQuality) {
+					if (BConfig.alwaysShowAlc) {
+						return "both";
+					} else {
+						return "quality stars";
+					}
+				} else {
+					if (BConfig.alwaysShowAlc) {
+						return "alc content";
+					} else {
+						return "none";
+					}
+				}
+			}));
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}*/
+	}
+
 	public void metricsForCreate(boolean byCmd) {
 		if (brewsCreated == Integer.MAX_VALUE) return;
 		brewsCreated++;
@@ -653,32 +409,28 @@ public class P extends JavaPlugin {
 	public class BreweryRunnable implements Runnable {
 		@Override
 		public void run() {
-			//long t1 = System.nanoTime();
+			long t1 = System.nanoTime();
 			BConfig.reloader = null;
 			for (BCauldron cauldron : BCauldron.bcauldrons.values()) {
 				cauldron.onUpdate();// runs every min to update cooking time
 			}
-			//long t2 = System.nanoTime();
+			long t2 = System.nanoTime();
 			Barrel.onUpdate();// runs every min to check and update ageing time
-			//long t3 = System.nanoTime();
+			long t3 = System.nanoTime();
 			if (use1_14) MCBarrel.onUpdate();
-			//long t4 = System.nanoTime();
+			long t4 = System.nanoTime();
 			BPlayer.onUpdate();// updates players drunkeness
-			//long t5 = System.nanoTime();
 
-			debugLog("Update");
-
-			//long t6 = System.nanoTime();
+			long t5 = System.nanoTime();
 			DataSave.autoSave();
-			//long t7 = System.nanoTime();
+			long t6 = System.nanoTime();
 
-			/*P.p.log("BreweryRunnable: " +
+			debugLog("BreweryRunnable: " +
 				"t1: " + (t2 - t1) / 1000000.0 + "ms" +
 				" | t2: " + (t3 - t2) / 1000000.0 + "ms" +
 				" | t3: " + (t4 - t3) / 1000000.0 + "ms" +
 				" | t4: " + (t5 - t4) / 1000000.0 + "ms" +
-				" | t5: " + (t6 - t5) / 1000000.0 + "ms" +
-				" | t6: " + (t7 - t6) / 1000000.0 + "ms" );*/
+				" | t5: " + (t6 - t5) / 1000000.0 + "ms" );
 		}
 
 	}

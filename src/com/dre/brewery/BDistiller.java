@@ -84,11 +84,23 @@ public class BDistiller {
 		return contents;
 	}
 
-	public static byte hasBrew(BrewerInventory brewer) {
+	public static void checkContents(BrewerInventory inv, Brew[] contents) {
+		ItemStack item;
+		for (int slot = 0; slot < 3; slot++) {
+			if (contents[slot] != null) {
+				item = inv.getItem(slot);
+				if (item == null || !Brew.isBrew(item)) {
+					contents[slot] = null;
+				}
+			}
+		}
+	}
+
+	public static byte hasBrew(BrewerInventory brewer, Brew[] contents) {
 		ItemStack item = brewer.getItem(3); // ingredient
 		boolean glowstone = (item != null && Material.GLOWSTONE_DUST == item.getType()); // need dust in the top slot.
 		byte customFound = 0;
-		for (Brew brew : getDistillContents(brewer)) {
+		for (Brew brew : contents) {
 			if (brew != null) {
 				if (!glowstone) {
 					return 1;
@@ -103,9 +115,8 @@ public class BDistiller {
 		return customFound;
 	}
 
-	public static boolean runDistill(BrewerInventory inv) {
+	public static boolean runDistill(BrewerInventory inv, Brew[] contents) {
 		boolean custom = false;
-		Brew[] contents = getDistillContents(inv);
 		for (int slot = 0; slot < 3; slot++) {
 			if (contents[slot] == null) continue;
 			if (contents[slot].canDistill()) {
@@ -122,10 +133,9 @@ public class BDistiller {
 		return false;
 	}
 
-	public static int getLongestDistillTime(BrewerInventory inv) {
+	public static int getLongestDistillTime(Brew[] contents) {
 		int bestTime = 0;
 		int time;
-		Brew[] contents = getDistillContents(inv);
 		for (int slot = 0; slot < 3; slot++) {
 			if (contents[slot] == null) continue;
 			time = contents[slot].getDistillTimeNextRun();
@@ -143,8 +153,7 @@ public class BDistiller {
 		return 800;
 	}
 
-	public static void showAlc(BrewerInventory inv) {
-		Brew[] contents = getDistillContents(inv);
+	public static void showAlc(BrewerInventory inv, Brew[] contents) {
 		for (int slot = 0; slot < 3; slot++) {
 			if (contents[slot] != null) {
 				// Show Alc in lore
@@ -159,6 +168,7 @@ public class BDistiller {
 	}
 
 	public class DistillRunnable extends BukkitRunnable {
+		Brew[] contents = null;
 
 		@Override
 		public void run() {
@@ -166,7 +176,13 @@ public class BDistiller {
 			if (now instanceof BrewingStand) {
 				BrewingStand stand = (BrewingStand) now;
 				if (brewTime == -1) { // only check at the beginning (and end) for distillables
-					switch (hasBrew(stand.getInventory())) {
+					BrewerInventory inventory = stand.getInventory();
+					if (contents == null) {
+						contents = getDistillContents(inventory);
+					} else {
+						checkContents(inventory, contents);
+					}
+					switch (hasBrew(inventory, contents)) {
 						case 1:
 							// Custom potion but not for distilling. Stop any brewing and cancel this task
 							if (stand.getBrewingTime() > 0) {
@@ -187,11 +203,11 @@ public class BDistiller {
 							// No custom potion, cancel and ignore
 							this.cancel();
 							trackedDistillers.remove(standBlock);
-							showAlc(stand.getInventory());
+							showAlc(inventory, contents);
 							P.p.debugLog("nothing to distill");
 							return;
 						default:
-							runTime = getLongestDistillTime(stand.getInventory());
+							runTime = getLongestDistillTime(contents);
 							brewTime = runTime;
 							P.p.debugLog("using brewtime: " + runTime);
 
@@ -202,10 +218,10 @@ public class BDistiller {
 				stand.setBrewingTime((int) ((float) brewTime / ((float) runTime / (float) DISTILLTIME)) + 1);
 
 				if (brewTime <= 1) { // Done!
+					checkContents(stand.getInventory(), contents);
 					stand.setBrewingTime(0);
 					stand.update();
-					BrewerInventory brewer = stand.getInventory();
-					if (!runDistill(brewer)) {
+					if (!runDistill(stand.getInventory(), contents)) {
 						this.cancel();
 						trackedDistillers.remove(standBlock);
 						P.p.debugLog("All done distilling");

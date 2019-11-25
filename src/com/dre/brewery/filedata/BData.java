@@ -38,10 +38,12 @@ public class BData {
 
 			long t2 = System.currentTimeMillis();
 
-			if (t2 - t1 > 5000) {
+			if (t2 - t1 > 8000) {
 				// Spigot is very slow at loading inventories from yml. Notify Admin that loading Data took long
 				P.p.log("Bukkit took " + (t2 - t1) / 1000.0 + "s to load the Data File,");
 				P.p.log("consider switching to Paper, or have less items in Barrels");
+			} else {
+				P.p.debugLog("Loading data.yml: " + (t2 - t1) + "ms");
 			}
 
 			Brew.installTime = data.getLong("installTime", System.currentTimeMillis());

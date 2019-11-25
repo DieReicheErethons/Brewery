@@ -31,6 +31,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * A Multi Block Barrel with Inventory
+ */
 public class Barrel implements InventoryHolder {
 
 	public static List<Barrel> barrels = new ArrayList<>();
@@ -52,7 +55,9 @@ public class Barrel implements InventoryHolder {
 		body = new BarrelBody(this, signoffset);
 	}
 
-	// load from file
+	/**
+	 * load from file
+	 */
 	public Barrel(Block spigot, byte sign, BoundingBox bounds, Map<String, Object> items, float time) {
 		this.spigot = spigot;
 		if (isLarge()) {
@@ -113,7 +118,9 @@ public class Barrel implements InventoryHolder {
 		return true;
 	}
 
-	// Ask for permission to destroy barrel
+	/**
+	 * Ask for permission to destroy barrel
+	 */
 	public boolean hasPermsDestroy(Player player, Block block, BarrelDestroyEvent.Reason reason) {
 		// Listened to by LWCBarrel (IntegrationListener)
 		BarrelDestroyEvent destroyEvent = new BarrelDestroyEvent(this, block, reason, player);
@@ -121,7 +128,9 @@ public class Barrel implements InventoryHolder {
 		return !destroyEvent.isCancelled();
 	}
 
-	// player opens the barrel
+	/**
+	 * player opens the barrel
+	 */
 	public void open(Player player) {
 		if (inventory == null) {
 			if (isLarge()) {
@@ -212,13 +221,15 @@ public class Barrel implements InventoryHolder {
 		return time;
 	}
 
-	// Returns true if this Block is part of this Barrel
+	/**
+	 * Returns true if this Block is part of this Barrel
+	 */
 	public boolean hasBlock(Block block) {
 		return body.hasBlock(block);
 	}
 
 	/**
-	 * Deprecated, just use hasBlock
+	 * @deprecated just use hasBlock
 	 */
 	@Deprecated
 	public boolean hasWoodBlock(Block block) {
@@ -226,14 +237,16 @@ public class Barrel implements InventoryHolder {
 	}
 
 	/**
-	 * Deprecated, just use hasBlock
+	 * @deprecated just use hasBlock
 	 */
 	@Deprecated
 	public boolean hasStairsBlock(Block block) {
 		return body.hasBlock(block);
 	}
 
-	// Get the Barrel by Block, null if that block is not part of a barrel
+	/**
+	 * Get the Barrel by Block, null if that block is not part of a barrel
+	 */
 	@Nullable
 	public static Barrel get(Block block) {
 		if (block == null) {
@@ -247,7 +260,9 @@ public class Barrel implements InventoryHolder {
 		}
 	}
 
-	// Get the Barrel by Sign or Spigot (Fastest)
+	/**
+	 * Get the Barrel by Sign or Spigot (Fastest)
+	 */
 	@Nullable
 	public static Barrel getBySpigot(Block sign) {
 		// convert spigot if neccessary
@@ -272,7 +287,9 @@ public class Barrel implements InventoryHolder {
 		return null;
 	}
 
-	// Get the barrel by its corpus (Wood Planks, Stairs)
+	/**
+	 * Get the barrel by its corpus (Wood Planks, Stairs)
+	 */
 	@Nullable
 	public static Barrel getByWood(Block wood) {
 		if (LegacyUtil.isWoodPlanks(wood.getType()) || LegacyUtil.isWoodStairs(wood.getType())) {
@@ -285,7 +302,9 @@ public class Barrel implements InventoryHolder {
 		return null;
 	}
 
-	// creates a new Barrel out of a sign
+	/**
+	 * creates a new Barrel out of a sign
+	 */
 	public static boolean create(Block sign, Player player) {
 		Block spigot = BarrelBody.getSpigotOfSign(sign);
 
@@ -383,39 +402,54 @@ public class Barrel implements InventoryHolder {
 		barrels.remove(this);
 	}
 
-	// is this a Large barrel?
+	/**
+	 * is this a Large barrel?
+	 */
 	public boolean isLarge() {
 		return !isSmall();
 	}
 
-	// is this a Small barrel?
+	/**
+	 * is this a Small barrel?
+	 */
 	public boolean isSmall() {
 		return LegacyUtil.isSign(spigot.getType());
 	}
 
-	// returns the Sign of a large barrel, the spigot if there is none
+	/**
+	 * returns the Sign of a large barrel, the spigot if there is none
+	 */
 	public Block getSignOfSpigot() {
 		return body.getSignOfSpigot();
 	}
 
-	// returns the fence above/below a block, itself if there is none
+	/**
+	 * returns the fence above/below a block, itself if there is none
+	 */
 	public static Block getSpigotOfSign(Block block) {
 		return BarrelBody.getSpigotOfSign(block);
 	}
 
-	// returns null if Barrel is correctly placed; the block that is missing when not
-	// the barrel needs to be formed correctly
-	// flag force to also check if chunk is not loaded
+	/**
+	 * returns null if Barrel is correctly placed; the block that is missing when not.
+	 * <p>The barrel needs to be formed correctly
+	 *
+	 * @param force to also check even if chunk is not loaded
+	 */
 	public Block getBrokenBlock(boolean force) {
 		return body.getBrokenBlock(force);
 	}
 
-	//unloads barrels that are in a unloading world
+	/**
+	 * unloads barrels that are in a unloading world
+	 */
 	public static void onUnload(String name) {
 		barrels.removeIf(barrel -> barrel.spigot.getWorld().getName().equals(name));
 	}
 
-	// Saves all data
+	/**
+	 * Saves all data
+	 */
 	public static void save(ConfigurationSection config, ConfigurationSection oldData) {
 		BUtil.createWorldSections(config);
 

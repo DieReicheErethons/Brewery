@@ -16,7 +16,7 @@ import java.util.Objects;
 
 /**
  * Minecraft Item with custon name and lore.
- * Mostly used for Custom Items of the Config, but also for general custom items
+ * <p>Mostly used for Custom Items of the Config, but also for general custom items
  */
 public class CustomItem extends RecipeItem implements Ingredient {
 
@@ -167,7 +167,7 @@ public class CustomItem extends RecipeItem implements Ingredient {
 
 	/**
 	 * If this item has lore that matches the given lore.
-	 * It matches if our lore is contained in the given lore consecutively, ignoring color of the given lore.
+	 * <p>It matches if our lore is contained in the given lore consecutively, ignoring color of the given lore.
 	 *
 	 * @param usedLore The given lore to match
 	 * @return True if the given lore contains our lore consecutively

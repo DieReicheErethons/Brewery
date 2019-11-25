@@ -16,6 +16,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * A Recipe for the Base Potion coming out of the Cauldron.
+ */
 public class BCauldronRecipe {
 	public static List<BCauldronRecipe> recipes = new ArrayList<>();
 	public static int numConfigRecipes;
@@ -32,8 +35,8 @@ public class BCauldronRecipe {
 
 
 	/**
-	 * A New Cauldron Recipe with the given name
-	 * Use new BCauldronRecipe.Builder() for easier Cauldron Recipe Creation
+	 * A New Cauldron Recipe with the given name.
+	 * <p>Use new BCauldronRecipe.Builder() for easier Cauldron Recipe Creation
 	 *
 	 * @param name Name of the Cauldron Recipe
 	 */
@@ -134,9 +137,9 @@ public class BCauldronRecipe {
 
 	/**
 	 * Find how much these ingredients match the given ones from 0-10.
-	 * If any ingredient is missing, returns 0
-	 * If all Ingredients and their amounts are equal, returns 10
-	 * Returns something between 0 and 10 if all ingredients present, but differing amounts, depending on how much the amount differs.
+	 * <p>If any ingredient is missing, returns 0
+	 * <br>If all Ingredients and their amounts are equal, returns 10
+	 * <br>Returns something between 0 and 10 if all ingredients present, but differing amounts, depending on how much the amount differs.
 	 */
 	public float getIngredientMatch(List<Ingredient> items) {
 		if (items.size() < ingredients.size()) {
@@ -210,27 +213,27 @@ public class BCauldronRecipe {
 	}
 
 	/**
-	 * Gets a Modifiable Sublist of the CauldronRecipes that are loaded by config
-	 * Changes are directly reflected by the main list of all recipes
-	 * Changes to the main List of all CauldronRecipes will make the reference to this sublist invalid
+	 * Gets a Modifiable Sublist of the CauldronRecipes that are loaded by config.
+	 * <p>Changes are directly reflected by the main list of all recipes
+	 * <br>Changes to the main List of all CauldronRecipes will make the reference to this sublist invalid
 	 *
-	 * After adding or removing elements, CauldronRecipes.numConfigRecipes MUST be updated!
+	 * <p>After adding or removing elements, CauldronRecipes.numConfigRecipes MUST be updated!
 	 */
 	public static List<BCauldronRecipe> getConfigRecipes() {
 		return recipes.subList(0, numConfigRecipes);
 	}
 
 	/**
-	 * Gets a Modifiable Sublist of the CauldronRecipes that are added by plugins
-	 * Changes are directly reflected by the main list of all recipes
-	 * Changes to the main List of all CauldronRecipes will make the reference to this sublist invalid
+	 * Gets a Modifiable Sublist of the CauldronRecipes that are added by plugins.
+	 * <p>Changes are directly reflected by the main list of all recipes
+	 * <br>Changes to the main List of all CauldronRecipes will make the reference to this sublist invalid
 	 */
 	public static List<BCauldronRecipe> getAddedRecipes() {
 		return recipes.subList(numConfigRecipes, recipes.size());
 	}
 
 	/**
-	 * Gets the main List of all CauldronRecipes
+	 * Gets the main List of all CauldronRecipes.
 	 */
 	public static List<BCauldronRecipe> getAllRecipes() {
 		return recipes;
@@ -272,6 +275,9 @@ public class BCauldronRecipe {
 		return null;
 	}*/
 
+	/**
+	 * Builder to easily create BCauldron recipes.
+	 */
 	public static class Builder {
 		private BCauldronRecipe recipe;
 

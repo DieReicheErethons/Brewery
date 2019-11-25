@@ -8,9 +8,9 @@ import org.bukkit.event.player.PlayerEvent;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * The player pukes (throws puke items to the ground)
- * Those items can never be picked up and despawn after the time set in the config
- * Number of items to drop can be changed with count
+ * The player pukes (throws puke items to the ground).
+ * <p>Those items can never be picked up and despawn after the time set in the config
+ * <p>Number of items to drop can be changed with count
  */
 public class PlayerPukeEvent extends PlayerEvent implements Cancellable {
 	private static final HandlerList handlers = new HandlerList();
@@ -25,14 +25,14 @@ public class PlayerPukeEvent extends PlayerEvent implements Cancellable {
 	}
 
 	/**
-	 * @return The Amount of items being dropped this time
+	 * Get the Amount of items being dropped this time
 	 */
 	public int getCount() {
 		return count;
 	}
 
 	/**
-	 * @param count Set the amount of items being dropped this time
+	 * Set the amount of items being dropped this time
 	 */
 	public void setCount(int count) {
 		this.count = count;

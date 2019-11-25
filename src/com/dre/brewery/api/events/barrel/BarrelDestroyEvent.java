@@ -9,10 +9,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * A Barrel is being destroyed by something, may not be by a Player
- * A BarrelRemoveEvent will be called after this, if this is not cancelled
- * Use the BarrelRemoveEvent to monitor any and all barrels being removed in a non cancellable way
- * Cancelling the Event will stop the barrel from being destroyed
+ * A Barrel is being destroyed by something, may not be by a Player.
+ * <p>A BarrelRemoveEvent will be called after this, if this is not cancelled
+ * <p>Use the BarrelRemoveEvent to monitor any and all barrels being removed in a non cancellable way
+ * <p>Cancelling the Event will stop the barrel from being destroyed
 */
 public class BarrelDestroyEvent extends BarrelEvent implements Cancellable {
 	private static final HandlerList handlers = new HandlerList();
@@ -82,6 +82,9 @@ public class BarrelDestroyEvent extends BarrelEvent implements Cancellable {
 		return handlers;
 	}
 
+	/**
+	 * The Reason why the Barrel is being destroyed.
+	 */
 	public enum Reason {
 		/**
 		 * A Player Broke the Barrel

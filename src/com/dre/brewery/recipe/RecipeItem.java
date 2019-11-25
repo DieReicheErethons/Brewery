@@ -17,8 +17,8 @@ import java.util.stream.Collectors;
 
 /**
  * Item that can be used in a Recipe.
- * They are not necessarily only loaded from config
- * They are immutable if used in a recipe. If one implements Ingredient,
+ * <p>They are not necessarily only loaded from config
+ * <p>They are immutable if used in a recipe. If one implements Ingredient,
  * it can be used as mutable copy directly in a
  * BIngredients. Otherwise it needs to be converted to an Ingredient
  */
@@ -31,7 +31,7 @@ public abstract class RecipeItem implements Cloneable {
 
 	/**
 	 * Does this RecipeItem match the given ItemStack?
-	 * Used to determine if the given item corresponds to this recipeitem
+	 * <p>Used to determine if the given item corresponds to this recipeitem
 	 *
 	 * @param item The ItemStack for comparison
 	 * @return True if the given item matches this recipeItem
@@ -39,9 +39,9 @@ public abstract class RecipeItem implements Cloneable {
 	public abstract boolean matches(ItemStack item);
 
 	/**
-	 * Does this Item match the given Ingredient.
-	 * A RecipeItem matches an Ingredient if all required info of the RecipeItem are fulfilled on the Ingredient
-	 * This does not imply that the same holds the other way round, as the ingredient item might have more info than needed
+	 * Does this Item match the given Ingredient?
+	 * <p>A RecipeItem matches an Ingredient if all required info of the RecipeItem are fulfilled on the Ingredient
+	 * <br>This does not imply that the same holds the other way round, as the ingredient item might have more info than needed
 	 *
 	 *
 	 * @param ingredient The ingredient that needs to fulfill the requirements
@@ -51,7 +51,7 @@ public abstract class RecipeItem implements Cloneable {
 
 	/**
 	 * Get the Corresponding Ingredient Item. For Items implementing Ingredient, just getMutableCopy()
-	 * This is called when this recipe item is added to a BIngredients
+	 * <p>This is called when this recipe item is added to a BIngredients
 	 *
 	 * @param forItem The ItemStack that has previously matched this RecipeItem. Used if the resulting Ingredient needs more info from the ItemStack
 	 * @return The IngredientItem corresponding to this RecipeItem
@@ -92,9 +92,9 @@ public abstract class RecipeItem implements Cloneable {
 	}
 
 	/**
-	 * Set the Amount of this Item in a Recipe
-	 * The amount can not be set on an existing item in a recipe or existing custom item.
-	 * To change amount you need to use getMutableCopy() and change the amount on the copy
+	 * Set the Amount of this Item in a Recipe.
+	 * <p>The amount can not be set on an existing item in a recipe or existing custom item.
+	 * <br>To change amount you need to use getMutableCopy() and change the amount on the copy
 	 *
 	 * @param amount The new amount
 	 */
@@ -128,12 +128,12 @@ public abstract class RecipeItem implements Cloneable {
 
 	/**
 	 * Tries to find a matching RecipeItem for this item. It checks custom items and if it has found a unique custom item
-	 * it will return that. If there are multiple matching custom items, a new CustomItem with all item info is returned
-	 * If there is no matching CustomItem, it will return a SimpleItem with the items type
+	 * it will return that. If there are multiple matching custom items, a new CustomItem with all item info is returned.
+	 * <br>If there is no matching CustomItem, it will return a SimpleItem with the items type
 	 *
 	 * @param item The Item for which to find a matching RecipeItem
 	 * @param acceptAll If true it will accept any item and return a SimpleItem even if not on the accepted list
-	 *                  If false it will return null if the item is not acceptable by the Cauldron
+	 *                  <br>If false it will return null if the item is not acceptable by the Cauldron
 	 * @return The Matched CustomItem, new CustomItem with all item info or SimpleItem
 	 */
 	@Nullable

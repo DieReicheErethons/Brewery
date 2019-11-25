@@ -11,8 +11,9 @@ import java.util.List;
 
 /**
  * A List of effects is applied to the player.
- * This happens for various reasons like Alcohol level, Brew quality, Brew effects, etc.
- * Can be changed or cancelled
+ * <p>This happens for various reasons like Alcohol level, Brew quality, Brew effects, etc.
+ *
+ * <p>Can be changed or cancelled
  */
 public class PlayerEffectEvent extends PlayerEvent implements Cancellable {
 	private static final HandlerList handlers = new HandlerList();
@@ -38,7 +39,7 @@ public class PlayerEffectEvent extends PlayerEvent implements Cancellable {
 	}
 
 	/**
-	 * @return What type of effects are applied, sie EffectType
+	 * @return What type of effects are applied, see EffectType
 	 */
 	public EffectType getEffectType() {
 		return effectType;
@@ -66,27 +67,30 @@ public class PlayerEffectEvent extends PlayerEvent implements Cancellable {
 	}
 
 
+	/**
+	 * The Type of Effect, or why an effect is being added to the player.
+	 */
 	public enum EffectType {
 		/**
 		 * The Alcohol level demands its toll.
-		 * Regularly applied depending on the players alcohol level
-		 * By default it is just one Confusion effect
+		 * <p>Regularly applied depending on the players alcohol level
+		 * <p>By default it is just one Confusion effect
 		 */
 		ALCOHOL,
 
 		/**
-		 *  Effects of a Brew are applied to the player (drinking the Brew)
-		 *  These depend on alcohol and quality of the brew
+		 *  Effects of a Brew are applied to the player (drinking the Brew).
+		 *  <p>These depend on alcohol and quality of the brew
 		 */
 		DRINK,
 
 		/**
-		 * When drinking a Brew with low Quality, these effects are applied
+		 * When drinking a Brew with low Quality, these effects are applied.
 		 */
 		QUALITY,
 
 		/**
-		 * When logging in after drinking, Hangover Effects are applied
+		 * When logging in after drinking, Hangover Effects are applied.
 		 */
 		HANGOVER
 

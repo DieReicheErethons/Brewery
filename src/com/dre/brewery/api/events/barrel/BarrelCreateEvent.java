@@ -7,8 +7,8 @@ import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Called when a Barrel is created by a Player by placing a Sign
- * Cancelling this will silently fail the Barrel creation
+ * Called when a Barrel is created by a Player by placing a Sign.
+ * <p>Cancelling this will silently fail the Barrel creation
  */
 public class BarrelCreateEvent extends BarrelEvent implements Cancellable {
 	private static final HandlerList handlers = new HandlerList();

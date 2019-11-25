@@ -13,7 +13,7 @@ import java.util.Objects;
 
 /**
  * Custom Item that matches any one of the given info.
- * Does not implement Ingredient, as it can not directly be added to an ingredient
+ * <p>Does not implement Ingredient, as it can not directly be added to an ingredient
  */
 public class CustomMatchAnyItem extends RecipeItem {
 

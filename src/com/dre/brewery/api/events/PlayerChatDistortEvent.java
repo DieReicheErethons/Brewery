@@ -13,7 +13,7 @@ import java.util.Objects;
 /**
  * The Player writes something in Chat or on a Sign and his words are distorted.
  *
- * This Event may be Async if the Chat Event is Async!
+ * <p>This Event may be Async if the Chat Event is Async!
  */
 public class PlayerChatDistortEvent extends Event implements Cancellable {
 	private static final HandlerList handlers = new HandlerList();

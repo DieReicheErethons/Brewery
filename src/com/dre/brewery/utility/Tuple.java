@@ -46,8 +46,6 @@ public class Tuple<A, B> {
 
 	/**
 	 * Gets the first value in the tuple
-	 *
-	 * @return
 	 */
 	public A first() {
 		return a;
@@ -55,8 +53,6 @@ public class Tuple<A, B> {
 
 	/**
 	 * Gets the second value in the tuple
-	 *
-	 * @return
 	 */
 	public B second() {
 		return b;
@@ -64,8 +60,6 @@ public class Tuple<A, B> {
 
 	/**
 	 * Gets the first value in the tuple, Synonym for first()
-	 *
-	 * @return
 	 */
 	public A a() {
 		return a;
@@ -73,8 +67,6 @@ public class Tuple<A, B> {
 
 	/**
 	 * Gets the second value in the tuple, Synonym for second()
-	 *
-	 * @return
 	 */
 	public B b() {
 		return b;

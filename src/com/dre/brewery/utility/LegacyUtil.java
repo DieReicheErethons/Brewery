@@ -191,7 +191,11 @@ public class LegacyUtil {
 		}
 	}
 
-	// 0 = empty, 1 = something in, 2 = full
+	/**
+	 * Get The Fill Level of a Cauldron Block, 0 = empty, 1 = something in, 2 = full
+	 *
+	 * @return 0 = empty, 1 = something in, 2 = full
+	 */
 	public static byte getFillLevel(Block block) {
 		if (block.getType() != Material.CAULDRON) {
 			return EMPTY;
@@ -219,7 +223,7 @@ public class LegacyUtil {
 		}
 	}
 
-	/*
+	/**
 	 * only used to convert a very old Datafile or config from a very old version
 	 */
 	public static Material getMaterial(int id) {

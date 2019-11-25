@@ -7,17 +7,15 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
-
 /**
- * The Brewery Config was reloaded
+ * The Brewery Config was reloaded.
  */
 public class ConfigLoadEvent extends Event {
 	private static final HandlerList handlers = new HandlerList();
 
 	/**
-	 * One of the things one might need to do after reloading
-	 * Removes a Recipe, can also remove config recipes
+	 * Removes a Recipe, can also remove config recipes.
+	 * One of the things one might need to do after reloading.
 	 *
 	 * @param name Name of the Recipe to remove
 	 * @return The Recipe that was removed, null if none was removed
@@ -27,8 +25,8 @@ public class ConfigLoadEvent extends Event {
 	}
 
 	/**
-	 * One of the things one might need to do after reloading
-	 * Removes a Cauldron Recipe, can also remove config recipes
+	 * Removes a Cauldron Recipe, can also remove config recipes.
+	 * One of the things one might need to do after reloading.
 	 *
 	 * @param name Name of the Cauldron Recipe to remove
 	 * @return The Cauldron Recipe that was removed, null if none was removed

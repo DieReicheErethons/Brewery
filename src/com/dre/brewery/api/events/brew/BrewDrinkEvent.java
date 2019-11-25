@@ -9,9 +9,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * A Player Drinks a Brew
- * The amount of alcohol and quality that will be added to the player can be get/set here
- * If cancelled the drinking will fail silently
+ * A Player Drinks a Brew.
+ * <p>The amount of alcohol and quality that will be added to the player can be get/set here
+ * <p>If cancelled the drinking will fail silently
  */
 public class BrewDrinkEvent extends BrewEvent implements Cancellable {
 	private static final HandlerList handlers = new HandlerList();

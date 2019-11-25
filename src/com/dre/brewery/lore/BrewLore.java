@@ -15,6 +15,10 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Represents the Lore on a Brew under Modification.
+ * <p>Can efficiently replace certain lines of lore, to update brew information on an item.
+ */
 public class BrewLore {
 	private Brew brew;
 	private PotionMeta meta;
@@ -32,8 +36,8 @@ public class BrewLore {
 	}
 
 	/**
-	 * Write the new lore into the Meta
-	 * Should be called at the end of operation on this Brew Lore
+	 * Write the new lore into the Meta.
+	 * <p>Should be called at the end of operation on this Brew Lore
  	 */
 	public PotionMeta write() {
 		if (lineAddedOrRem) {
@@ -286,7 +290,7 @@ public class BrewLore {
 
 	/**
 	 * Adds or replaces a line of Lore.
-	 * Searches for type and if not found for Substring lore and replaces it
+	 * <p>Searches for type and if not found for Substring lore and replaces it
 	 *
 	 * @param type The Type of BrewLore to replace
 	 * @param prefix The Prefix to add to the line of lore
@@ -473,6 +477,9 @@ public class BrewLore {
 		return P.p.color(color);
 	}
 
+	/**
+	 * Type of Lore Line
+	 */
 	public enum Type {
 		STARS("§s"),
 		CUSTOM("§t"),

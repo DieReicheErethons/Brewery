@@ -59,7 +59,9 @@ public class BUtil {
 		}
 	}
 
-	// returns the Player if online
+	/**
+	 * returns the Player if online
+	 */
 	public static Player getPlayerfromString(String name) {
 		if (P.useUUID) {
 			try {
@@ -97,7 +99,7 @@ public class BUtil {
 	}
 
 	/**
-	 * Load A List of Strings from config. If found a single String, will convert to List
+	 * Load A List of Strings from config, if found a single String, will convert to List
 	 */
 	@Nullable
 	public static List<String> loadCfgStringList(ConfigurationSection cfg, String path) {
@@ -112,7 +114,7 @@ public class BUtil {
 	}
 
 	/**
-	 * Load a String from config. If found a List, will return the first String
+	 * Load a String from config, if found a List, will return the first String
 	 */
 	@Nullable
 	public static String loadCfgString(ConfigurationSection cfg, String path) {

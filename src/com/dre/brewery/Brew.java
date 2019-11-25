@@ -173,8 +173,11 @@ public class Brew implements Cloneable {
 		return null;
 	}
 
-	// returns a Brew by its UID
-	// Does not work anymore with new save system
+	/**
+	 * returns a Brew by its UID
+	 *
+	 * @deprecated Does not work anymore with new save system
+	 */
 	@Deprecated
 	public static Brew get(int uid) {
 		if (uid < -1) {
@@ -188,8 +191,11 @@ public class Brew implements Cloneable {
 		return legacyPotions.get(uid);
 	}
 
-	// returns UID of custom Potion item
-	// Does not work anymore with new save system
+	/**
+	 * returns UID of custom Potion item
+	 *
+	 * @deprecated Does not work anymore with new save system
+	 */
 	@Deprecated
 	public static int getUID(ItemStack item) {
 		return getUID((PotionMeta) item.getItemMeta());
@@ -197,6 +203,12 @@ public class Brew implements Cloneable {
 
 	// returns UID of custom Potion meta
 	// Does not work anymore with new save system
+
+	/**
+	 * returns UID of custom Potion meta
+	 *
+	 * @deprecated Does not work anymore with new save system
+	 */
 	@Deprecated
 	public static int getUID(PotionMeta potionMeta) {
 		if (potionMeta.hasCustomEffect(PotionEffectType.REGENERATION)) {
@@ -395,7 +407,9 @@ public class Brew implements Cloneable {
 		}
 	}
 
-	// return special effect
+	/**
+	 * Get Special Drink Effects
+	 */
 	public List<BEffect> getEffects() {
 		if (currentRecipe != null && quality > 0) {
 			return currentRecipe.getEffects();
@@ -427,7 +441,8 @@ public class Brew implements Cloneable {
 	}
 
 	/**
-	 * Do some regular updates
+	 * Do some regular updates.
+	 * <p>Not really used, apart from legacy potion timed purge
 	 */
 	public void touch() {
 		lastUpdate = (int) ((double) (System.currentTimeMillis() - installTime) / 3600000D);
@@ -734,8 +749,8 @@ public class Brew implements Cloneable {
 	}
 
 	/**
-	 * Performant way of checking if this item is a Brew
-	 * Does not give any guarantees that get() will return notnull for this item, i.e. if it is a brew but the data is corrupt
+	 * Performant way of checking if this item is a Brew.
+	 * <p>Does not give any guarantees that get() will return notnull for this item, i.e. if it is a brew but the data is corrupt
 	 *
 	 * @param item The Item to check
 	 * @return True if the item is a brew
@@ -854,8 +869,8 @@ public class Brew implements Cloneable {
 	}
 
 	/**
-	 * Save brew data into meta: lore/nbt
-	 * Should be called after any changes made to the brew
+	 * Save brew data into meta: lore/nbt.
+	 * <p>Should be called after any changes made to the brew
 	 */
 	public void save(ItemMeta meta) {
 		OutputStream itemSaveStream;
@@ -881,8 +896,8 @@ public class Brew implements Cloneable {
 	}
 
 	/**
-	 * Save brew data into the meta/lore of the specified item
-	 * 	The meta on the item changes, so to make further changes to the meta, item.getItemMeta() has to be called again after this
+	 * Save brew data into the meta/lore of the specified item.
+	 * <p>The meta on the item changes, so to make further changes to the meta, item.getItemMeta() has to be called again after this
 	 *
 	 * @param item The item to save this brew into
 	 */
@@ -1027,8 +1042,8 @@ public class Brew implements Cloneable {
 	}
 
 	/**
-	 * Saves all data
-	 * 	Legacy method to save to data file
+	 * Saves all data,
+	 * Legacy method to save to data file.
 	 */
 	public static void saveLegacy(ConfigurationSection config) {
 		for (Map.Entry<Integer, Brew> entry : legacyPotions.entrySet()) {

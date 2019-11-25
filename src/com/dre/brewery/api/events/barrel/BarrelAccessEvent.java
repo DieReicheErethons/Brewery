@@ -8,9 +8,9 @@ import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * A Player opens a Barrel by rightclicking it
- * The PlayerInteractEvent on the Barrel may be cancelled. In that case this never gets called
- * Can be cancelled to silently deny opening the Barrel
+ * A Player opens a Barrel by rightclicking it.
+ * <p>The PlayerInteractEvent on the Barrel may be cancelled. In that case this never gets called
+ * <p>Can be cancelled to silently deny opening the Barrel
  */
 public class BarrelAccessEvent extends BarrelEvent implements Cancellable {
 	private static final HandlerList handlers = new HandlerList();
@@ -26,7 +26,7 @@ public class BarrelAccessEvent extends BarrelEvent implements Cancellable {
 
 	/**
 	 * Gets the Block that was actually clicked.
-	 * For access Permissions getSpigot() should be used
+	 * <p>For access Permissions getSpigot() should be used
 	 */
 	public Block getClickedBlock() {
 		return clickedBlock;

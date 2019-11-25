@@ -16,8 +16,8 @@ import java.util.function.Supplier;
 
 /**
  * An Item of a Recipe or as Ingredient in a Brew that corresponds to an item from another plugin.
- * See /integration/item for examples on how to extend this class.
- * This class stores items as name of the plugin and item id
+ * <p>See /integration/item for examples on how to extend this class.
+ * <p>This class stores items as name of the plugin and item id
  */
 public abstract class PluginItem extends RecipeItem implements Ingredient {
 
@@ -72,14 +72,14 @@ public abstract class PluginItem extends RecipeItem implements Ingredient {
 
 	/**
 	 * Called after Loading this Plugin Item from Config, or (by default) from Ingredients.
-	 * Allows Override to define custom actions after an Item was constructed
+	 * <p>Allows Override to define custom actions after an Item was constructed
 	 */
 	protected void onConstruct() {
 	}
 
 	/**
 	 * Does this PluginItem Match the other Ingredient.
-	 * By default it matches exactly when they are similar, i.e. also a PluginItem with same parameters
+	 * <p>By default it matches exactly when they are similar, i.e. also a PluginItem with same parameters
 	 *
 	 * @param ingredient The ingredient that needs to fulfill the requirements
 	 * @return True if the ingredient matches the required info of this
@@ -132,8 +132,8 @@ public abstract class PluginItem extends RecipeItem implements Ingredient {
 	}
 
 	/**
-	 * Called when loading this Plugin Item from Ingredients (of a Brew)
-	 * The default loading is the same as loading from Config
+	 * Called when loading this Plugin Item from Ingredients (of a Brew).
+	 * <p>The default loading is the same as loading from Config
 	 *
 	 * @param loader The ItemLoader from which to load the data, use loader.getInputStream()
 	 * @return The constructed PluginItem
@@ -161,8 +161,8 @@ public abstract class PluginItem extends RecipeItem implements Ingredient {
 	}
 
 	/**
-	 * Needs to be called at Server start
-	 * Registers the chosen SaveID and the loading Method for loading from Brew or BCauldron
+	 * Registers the chosen SaveID and the loading Method for loading from Brew or BCauldron.
+	 * <p>Needs to be called at Server start.
  	 */
 	public static void registerItemLoader() {
 		Ingredient.registerForItemLoader("PI", PluginItem::loadFrom);
@@ -170,8 +170,8 @@ public abstract class PluginItem extends RecipeItem implements Ingredient {
 
 
 	/**
-	 * Called when loading trying to find a config defined Plugin Item, or by default also when loading from ingredients
-	 * Will call a registered constructor matching the given plugin identifier
+	 * Called when loading trying to find a config defined Plugin Item. By default also when loading from ingredients
+	 * <p>Will call a registered constructor matching the given plugin identifier
 	 *
 	 * @param plugin The Identifier of the Plugin used in the config
 	 * @param itemId The Identifier of the Item belonging to this Plugin used in the config
@@ -193,11 +193,11 @@ public abstract class PluginItem extends RecipeItem implements Ingredient {
 
 	/**
 	 * This needs to be called at Server Start before Brewery loads its data.
-	 * When implementing this, put Brewery as softdepend in your plugin.yml!
-	 * Registers a Constructor that returns a new or cloned instance of a PluginItem
-	 * This Constructor will be called when loading a Plugin Item from Config or by default from ingredients
-	 * After the Constructor is called, the plugin and itemid will be set on the new instance
-	 * Finally the onConstruct is called.
+	 * <p>When implementing this, put Brewery as softdepend in your plugin.yml!
+	 * <p>Registers a Constructor that returns a new or cloned instance of a PluginItem
+	 * <br>This Constructor will be called when loading a Plugin Item from Config or by default from ingredients
+	 * <br>After the Constructor is called, the plugin and itemid will be set on the new instance
+	 * <p>Finally the onConstruct is called.
 	 *
 	 * @param pluginId The ID to use in the config
 	 * @param constructor The constructor i.e. YourPluginItem::new

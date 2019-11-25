@@ -68,7 +68,7 @@ public class InventoryListener implements Listener {
 
 	/**
 	 * Clicking can either start or stop the new brew distillation tracking.
-	 * Note that server restart will halt any ongoing brewing processes and
+	 * <p>Note that server restart will halt any ongoing brewing processes and
 	 * they will _not_ restart until a new click event.
 	 */
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)

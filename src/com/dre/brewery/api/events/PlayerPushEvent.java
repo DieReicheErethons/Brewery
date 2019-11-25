@@ -9,9 +9,9 @@ import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * The Players movement is hindered because of drunkeness
- * Called each time before pushing the Player with the Vector push 10 times
- * The Push Vector can be changed or multiplied
+ * The Players movement is hindered because of drunkeness.
+ * <p>Called each time before pushing the Player with the Vector push 10 times
+ * <p>The Push Vector can be changed or multiplied
  */
 public class PlayerPushEvent extends PlayerEvent implements Cancellable {
 	private static final HandlerList handlers = new HandlerList();
@@ -29,12 +29,9 @@ public class PlayerPushEvent extends PlayerEvent implements Cancellable {
 		return bPlayer;
 	}
 
-	// The Vector in which direction and magnitude the player is Pushed
-	// Can be changed directly or through setPush
-
 	/**
-	 * Get the Vector in which direction and magnitude the player is pushed
-	 * Can be changed directly or through setPush
+	 * Get the Vector in which direction and magnitude the player is pushed.
+	 * <p>Can be changed directly or through setPush
 	 *
 	 * @return The current push vector
 	 */
@@ -43,7 +40,7 @@ public class PlayerPushEvent extends PlayerEvent implements Cancellable {
 	}
 
 	/**
-	 * Set the Push vector
+	 * Set the Push vector.
 	 *
 	 * @param push The new push vector, not null
 	 */

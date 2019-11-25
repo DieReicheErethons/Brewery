@@ -20,6 +20,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 
+/**
+ * A Recipe used to Brew a Brewery Potion.
+ */
 public class BRecipe {
 
 	private static List<BRecipe> recipes = new ArrayList<>();
@@ -54,8 +57,8 @@ public class BRecipe {
 	}
 
 	/**
-	 * New BRecipe with Name
-	 * Use new BRecipe.Builder() for easier Recipe Creation
+	 * New BRecipe with Name.
+	 * <p>Use new BRecipe.Builder() for easier Recipe Creation
 	 *
 	 * @param name The name for all qualities
 	 */
@@ -66,8 +69,8 @@ public class BRecipe {
 	}
 
 	/**
-	 * New BRecipe with Names
-	 * Use new BRecipe.Builder() for easier Recipe Creation
+	 * New BRecipe with Names.
+	 * <p>Use new BRecipe.Builder() for easier Recipe Creation
 	 *
 	 * @param names {name bad, name normal, name good}
 	 */
@@ -311,7 +314,9 @@ public class BRecipe {
 		return null;
 	}
 
-	// check every part of the recipe for validity
+	/**
+	 * check every part of the recipe for validity.
+	 */
 	public boolean isValid() {
 		if (ingredients == null || ingredients.isEmpty()) {
 			P.p.errorLog("No ingredients could be loaded for Recipe: " + getRecipeName());
@@ -348,7 +353,9 @@ public class BRecipe {
 		return true;
 	}
 
-	// allowed deviation to the recipes count of ingredients at the given difficulty
+	/**
+	 * allowed deviation to the recipes count of ingredients at the given difficulty
+	 */
 	public int allowedCountDiff(int count) {
 		if (count < 8) {
 			count = 8;
@@ -361,7 +368,9 @@ public class BRecipe {
 		return allowedCountDiff;
 	}
 
-	// allowed deviation to the recipes cooking-time at the given difficulty
+	/**
+	 * allowed deviation to the recipes cooking-time at the given difficulty
+	 */
 	public int allowedTimeDiff(int time) {
 		if (time < 8) {
 			time = 8;
@@ -374,7 +383,9 @@ public class BRecipe {
 		return allowedTimeDiff;
 	}
 
-	// difference between given and recipe-wanted woodtype
+	/**
+	 * difference between given and recipe-wanted woodtype
+	 */
 	public float getWoodDiff(float wood) {
 		return Math.abs(wood - this.wood);
 	}
@@ -391,7 +402,9 @@ public class BRecipe {
 		return age != 0;
 	}
 
-	// true if given list misses an ingredient
+	/**
+	 * true if given list misses an ingredient
+	 */
 	public boolean isMissingIngredients(List<Ingredient> list) {
 		if (list.size() < ingredients.size()) {
 			return true;
@@ -431,7 +444,8 @@ public class BRecipe {
 	}
 
 	/**
-	 * Create a Potion from this Recipe with best values. Quality can be set, but will reset to 10 if put in a barrel
+	 * Create a Potion from this Recipe with best values.
+	 * Quality can be set, but will reset to 10 if unset immutable and put in a barrel
 	 *
 	 * @param quality The Quality of the Brew
 	 * @return The Created Item
@@ -441,7 +455,8 @@ public class BRecipe {
 	}
 
 	/**
-	 * Create a Brew from this Recipe with best values. Quality can be set, but will reset to 10 if unset immutable and put in a barrel
+	 * Create a Brew from this Recipe with best values.
+	 * Quality can be set, but will reset to 10 if unset immutable and put in a barrel
 	 *
 	 * @param quality The Quality of the Brew
 	 * @return The created Brew
@@ -478,7 +493,9 @@ public class BRecipe {
 
 	// Getter
 
-	// how many of a specific ingredient in the recipe
+	/**
+	 * how many of a specific ingredient in the recipe
+	 */
 	public int amountOf(Ingredient ing) {
 		for (RecipeItem rItem : ingredients) {
 			if (rItem.matches(ing)) {
@@ -488,7 +505,9 @@ public class BRecipe {
 		return 0;
 	}
 
-	// how many of a specific ingredient in the recipe
+	/**
+	 * how many of a specific ingredient in the recipe
+	 */
 	public int amountOf(ItemStack item) {
 		for (RecipeItem rItem : ingredients) {
 			if (rItem.matches(item)) {
@@ -498,12 +517,16 @@ public class BRecipe {
 		return 0;
 	}
 
-	// Same as getName(5)
+	/**
+	 * Same as getName(5)
+	 */
 	public String getRecipeName() {
 		return getName(5);
 	}
 
-	// name that fits the quality
+	/**
+	 * name that fits the quality
+	 */
 	public String getName(int quality) {
 		if (name.length > 2) {
 			if (quality <= 3) {
@@ -518,7 +541,9 @@ public class BRecipe {
 		}
 	}
 
-	// If one of the quality names equalIgnoreCase given name
+	/**
+	 * If one of the quality names equalIgnoreCase given name
+	 */
 	public boolean hasName(String name) {
 		for (String test : this.name) {
 			if (test.equalsIgnoreCase(name)) {
@@ -549,7 +574,9 @@ public class BRecipe {
 		return color;
 	}
 
-	// get the woodtype
+	/**
+	 * get the woodtype
+	 */
 	public byte getWood() {
 		return wood;
 	}
@@ -680,27 +707,27 @@ public class BRecipe {
 	}
 
 	/**
-	 * Gets a Modifiable Sublist of the Recipes that are loaded by config
-	 * Changes are directly reflected by the main list of all recipes
-	 * Changes to the main List of all recipes will make the reference to this sublist invalid
+	 * Gets a Modifiable Sublist of the Recipes that are loaded by config.
+	 * <p>Changes are directly reflected by the main list of all recipes
+	 * <br>Changes to the main List of all recipes will make the reference to this sublist invalid
 	 *
-	 * After adding or removing elements, BRecipe.numConfigRecipes MUST be updated!
+	 * <p>After adding or removing elements, BRecipe.numConfigRecipes MUST be updated!
 	 */
 	public static List<BRecipe> getConfigRecipes() {
 		return recipes.subList(0, numConfigRecipes);
 	}
 
 	/**
-	 * Gets a Modifiable Sublist of the Recipes that are added by plugins
-	 * Changes are directly reflected by the main list of all recipes
-	 * Changes to the main List of all recipes will make the reference to this sublist invalid
+	 * Gets a Modifiable Sublist of the Recipes that are added by plugins.
+	 * <p>Changes are directly reflected by the main list of all recipes
+	 * <br>Changes to the main List of all recipes will make the reference to this sublist invalid
 	 */
 	public static List<BRecipe> getAddedRecipes() {
 		return recipes.subList(numConfigRecipes, recipes.size());
 	}
 
 	/**
-	 * Gets the main List of all recipes
+	 * Gets the main List of all recipes.
 	 */
 	public static List<BRecipe> getAllRecipes() {
 		return recipes;
@@ -725,6 +752,9 @@ public class BRecipe {
 	}*/
 
 
+	/**
+	 * Builder to easily create Recipes
+	 */
 	public static class Builder {
 		private BRecipe recipe;
 

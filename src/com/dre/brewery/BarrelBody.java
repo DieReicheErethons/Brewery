@@ -10,7 +10,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
-// The Blocks that make up a Barrel in the World
+/**
+ * The Blocks that make up a Barrel in the World
+ */
 public class BarrelBody {
 
 	private final Barrel barrel;
@@ -25,7 +27,9 @@ public class BarrelBody {
 		this.bounds = new BoundingBox(0, 0, 0, 0, 0, 0);
 	}
 
-	// Loading from file
+	/**
+	 * Loading from file
+	 */
 	public BarrelBody(Barrel barrel, byte signoffset, BoundingBox bounds) {
 		this(barrel, signoffset);
 
@@ -67,12 +71,16 @@ public class BarrelBody {
 		this.signoffset = signoffset;
 	}
 
-	// If the Sign of a Large Barrel gets destroyed, set signOffset to 0
+	/**
+	 * If the Sign of a Large Barrel gets destroyed, set signOffset to 0
+	 */
 	public void destroySign() {
 		signoffset = 0;
 	}
 
-	// direction of the barrel from the spigot
+	/**
+	 * direction of the barrel from the spigot
+	 */
 	public static int getDirection(Block spigot) {
 		int direction = 0;// 1=x+ 2=x- 3=z+ 4=z-
 		Material type = spigot.getRelative(0, 0, 1).getType();
@@ -106,17 +114,23 @@ public class BarrelBody {
 		return direction;
 	}
 
-	// is this a Large barrel?
+	/**
+	 * is this a Large barrel?
+	 */
 	public boolean isLarge() {
 		return barrel.isLarge();
 	}
 
-	// is this a Small barrel?
+	/**
+	 * is this a Small barrel?
+	 */
 	public boolean isSmall() {
 		return barrel.isSmall();
 	}
 
-	// woodtype of the block the spigot is attached to
+	/**
+	 * woodtype of the block the spigot is attached to
+	 */
 	public byte getWood() {
 		Block wood;
 		switch (getDirection(spigot)) { // 1=x+ 2=x- 3=z+ 4=z-
@@ -160,13 +174,17 @@ public class BarrelBody {
 		return false;
 	}
 
-	// Returns true if the Offset of the clicked Sign matches the Barrel.
-	// This prevents adding another sign to the barrel and clicking that.
+	/**
+	 * Returns true if the Offset of the clicked Sign matches the Barrel.
+	 * <p>This prevents adding another sign to the barrel and clicking that.
+	 */
 	public boolean isSignOfBarrel(byte offset) {
 		return offset == 0 || signoffset == 0 || signoffset == offset;
 	}
 
-	// returns the Sign of a large barrel, the spigot if there is none
+	/**
+	 * returns the Sign of a large barrel, the spigot if there is none
+	 */
 	public Block getSignOfSpigot() {
 		if (signoffset != 0) {
 			if (LegacyUtil.isSign(spigot.getType())) {
@@ -182,7 +200,9 @@ public class BarrelBody {
 		return spigot;
 	}
 
-	// returns the fence above/below a block, itself if there is none
+	/**
+	 * returns the fence above/below a block, itself if there is none
+	 */
 	public static Block getSpigotOfSign(Block block) {
 
 		int y = -2;
@@ -197,9 +217,12 @@ public class BarrelBody {
 		return block;
 	}
 
-	// returns null if Barrel is correctly placed; the block that is missing when not
-	// the barrel needs to be formed correctly
-	// flag force to also check if chunk is not loaded
+	/**
+	 * returns null if Barrel is correctly placed; the block that is missing when not.
+	 * <p>the barrel needs to be formed correctly
+	 *
+	 * @param force to also check even if chunk is not loaded
+	 */
 	public Block getBrokenBlock(boolean force) {
 		if (force || BUtil.isChunkLoaded(spigot)) {
 			//spigot = getSpigotOfSign(spigot);

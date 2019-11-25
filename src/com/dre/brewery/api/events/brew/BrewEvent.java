@@ -19,6 +19,9 @@ public abstract class BrewEvent extends Event {
 		return brew;
 	}
 
+	/**
+	 * Gets the Meta of the Item this Brew is attached to
+	 */
 	@NotNull
 	public ItemMeta getItemMeta() {
 		return meta;

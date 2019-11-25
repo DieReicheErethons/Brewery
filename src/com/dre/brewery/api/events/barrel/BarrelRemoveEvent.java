@@ -5,7 +5,8 @@ import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * A Barrel is being removed. There may have been a BarrelDestroyEvent before this
+ * A Barrel is being removed.
+ * <p>There may have been a BarrelDestroyEvent before this.
  * If not, Worldedit, other Plugins etc may be the cause for unexpected removal
  */
 public class BarrelRemoveEvent extends BarrelEvent {

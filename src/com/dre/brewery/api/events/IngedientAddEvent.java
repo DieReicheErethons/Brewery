@@ -15,9 +15,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Player adding an ingredient to a cauldron
- * Always one item added at a time
- * If needed use the caudrons add method to manually add more Items
+ * Player adding an ingredient to a cauldron.
+ * <p>Always one item added at a time.
+ * <p>If needed use the caudrons add method to manually add more Items
  */
 public class IngedientAddEvent extends PlayerEvent implements Cancellable {
 	private static final HandlerList handlers = new HandlerList();
@@ -46,17 +46,17 @@ public class IngedientAddEvent extends PlayerEvent implements Cancellable {
 
 	/**
 	 * The Recipe item that matches the ingredient.
-	 * This might not be the only recipe item that will match the ingredient
-	 * Will be recalculated if the Ingredient is changed with the setIngredient Method
+	 * <p>This might not be the only recipe item that will match the ingredient
+	 * <p>Will be recalculated if the Ingredient is changed with the setIngredient Method
 	 */
 	public RecipeItem getRecipeItem() {
 		return rItem;
 	}
 
 	/**
-	 * Get the item currently being added to the cauldron by the player
-	 * Can be changed directly (mutable) or with the setter Method
-	 * The amount is ignored and always one added
+	 * Get the item currently being added to the cauldron by the player.
+	 * <p>Can be changed directly (mutable) or with the setter Method
+	 * <p>The amount is ignored and always one added
 	 *
 	 * @return The item being added
 	 */
@@ -65,10 +65,10 @@ public class IngedientAddEvent extends PlayerEvent implements Cancellable {
 	}
 
 	/**
-	 * Set the ingredient added to the cauldron to something else
-	 * Will always be accepted, even when not in a recipe or the cooked lis
-	 * The amount is ignored and always one added
-	 * This also recalculates the recipeItem!
+	 * Set the ingredient added to the cauldron to something else.
+	 * <p>Will always be accepted, even when not in a recipe or the cooked lis
+	 * <p>The amount is ignored and always one added
+	 * <p>This also recalculates the recipeItem!
 	 *
 	 * @param ingredient The item to add instead
 	 */
@@ -79,15 +79,15 @@ public class IngedientAddEvent extends PlayerEvent implements Cancellable {
 	}
 
 	/**
-	 * If the amount of the item in the players hand should be decreased
-	 * Default true
+	 * If the amount of the item in the players hand should be decreased.
+	 * (Default true)
 	 */
 	public boolean willTakeItem() {
 		return takeItem;
 	}
 
 	/**
-	 * Set if the amount of the item in the players hand should be decreased
+	 * Set if the amount of the item in the players hand should be decreased.
 	 *
 	 * @param takeItem if the item amount in the hand should be decreased
 	 */
@@ -96,8 +96,8 @@ public class IngedientAddEvent extends PlayerEvent implements Cancellable {
 	}
 
 	/**
-	 * Get the BlockData of the Cauldron
-	 * May be null if the Cauldron does not exist anymore
+	 * Get the BlockData of the Cauldron.
+	 * <p>May be null if the Cauldron does not exist anymore
 	 *
 	 * @return The BlockData of the cauldron
 	 */
@@ -111,9 +111,9 @@ public class IngedientAddEvent extends PlayerEvent implements Cancellable {
 	}
 
 	/**
-	 * Get the water fill level of the Cauldron
-	 * 0 = empty, 1 = something in, 2 = full
-	 * Can use BCauldron.EMPTY, BCauldron.SOME, BCauldron.FULL
+	 * Get the water fill level of the Cauldron.
+	 * <p>0 = empty, 1 = something in, 2 = full
+	 * <p>Can use BCauldron.EMPTY, BCauldron.SOME, BCauldron.FULL
 	 *
 	 * @return The fill level as a byte 0-2
 	 */
@@ -127,7 +127,7 @@ public class IngedientAddEvent extends PlayerEvent implements Cancellable {
 	}
 
 	/**
-	 * If the event is cancelled, no item will be added or taken from the player
+	 * If the event is cancelled, no item will be added or taken from the player.
 	 */
 	@Override
 	public void setCancelled(boolean cancelled) {

@@ -12,6 +12,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -21,7 +22,7 @@ public class CommandListener implements CommandExecutor {
 	public P p = P.p;
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+	public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
 
 		String cmd = "help";
 		if (args.length > 0) {
@@ -560,6 +561,7 @@ public class CommandListener implements CommandExecutor {
 			ItemStack item = recipe.create(quality);
 			if (item != null) {
 				player.getInventory().addItem(item);
+				p.msg(sender, p.languageReader.get("CMD_Created"));
 			}
 		} else {
 			p.msg(sender, p.languageReader.get("Error_NoBrewName", name));

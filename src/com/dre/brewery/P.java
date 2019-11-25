@@ -565,9 +565,6 @@ public class P extends JavaPlugin {
 			return;
 		}
 
-		// load LanguageReader
-		languageReader = new LanguageReader(new File(p.getDataFolder(), "languages/" + language + ".yml"));
-
 		// Reload Recipes
 		boolean successful = true;
 		for (Brew brew : Brew.legacyPotions.values()) {

@@ -1,15 +1,15 @@
 # Brew
 Brew_-times: -fach
-Brew_BadPotion: Verdorbenes Getränk
+Brew_BadPotion: Verdorbenes Gebräu
 Brew_BarrelRiped: Fassgereift
-Brew_DistillUndefined: Undefinierbares Destillat
+Brew_DistillUndefined: Graues Destillat
 Brew_Distilled: Destilliert
 Brew_HundredsOfYears: Hunderte Jahre
 Brew_Ingredients: Zutaten
 Brew_MinutePluralPostfix: n
 Brew_OneYear: Ein Jahr
 Brew_ThickBrew: Schlammiger Sud
-Brew_Undefined: Undefinierbarer Sud
+Brew_Undefined: Kesselsud
 Brew_Woodtype: Holzart
 Brew_Years: Jahre
 Brew_fermented: gegärt
@@ -23,6 +23,7 @@ CMD_Info_NotDrunk: '&v1 ist nicht betrunken'
 CMD_Player: '&a&v1 ist nun &6&v2% &abetrunken, mit einer Qualität von &6&v3'
 CMD_Player_Error: '&cDie Qualität muss zwischen 1 und 10 liegen!'
 CMD_Reload: '&aConfig wurde neu eingelesen'
+CMD_Created: '&aTrank erstellt'
 CMD_Configname: '&aName für Config ist: &f&v1'
 CMD_Configname_Error: '&cDu hast kein Item in der Hand'
 CMD_UnLabel: '&aDas Label wurde entfernt'

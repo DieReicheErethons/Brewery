@@ -148,7 +148,7 @@ public class BConfig {
 		p.language = config.getString("language", "en");
 
 		// Load LanguageReader
-		p.languageReader = new LanguageReader(new File(p.getDataFolder(), "languages/" + p.language + ".yml"));
+		p.languageReader = new LanguageReader(new File(p.getDataFolder(), "languages/" + p.language + ".yml"), "languages/" + p.language + ".yml");
 
 		// Has to config still got old materials
 		boolean oldMat = config.getBoolean("oldMat", false);

@@ -52,12 +52,10 @@ public class PlayerListener implements Listener {
 				barrel = Barrel.getByWood(clickedBlock);
 			}
 		} else if (LegacyUtil.isWoodStairs(type)) {
-			for (Barrel barrel2 : Barrel.barrels) {
-				if (barrel2.getBody().hasBlock(clickedBlock)) {
-					if (BConfig.openEverywhere || !barrel2.isLarge()) {
-						barrel = barrel2;
-					}
-					break;
+			barrel = Barrel.getByWood(clickedBlock);
+			if (barrel != null) {
+				if (!BConfig.openEverywhere && barrel.isLarge()) {
+					barrel = null;
 				}
 			}
 		} else if (LegacyUtil.isFence(type) || LegacyUtil.isSign(type)) {

@@ -82,12 +82,20 @@ public class Barrel implements InventoryHolder {
 			// Minecraft day is 20 min, so add 1/20 to the time every minute
 			barrel.time += (1.0 / 20.0);
 		}
-		if (check == 0 && barrels.size() > 0) {
-			Barrel random = barrels.get((int) Math.floor(Math.random() * barrels.size()));
+		int numBarrels = barrels.size();
+		if (check == 0 && numBarrels > 0) {
+			Barrel random = barrels.get((int) Math.floor(Math.random() * numBarrels));
 			if (random != null) {
 				// You have been selected for a random search
 				// We want to check at least one barrel every time
 				random.checked = false;
+			}
+			if (numBarrels > 50) {
+				Barrel randomInTheBack = barrels.get(numBarrels - 1 - (int) (Math.random() * (numBarrels >>> 2)));
+				if (randomInTheBack != null) {
+					// Prioritize checking one of the less recently used barrels as well
+					randomInTheBack.checked = false;
+				}
 			}
 			new BarrelCheck().runTaskTimer(P.p, 1, 1);
 		}
@@ -273,6 +281,7 @@ public class Barrel implements InventoryHolder {
 			signoffset = (byte) (sign.getY() - spigot.getY());
 		}
 
+		int i = 0;
 		for (Barrel barrel : barrels) {
 			if (barrel.body.isSignOfBarrel(signoffset)) {
 				if (barrel.spigot.equals(spigot)) {
@@ -280,9 +289,11 @@ public class Barrel implements InventoryHolder {
 						// Barrel has no signOffset even though we clicked a sign, may be old
 						barrel.body.setSignoffset(signoffset);
 					}
+					moveMRU(i);
 					return barrel;
 				}
 			}
+			i++;
 		}
 		return null;
 	}
@@ -293,13 +304,25 @@ public class Barrel implements InventoryHolder {
 	@Nullable
 	public static Barrel getByWood(Block wood) {
 		if (LegacyUtil.isWoodPlanks(wood.getType()) || LegacyUtil.isWoodStairs(wood.getType())) {
+			int i = 0;
 			for (Barrel barrel : barrels) {
 				if (barrel.getSpigot().getWorld().equals(wood.getWorld()) && barrel.body.getBounds().contains(wood)) {
+					moveMRU(i);
 					return barrel;
 				}
+				i++;
 			}
 		}
 		return null;
+	}
+
+	// Move Barrel that was recently used more towards the front of the List
+	// Optimizes retrieve by Block over time
+	private static void moveMRU(int index) {
+		if (index > 0) {
+			// Swap entry at the index with the one next to it
+			barrels.set(index - 1, barrels.set(index, barrels.get(index - 1)));
+		}
 	}
 
 	/**
@@ -331,7 +354,7 @@ public class Barrel implements InventoryHolder {
 				BarrelCreateEvent createEvent = new BarrelCreateEvent(barrel, player);
 				P.p.getServer().getPluginManager().callEvent(createEvent);
 				if (!createEvent.isCancelled()) {
-					barrels.add(barrel);
+					barrels.add(0, barrel);
 					return true;
 				}
 			}
@@ -517,14 +540,15 @@ public class Barrel implements InventoryHolder {
 					if (!barrel.checked) {
 						Block broken = barrel.body.getBrokenBlock(false);
 						if (broken != null) {
-							P.p.debugLog("Barrel at " + broken.getWorld().getName() + "/" + broken.getX() + "/" + broken.getY() + "/" + broken.getZ()
-									+ " has been destroyed unexpectedly, contents will drop");
+							P.p.debugLog("Barrel at "
+								+ broken.getWorld().getName() + "/" + broken.getX() + "/" + broken.getY() + "/" + broken.getZ()
+								+ " has been destroyed unexpectedly, contents will drop");
 							// remove the barrel if it was destroyed
 							barrel.remove(broken, null, true);
 						} else {
-							// Dont check this barrel again, its enough to check it once after every restart
-							// as now this is only the backup if we dont register the barrel breaking, as sample
-							// when removing it with some world editor
+							// Dont check this barrel again, its enough to check it once after every restart (and when randomly chosen)
+							// as now this is only the backup if we dont register the barrel breaking,
+							// for example when removing it with some world editor
 							barrel.checked = true;
 						}
 						repeat = false;

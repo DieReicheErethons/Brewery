@@ -15,6 +15,7 @@ import com.dre.brewery.recipe.RecipeItem;
 import com.dre.brewery.utility.LegacyUtil;
 import net.Indyuce.mmoitems.MMOItems;
 import net.Indyuce.mmoitems.api.item.NBTItem;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -37,6 +38,7 @@ public class IntegrationListener implements Listener {
 				try {
 					if (!BConfig.wg.checkAccess(event.getPlayer(), event.getSpigot(), plugin)) {
 						event.setCancelled(true);
+						P.p.msg(event.getPlayer(), P.p.languageReader.get("Error_NoBarrelAccess"));
 					}
 				} catch (Throwable e) {
 					event.setCancelled(true);
@@ -58,10 +60,37 @@ public class IntegrationListener implements Listener {
 
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onBarrelAccess(BarrelAccessEvent event) {
+		if (BConfig.useGMInventories) {
+			Plugin pl = P.p.getServer().getPluginManager().getPlugin("GameModeInventories");
+			if (pl != null && pl.isEnabled()) {
+				try {
+					if (pl.getConfig().getBoolean("restrict_creative")) {
+						Player player = event.getPlayer();
+						if (player.getGameMode() == GameMode.CREATIVE) {
+							if (!pl.getConfig().getBoolean("bypass.inventories") || (!player.hasPermission("gamemodeinventories.bypass") && !player.isOp())) {
+								event.setCancelled(true);
+								if (!pl.getConfig().getBoolean("dont_spam_chat")) {
+									P.p.msg(event.getPlayer(), P.p.languageReader.get("Error_NoBarrelAccess"));
+								}
+								return;
+							}
+						}
+					}
+				} catch (Throwable e) {
+					P.p.errorLog("Failed to Check GameModeInventories for Barrel Open Permissions!");
+					P.p.errorLog("Players will be able to open Barrel with GameMode Creative");
+					e.printStackTrace();
+					BConfig.useGMInventories = false;
+				}
+			} else {
+				BConfig.useGMInventories = false;
+			}
+		}
 		if (BConfig.useGP) {
 			if (P.p.getServer().getPluginManager().isPluginEnabled("GriefPrevention")) {
 				try {
 					if (!GriefPreventionBarrel.checkAccess(event)) {
+						P.p.msg(event.getPlayer(), P.p.languageReader.get("Error_NoBarrelAccess"));
 						event.setCancelled(true);
 						return;
 					}
@@ -94,9 +123,11 @@ public class IntegrationListener implements Listener {
 						Player player = event.getPlayer();
 						try {
 							if (!LWCBarrel.checkAccess(player, sign, plugin)) {
+								P.p.msg(event.getPlayer(), P.p.languageReader.get("Error_NoBarrelAccess"));
 								event.setCancelled(true);
 							}
 						} catch (Throwable e) {
+							event.setCancelled(true);
 							P.p.errorLog("Failed to Check LWC for Barrel Open Permissions!");
 							P.p.errorLog("Brewery was tested with version 4.5.0 of LWC!");
 							P.p.errorLog("Disable the LWC support in the config and do /brew reload");
@@ -105,7 +136,7 @@ public class IntegrationListener implements Listener {
 								P.p.msg(player, "&cLWC check Error, Brewery was tested with up to v4.5.0 of LWC");
 								P.p.msg(player, "&cSet &7useLWC: false &cin the config and /brew reload");
 							} else {
-								P.p.msg(player, "&cError breaking Barrel, please report to an Admin!");
+								P.p.msg(player, "&cError opening Barrel, please report to an Admin!");
 							}
 						}
 					}
@@ -134,7 +165,7 @@ public class IntegrationListener implements Listener {
 					P.p.msg(player, "&cLWC check Error, Brewery was tested with up to v4.5.0 of LWC");
 					P.p.msg(player, "&cSet &7useLWC: false &cin the config and /brew reload");
 				} else {
-					P.p.msg(player, "&cError opening Barrel, please report to an Admin!");
+					P.p.msg(player, "&cError breaking Barrel, please report to an Admin!");
 				}
 			}
 		} else {

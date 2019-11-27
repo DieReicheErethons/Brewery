@@ -409,6 +409,7 @@ recipes:
 useWorldGuard: true
 useLWC: true
 useGriefPrevention: true
+useGMInventories: true
 
 # Änderungen an Fassinventaren mit LogBlock aufzeichen [true]
 useLogBlock: true

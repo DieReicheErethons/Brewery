@@ -411,6 +411,7 @@ recipes:
 useWorldGuard: true
 useLWC: true
 useGriefPrevention: true
+useGMInventories: true
 
 # Enable the Logging of Barrel Inventories to LogBlock [true]
 useLogBlock: true

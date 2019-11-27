@@ -48,6 +48,7 @@ public class BConfig {
 	public static boolean useGP; //GriefPrevention
 	public static boolean hasVault; // Vault
 	public static boolean useCitadel; // CivCraft/DevotedMC Citadel
+	public static boolean useGMInventories; // GamemodeInventories
 	public static Boolean hasSlimefun = null; // Slimefun ; Null if not checked
 	public static Boolean hasMMOItems = null; // MMOItems ; Null if not checked
 
@@ -194,6 +195,7 @@ public class BConfig {
 		useLWC = config.getBoolean("useLWC", true) && plMan.isPluginEnabled("LWC");
 		useGP = config.getBoolean("useGriefPrevention", true) && plMan.isPluginEnabled("GriefPrevention");
 		useLB = config.getBoolean("useLogBlock", false) && plMan.isPluginEnabled("LogBlock");
+		useGMInventories = config.getBoolean("useGMInventories", false);
 		useCitadel = config.getBoolean("useCitadel", false) && plMan.isPluginEnabled("Citadel");
 		// The item util has been removed in Vault 1.7+
 		hasVault = plMan.isPluginEnabled("Vault")

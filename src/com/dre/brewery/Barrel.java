@@ -119,7 +119,6 @@ public class Barrel implements InventoryHolder {
 		// Listened to by WGBarrel7, WGBarrelNew, WGBarrelOld, GriefPreventionBarrel (IntegrationListener)
 		P.p.getServer().getPluginManager().callEvent(accessEvent);
 		if (accessEvent.isCancelled()) {
-			P.p.msg(player, P.p.languageReader.get("Error_NoBarrelAccess"));
 			return false;
 		}
 

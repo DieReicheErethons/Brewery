@@ -14,6 +14,7 @@ Brew_Woodtype: 木材質
 Brew_Years: 年
 Brew_fermented: 發酵
 Brew_minute: 分鐘
+Brew_Alc: Alc &v1ml
 
 # CMD
 CMD_Copy_Error: '&6&v1 &c藥水不適合你的庫存'
@@ -23,6 +24,7 @@ CMD_NonStatic: '&e藥水不再是靜止的,會在桶木中老化.'
 CMD_Player: '&a&v1 現在是 &6&v2% &a醉酒,酒的品質為 &6&v3'
 CMD_Player_Error: '&c酒的品質必須在1到10之間！'
 CMD_Reload: '&a設定檔已成功重新加載'
+CMD_Created: '&aBrew Created'
 CMD_Configname: '&aName for the Config is: &f&v1'
 CMD_Configname_Error: '&cCould not find item in your hand'
 CMD_Static: '&a藥水現在是靜止的,不會在桶或釀造台上變化.'

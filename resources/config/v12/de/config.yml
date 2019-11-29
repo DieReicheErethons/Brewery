@@ -76,9 +76,117 @@ updateCheck: true
 # Autosave Intervall in Minuten [3]
 autosave: 3
 
+# Debug Nachrichten im Log anzeigen [false]
+debug: false
+
 # Config Version
 version: '1.8'
 oldMat: true
+
+
+
+# -- Eigene Items Definieren --
+# Die festgelegte id kann dann in einem Rezept verwendet werden
+
+# matchAny: true wenn es schon reicht wenn eine der Angaben zutrifft
+# material: Welche Art das Item haben muss
+# name: Welchen Namen das Item haben muss (Farbcodes möglich: z.b. &6)
+# lore: Was in der Lore des Items stehen muss
+
+customItems:
+  bsp-item:
+    #  Ein Bedrock Item das Mauer heißt und in der Lore die angegebene Zeile hat
+    material: BEDROCK
+    name: 'Mauer'
+    lore:
+      - '&7Besonders gut geschützt'
+
+  bsp-item2:
+    #  Mit matchAny muss nur eine der Angaben zutreffen.
+    #  Hier also eine der Türarten, oder ein Item namens Buchenholztür, oder ein Item mit 'Eine Tür' in der Lore
+    matchAny: true
+    material:
+      - WOODEN_DOOR
+      - IRON_DOOR
+    name:
+      - 'Buchenholztür'
+    lore:
+      - 'Eine Tür'
+
+  himbeere:
+    name: '&cHimbeere'
+
+
+# -- Zutaten im Kessel --
+# Hier kann angegeben werden welche Zutaten in den Kessel getan werden können und was mit ihnen geschieht.
+
+# name: Name des Basistrankes der aus dem Kessel kommt (Farbcodes möglich: z.b. &6)
+# ingredients: Auflistung von 'Material/Anzahl'
+#   Halte ein Item in der Hand und benutze /brew ItemName um dessen Material herauszufinden und für ein Rezept zu benutzen
+#   (Item-ids anstatt Material können in Bukkit nicht mehr benutzt werden)
+#   Eine Liste von allen Materialien kann hier gefunden werden: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
+# color: Farbe des Trankes der aus dem Kessel kommt
+#   Benutzbare Farben: DARK_RED, RED, BRIGHT_RED, ORANGE, PINK, BLUE, CYAN, WATER, GREEN, BLACK, GREY, BRIGHT_GREY
+#   Oder RGB Farben (Hex: also zB '99FF33') (Ohne #) (mit '') (Einfach nach "HTML color" im Internet suchen)
+# lore: Auflistung von zusätzlichem Text auf dem Trank. (Farbcodes möglich: z.b. &6)
+
+
+cauldron:
+  bsp:
+    name: Beispiel
+    ingredients:
+      - BEDROCK/2
+      - DIAMOND
+    color: BLACK
+    lore:
+      - Ein Beispiel für einen Basistrank
+      - So kommt er aus dem Kessel
+
+# -- Eine Zutat: --
+  wheat:
+    name: Getreideferment
+    ingredients: WHEAT
+
+  sugarcane:
+    name: Zuckersud
+    ingredients: SUGAR_CANE
+    color: 'f1ffad' # gelbliches grün
+
+  apple:
+    name: Apfelmost
+    ingredients: APPLE
+
+  potato:
+    name: Kartoffelmaische
+    ingredients: POTATO_ITEM
+
+  grass:
+    name: Kräuterbrühe
+    ingredients: LONG_GRASS
+    color: '99ff66' # helles grün
+
+  rmushroom:
+    name: Pilzsud
+    ingredients: RED_MUSHROOM
+    color: 'ff5c33' # bernsteinrot
+
+  cocoa:
+    name: Kakaobrühe
+    ingredients: INK_SACK
+    color: '804600' # mokka
+
+  milk:
+    name: Milchiges Wasser
+    ingredients: MILK_BUCKET
+    color: BRIGHT_GREY
+
+  # -- Mehrere Zutaten: --
+  apfelmet_basis:
+    name: Apfel-Zuckersud
+    ingredients:
+      - SUGAR_CANE/3
+      - APPLE
+    color: 'e1ff4d' # grünliches gelb
 
 
 # -- Rezepte für Getränke --
@@ -104,6 +212,10 @@ oldMat: true
 # alcohol: Alkoholgehalt 0-100 in absoluter Menge bei perfektem Getränk (wird dem Spieler hinzugefügt, bei 100 = tot)
 # lore: Auflistung von zusätzlichem Text auf dem fertigen Trank. (Farbcodes möglich: z.b. &6)
 #   Lore nur für bestimmte Qualität möglich mit + Schlecht, ++ Mittel, +++ Gut, vorne anhängen.
+# servercommands: Liste von Befehlen ausgeführt vom Server wenn der Trank getrunken wird
+# playercommands: Liste von Befehlen ausgeführt vom Spieler wenn der Trank getrunken wird
+# drinkmessage: Nachricht im Chat beim trinken des Trankes
+# drinktitle: Nachricht als Titel auf dem Bildschirm an den Spieler beim trinken des Trankes
 # effects: Auflistung Effekt/Level/Dauer  Besonderere Trank-Effekte beim Trinken, Dauer in sek.
 #   Ein 'X' an den Namen anhängen, um ihn zu verbergen. Bsp: 'POISONX/2/10' (WEAKNESS, INCREASE_DAMAGE, SLOW und SPEED sind immer verborgen.)
 #   Effekte sind ab der 1.9 immer verborgen, wegen Änderungen an den Tränken.
@@ -114,7 +226,7 @@ oldMat: true
 
 recipes:
 #  Ein vollständiges Beispiel zuerst:
-   0:
+   bsp:
       name: Schlechtes Beispiel/Beispiel/Gutes Beispiel
       ingredients:
       - SUGAR_CANE/5
@@ -123,7 +235,9 @@ recipes:
       - WOOD,1/8
       - BEDROCK/1
 #     - Jungle Leaves/64  # Nur mit Vault
-#     - Green Dye/6       # Nur mit Vault
+      - Brewery:Weißbier/2
+#     - ExoticGarden:Grape/3
+      - bsp-item/4
       cookingtime: 3
       distillruns: 2
       distilltime: 60
@@ -135,17 +249,23 @@ recipes:
       lore:
       - Dies ist ein Beispiel Trank
       - ++Ganz normales Beispiel
-      - Man kann ihn nicht brauen
-      - Aber dies würde auf dem Trank stehen
+      - Dies würde auf dem Trank stehen
       - + Riecht eklig
       - ++ Riecht ganz ok
       - +++ Riecht richtig gut
+      servercommands:
+      - weather clear
+      playercommands:
+      - homes
+      drinkmessage: Schmeckt toll
+      drinktitle: Wärmt dich von innen
       effects:
       - FIRE_RESISTANCE/20
       - HEAL/1
       - WEAKNESS/2-3/50-60
       - POISONX/1-0/20-0
-   1:
+
+   weißbier:
       name: Ranziges Weißbier/Weißbier/Feines Weißbier
       ingredients:
       - WHEAT/3
@@ -156,7 +276,8 @@ recipes:
       color: BRIGHT_GREY
       difficulty: 1
       alcohol: 5
-   2:
+
+   bier:
       name: Ranziges Bier/Bier/Feines Bier
       ingredients:
       - WHEAT/6
@@ -169,7 +290,8 @@ recipes:
       lore:
       - +++ &8Das perlt
       alcohol: 6
-   3:
+
+   dunkelbier:
       name: Ranziges Dunkelbier/Dunkelbier/Feines Dunkelbier
       ingredients:
       - WHEAT/6
@@ -180,7 +302,8 @@ recipes:
       color: BLACK
       difficulty: 2
       alcohol: 7
-   4:
+
+   met:
       name: Scheußlicher Met/Met/&6Goldener Met
       ingredients:
       - SUGAR_CANE/6
@@ -193,7 +316,8 @@ recipes:
       alcohol: 9
       lore:
       - +++ Hat einen goldenen Schein
-   5:
+
+   apfelmet:
       name: Apfelmet/Süßer Apfelmet/&6Goldensüßer Apfelmet
       ingredients:
       - SUGAR_CANE/6
@@ -211,7 +335,8 @@ recipes:
       - +++ Hat eine wunderbare Apfelnote
       effects:
       - WATER_BREATHINGX/1-2/150
-   6:
+
+   rum:
       name: Bitterer Rum/Würziger Rum/&6Goldener Rum
       ingredients:
       - SUGAR_CANE/14
@@ -226,7 +351,8 @@ recipes:
       effects:
       - FIRE_RESISTANCE/1/20-100
       - POISONX/1-0/30-0
-   7:
+
+   vodka:
       name: Abgeranzter Vodka/Vodka/Russischer Vodka
       ingredients:
       - POTATO_ITEM/10
@@ -241,7 +367,8 @@ recipes:
       effects:
       - WEAKNESS/15
       - POISON/10
-   8:
+
+   absinth:
       name: minderwertiger Absinth/Absinth/Starker Absinth
       ingredients:
       - LONG_GRASS/15
@@ -253,7 +380,8 @@ recipes:
       alcohol: 45
       effects:
       - POISON/20-30
-   9:
+
+   kartoffelsuppe:
       name: Kartoffelsuppe
       ingredients:
       - POTATO_ITEM/5
@@ -263,7 +391,8 @@ recipes:
       difficulty: 1
       effects:
       - HEAL/0-1
-   10:
+
+   kaffee:
       name: Fader Kaffee/Kaffee/Starker Kaffee
       ingredients:
       - INK_SACK,3/12
@@ -281,27 +410,13 @@ recipes:
 # Der Serveradmin kann neue Rezepte hinzufügen und bestehende ändern, um das Abschauen aus der Standardconfig zu verhindern.
 
 
-# cooked: ALLE möglichen Zutaten und die nach dem Gähren daraus entstehenden Tranknamen:
-# [Beispiel] MATERIAL: Name nach Gähren
-
-cooked:
-   WHEAT: Getreideferment
-   SUGAR_CANE: Zuckersud
-   APPLE: Apfelmost
-   POTATO_ITEM: Kartoffelmaische
-   LONG_GRASS: Kräuterbrühe
-   RED_MUSHROOM: Pilzsud
-   INK_SACK: Farbige Brühe
-   MILK_BUCKET: Milchiges Wasser
-
-
-
 # -- Plugin Kompatiblität --
 
 # Andere Plugins (wenn installiert) nach Rechten zum öffnen von Fässern checken [true]
 useWorldGuard: true
 useLWC: true
 useGriefPrevention: true
+useGMInventories: true
 useCitadel: true
 
 # Änderungen an Fassinventaren mit LogBlock aufzeichen [true]

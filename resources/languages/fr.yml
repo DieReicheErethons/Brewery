@@ -5,7 +5,7 @@ Brew_BarrelRiped: Baril âgé
 Brew_DistillUndefined: Distillation indéfinie
 Brew_Distilled: Distillé
 Brew_HundredsOfYears: Centaines d´années
-Brew_Ingredients: Ingredients
+Brew_Ingredients: Ingrédients
 Brew_MinutePluralPostfix: s
 Brew_OneYear: Un an
 Brew_ThickBrew: Breuvage boueux
@@ -14,6 +14,7 @@ Brew_Woodtype: Type de bois
 Brew_Years: Années
 Brew_fermented: fermenté
 Brew_minute: minute
+Brew_Alc: Alc &v1ml
 
 # CMD
 CMD_Copy_Error: '&6&v1 &cCes potions ne rentrent pas dans votre inventaire.'
@@ -23,8 +24,9 @@ CMD_NonStatic: '&eLa boisson n´est plus statique et vieillira normalement dans 
 CMD_Player: '&a&v1 est maintenant &6&v2% &aivre, avec une qualité de &6&v3'
 CMD_Player_Error: '&cLa qualité doit être comprise entre 1 et 10 !'
 CMD_Reload: '&aLa config a été reload avec succès.'
+CMD_Created: '&aBrew créé'
 CMD_Configname: '&aName for the Config is: &f&v1'
-CMD_Configname_Error: '&cCould not find item in your hand'
+CMD_Configname_Error: '&cN´a pas pu trouver d´objet dans votre main'
 CMD_Static: '&aLa boisson est maintenant statique et ne changera pas dans les barils ou les stands d´alchimie.'
 CMD_UnLabel: '&aLabel supprimé!'
 

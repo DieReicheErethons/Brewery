@@ -14,6 +14,7 @@ Brew_Woodtype: Tipo di legno
 Brew_Years: Anni
 Brew_fermented: fermentata
 Brew_minute: minuto
+Brew_Alc: Alc &v1ml
 
 # Comandi
 CMD_Copy_Error: '&6&v1 &cLe copie di questa pozione non stavano nell''inventario.'
@@ -23,6 +24,7 @@ CMD_NonStatic: '&eLa pozione non è più statica ed invecchierà normalmente nei
 CMD_Player: '&a&v1 è ora &6&v2% &asbronzo, con una qualità di &6&v3'
 CMD_Player_Error: '&cLa qualità deve essere fra 1 e 10!'
 CMD_Reload: '&aLa configurazione è stata ricaricata con successo'
+CMD_Created: '&aBrew Created'
 CMD_Configname: '&aName for the Config is: &f&v1'
 CMD_Configname_Error: '&cCould not find item in your hand'
 CMD_Static: '&aLa pozione è ora statica e non cambierà né nei barili né negli alambicchi.'

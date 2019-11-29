@@ -81,8 +81,9 @@ public class BConfig {
 	private static boolean checkConfigs() {
 		File cfg = new File(p.getDataFolder(), "config.yml");
 		if (!cfg.exists()) {
-			p.errorLog("No config.yml found, creating default file! You may want to choose a config according to your language!");
-			p.errorLog("You can find them in plugins/Brewery/configs/");
+			p.log("§1§lNo config.yml found, creating default file! You may want to choose a config according to your language!");
+			p.log("§1§lYou can find them in plugins/Brewery/configs/");
+			p.log("§1§lJust copy the config for your language into the Brewery folder and /brew reload");
 			InputStream defconf = p.getResource("config/" + (P.use1_13 ? "v13/" : "v12/") + "en/config.yml");
 			if (defconf == null) {
 				p.errorLog("default config file not found, your jarfile may be corrupt. Disabling Brewery!");
@@ -111,9 +112,10 @@ public class BConfig {
 			File lfold = new File(configs, l);
 			try {
 				BUtil.saveFile(p.getResource("config/" + (P.use1_13 ? "v13/" : "v12/") + l + "/config.yml"), lfold, "config.yml", overwrite);
-				BUtil.saveFile(p.getResource("languages/" + l + ".yml"), languages, l + ".yml", false); // Never overwrite languages for now
+				BUtil.saveFile(p.getResource("languages/" + l + ".yml"), languages, l + ".yml", false); // Never overwrite languages, they get updated with their updater
 			} catch (IOException e) {
 				if (!(l.equals("zh") || l.equals("tw"))) {
+					// zh and tw not available for some versions
 					e.printStackTrace();
 				}
 			}

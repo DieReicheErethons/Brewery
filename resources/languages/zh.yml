@@ -14,6 +14,7 @@ Brew_Woodtype: 木头种类
 Brew_Years: 年
 Brew_fermented: 炖煮发酵
 Brew_minute: 分钟
+Brew_Alc: Alc &v1ml
 
 # CMD
 CMD_Copy_Error: '&6&v1&r, &c你的背包塞不下了.'
@@ -23,6 +24,7 @@ CMD_NonStatic: '&e饮品已被取消静滞, 现在可以正常地进行蒸馏或
 CMD_Player: '&a&v1醉酒程度为&6&v2%&f, 醉酒质量为&6&v3.'
 CMD_Player_Error: '&c醉酒质量必须在1到10之间.'
 CMD_Reload: '&a配置文件重载成功.'
+CMD_Created: '&aBrew Created'
 CMD_Configname: '配置文件中&aName的名字是: &f&v1'
 CMD_Configname_Error: '&c无法找到物品名称'
 CMD_Static: '&a饮品已被静滞, 现在其无法被蒸馏或进行木桶熟成.'

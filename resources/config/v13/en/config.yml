@@ -77,11 +77,12 @@ updateCheck: true
 # Autosave interval in minutes [3]
 autosave: 3
 
-# Debug Nachrichten im Log anzeigen [false]
+# Show debug messages in log [false]
 debug: false
 
 # Config Version
 version: '1.8'
+
 
 
 # -- Define custom items --
@@ -210,7 +211,7 @@ cauldron:
 # difficulty: 1-10 accuracy needed to get good quality (1 = unaccurate/easy, 10 = very precise/hard)
 # alcohol: Absolute amount of alcohol 0-100 in a perfect potion (will be added directly to the player, where 100 means fainting)
 # lore: List of additional text on the finished brew. (Formatting codes possible: such as &6)
-#   Specific lore for quality possible, using + bad, ++ normal, ++ good, added to the front of the line.
+#   Specific lore for quality possible, using + bad, ++ normal, +++ good, added to the front of the line.
 # servercommands: List of Commands executed by the Server when drinking the brew
 # playercommands: List of Commands executed by the Player when drinking the brew
 # drinkmessage: Chat-message to the Player when drinking the Brew
@@ -419,8 +420,7 @@ useLogBlock: true
 
 # -- Chat Distortion Settings --
 
-# If written Chat is distorted when the Player is Drunk,
-# so that it looks like drunk writing
+# If written Chat is distorted when the Player is Drunk, so that it looks like drunk writing
 # How much the chat is distorted depends on how drunk the Player is
 # Below are settings for what and how changes in chat occur
 enableChatDistortion: true

@@ -52,6 +52,12 @@ hangoverDays: 7
 colorInBarrels: true
 colorInBrewer: true
 
+# Always show the 1-5 stars on the item depending on the quality. If false, they will only appear when brewing [true]
+alwaysShowQuality: true
+
+# Always show the alcohol content on the item. If false, it will only show in the brewing stand [false]
+alwaysShowAlc: false
+
 # 大型熟成木桶可以通过右击桶身任意一个位置来打开, 而不需要专门右击其龙头. 这一操作对小型酒桶总为真.[true]
 openLargeBarrelEverywhere: false
 
@@ -73,8 +79,117 @@ updateCheck: true
 # 自动保存时间间隔, 单位:分钟.[3]
 autosave: 3
 
+# Show debug messages in log [false]
+debug: false
+
 # 配置文件版本
 version: '1.8'
+
+
+
+# -- Define custom items --
+# The defined id can then be used in recipes
+
+# matchAny: true if it is already enough if one of the info matches
+# material: Which type the item has to be
+# name: Which name the item has to be (Formatting codes possible: such as &6)
+# lore: What has to be in the lore of the item
+
+customItems:
+  ex-item:
+    # A Barrier item called Wall and has the given line in its lore
+    material: Barrier
+    name: 'Wall'
+    lore:
+      - '&7Very well protected'
+
+  ex-item2:
+    # Using matchAny only one of the following has to match.
+    # In this case on of the door types, or an item called Beechwood Door, or an item with 'A door' in its lore
+    matchAny: true
+    material:
+      - Acacia_Door
+      - Oak_Door
+      - Spruce_Door
+    name:
+      - 'Beechwood Door'
+    lore:
+      - 'A door'
+
+  rasp:
+    name: '&cRaspberry'
+
+
+# -- Ingredients in the Cauldron --
+# Which Ingredients are accepted by the Cauldron and the base potion resulting from them
+
+# name: Name of the base potion coming out of the Cauldron (Formatting codes possible: such as &6)
+# ingredients: List of 'material/amount'
+#   With an item in your hand, use /brew ItemName to get its material for use in a recipe
+#   (Item-ids instead of material are not supported by bukkit anymore and will not work)
+#   A list of materials can be found here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
+# color: Color of the potion from a cauldron.
+#   Usable Colors: DARK_RED, RED, BRIGHT_RED, ORANGE, PINK, BLUE, CYAN, WATER, GREEN, BLACK, GREY, BRIGHT_GREY
+#   Or RGB colors (hex: for example '99FF33') (with '') (search for "HTML color" on the internet)
+# lore: List of additional text on the base potion. (Formatting codes possible: such as &6)
+
+cauldron:
+  ex:
+    name: Example
+    ingredients:
+      - Bedrock/2
+      - Diamond
+    color: BLACK
+    lore:
+      - An example for a Base Potion
+      - This is how it comes out of a Cauldron
+
+  # -- One Ingredient: --
+  wheat:
+    name: 发酵麦汁
+    ingredients: Wheat
+
+  sugarcane:
+    name: 糖浆
+    ingredients: Sugar_Cane
+    color: 'f1ffad' # yellowish green
+
+  apple:
+    name: 苹果汁
+    ingredients: Apple
+
+  potato:
+    name: 土豆泥
+    ingredients: Potato
+
+  grass:
+    name: 蒸煮过的药草
+    ingredients: Grass
+    color: '99ff66' # bright green
+
+  rmushroom:
+    name: 蘑菇酿
+    ingredients: Red_Mushroom
+    color: 'ff5c33' # amber red
+
+  cocoa:
+    name: 上了色的水
+    ingredients: Cocoa_Beans
+    color: '804600' # mocca
+
+  milk:
+    name: 乳浊液体
+    ingredients: Milk_Bucket
+    color: BRIGHT_GREY
+
+  # -- Multiple Ingredients: --
+  apfelmet_base:
+    name: Apple-Sugar brew
+    ingredients:
+      - Sugar_Cane/3
+      - Apple
+    color: 'e1ff4d' # greenish yellow
+
 
 
 # -- 饮品配方列表 --
@@ -84,6 +199,8 @@ version: '1.8'
 #   手中持有物品的时候, 可以使用/brew ItemName来获取其物品id, 便于增改配方
 #   (请勿使用物品ID, 物品ID已被弃用, 使用材料名称是唯一支持的做法.)
 #   材料名称列表详见此处: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html (可能需要挂梯子进行浏览)
+#   Plugin items with 'plugin:id' (Currently supporting ExoticGarden, Slimefun, MMOItems, Brewery)
+#   Or a custom item defined above
 # cookingtime: 原料需要在炼药锅内烹制发酵的时间, 单位为现实分钟.
 # distillruns: 饮品需要在酿造台上蒸馏的次数(0=无需蒸馏).
 # distilltime: 每次蒸馏所需要耗费的时间(0=默认值, 即40秒), MC默认则为20秒/
@@ -96,6 +213,12 @@ version: '1.8'
 #   也可以使用RGB颜色(十六进制, 如'99FF33', 必须包含两个单引号)(在线搜索"HTML 颜色"或者其他颜色库即刻获得你需要的颜色的十六进制表示)
 # difficulty: 酿制难度, 1 = 不需要非常精确的操作就可以制出优质饮品, 10 = 需要非常精确的操作才可以制出优质饮品.
 # alcohol: 完美质量的饮品所含有的酒精度(百分数, 会被直接添加到玩家身上, 100意为直接昏迷)
+# lore: List of additional text on the finished brew. (Formatting codes possible: such as &6)
+#   Specific lore for quality possible, using + bad, ++ normal, +++ good, added to the front of the line.
+# servercommands: List of Commands executed by the Server when drinking the brew
+# playercommands: List of Commands executed by the Player when drinking the brew
+# drinkmessage: Chat-message to the Player when drinking the Brew
+# drinktitle: Title on Screen to the Player when drinking the Brew
 # effects: 饮用后能够获得的药效的列表. 格式为"药效/强度/时长(秒)".
 #   药效列表: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/potion/PotionEffectType.html
 #   药效强度与时长可以用"-"划分区间, 如: "SPEED/1-2/30-40" = 最劣质情况下的饮品会给予速度1三十秒, 最优质则会给予速度2四十秒.
@@ -103,145 +226,170 @@ version: '1.8'
 #   时长极限为1638秒. 药效强度极限为255级. 瞬间型药效无需附加时长.
 
 recipes:
-#  例:
-   0:
-      name: 劣质的 范例饮品/范例饮品/优质的 范例饮品
-      ingredients:
-      - Sugar_Cane/5
+  #  例:
+
+  0:
+    name: 劣质的 范例饮品/范例饮品/优质的 范例饮品
+    ingredients:
       - Diamond/1
-      - Cocoa_Beans/20
       - Spruce_Planks/8
       - Bedrock/1
-      cookingtime: 3
-      distillruns: 2
-      distilltime: 60
-      wood: 4
-      age: 11
-      color: DARK_RED
-      difficulty: 3
-      alcohol: 23
-      effects:
+      - Brewery:Wheatbeer/2
+#      - ExoticGarden:Grape/3
+      - ex-item/4
+    cookingtime: 3
+    distillruns: 2
+    distilltime: 60
+    wood: 4
+    age: 11
+    color: DARK_RED
+    difficulty: 3
+    alcohol: 23
+    lore:
+      - This is an examble brew
+      - ++Just a normal Example
+      - This text would be on the brew
+      - + Smells disgusting
+      - ++ Smells alright
+      - +++ Smells really good
+    servercommands:
+      - weather clear
+    playercommands:
+      - homes
+    drinkmessage: Tastes good
+    drinktitle: Warms you from inside
+    effects:
       - FIRE_RESISTANCE/20
       - HEAL/1
       - WEAKNESS/2-3/50-60
       - POISON/1-0/20-0
-   1:
-      name: 劣质麦啤/麦啤/优质麦啤
-      ingredients:
+
+  1:
+    name: 劣质麦啤/麦啤/优质麦啤
+    ingredients:
       - Wheat/3
-      cookingtime: 8
-      distillruns: 0
-      wood: 1
-      age: 2
-      color: BRIGHT_GREY
-      difficulty: 1
-      alcohol: 5
-   2:
-      name: 劣质啤酒/啤酒/鲜啤
-      ingredients:
+    cookingtime: 8
+    distillruns: 0
+    wood: 1
+    age: 2
+    color: BRIGHT_GREY
+    difficulty: 1
+    alcohol: 5
+
+  2:
+    name: 劣质啤酒/啤酒/鲜啤
+    ingredients:
       - Wheat/6
-      cookingtime: 8
-      distillruns: 0
-      wood: 0
-      age: 3
-      color: ORANGE
-      difficulty: 1
-      alcohol: 6
-   3:
-      name: 劣质黑啤/黑啤/精制黑啤
-      ingredients:
+    cookingtime: 8
+    distillruns: 0
+    wood: 0
+    age: 3
+    color: ORANGE
+    difficulty: 1
+    alcohol: 6
+
+  3:
+    name: 劣质黑啤/黑啤/精制黑啤
+    ingredients:
       - Wheat/6
-      cookingtime: 8
-      distillruns: 0
-      wood: 4
-      age: 8
-      color: BLACK
-      difficulty: 2
-      alcohol: 7
-   4:
-      name: 粗制蜜酒/蜜酒/黄金蜜酒
-      ingredients:
+    cookingtime: 8
+    distillruns: 0
+    wood: 4
+    age: 8
+    color: BLACK
+    difficulty: 2
+    alcohol: 7
+
+  4:
+    name: 粗制蜜酒/蜜酒/黄金蜜酒
+    ingredients:
       - Sugar_Cane/6
-      cookingtime: 3
-      distillruns: 0
-      wood: 2
-      age: 4
-      color: ORANGE
-      difficulty: 2
-      alcohol: 9
-   5:
-      name: 苹果蜜酒/甜苹果蜜酒/甘醇黄金苹果蜜酒
-      ingredients:
+    cookingtime: 3
+    distillruns: 0
+    wood: 2
+    age: 4
+    color: ORANGE
+    difficulty: 2
+    alcohol: 9
+
+  5:
+    name: 苹果蜜酒/甜苹果蜜酒/甘醇黄金苹果蜜酒
+    ingredients:
       - Sugar_Cane/6
       - Apple/2
-      cookingtime: 4
-      distillruns: 0
-      wood: 2
-      age: 4
-      color: ORANGE
-      difficulty: 4
-      alcohol: 12
-      effects:
+    cookingtime: 4
+    distillruns: 0
+    wood: 2
+    age: 4
+    color: ORANGE
+    difficulty: 4
+    alcohol: 12
+    effects:
       - WATER_BREATHING/1-2/150
-   6:
-      name: 苦涩的朗姆/辛辣的朗姆/金品朗姆
-      ingredients:
+
+  6:
+    name: 苦涩的朗姆/辛辣的朗姆/金品朗姆
+    ingredients:
       - Sugar_Cane/14
-      cookingtime: 5
-      distillruns: 2
-      distilltime: 30
-      wood: 2
-      age: 14
-      color: DARK_RED
-      difficulty: 6
-      alcohol: 30
-      effects:
+    cookingtime: 5
+    distillruns: 2
+    distilltime: 30
+    wood: 2
+    age: 14
+    color: DARK_RED
+    difficulty: 6
+    alcohol: 30
+    effects:
       - FIRE_RESISTANCE/1/20-100
       - POISON/1-0/30-0
-   7:
-      name: 劣质伏特加/伏特加/纯正俄式风味伏特加
-      ingredients:
+
+  7:
+    name: 劣质伏特加/伏特加/纯正俄式风味伏特加
+    ingredients:
       - Potato/10
-      cookingtime: 15
-      distillruns: 3
-      age: 0
-      color: BRIGHT_GREY
-      difficulty: 4
-      alcohol: 20
-      effects:
+    cookingtime: 15
+    distillruns: 3
+    age: 0
+    color: BRIGHT_GREY
+    difficulty: 4
+    alcohol: 20
+    effects:
       - WEAKNESS/15
       - POISON/10
-   8:
-      name: 劣质苦艾酒/苦艾酒/劲猛苦艾酒
-      ingredients:
+
+  8:
+    name: 劣质苦艾酒/苦艾酒/劲猛苦艾酒
+    ingredients:
       - Grass/15
-      cookingtime: 3
-      distillruns: 6
-      distilltime: 80
-      color: GREEN
-      difficulty: 8
-      alcohol: 45
-      effects:
+    cookingtime: 3
+    distillruns: 6
+    distilltime: 80
+    color: GREEN
+    difficulty: 8
+    alcohol: 45
+    effects:
       - POISON/20-30
-   9:
-      name: 土豆汤
-      ingredients:
+
+  9:
+    name: 土豆汤
+    ingredients:
       - Potato/5
       - Grass/3
-      cookingtime: 3
-      color: PINK
-      difficulty: 1
-      effects:
+    cookingtime: 3
+    color: PINK
+    difficulty: 1
+    effects:
       - HEAL/0-1
-   10:
-      name: 平淡的咖啡/咖啡/浓苦黑咖
-      ingredients:
+
+  10:
+    name: 平淡的咖啡/咖啡/浓苦黑咖
+    ingredients:
       - Cocoa_Beans/12
       - Milk_Bucket/2
-      cookingtime: 2
-      color: BLACK
-      difficulty: 3
-      effects:
+    cookingtime: 2
+    color: BLACK
+    difficulty: 3
+    effects:
       - REGENERATION/1/2-5
       - SPEED/1/30-140
 
@@ -250,30 +398,13 @@ recipes:
 # 插件的本意是让玩家自行实验饮品制造配方, 所以未来的新配方由服管决定是否加入.
 
 
-
-
-# cooked: 炼药锅中烹制发酵过后的液体名称, 由一个饮品中的第一个原料决定.
-# [例] 原料名称: 烹制后的名称
-
-cooked:
-   Wheat: 发酵麦汁
-   Sugar_Cane: 糖浆
-   Apple: 苹果汁
-   Potato: 土豆泥
-   Grass: 蒸煮过的药草
-   Red_Mushroom: 蘑菇酿
-   Cocoa_Beans: 上了色的水
-   Milk_Bucket: 乳浊液体
-
-
-
-
 # -- 插件兼容性 --
 
 # 检查插件以进行权限配置[true]
 useWorldGuard: true
 useLWC: true
 useGriefPrevention: true
+useGMInventories: true
 
 # 对LogBlock启用方块数据录入[true]
 useLogBlock: true

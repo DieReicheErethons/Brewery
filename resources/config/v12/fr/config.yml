@@ -1,6 +1,7 @@
 # config for Brewery.jar
 
 
+# Quelques traductions en français ont été faites avec DeepL
 # -- Paramètres --
 # Les paramètres par défaut sont entre []
 
@@ -50,17 +51,23 @@ hangoverDays: 7
 colorInBarrels: true
 colorInBrewer: true
 
+# Toujours montrer les 1-5 étoiles sur les objets en fonction de leur qualité. S'ils sont faux, ils n'apparaîtront que lors de l'infusion. [true]
+alwaysShowQuality: true
+
+# Toujours indiquer la teneur en alcool sur les objets. S'il est false, il n'apparaîtra que dans le stand de brassage. [false]
+alwaysShowAlc: false
+
 # Si le grand tonneau peut être ouvert en cliquant sur n'importe quel bloc, non seulement le robinet ou le panneau. Toujours "true" pour les petits tonneaux. [true]
 openLargeBarrelEverywhere: true
 
-# How many Brewery drinks can be put into the Minecraft barrels [6]
+# Combien de boissons de brasserie peuvent être mises dans les barils Minecraft [6]
 maxBrewsInMCBarrels: 6
 
-# The used Ingredients and other brewing-data is saved to all Brewery Items. To prevent
-# hacked clients from reading what exactly was used to brew an item, the data can be encoded/scrambled.
-# This is a fast process to stop players from hacking out recipes, once they get hold of a brew.
-# Only drawback: brew items can only be used on another server with the same encodeKey.
-# So enable this if you want to make recipe cheating harder, but don't share any brews by world download, schematics, or other means. [false]
+# Les ingrédients et autres données de brassage utilisés sont sauvegardés dans tous les articles de brasserie. [false]
+# Pour empêcher les clients piratés de lire exactement ce qui a été utilisé pour infuser un élément, les données peuvent être encodées/brouillées.
+# Il s'agit d'un processus rapide pour empêcher les joueurs de pirater des recettes, une fois qu'ils mettent la main sur une bière.
+# Seul inconvénient: Les boissons brassicoles ne peuvent être utilisés que sur un autre serveur avec la même clé de chiffrement.
+# Activez cette option si vous voulez rendre la tricherie des recettes plus difficile, mais ne partagez pas les infusions par téléchargement mondial, schémas ou autres moyens.
 enableEncode: false
 encodeKey: 0
 
@@ -71,33 +78,150 @@ updateCheck: true
 # Intervale de la sauvegarde automatique en minutes [3]
 autosave: 3
 
+# Show debug messages in log [false]
+debug: false
+
 # Version de configuration
 version: '1.8'
 oldMat: true
 
 
+
+# -- Définir des objets personnalisés --
+# L'id défini peut ensuite être utilisé dans les recettes
+
+# matchAny: si c'est déjà assez si l'une des infos correspond
+# material: le type d'article à utiliser
+# name: Quel nom l'article doit porter (codes de formatage possibles : tels que &6)
+# lore: Ce qui doit être dans la lore de l'objet
+
+customItems:
+  ex-item:
+    # Un objet Barrière appelé "Wall" et qui a la ligne donnée dans sa lore
+    material: BEDROCK
+    name: 'Wall'
+    lore:
+      - '&7Very well protected'
+
+  ex-item2:
+    # En utilisant matchAny, un seul des éléments suivants doit correspondre.
+    # Dans ce cas, l'un des types de porte, ou un article appelé "Beechwood Door", ou un objet avec "A door" dans sa lore.
+    matchAny: true
+    material:
+      - WOODEN_DOOR
+      - IRON_DOOR
+    name:
+      - 'Beechwood Door'
+    lore:
+      - 'A door'
+
+  rasp:
+    name: '&cRaspberry'
+
+
+# -- Ingrédients dans le chaudron --
+# Quels sont les ingrédients acceptés par le chaudron et la potion de base qui en résulte
+
+# name: Nom de la potion de base qui sort du chaudron (codes de formatage possibles : tels que &6)
+# ingredients: Liste des 'matériaux/montant'
+#   Avec un objet en main, utilisez /brew ItemName pour obtenir son matériau pour une recette de cuisine
+#   (Les id d'objets à la place des matériaux sont obsolètes pour bukkit)
+#   Une liste des matériaux peuvent-être trouvés ici: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
+# color : Couleur de la potion provenant d'un chaudron.
+#   Couleurs disponibles : DARK_RED, RED, BRIGHT_RED, ORANGE, PINK, BLUE, CYAN, WATER, GREEN, BLACK, GREY, BRIGHT_GREY
+#     (Dans l'ordre : Rouge foncé, Rouge, Rouge clair, Orange, Rose, Bleu, Cyan, Eau, Vert, Noir, Gris, Gris clair)
+#   Ou couleurs RGB (hex: par exemple '99FF33') (avec '') (recherche de "HTML color" sur internet)
+# lore: Liste de texte supplémentaire sur la potion de base. (Formatting codes possible: such as &6)
+
+cauldron:
+  ex:
+    name: Exemple
+    ingredients:
+      - BEDROCK/2
+      - DIAMOND
+    color: BLACK
+    lore:
+      - Un exemple pour une potion de base
+      - Voici comment il sort d'un chaudron
+
+  # -- Un ingrédient: --
+  wheat:
+    name: Blé fermenté
+    ingredients: WHEAT
+
+  sugarcane:
+    name: Sucre fermenté
+    ingredients: SUGAR_CANE
+    color: 'f1ffad' # yellowish green
+
+  apple:
+    name: Cidre de pommes
+    ingredients: APPLE
+
+  potato:
+    name: Purée de Pommes de Terre
+    ingredients: POTATO_ITEM
+
+  grass:
+    name: Herbes bouillies
+    ingredients: LONG_GRASS
+    color: '99ff66' # bright green
+
+  rmushroom:
+    name: Champignons fermentés
+    ingredients: RED_MUSHROOM
+    color: 'ff5c33' # amber red
+
+  cocoa:
+    name: Infusion au chocolat
+    ingredients: INK_SACK
+    color: '804600' # mocca
+
+  milk:
+    name: Eau laiteuse
+    ingredients: MILK_BUCKET
+    color: BRIGHT_GREY
+
+  # -- Ingrédients multiples: --
+  apfelmet_base:
+    name: Brassée pomme-sucre
+    ingredients:
+      - SUGAR_CANE/3
+      - APPLE
+    color: 'e1ff4d' # greenish yellow
+
+
 # -- Recette pour les boissons --
 
 # name: Différents noms pour la mauvaise/moyen/bonne qualité (Les codes de mise en forme sont pris en charge: comme par exemple &6 pour la couleur Or.)
-# ingredients: Liste des 'matériaux,data/montant'
-#   With an item in your hand, use /brew ItemName to get its material for use in a recipe
-#   (Les id d'objets à la place des matériaux sont obsolètes pour bukkit et pourraient ne pas fonctionner dans le futur!)
-#     Ex: 'SUGAR_CANE'
+# ingredients: Liste des 'matériaux/montant'
+#   Avec un objet en main, utilisez /brew ItemName pour obtenir son matériau pour une recette de cuisine
+#   (Les id d'objets à la place des matériaux sont obsolètes pour bukkit)
+#     Ex: 'Sugar_Cane'
 #   Une liste des matériaux peuvent-être trouvés ici: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
 #   Vous pouvez spécifier une data (Ex: 5,3 -> Planche de bois de jungle), si vous ne le faites pas la data ne sera pas prise en compte (Ex : 5 -> Bois en général)
 #   If Vault is installed normal names can be used instead of material or id, so using Vault is highly recommended.
 #   Vault will recognize things like "Jungle Leaves" instead of "5,3"
+#   Plugin items avec 'plugin:id' (Actuellement supporté ExoticGarden, Slimefun, MMOItems, Brewery)
+#   Ou un élément personnalisé défini ci-dessus
 # cookingtime: Temps en minutes réelles durant lesquelles les ingrédients devront bouillir
 # distillruns: Combien de fois le breuvage devra être distillé pour un alcool de qualité (0=Ne pas distiller)
-# distilltime: How long (in seconds) one distill-run takes (0=Default time of 40 sec) MC Default would be 20 sec
+# distilltime: Combien de temps (en secondes) dure une distillation (0=Temps par défaut de 40 secondes) MC Par défaut serait de 20 secondes
 # wood: Type de bois du baril 0=aucun 1=Bouleau 2=Chêne 3=Jungle 4=Pin 5=Acacia 6=Chêne Noir
-#   The Minecraft barrel is made of oak
+#   Le tonneau Minecraft est en chêne.
 # age: Temps en jours de Minecraft, la potion devra être âgée dans un baril. 0=Pas besoin d'âge
 # color: Couleur de la potion après distillation/avoir laissé vieillir.
-#   Couleurs disponibles: DARK_RED, RED, BRIGHT_RED, ORANGE, PINK, BLUE, CYAN, WATER, GREEN, BLACK, GREY, BRIGHT_GREY (Dans l'ordre : Rouge foncé, Rouge, Rouge clair, Orange, Rose, Bleu, Cyan, Eau, Vert, Noir, Gris, Gris clair)
-#   Or RGB colors (hex: for example '99FF33') (with '') (search for "HTML color" on the internet)
+#   Couleurs disponibles: DARK_RED, RED, BRIGHT_RED, ORANGE, PINK, BLUE, CYAN, WATER, GREEN, BLACK, GREY, BRIGHT_GREY
+#     (Dans l'ordre : Rouge foncé, Rouge, Rouge clair, Orange, Rose, Bleu, Cyan, Eau, Vert, Noir, Gris, Gris clair)
+#   Ou couleurs RGB (hex: par exemple '99FF33') (avec '') (recherche de "HTML color" sur internet)
 # difficulty: 1-10 précision nécessaire pour obtenir une bonne qualité (1 = imprécis/facile, 10 = très précis/difficile)
 # alcohol: Le montant d'alcool absolu dans une boisson parfaite (cela sera ajouté directement au joueur, où 100% entraînera l'évanouissement), un degré d'alcooléisme en fait
+# lore: Liste des textes supplémentaires sur le breuvage fini. (Codes de formatage possibles : tels que &6)
+#   Texte spécifique de qualité possible, en utilisant + mauvais, ++ normal, +++ bon, ajouté à l'avant de la ligne.
+# servercommands: Liste des commandes exécutées par le serveur lors de la consommation de la potion
+# playercommands: Liste des commandes exécutées par le joueur lors de la consommation de la potion
+# drinkmessage: Chat-message au joueur lorsqu'il boit la potion
+# drinktitle: Titre à l'écran du joueur lorsqu'il boit la potion
 # effects: Liste des effets/durée en secondes lors de la consommation.
 #   Rajouter le suffixe 'X' pour le cacher du label. Exemple: POISONX/10
 #   (WEAKNESS, INCREASE_DAMAGE, SLOW et SPEED sont toujours cachés.)
@@ -115,10 +239,11 @@ recipes:
    0:
       name: Mauvais Exemple/Exemple/Bonne Exemple
       ingredients:
-      - SUGAR_CANE/5
-      - 264/1
+      - DIAMOND/1
       - INK_SACK,3/20
-      - 5,1/8
+      - WOOD,1/8
+      - Brewery:Wheatbeer/2
+#     - ExoticGarden:Grape/3
       - BEDROCK/1
 #     - Jungle Leaves/64  # Only with Vault
 #     - Green Dye/6       # Only with Vault
@@ -130,11 +255,25 @@ recipes:
       color: DARK_RED
       difficulty: 3
       alcohol: 23
+      lore:
+      - C'est un breuvage d'exemple
+      - ++Juste un exemple normal
+      - Ce texte serait sur le breuvage
+      - + Ça sent dégueulasse.
+      - ++ Ça sent bon
+      - +++ Ça sent vraiment bon
+      servercommands:
+      - weather clear
+      playercommands:
+      - homes
+      drinkmessage: C'est bon au goût
+      drinktitle: vous réchauffe à l'intérieur
       effects:
       - FIRE_RESISTANCE/20
       - HEAL/1
       - WEAKNESS/2-3/50-60
       - POISONX/1-0/20-0
+
    1:
       name: Bière Blanche Fade/Bière Blanche/Bonne Bière Blanche
       ingredients:
@@ -146,6 +285,7 @@ recipes:
       color: BRIGHT_GREY
       difficulty: 1
       alcohol: 5
+
    2:
       name: Bière Fade/Bière/Bonne Bière
       ingredients:
@@ -157,6 +297,7 @@ recipes:
       color: ORANGE
       difficulty: 1
       alcohol: 6
+
    3:
       name: Bière Brune Fade/Bière Brune/Bonne Bière Brune
       ingredients:
@@ -168,6 +309,7 @@ recipes:
       color: BLACK
       difficulty: 2
       alcohol: 7
+
    4:
       name: Hydromel Bizarre/Hydromel/&6Hydromel Doré
       ingredients:
@@ -179,6 +321,7 @@ recipes:
       color: ORANGE
       difficulty: 2
       alcohol: 9
+
    5:
       name: Hydromel de Pommes/Doux Hydromel de Pommes/&6Doux Hydromel de Pommes Dorées
       ingredients:
@@ -193,6 +336,7 @@ recipes:
       alcohol: 12
       effects:
       - WATER_BREATHINGX/1-2/150
+
    6:
       name: Rhum Amer/Rhum Epicé/&6Rhum Doré
       ingredients:
@@ -208,6 +352,7 @@ recipes:
       effects:
       - FIRE_RESISTANCE/1/20-100
       - POISONX/1-0/30-0
+
    7:
       name: Vodka Sale/Vodka/Vodka Russe
       ingredients:
@@ -221,6 +366,7 @@ recipes:
       effects:
       - WEAKNESS/15
       - POISON/10
+
    8:
       name: Absinthe pauvre/Absinthe/Absinthe forte
       ingredients:
@@ -233,6 +379,7 @@ recipes:
       alcohol: 45
       effects:
       - POISON/20-30
+
    9:
       name: Potato soup
       ingredients:
@@ -243,6 +390,7 @@ recipes:
       difficulty: 1
       effects:
       - HEAL/0-1
+
    10:
       name: Café fétide/Café/Café fort
       ingredients:
@@ -260,28 +408,13 @@ recipes:
 # Ce sera aux Admins des serveurs de changer et d'ajouter les recettes, ainsi les joueurs ne pourront pas tricher avec les configuration de base.
 
 
-
-# cooked: CHAQUE ingrédient possible avec le nom donné après la fermentation (la cuisson):
-# [Exemple] MATERIEL: Nom après la cuisson
-
-cooked:
-   WHEAT: Blé fermenté
-   SUGAR_CANE: Sucre fermenté
-   APPLE: Cidre de pommes
-   POTATO_ITEM: Purée de Pommes de Terre
-   LONG_GRASS: Herbes bouillies
-   RED_MUSHROOM: Champignons fermentés
-   INK_SACK: Fermentation colorée
-   MILK_BUCKET: Eau laiteuse
-
-
-
 # -- Compatibilité entre Plugins --
 
 # Activer la vérification des autres plugins (si installés) pour les permissions des tonneaux. [true]
 useWorldGuard: true
 useLWC: true
 useGriefPrevention: true
+useGMInventories: true
 useCitadel: true
 
 # Activer l'historique du contenu des tonneaux avec LogBlock [true]
@@ -290,10 +423,9 @@ useLogBlock: true
 
 # -- Paramètres de la distorsion du Chat --
 
-# If written Chat is distorted when the Player is Drunk,
-# so that it looks like drunk writing
-# How much the chat is distorted depends on how drunk the Player is
-# Below are settings for what and how changes in chat occur
+# Si le Chat écrit est déformé quand le joueur est ivre, de sorte qu'il ressemble à un chat bourré en train d'écrire
+# Le degré de distorsion du chat dépend de l'état d'ébriété du joueur
+# Ci-dessous sont les paramètres pour ce qui et comment les changements dans le chat se produisent
 enableChatDistortion: true
 
 # Ecrire dans les "logs" du serveur ce que le joueur devrait dire, à la place de la distorsion. [false]

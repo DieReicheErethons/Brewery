@@ -81,17 +81,17 @@ autosave: 3
 debug: false
 
 # Config Version
-version: '1.8'
+version: '2.0'
 
 
 
 # -- Define custom items --
 # The defined id can then be used in recipes
 
-# matchAny: true if it is already enough if one of the info matches
-# material: Which type the item has to be
-# name: Which name the item has to be (Formatting codes possible: such as &6)
-# lore: What has to be in the lore of the item
+#  matchAny: true if it is already enough if one of the info matches
+#  material: Which type the item has to be
+#  name: Which name the item has to be (Formatting codes possible: such as &6)
+#  lore: What has to be in the lore of the item
 
 customItems:
   ex-item:
@@ -121,15 +121,15 @@ customItems:
 # -- Ingredients in the Cauldron --
 # Which Ingredients are accepted by the Cauldron and the base potion resulting from them
 
-# name: Name of the base potion coming out of the Cauldron (Formatting codes possible: such as &6)
-# ingredients: List of 'material/amount'
-#   With an item in your hand, use /brew ItemName to get its material for use in a recipe
-#   (Item-ids instead of material are not supported by bukkit anymore and will not work)
-#   A list of materials can be found here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
-# color: Color of the potion from a cauldron.
-#   Usable Colors: DARK_RED, RED, BRIGHT_RED, ORANGE, PINK, BLUE, CYAN, WATER, GREEN, BLACK, GREY, BRIGHT_GREY
-#   Or RGB colors (hex: for example '99FF33') (with '') (search for "HTML color" on the internet)
-# lore: List of additional text on the base potion. (Formatting codes possible: such as &6)
+ # name: Name of the base potion coming out of the Cauldron (Formatting codes possible: such as &6)
+ # ingredients: List of 'material/amount'
+ #   With an item in your hand, use /brew ItemName to get its material for use in a recipe
+ #   (Item-ids instead of material are not supported by bukkit anymore and will not work)
+ #   A list of materials can be found here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
+ # color: Color of the potion from a cauldron.
+ #   Usable Colors: DARK_RED, RED, BRIGHT_RED, ORANGE, PINK, BLUE, CYAN, WATER, GREEN, BLACK, GREY, BRIGHT_GREY
+ #   Or RGB colors (hex: for example '99FF33') (with '') (search for "HTML color" on the internet)
+ # lore: List of additional text on the base potion. (Formatting codes possible: such as &6)
 
 cauldron:
   ex:
@@ -365,41 +365,41 @@ recipes:
       - POISON/10
 
   absinthe:
-     name: Poor Absinthe/Absinthe/Strong Absinthe
-     ingredients:
-       - Grass/15
-     cookingtime: 3
-     distillruns: 6
-     distilltime: 80
-     color: GREEN
-     difficulty: 8
-     alcohol: 45
-     effects:
-       - POISON/20-30
+    name: Poor Absinthe/Absinthe/Strong Absinthe
+    ingredients:
+      - Grass/15
+    cookingtime: 3
+    distillruns: 6
+    distilltime: 80
+    color: GREEN
+    difficulty: 8
+    alcohol: 45
+    effects:
+      - POISON/20-30
 
-   potato_soup:
-     name: Potato soup
-     ingredients:
-       - Potato/5
-       - Grass/3
-     cookingtime: 3
-     color: PINK
-     difficulty: 1
-     effects:
-       - HEAL/0-1
+  potato_soup:
+    name: Potato soup
+    ingredients:
+      - Potato/5
+      - Grass/3
+    cookingtime: 3
+    color: PINK
+    difficulty: 1
+    effects:
+      - HEAL/0-1
 
-   coffee:
-     name: Stale Coffee/Coffee/Strong Coffee
-     ingredients:
-       - Cocoa_Beans/12
-       - Milk_Bucket/2
-     cookingtime: 2
-     color: BLACK
-     difficulty: 3
-     lore: + &8Probably a week old
-     effects:
-       - REGENERATION/1/2-5
-       - SPEED/1/30-140
+  coffee:
+    name: Stale Coffee/Coffee/Strong Coffee
+    ingredients:
+      - Cocoa_Beans/12
+      - Milk_Bucket/2
+    cookingtime: 2
+    color: BLACK
+    difficulty: 3
+    lore: + &8Probably a week old
+    effects:
+      - REGENERATION/1/2-5
+      - SPEED/1/30-140
 
 # More Recipes ideas: Cachaca, Gin, Whiskey, Tequila, Cider, etc. as well as high quality abbreviations like golden vodka etc.
 # I will not add more Recipes to the default config, as they would be public and viewable by users to cheat.

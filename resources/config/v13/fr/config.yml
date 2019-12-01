@@ -82,17 +82,17 @@ autosave: 3
 debug: false
 
 # Version de configuration
-version: '1.8'
+version: '2.0'
 
 
 
 # -- Définir des objets personnalisés --
 # L'id défini peut ensuite être utilisé dans les recettes
 
-# matchAny: si c'est déjà assez si l'une des infos correspond
-# material: le type d'article à utiliser
-# name: Quel nom l'article doit porter (codes de formatage possibles : tels que &6)
-# lore: Ce qui doit être dans la lore de l'objet
+#  matchAny: si c'est déjà assez si l'une des infos correspond
+#  material: le type d'article à utiliser
+#  name: Quel nom l'article doit porter (codes de formatage possibles : tels que &6)
+#  lore: Ce qui doit être dans la lore de l'objet
 
 customItems:
   ex-item:
@@ -122,16 +122,16 @@ customItems:
 # -- Ingrédients dans le chaudron --
 # Quels sont les ingrédients acceptés par le chaudron et la potion de base qui en résulte
 
-# name: Nom de la potion de base qui sort du chaudron (codes de formatage possibles : tels que &6)
-# ingredients: Liste des 'matériaux/montant'
-#   Avec un objet en main, utilisez /brew ItemName pour obtenir son matériau pour une recette de cuisine
-#   (Les id d'objets à la place des matériaux sont obsolètes pour bukkit)
-#   Une liste des matériaux peuvent-être trouvés ici: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
-# color : Couleur de la potion provenant d'un chaudron.
-#   Couleurs disponibles : DARK_RED, RED, BRIGHT_RED, ORANGE, PINK, BLUE, CYAN, WATER, GREEN, BLACK, GREY, BRIGHT_GREY
-#     (Dans l'ordre : Rouge foncé, Rouge, Rouge clair, Orange, Rose, Bleu, Cyan, Eau, Vert, Noir, Gris, Gris clair)
-#   Ou couleurs RGB (hex: par exemple '99FF33') (avec '') (recherche de "HTML color" sur internet)
-# lore: Liste de texte supplémentaire sur la potion de base. (Formatting codes possible: such as &6)
+ # name: Nom de la potion de base qui sort du chaudron (codes de formatage possibles : tels que &6)
+ # ingredients: Liste des 'matériaux/montant'
+ #   Avec un objet en main, utilisez /brew ItemName pour obtenir son matériau pour une recette de cuisine
+ #   (Les id d'objets à la place des matériaux sont obsolètes pour bukkit)
+ #   Une liste des matériaux peuvent-être trouvés ici: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
+ # color : Couleur de la potion provenant d'un chaudron.
+ #   Couleurs disponibles : DARK_RED, RED, BRIGHT_RED, ORANGE, PINK, BLUE, CYAN, WATER, GREEN, BLACK, GREY, BRIGHT_GREY
+ #     (Dans l'ordre : Rouge foncé, Rouge, Rouge clair, Orange, Rose, Bleu, Cyan, Eau, Vert, Noir, Gris, Gris clair)
+ #   Ou couleurs RGB (hex: par exemple '99FF33') (avec '') (recherche de "HTML color" sur internet)
+ # lore: Liste de texte supplémentaire sur la potion de base. (Formatting codes possible: such as &6)
 
 cauldron:
   ex:

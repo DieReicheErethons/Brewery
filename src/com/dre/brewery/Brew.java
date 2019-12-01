@@ -647,7 +647,7 @@ public class Brew implements Cloneable {
 				lore.updateAgeLore(BConfig.colorInBarrels);
 			}
 			if (ageTime > 0.5) {
-				if (BConfig.colorInBarrels && !unlabeled && currentRecipe != null) {
+				if (BConfig.colorInBarrels) {
 					lore.updateWoodLore(true);
 				}
 				lore.updateQualityStars(BConfig.colorInBarrels);

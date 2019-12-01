@@ -13,18 +13,14 @@ import com.dre.brewery.recipe.BRecipe;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.LegacyUtil;
 import org.apache.commons.lang.math.NumberUtils;
-import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 
 public class P extends JavaPlugin {
 	public static P p;
@@ -67,7 +63,6 @@ public class P extends JavaPlugin {
 
 		//MC 1.13 uses a different NBT API than the newer versions..
 		// We decide here which to use, the new or the old or none at all
-		P.debug = true;
 		if (LegacyUtil.initNbt()) {
 			useNBT = true;
 		}
@@ -81,11 +76,12 @@ public class P extends JavaPlugin {
 		// load the Config
 		try {
 			FileConfiguration cfg = BConfig.loadConfigFile();
-			if (cfg == null || !BConfig.readConfig(cfg)) {
+			if (cfg == null) {
 				p = null;
 				getServer().getPluginManager().disablePlugin(this);
 				return;
 			}
+			BConfig.readConfig(cfg);
 		} catch (Exception e) {
 			e.printStackTrace();
 			p = null;
@@ -104,8 +100,11 @@ public class P extends JavaPlugin {
 		inventoryListener = new InventoryListener();
 		worldListener = new WorldListener();
 		integrationListener = new IntegrationListener();
-		getCommand("Brewery").setExecutor(new CommandListener());
-		getCommand("Brewery").setTabCompleter(new TabListener());
+		PluginCommand c = getCommand("Brewery");
+		if (c != null) {
+			c.setExecutor(new CommandListener());
+			c.setTabCompleter(new TabListener());
+		}
 
 		p.getServer().getPluginManager().registerEvents(blockListener, p);
 		p.getServer().getPluginManager().registerEvents(playerListener, p);
@@ -148,25 +147,8 @@ public class P extends JavaPlugin {
 		// save Data to Disk
 		DataSave.save(true);
 
-		// delete Data from Ram
-		Barrel.barrels.clear();
-		BCauldron.bcauldrons.clear();
-		BRecipe.getConfigRecipes().clear();
-		BRecipe.numConfigRecipes = 0;
-		BCauldronRecipe.acceptedMaterials.clear();
-		BCauldronRecipe.acceptedCustom.clear();
-		BCauldronRecipe.acceptedSimple.clear();
-		BCauldronRecipe.getConfigRecipes().clear();
-		BCauldronRecipe.numConfigRecipes = 0;
-		BConfig.customItems.clear();
-		BConfig.hasSlimefun = null;
-		BConfig.hasMMOItems = null;
-		BPlayer.clear();
-		Brew.legacyPotions.clear();
-		Wakeup.wakeups.clear();
-		DistortChat.words.clear();
-		DistortChat.ignoreText.clear();
-		DistortChat.commands = null;
+		// delete config data, in case this is a reload and to clear up some ram
+		clearConfigData();
 
 		this.log(this.getDescription().getName() + " disabled!");
 	}
@@ -177,11 +159,41 @@ public class P extends JavaPlugin {
 		}
 		FileConfiguration cfg = BConfig.loadConfigFile();
 		if (cfg == null) {
-			// Could not read yml file, do not proceed
+			// Could not read yml file, do not proceed, error was printed
 			return;
 		}
 
 		// clear all existent config Data
+		clearConfigData();
+
+		// load the Config
+		try {
+			BConfig.readConfig(cfg);
+		} catch (Exception e) {
+			e.printStackTrace();
+			p = null;
+			getServer().getPluginManager().disablePlugin(this);
+			return;
+		}
+
+		// Reload Recipes
+		boolean successful = true;
+		for (Brew brew : Brew.legacyPotions.values()) {
+			if (!brew.reloadRecipe()) {
+				successful = false;
+			}
+		}
+		if (sender != null) {
+			if (!successful) {
+				msg(sender, p.languageReader.get("Error_Recipeload"));
+			} else {
+				p.msg(sender, p.languageReader.get("CMD_Reload"));
+			}
+		}
+		BConfig.reloader = null;
+	}
+
+	private void clearConfigData() {
 		BRecipe.getConfigRecipes().clear();
 		BRecipe.numConfigRecipes = 0;
 		BCauldronRecipe.acceptedMaterials.clear();
@@ -201,34 +213,6 @@ public class P extends JavaPlugin {
 				e.printStackTrace();
 			}
 		}
-
-		// load the Config
-		try {
-			if (!BConfig.readConfig(cfg)) {
-				p = null;
-				getServer().getPluginManager().disablePlugin(this);
-				return;
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			p = null;
-			getServer().getPluginManager().disablePlugin(this);
-			return;
-		}
-
-		// Reload Recipes
-		boolean successful = true;
-		for (Brew brew : Brew.legacyPotions.values()) {
-			if (!brew.reloadRecipe()) {
-				successful = false;
-			}
-		}
-		if (!successful && sender != null) {
-			msg(sender, p.languageReader.get("Error_Recipeload"));
-		} else {
-			p.msg(sender, p.languageReader.get("CMD_Reload"));
-		}
-		BConfig.reloader = null;
 	}
 
 	public static P getInstance() {

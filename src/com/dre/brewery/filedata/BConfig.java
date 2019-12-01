@@ -36,7 +36,7 @@ import java.util.Map;
 
 public class BConfig {
 
-	public static final String configVersion = "1.8";
+	public static final String configVersion = "2.0";
 	public static boolean updateCheck;
 	public static CommandSender reloader;
 
@@ -146,7 +146,7 @@ public class BConfig {
 		return null;
 	}
 
-	public static boolean readConfig(FileConfiguration config) {
+	public static void readConfig(FileConfiguration config) {
 		// Set the Language
 		p.language = config.getString("language", "en");
 
@@ -162,7 +162,7 @@ public class BConfig {
 			if (!version.equals(configVersion) || (oldMat && P.use1_13)) {
 				File file = new File(P.p.getDataFolder(), "config.yml");
 				copyDefaultConfigs(true);
-				new ConfigUpdater(file).update(version, oldMat, p.language);
+				new ConfigUpdater(file).update(version, oldMat, p.language, config);
 				P.p.log("Config Updated to version: " + configVersion);
 				config = YamlConfiguration.loadConfiguration(file);
 			}
@@ -326,6 +326,6 @@ public class BConfig {
 		ConfigLoadEvent event = new ConfigLoadEvent();
 		P.p.getServer().getPluginManager().callEvent(event);
 
-		return true;
+
 	}
 }

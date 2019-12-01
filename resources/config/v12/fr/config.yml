@@ -82,7 +82,7 @@ autosave: 3
 debug: false
 
 # Version de configuration
-version: '1.8'
+version: '2.0'
 oldMat: true
 
 
@@ -90,10 +90,10 @@ oldMat: true
 # -- Définir des objets personnalisés --
 # L'id défini peut ensuite être utilisé dans les recettes
 
-# matchAny: si c'est déjà assez si l'une des infos correspond
-# material: le type d'article à utiliser
-# name: Quel nom l'article doit porter (codes de formatage possibles : tels que &6)
-# lore: Ce qui doit être dans la lore de l'objet
+#  matchAny: si c'est déjà assez si l'une des infos correspond
+#  material: le type d'article à utiliser
+#  name: Quel nom l'article doit porter (codes de formatage possibles : tels que &6)
+#  lore: Ce qui doit être dans la lore de l'objet
 
 customItems:
   ex-item:
@@ -122,16 +122,16 @@ customItems:
 # -- Ingrédients dans le chaudron --
 # Quels sont les ingrédients acceptés par le chaudron et la potion de base qui en résulte
 
-# name: Nom de la potion de base qui sort du chaudron (codes de formatage possibles : tels que &6)
-# ingredients: Liste des 'matériaux/montant'
-#   Avec un objet en main, utilisez /brew ItemName pour obtenir son matériau pour une recette de cuisine
-#   (Les id d'objets à la place des matériaux sont obsolètes pour bukkit)
-#   Une liste des matériaux peuvent-être trouvés ici: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
-# color : Couleur de la potion provenant d'un chaudron.
-#   Couleurs disponibles : DARK_RED, RED, BRIGHT_RED, ORANGE, PINK, BLUE, CYAN, WATER, GREEN, BLACK, GREY, BRIGHT_GREY
-#     (Dans l'ordre : Rouge foncé, Rouge, Rouge clair, Orange, Rose, Bleu, Cyan, Eau, Vert, Noir, Gris, Gris clair)
-#   Ou couleurs RGB (hex: par exemple '99FF33') (avec '') (recherche de "HTML color" sur internet)
-# lore: Liste de texte supplémentaire sur la potion de base. (Formatting codes possible: such as &6)
+ # name: Nom de la potion de base qui sort du chaudron (codes de formatage possibles : tels que &6)
+ # ingredients: Liste des 'matériaux/montant'
+ #   Avec un objet en main, utilisez /brew ItemName pour obtenir son matériau pour une recette de cuisine
+ #   (Les id d'objets à la place des matériaux sont obsolètes pour bukkit)
+ #   Une liste des matériaux peuvent-être trouvés ici: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
+ # color : Couleur de la potion provenant d'un chaudron.
+ #   Couleurs disponibles : DARK_RED, RED, BRIGHT_RED, ORANGE, PINK, BLUE, CYAN, WATER, GREEN, BLACK, GREY, BRIGHT_GREY
+ #     (Dans l'ordre : Rouge foncé, Rouge, Rouge clair, Orange, Rose, Bleu, Cyan, Eau, Vert, Noir, Gris, Gris clair)
+ #   Ou couleurs RGB (hex: par exemple '99FF33') (avec '') (recherche de "HTML color" sur internet)
+ # lore: Liste de texte supplémentaire sur la potion de base. (Formatting codes possible: such as &6)
 
 cauldron:
   ex:
@@ -200,8 +200,6 @@ cauldron:
 #     Ex: 'Sugar_Cane'
 #   Une liste des matériaux peuvent-être trouvés ici: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
 #   Vous pouvez spécifier une data (Ex: 5,3 -> Planche de bois de jungle), si vous ne le faites pas la data ne sera pas prise en compte (Ex : 5 -> Bois en général)
-#   If Vault is installed normal names can be used instead of material or id, so using Vault is highly recommended.
-#   Vault will recognize things like "Jungle Leaves" instead of "5,3"
 #   Plugin items avec 'plugin:id' (Actuellement supporté ExoticGarden, Slimefun, MMOItems, Brewery)
 #   Ou un élément personnalisé défini ci-dessus
 # cookingtime: Temps en minutes réelles durant lesquelles les ingrédients devront bouillir
@@ -245,8 +243,7 @@ recipes:
       - Brewery:Wheatbeer/2
 #     - ExoticGarden:Grape/3
       - BEDROCK/1
-#     - Jungle Leaves/64  # Only with Vault
-#     - Green Dye/6       # Only with Vault
+      - ex-item/4
       cookingtime: 3
       distillruns: 2
       distilltime: 60

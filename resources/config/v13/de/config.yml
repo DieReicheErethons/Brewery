@@ -80,17 +80,17 @@ autosave: 3
 debug: false
 
 # Config Version
-version: '1.8'
+version: '2.0'
 
 
 
 # -- Eigene Items Definieren --
 # Die festgelegte id kann dann in einem Rezept verwendet werden
 
-# matchAny: true wenn es schon reicht wenn eine der Angaben zutrifft
-# material: Welche Art das Item haben muss
-# name: Welchen Namen das Item haben muss (Farbcodes möglich: z.b. &6)
-# lore: Was in der Lore des Items stehen muss
+#  matchAny: true wenn es schon reicht wenn eine der Angaben zutrifft
+#  material: Welche Art das Item haben muss
+#  name: Welchen Namen das Item haben muss (Farbcodes möglich: z.b. &6)
+#  lore: Was in der Lore des Items stehen muss
 
 customItems:
   bsp-item:
@@ -120,16 +120,15 @@ customItems:
 # -- Zutaten im Kessel --
 # Hier kann angegeben werden welche Zutaten in den Kessel getan werden können und was mit ihnen geschieht.
 
-# name: Name des Basistrankes der aus dem Kessel kommt (Farbcodes möglich: z.b. &6)
-# ingredients: Auflistung von 'Material/Anzahl'
-#   Halte ein Item in der Hand und benutze /brew ItemName um dessen Material herauszufinden und für ein Rezept zu benutzen
-#   (Item-ids anstatt Material können in Bukkit nicht mehr benutzt werden)
-#   Eine Liste von allen Materialien kann hier gefunden werden: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
-# color: Farbe des Trankes der aus dem Kessel kommt
-#   Benutzbare Farben: DARK_RED, RED, BRIGHT_RED, ORANGE, PINK, BLUE, CYAN, WATER, GREEN, BLACK, GREY, BRIGHT_GREY
-#   Oder RGB Farben (Hex: also zB '99FF33') (Ohne #) (mit '') (Einfach nach "HTML color" im Internet suchen)
-# lore: Auflistung von zusätzlichem Text auf dem Trank. (Farbcodes möglich: z.b. &6)
-
+ # name: Name des Basistrankes der aus dem Kessel kommt (Farbcodes möglich: z.b. &6)
+ # ingredients: Auflistung von 'Material/Anzahl'
+ #   Halte ein Item in der Hand und benutze /brew ItemName um dessen Material herauszufinden und für ein Rezept zu benutzen
+ #   (Item-ids anstatt Material können in Bukkit nicht mehr benutzt werden)
+ #   Eine Liste von allen Materialien kann hier gefunden werden: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
+ # color: Farbe des Trankes der aus dem Kessel kommt
+ #   Benutzbare Farben: DARK_RED, RED, BRIGHT_RED, ORANGE, PINK, BLUE, CYAN, WATER, GREEN, BLACK, GREY, BRIGHT_GREY
+ #   Oder RGB Farben (Hex: also zB '99FF33') (Ohne #) (mit '') (Einfach nach "HTML color" im Internet suchen)
+ # lore: Auflistung von zusätzlichem Text auf dem Trank. (Farbcodes möglich: z.b. &6)
 
 cauldron:
   bsp:

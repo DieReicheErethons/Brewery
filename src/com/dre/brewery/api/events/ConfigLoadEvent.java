@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * The Brewery Config was reloaded.
+ * <p>The Recipes added by a Plugin to the Added Recipes will not be reloaded and stay where they are.
  */
 public class ConfigLoadEvent extends Event {
 	private static final HandlerList handlers = new HandlerList();

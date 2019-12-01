@@ -261,17 +261,17 @@ public class LegacyUtil {
 		try {
 			Class.forName("org.bukkit.persistence.PersistentDataContainer");
 			NewNbtVer = true;
-			P.p.debugLog("Using the NEW nbt api");
+			P.p.log("Using the NEW nbt api");
 			return true;
 		} catch (ClassNotFoundException e) {
 			try {
 				Class.forName("org.bukkit.inventory.meta.tags.CustomItemTagContainer");
 				NewNbtVer = false;
-				P.p.debugLog("Using the OLD nbt api");
+				P.p.log("Using the OLD nbt api");
 				return true;
 			} catch (ClassNotFoundException ex) {
 				NewNbtVer = false;
-				P.p.debugLog("No nbt api found, using Lore Save System");
+				P.p.log("No nbt api found, using Lore Save System");
 				return false;
 			}
 		}

@@ -147,7 +147,7 @@ public class BrewLore {
 		if (brew.getDistillRuns() <= 0) return;
 		String prefix;
 		byte distillRuns = brew.getDistillRuns();
-		if (qualityColor && brew.hasRecipe()) {
+		if (qualityColor && !brew.isUnlabeled() && brew.hasRecipe()) {
 			prefix = getQualityColor(brew.getIngredients().getDistillQuality(brew.getCurrentRecipe(), distillRuns));
 		} else {
 			prefix = "§7";
@@ -168,7 +168,7 @@ public class BrewLore {
 	public void updateAgeLore(boolean qualityColor) {
 		String prefix;
 		float age = brew.getAgeTime();
-		if (qualityColor && brew.hasRecipe()) {
+		if (qualityColor && !brew.isUnlabeled() && brew.hasRecipe()) {
 			prefix = getQualityColor(brew.getIngredients().getAgeQuality(brew.getCurrentRecipe(), age));
 		} else {
 			prefix = "§7";
@@ -191,7 +191,7 @@ public class BrewLore {
 	 * @param qualityColor If the lore should have colors according to quality
 	 */
 	public void updateWoodLore(boolean qualityColor) {
-		if (qualityColor && brew.hasRecipe()) {
+		if (qualityColor && brew.hasRecipe() && !brew.isUnlabeled()) {
 			int quality = brew.getIngredients().getWoodQuality(brew.getCurrentRecipe(), brew.getWood());
 			addOrReplaceLore(Type.WOOD, getQualityColor(quality), P.p.languageReader.get("Brew_Woodtype"));
 		} else {
@@ -260,15 +260,16 @@ public class BrewLore {
 		}
 
 		updateCustomLore();
+		if (toQuality && brew.isUnlabeled()) {
+			return;
+		}
 		updateQualityStars(toQuality);
 
-		if (!brew.isUnlabeled()) {
-			// Ingredients
-			updateIngredientLore(toQuality);
+		// Ingredients
+		updateIngredientLore(toQuality);
 
-			// Cooking
-			updateCookLore(toQuality);
-		}
+		// Cooking
+		updateCookLore(toQuality);
 
 		// Distilling
 		updateDistillLore(toQuality);
@@ -279,10 +280,8 @@ public class BrewLore {
 		}
 
 		// WoodType
-		if (!brew.isUnlabeled()) {
-			if (brew.getAgeTime() > 0.5) {
-				updateWoodLore(toQuality);
-			}
+		if (brew.getAgeTime() > 0.5) {
+			updateWoodLore(toQuality);
 		}
 
 		updateAlc(false);

@@ -81,7 +81,7 @@ autosave: 3
 debug: false
 
 # Versione del config
-version: '1.8'
+version: '2.0'
 oldMat: true
 
 
@@ -89,10 +89,10 @@ oldMat: true
 # -- Define custom items --
 # The defined id can then be used in recipes
 
-# matchAny: true if it is already enough if one of the info matches
-# material: Which type the item has to be
-# name: Which name the item has to be (Formatting codes possible: such as &6)
-# lore: What has to be in the lore of the item
+#  matchAny: true if it is already enough if one of the info matches
+#  material: Which type the item has to be
+#  name: Which name the item has to be (Formatting codes possible: such as &6)
+#  lore: What has to be in the lore of the item
 
 customItems:
   ex-item:
@@ -121,15 +121,15 @@ customItems:
 # -- Ingredients in the Cauldron --
 # Which Ingredients are accepted by the Cauldron and the base potion resulting from them
 
-# name: Name of the base potion coming out of the Cauldron (Formatting codes possible: such as &6)
-# ingredients: List of 'material/amount'
-#   With an item in your hand, use /brew ItemName to get its material for use in a recipe
-#   (Item-ids instead of material are not supported by bukkit anymore and will not work)
-#   A list of materials can be found here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
-# color: Color of the potion from a cauldron.
-#   Usable Colors: DARK_RED, RED, BRIGHT_RED, ORANGE, PINK, BLUE, CYAN, WATER, GREEN, BLACK, GREY, BRIGHT_GREY
-#   Or RGB colors (hex: for example '99FF33') (with '') (search for "HTML color" on the internet)
-# lore: List of additional text on the base potion. (Formatting codes possible: such as &6)
+ # name: Name of the base potion coming out of the Cauldron (Formatting codes possible: such as &6)
+ # ingredients: List of 'material/amount'
+ #   With an item in your hand, use /brew ItemName to get its material for use in a recipe
+ #   (Item-ids instead of material are not supported by bukkit anymore and will not work)
+ #   A list of materials can be found here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
+ # color: Color of the potion from a cauldron.
+ #   Usable Colors: DARK_RED, RED, BRIGHT_RED, ORANGE, PINK, BLUE, CYAN, WATER, GREEN, BLACK, GREY, BRIGHT_GREY
+ #   Or RGB colors (hex: for example '99FF33') (with '') (search for "HTML color" on the internet)
+ # lore: List of additional text on the base potion. (Formatting codes possible: such as &6)
 
 cauldron:
   ex:
@@ -144,39 +144,39 @@ cauldron:
 
   # -- One Ingredient: --
   wheat:
-    name: Fermented wheat
+    name: Frumento fermentato
     ingredients: WHEAT
 
   sugarcane:
-    name: Sugar brew
+    name: Miscela zuccherata
     ingredients: SUGAR_CANE
     color: 'f1ffad' # yellowish green
 
   apple:
-    name: Apple cider
+    name: Sidro di mele
     ingredients: APPLE
 
   potato:
-    name: Potatomash
+    name: Purè di patate
     ingredients: POTATO_ITEM
 
   grass:
-    name: Boiled herbs
+    name: Erbe bollite
     ingredients: LONG_GRASS
     color: '99ff66' # bright green
 
   rmushroom:
-    name: Mushroom brew
+    name: Miscela ai funghi
     ingredients: RED_MUSHROOM
     color: 'ff5c33' # amber red
 
   cocoa:
-    name: Chocolately brew
+    name: Miscela colorata
     ingredients: INK_SACK
     color: '804600' # mocca
 
   milk:
-    name: Milky water
+    name: Acqua lattea
     ingredients: MILK_BUCKET
     color: BRIGHT_GREY
 
@@ -196,8 +196,6 @@ cauldron:
 #   (Gli id invece dei materiali sono "disapprovati" da Bukkit e potrebbero non funzionare in futuro!)
 #   Una lista di materiali può essere trovata qui: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
 #   Puoi specificare dei dati dell'oggetto, ma se omesso sarà semplicemente ignorato.
-#   Se Vault è installato i nomi normali possono essere usati invece del materiale o dell'id quindi l'uso di Vault è fortemente consigliato.
-#   Vault riconoscerà cose come "Jungle Leaves" invece di "LEAVES,3".
 #   Plugin items with 'plugin:id' (Currently supporting ExoticGarden, Slimefun, MMOItems, Brewery)
 #   Or a custom item defined above
 # cookingtime: Tempo in minuti richiesto dagli ingredienti per bollire
@@ -236,8 +234,7 @@ recipes:
       - Brewery:Wheatbeer/2
 #     - ExoticGarden:Grape/3
       - BEDROCK/1
-#     - Jungle Leaves/64  # Solo con Vault
-#     - Green Dye/6       # Solo con Vault
+      - ex-item/4
       cookingtime: 3
       distillruns: 2
       distilltime: 60

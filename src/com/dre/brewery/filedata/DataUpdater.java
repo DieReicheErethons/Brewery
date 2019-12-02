@@ -1,16 +1,15 @@
 package com.dre.brewery.filedata;
 
-import com.dre.brewery.LegacyUtil;
-import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
+import com.dre.brewery.utility.LegacyUtil;
+import com.dre.brewery.P;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
-import com.dre.brewery.P;
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class DataUpdater {
 

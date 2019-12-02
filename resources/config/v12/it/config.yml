@@ -3,7 +3,6 @@
 
 # -- Opzioni --
 # I valori di default sono scritti fra []
-# Cancellare una voce la disabilita
 
 # Lingua da usare (fra quelle in plugins/Brewery/languages)
 language: it
@@ -51,11 +50,25 @@ hangoverDays: 7
 colorInBarrels: true
 colorInBrewer: true
 
+# Always show the 1-5 stars on the item depending on the quality. If false, they will only appear when brewing [true]
+alwaysShowQuality: true
+
+# Always show the alcohol content on the item. If false, it will only show in the brewing stand [false]
+alwaysShowAlc: false
+
 # Se un barile grande può essere aperto  cliccandoci sopra, non solo sul cartello e sulla staccionata. Questo è sempre true per i barili piccoli. [true]
 openLargeBarrelEverywhere: true
 
 # How many Brewery drinks can be put into the Minecraft barrels [6]
 maxBrewsInMCBarrels: 6
+
+# The used Ingredients and other brewing-data is saved to all Brewery Items. To prevent
+# hacked clients from reading what exactly was used to brew an item, the data can be encoded/scrambled.
+# This is a fast process to stop players from hacking out recipes, once they get hold of a brew.
+# Only drawback: brew items can only be used on another server with the same encodeKey.
+# So enable this if you want to make recipe cheating harder, but don't share any brews by world download, schematics, or other means. [false]
+enableEncode: false
+encodeKey: 0
 
 # Abilita il controllo degli aggiornamenti, controlla l'API di CurseForge per eventuali aggiornamenti di Brewery [true]
 # Se quando un aggiornamento viene trovato un messaggio è loggato e mostrato agli OPs quando entrano in gioco.
@@ -64,10 +77,116 @@ updateCheck: true
 # Intervallo di autosalvataggio in minuti [3]
 autosave: 3
 
+# Show debug messages in log [false]
+debug: false
+
 # Versione del config
-version: '1.8'
+version: '2.0'
 oldMat: true
 
+
+
+# -- Define custom items --
+# The defined id can then be used in recipes
+
+#  matchAny: true if it is already enough if one of the info matches
+#  material: Which type the item has to be
+#  name: Which name the item has to be (Formatting codes possible: such as &6)
+#  lore: What has to be in the lore of the item
+
+customItems:
+  ex-item:
+    # A Bedrock item called Wall and has the given line in its lore
+    material: BEDROCK
+    name: 'Wall'
+    lore:
+      - '&7Very well protected'
+
+  ex-item2:
+    # Using matchAny only one of the following has to match.
+    # In this case on of the door types, or an item called Beechwood Door, or an item with 'A door' in its lore
+    matchAny: true
+    material:
+      - WOODEN_DOOR
+      - IRON_DOOR
+    name:
+      - 'Beechwood Door'
+    lore:
+      - 'A door'
+
+  rasp:
+    name: '&cRaspberry'
+
+
+# -- Ingredients in the Cauldron --
+# Which Ingredients are accepted by the Cauldron and the base potion resulting from them
+
+ # name: Name of the base potion coming out of the Cauldron (Formatting codes possible: such as &6)
+ # ingredients: List of 'material/amount'
+ #   With an item in your hand, use /brew ItemName to get its material for use in a recipe
+ #   (Item-ids instead of material are not supported by bukkit anymore and will not work)
+ #   A list of materials can be found here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
+ # color: Color of the potion from a cauldron.
+ #   Usable Colors: DARK_RED, RED, BRIGHT_RED, ORANGE, PINK, BLUE, CYAN, WATER, GREEN, BLACK, GREY, BRIGHT_GREY
+ #   Or RGB colors (hex: for example '99FF33') (with '') (search for "HTML color" on the internet)
+ # lore: List of additional text on the base potion. (Formatting codes possible: such as &6)
+
+cauldron:
+  ex:
+    name: Example
+    ingredients:
+      - BEDROCK/2
+      - DIAMOND
+    color: BLACK
+    lore:
+      - An example for a Base Potion
+      - This is how it comes out of a Cauldron
+
+  # -- One Ingredient: --
+  wheat:
+    name: Frumento fermentato
+    ingredients: WHEAT
+
+  sugarcane:
+    name: Miscela zuccherata
+    ingredients: SUGAR_CANE
+    color: 'f1ffad' # yellowish green
+
+  apple:
+    name: Sidro di mele
+    ingredients: APPLE
+
+  potato:
+    name: Purè di patate
+    ingredients: POTATO_ITEM
+
+  grass:
+    name: Erbe bollite
+    ingredients: LONG_GRASS
+    color: '99ff66' # bright green
+
+  rmushroom:
+    name: Miscela ai funghi
+    ingredients: RED_MUSHROOM
+    color: 'ff5c33' # amber red
+
+  cocoa:
+    name: Miscela colorata
+    ingredients: INK_SACK
+    color: '804600' # mocca
+
+  milk:
+    name: Acqua lattea
+    ingredients: MILK_BUCKET
+    color: BRIGHT_GREY
+
+  # -- Multiple Ingredients: --
+  apfelmet_base:
+    name: Apple-Sugar brew
+    ingredients:
+      - SUGAR_CANE/3
+      - APPLE
+    color: 'e1ff4d' # greenish yellow
 
 # -- Ricette per pozioni --
 
@@ -77,8 +196,8 @@ oldMat: true
 #   (Gli id invece dei materiali sono "disapprovati" da Bukkit e potrebbero non funzionare in futuro!)
 #   Una lista di materiali può essere trovata qui: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
 #   Puoi specificare dei dati dell'oggetto, ma se omesso sarà semplicemente ignorato.
-#   Se Vault è installato i nomi normali possono essere usati invece del materiale o dell'id quindi l'uso di Vault è fortemente consigliato.
-#   Vault riconoscerà cose come "Jungle Leaves" invece di "LEAVES,3".
+#   Plugin items with 'plugin:id' (Currently supporting ExoticGarden, Slimefun, MMOItems, Brewery)
+#   Or a custom item defined above
 # cookingtime: Tempo in minuti richiesto dagli ingredienti per bollire
 # distillruns: Quanto spesso deve essere distillato per ottenere la versione perfetta con il volume alcolico impostato (0=non serve distillare).
 # distilltime: How long (in seconds) one distill-run takes (0=Default time of 40 sec) MC Default would be 20 sec
@@ -90,6 +209,12 @@ oldMat: true
 #   Or RGB colors (hex: for example '99FF33') (with '') (search for "HTML color" on the internet)
 # difficoltà: Precisione richiesta per avere la migliore qualità da 1 a 10(1 = spreciso/più facile, 10 = molto preciso/più difficile)
 # alcohol: Volume alcolico da 0 a 100 nella versione perfetta (sarà aggiunta direttamente al giocatore, dove 100 è la quantità massima di alcohol assorbibile.
+# lore: List of additional text on the finished brew. (Formatting codes possible: such as &6)
+#   Specific lore for quality possible, using + bad, ++ normal, +++ good, added to the front of the line.
+# servercommands: List of Commands executed by the Server when drinking the brew
+# playercommands: List of Commands executed by the Player when drinking the brew
+# drinkmessage: Chat-message to the Player when drinking the Brew
+# drinktitle: Title on Screen to the Player when drinking the Brew
 # effects: Eventuali effetti come quelli delle pozioni nel formato di effetto/livello/durata.
 #   Aggiungere il suffisso 'X' per nascondere l'effetto dalla descrizione. Esempio: 'POISONX/2/10' (gli effetti WEAKNESS, INCREASE_DAMAGE, SLOW and SPEED sono sempre nascosti).
 #   Gli effetti sono sempre nascosti dalla 1.9 in poi, per via dei cambiamenti nelle meccaniche delle pozioni.
@@ -103,13 +228,13 @@ recipes:
    0:
       name: Cattivo esempio/Esempio/Buon esempio
       ingredients:
-      - SUGAR_CANE/5
-      - 264/1
+      - DIAMOND/1
       - INK_SACK,3/20
-      - 5,1/8
+      - WOOD,1/8
+      - Brewery:Wheatbeer/2
+#     - ExoticGarden:Grape/3
       - BEDROCK/1
-#     - Jungle Leaves/64  # Solo con Vault
-#     - Green Dye/6       # Solo con Vault
+      - ex-item/4
       cookingtime: 3
       distillruns: 2
       distilltime: 60
@@ -118,11 +243,25 @@ recipes:
       color: DARK_RED
       difficulty: 3
       alcohol: 23
+      lore:
+      - This is an examble brew
+      - ++Just a normal Example
+      - This text would be on the brew
+      - + Smells disgusting
+      - ++ Smells alright
+      - +++ Smells really good
+      servercommands:
+      - weather clear
+      playercommands:
+      - homes
+      drinkmessage: Tastes good
+      drinktitle: Warms you from inside
       effects:
       - FIRE_RESISTANCE/20
       - HEAL/1
       - WEAKNESS/2-3/50-60
       - POISONX/1-0/20-0
+
    1:
       name: Birra di frumento puzzolente/Birra di frumento/Birra di frumento pregiata
       ingredients:
@@ -134,6 +273,7 @@ recipes:
       color: BRIGHT_GREY
       difficulty: 1
       alcohol: 5
+
    2:
       name: Birra puzzolente/Birra/Birra pregiata
       ingredients:
@@ -145,6 +285,7 @@ recipes:
       color: ORANGE
       difficulty: 1
       alcohol: 6
+
    3:
       name: Birra scura puzzolente/Birra scura/Birra scura pregiata
       ingredients:
@@ -156,6 +297,7 @@ recipes:
       color: BLACK
       difficulty: 2
       alcohol: 7
+
    4:
       name: Idromele scarso/Idromele/&6Idromele dorato
       ingredients:
@@ -167,6 +309,7 @@ recipes:
       color: ORANGE
       difficulty: 2
       alcohol: 9
+
    5:
       name: Idromele di mele/Idromele di mele dolci/&6Idromele di mele dolci dorato
       ingredients:
@@ -181,6 +324,7 @@ recipes:
       alcohol: 12
       effects:
       - WATER_BREATHINGX/1-2/150
+
    6:
       name: Rum amaro/Rum speziato/&6Rum dorato
       ingredients:
@@ -196,6 +340,7 @@ recipes:
       effects:
       - FIRE_RESISTANCE/1/20-100
       - POISONX/1-0/30-0
+
    7:
       name: Vodka schifosa/Vodka/Vodka russa
       ingredients:
@@ -209,6 +354,7 @@ recipes:
       effects:
       - WEAKNESS/15
       - POISON/10
+
    8:
       name: Assenzio scarso/Assenzio/Assenzio forte
       ingredients:
@@ -221,6 +367,7 @@ recipes:
       alcohol: 45
       effects:
       - POISON/20-30
+
    9:
       name: Zuppa di patate
       ingredients:
@@ -231,6 +378,7 @@ recipes:
       difficulty: 1
       effects:
       - HEAL/0-1
+
    10:
       name: Caffè stantio/Caffè/Caffè forte
       ingredients:
@@ -249,27 +397,13 @@ recipes:
 
 
 
-# cooked: OGNI possibile ingrediente e i nomi per la pozione originatasi dopo la fermentazione.
-# (Esempio) MATERIALE: Nome dopo la cottura
-
-cooked:
-   WHEAT: Frumento fermentato
-   SUGAR_CANE: Miscela zuccherata
-   APPLE: Sidro di mele
-   POTATO_ITEM: Purè di patate
-   LONG_GRASS: Erbe bollite
-   RED_MUSHROOM: Miscela ai funghi
-   INK_SACK: Miscela colorata
-   MILK_BUCKET: Acqua lattea
-
-
-
 # -- Compatibilità con altri plugin --
 
 # Abilita il controllo della presenza di altri plugin per i permessi relativi ai barili[true]
 useWorldGuard: true
 useLWC: true
 useGriefPrevention: true
+useGMInventories: true
 useCitadel: true
 
 # Abilita il logging degli inventari dei barili [true]

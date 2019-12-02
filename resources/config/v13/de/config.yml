@@ -3,7 +3,6 @@
 
 # -- Verschiedene Einstellungen --
 # Standardeinstellungen sind in [] angegeben
-# Löschen einzelner Einstellungen deaktiviert sie
 
 # Sprachedatei die genutzt werden sollte (befindet sich in plugins/Brewery/languages)
 language: de
@@ -41,8 +40,8 @@ pukeDespawntime: 60
 
 # Konsumierbares Item/Stärke. Senkt den Alkoholpegel um <Stärke> wenn konsumiert.
 drainItems:
-- Bread/4
-- Milk_Bucket/2
+  - Bread/4
+  - Milk_Bucket/2
 
 # Zeit (in Tagen) die Trunkenheitsdaten nach offlinegehen eines Spielers im Speicher verbleiben, um z.B. Kater-Effekte anzuwenden. [7]
 hangoverDays: 7
@@ -51,14 +50,24 @@ hangoverDays: 7
 colorInBarrels: true
 colorInBrewer: true
 
+# Ob in den Iteminformationen immer 1-5 Sterne für die Qualität angezeigt werden sollen, oder nur beim brauen [true]
+alwaysShowQuality: true
+
+# Ob in den Iteminformationen immer der Alkoholgehalt angezeigt weden soll, oder nur im Braustand [false]
+alwaysShowAlc: false
+
 # Ob große Fässer an jedem Block geöffnet werden können, nicht nur an Zapfhahn und Schild. Bei kleinen Fässern geht dies immer. [true]
 openLargeBarrelEverywhere: true
 
 # Wie viele Brewery Getränke in die Minecraft Fässer getan werden können [6]
 maxBrewsInMCBarrels: 6
 
-# In den Serverlog loggen was der Spieler tatsächlich geschrieben hat, bevor seine Worte verändert wurden [false]
-logRealChat: false
+# Benutzte Zutaten und andere Brau-Daten werden in allen Brewery Tränken gespeichert. Um zu verhindern,
+# dass gehackte clients diese Daten auslesen um Rezepte herauszufinden, können diese encodiert werden.
+# Einziger Nachteil: Tränke können nur auf Servern mit dem gleichen encodeKey benutzt werden.
+# Dies kann also aktiviert werden um Rezept-cheating schwerer zu machen, aber keine Tränke per World Download, Schematic, o.ä. geteilt werden. [false]
+enableEncode: false
+encodeKey: 0
 
 # Aktiviert das Suchen nach Updates für Brewery mit der curseforge api [true]
 # Wenn ein Update gefunden wurde, wird dies bei Serverstart im log angezeigt, sowie OPs benachrichtigt
@@ -67,8 +76,116 @@ updateCheck: true
 # Autosave Intervall in Minuten [3]
 autosave: 3
 
+# Debug Nachrichten im Log anzeigen [false]
+debug: false
+
 # Config Version
-version: '1.8'
+version: '2.0'
+
+
+
+# -- Eigene Items Definieren --
+# Die festgelegte id kann dann in einem Rezept verwendet werden
+
+#  matchAny: true wenn es schon reicht wenn eine der Angaben zutrifft
+#  material: Welche Art das Item haben muss
+#  name: Welchen Namen das Item haben muss (Farbcodes möglich: z.b. &6)
+#  lore: Was in der Lore des Items stehen muss
+
+customItems:
+  bsp-item:
+#  Ein Barriere Item das Mauer heißt und in der Lore die angegebene Zeile hat
+    material: Barrier
+    name: 'Mauer'
+    lore:
+      - '&7Besonders gut geschützt'
+
+  bsp-item2:
+#  Mit matchAny muss nur eine der Angaben zutreffen.
+#  Hier also eine der Türarten, oder ein Item namens Buchenholztür, oder ein Item mit 'Eine Tür' in der Lore
+    matchAny: true
+    material:
+      - Acacia_Door
+      - Oak_Door
+      - Spruce_Door
+    name:
+      - 'Buchenholztür'
+    lore:
+      - 'Eine Tür'
+
+  himbeere:
+    name: '&cHimbeere'
+
+
+# -- Zutaten im Kessel --
+# Hier kann angegeben werden welche Zutaten in den Kessel getan werden können und was mit ihnen geschieht.
+
+ # name: Name des Basistrankes der aus dem Kessel kommt (Farbcodes möglich: z.b. &6)
+ # ingredients: Auflistung von 'Material/Anzahl'
+ #   Halte ein Item in der Hand und benutze /brew ItemName um dessen Material herauszufinden und für ein Rezept zu benutzen
+ #   (Item-ids anstatt Material können in Bukkit nicht mehr benutzt werden)
+ #   Eine Liste von allen Materialien kann hier gefunden werden: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
+ # color: Farbe des Trankes der aus dem Kessel kommt
+ #   Benutzbare Farben: DARK_RED, RED, BRIGHT_RED, ORANGE, PINK, BLUE, CYAN, WATER, GREEN, BLACK, GREY, BRIGHT_GREY
+ #   Oder RGB Farben (Hex: also zB '99FF33') (Ohne #) (mit '') (Einfach nach "HTML color" im Internet suchen)
+ # lore: Auflistung von zusätzlichem Text auf dem Trank. (Farbcodes möglich: z.b. &6)
+
+cauldron:
+  bsp:
+    name: Beispiel
+    ingredients:
+      - Bedrock/2
+      - Diamond
+    color: BLACK
+    lore:
+      - Ein Beispiel für einen Basistrank
+      - So kommt er aus dem Kessel
+
+# -- Eine Zutat: --
+  wheat:
+    name: Getreideferment
+    ingredients: Wheat
+
+  sugarcane:
+    name: Zuckersud
+    ingredients: Sugar_Cane
+    color: 'f1ffad' # gelbliches grün
+
+  apple:
+    name: Apfelmost
+    ingredients: Apple
+
+  potato:
+    name: Kartoffelmaische
+    ingredients: Potato
+
+  grass:
+    name: Kräuterbrühe
+    ingredients: Grass
+    color: '99ff66' # helles grün
+
+  rmushroom:
+    name: Pilzsud
+    ingredients: Red_Mushroom
+    color: 'ff5c33' # bernsteinrot
+
+  cocoa:
+    name: Kakaobrühe
+    ingredients: Cocoa_Beans
+    color: '804600' # mokka
+
+  milk:
+    name: Milchiges Wasser
+    ingredients: Milk_Bucket
+    color: BRIGHT_GREY
+
+  # -- Mehrere Zutaten: --
+  apfelmet_basis:
+    name: Apfel-Zuckersud
+    ingredients:
+      - Sugar_Cane/3
+      - Apple
+    color: 'e1ff4d' # grünliches gelb
 
 
 # -- Rezepte für Getränke --
@@ -78,6 +195,8 @@ version: '1.8'
 #   Halte ein Item in der Hand und benutze /brew ItemName um dessen Material herauszufinden und für ein Rezept zu benutzen
 #   (Item-ids anstatt Material können in Bukkit nicht mehr benutzt werden)
 #   Eine Liste von allen Materialien kann hier gefunden werden: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
+#   Plugin Items mit 'Plugin:Id' (Im Moment ExoticGarden, Slimefun, MMOItems, Brewery)
+#   Oder ein oben definiertes Custom Item
 # cookingtime: Zeit in Echtminuten die die Zutaten kochen müssen
 # distillruns: Wie oft destilliert werden muss für vollen Alkoholgehalt (0=ohne Destillieren)
 # distilltime: Wie lange (in sekunden) ein Destillations-Durchlauf braucht (0=Standard Zeit von 40 sek) MC Standard wäre 20 sek
@@ -89,6 +208,12 @@ version: '1.8'
 #   Oder RGB Farben (Hex: also zB '99FF33') (Ohne #) (mit '') (Einfach nach "HTML color" im Internet suchen)
 # difficulty: 1-10 Genauigkeit der Einhaltung der Vorgaben (1 = ungenau/einfach 10 = sehr genau/schwer)
 # alcohol: Alkoholgehalt 0-100 in absoluter Menge bei perfektem Getränk (wird dem Spieler hinzugefügt, bei 100 = tot)
+# lore: Auflistung von zusätzlichem Text auf dem fertigen Trank. (Farbcodes möglich: z.b. &6)
+#   Lore nur für bestimmte Qualität möglich mit + Schlecht, ++ Mittel, +++ Gut, vorne anhängen.
+# servercommands: Liste von Befehlen ausgeführt vom Server wenn der Trank getrunken wird
+# playercommands: Liste von Befehlen ausgeführt vom Spieler wenn der Trank getrunken wird
+# drinkmessage: Nachricht im Chat beim trinken des Trankes
+# drinktitle: Nachricht als Titel auf dem Bildschirm an den Spieler beim trinken des Trankes
 # effects: Auflistung Effekt/Level/Dauer  Besonderere Trank-Effekte beim Trinken, Dauer in sek.
 #   Mögliche Effekte: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/potion/PotionEffectType.html
 #   Minimale und Maximale Level/Dauer können durch "-" festgelegt werden, Bsp: 'SPEED/1-2/30-40' = Level 1 und 30 sek minimal, Level 2 und 40 sek maximal
@@ -97,144 +222,179 @@ version: '1.8'
 
 recipes:
 #  Ein vollständiges Beispiel zuerst:
-   0:
-      name: Schlechtes Beispiel/Beispiel/Gutes Beispiel
-      ingredients:
-      - Sugar_Cane/5
+  bsp:
+    name: Schlechtes Beispiel/Beispiel/Gutes Beispiel
+    ingredients:
       - Diamond/1
-      - Cocoa_Beans/20
       - Spruce_Planks/8
       - Bedrock/1
-      cookingtime: 3
-      distillruns: 2
-      distilltime: 60
-      wood: 4
-      age: 11
-      color: DARK_RED
-      difficulty: 3
-      alcohol: 23
-      effects:
+      - Brewery:Weißbier/2
+#      - ExoticGarden:Grape/3
+      - bsp-item/4
+    cookingtime: 3
+    distillruns: 2
+    distilltime: 60
+    wood: 4
+    age: 11
+    color: DARK_RED
+    difficulty: 3
+    alcohol: 23
+    lore:
+      - Dies ist ein Beispiel Trank
+      - ++Ganz normales Beispiel
+      - Dies würde auf dem Trank stehen
+      - + Riecht eklig
+      - ++ Riecht ganz ok
+      - +++ Riecht richtig gut
+    servercommands:
+      - weather clear
+    playercommands:
+      - homes
+    drinkmessage: Schmeckt toll
+    drinktitle: Wärmt dich von innen
+    effects:
       - FIRE_RESISTANCE/20
       - HEAL/1
       - WEAKNESS/2-3/50-60
       - POISON/1-0/20-0
-   1:
-      name: Ranziges Weißbier/Weißbier/Feines Weißbier
-      ingredients:
+
+  weißbier:
+    name: Ranziges Weißbier/Weißbier/Feines Weißbier
+    ingredients:
       - Wheat/3
-      cookingtime: 8
-      distillruns: 0
-      wood: 1
-      age: 2
-      color: BRIGHT_GREY
-      difficulty: 1
-      alcohol: 5
-   2:
-      name: Ranziges Bier/Bier/Feines Bier
-      ingredients:
+    cookingtime: 8
+    distillruns: 0
+    wood: 1
+    age: 2
+    color: BRIGHT_GREY
+    difficulty: 1
+    alcohol: 5
+
+  bier:
+    name: Ranziges Bier/Bier/Feines Bier
+    ingredients:
       - Wheat/6
-      cookingtime: 8
-      distillruns: 0
-      wood: 0
-      age: 3
-      color: ORANGE
-      difficulty: 1
-      alcohol: 6
-   3:
-      name: Ranziges Dunkelbier/Dunkelbier/Feines Dunkelbier
-      ingredients:
+    cookingtime: 8
+    distillruns: 0
+    wood: 0
+    age: 3
+    color: ORANGE
+    difficulty: 1
+    lore:
+      - +++ &8Das perlt
+    alcohol: 6
+
+  dunkelbier:
+    name: Ranziges Dunkelbier/Dunkelbier/Feines Dunkelbier
+    ingredients:
       - Wheat/6
-      cookingtime: 8
-      distillruns: 0
-      wood: 4
-      age: 8
-      color: BLACK
-      difficulty: 2
-      alcohol: 7
-   4:
-      name: Scheußlicher Met/Met/&6Goldener Met
-      ingredients:
+    cookingtime: 8
+    distillruns: 0
+    wood: 4
+    age: 8
+    color: BLACK
+    difficulty: 2
+    alcohol: 7
+
+  met:
+    name: Scheußlicher Met/Met/&6Goldener Met
+    ingredients:
       - Sugar_Cane/6
-      cookingtime: 3
-      distillruns: 0
-      wood: 2
-      age: 4
-      color: ORANGE
-      difficulty: 2
-      alcohol: 9
-   5:
-      name: Apfelmet/Süßer Apfelmet/&6Goldensüßer Apfelmet
-      ingredients:
+    cookingtime: 3
+    distillruns: 0
+    wood: 2
+    age: 4
+    color: ORANGE
+    difficulty: 2
+    alcohol: 9
+    lore:
+      - +++ Hat einen goldenen Schein
+
+  apfelmet:
+    name: Apfelmet/Süßer Apfelmet/&6Goldensüßer Apfelmet
+    ingredients:
       - Sugar_Cane/6
       - Apple/2
-      cookingtime: 4
-      distillruns: 0
-      wood: 2
-      age: 4
-      color: ORANGE
-      difficulty: 4
-      alcohol: 12
-      effects:
+    cookingtime: 4
+    distillruns: 0
+    wood: 2
+    age: 4
+    color: ORANGE
+    difficulty: 4
+    alcohol: 12
+    lore:
+      - + Ist da wirklich Apfel drin?
+      - ++ Schmeckt nach süßem Apfel
+      - +++ Hat eine wunderbare Apfelnote
+    effects:
       - WATER_BREATHING/1-2/150
-   6:
-      name: Bitterer Rum/Würziger Rum/&6Goldener Rum
-      ingredients:
+
+  rum:
+    name: Bitterer Rum/Würziger Rum/&6Goldener Rum
+    ingredients:
       - Sugar_Cane/14
-      cookingtime: 5
-      distillruns: 2
-      distilltime: 30
-      wood: 2
-      age: 14
-      color: DARK_RED
-      difficulty: 6
-      alcohol: 30
-      effects:
+    cookingtime: 5
+    distillruns: 2
+    distilltime: 30
+    wood: 2
+    age: 14
+    color: DARK_RED
+    difficulty: 6
+    alcohol: 30
+    effects:
       - FIRE_RESISTANCE/1/20-100
       - POISON/1-0/30-0
-   7:
-      name: Abgeranzter Vodka/Vodka/Russischer Vodka
-      ingredients:
+
+  vodka:
+    name: Abgeranzter Vodka/Vodka/Russischer Vodka
+    ingredients:
       - Potato/10
-      cookingtime: 15
-      distillruns: 3
-      age: 0
-      color: BRIGHT_GREY
-      difficulty: 4
-      alcohol: 20
-      effects:
+    cookingtime: 15
+    distillruns: 3
+    age: 0
+    color: BRIGHT_GREY
+    difficulty: 4
+    alcohol: 20
+    lore:
+      - + &8Fast nicht trinkbar
+    effects:
       - WEAKNESS/15
       - POISON/10
-   8:
-      name: minderwertiger Absinth/Absinth/Starker Absinth
-      ingredients:
+
+  absinth:
+    name: minderwertiger Absinth/Absinth/Starker Absinth
+    ingredients:
       - Grass/15
-      cookingtime: 3
-      distillruns: 6
-      distilltime: 80
-      color: GREEN
-      difficulty: 8
-      alcohol: 45
-      effects:
+    cookingtime: 3
+    distillruns: 6
+    distilltime: 80
+    color: GREEN
+    difficulty: 8
+    alcohol: 45
+    effects:
       - POISON/20-30
-   9:
-      name: Kartoffelsuppe
-      ingredients:
+
+  kartoffelsuppe:
+    name: Kartoffelsuppe
+    ingredients:
       - Potato/5
       - Grass/3
-      cookingtime: 3
-      color: PINK
-      difficulty: 1
-      effects:
+    cookingtime: 3
+    color: PINK
+    difficulty: 1
+    effects:
       - HEAL/0-1
-   10:
-      name: Fader Kaffee/Kaffee/Starker Kaffee
-      ingredients:
+
+  kaffee:
+    name: Fader Kaffee/Kaffee/Starker Kaffee
+    ingredients:
       - Cocoa_Beans/12
       - Milk_Bucket/2
-      cookingtime: 2
-      color: BLACK
-      difficulty: 3
-      effects:
+    cookingtime: 2
+    color: BLACK
+    difficulty: 3
+    lore: + &8Bestimmt schon eine Woche alt
+    effects:
       - REGENERATION/1/2-5
       - SPEED/1/30-140
 
@@ -243,27 +403,13 @@ recipes:
 # Der Serveradmin kann neue Rezepte hinzufügen und bestehende ändern, um das Abschauen aus der Standardconfig zu verhindern.
 
 
-# cooked: ALLE möglichen Zutaten und die nach dem Gähren daraus entstehenden Tranknamen:
-# [Beispiel] MATERIAL: Name nach Gähren
-
-cooked:
-   Wheat: Getreideferment
-   Sugar_Cane: Zuckersud
-   Apple: Apfelmost
-   Potato: Kartoffelmaische
-   Grass: Kräuterbrühe
-   Red_Mushroom: Pilzsud
-   Cocoa_Beans: Farbige Brühe
-   Milk_Bucket: Milchiges Wasser
-
-
-
 # -- Plugin Kompatiblität --
 
 # Andere Plugins (wenn installiert) nach Rechten zum öffnen von Fässern checken [true]
 useWorldGuard: true
 useLWC: true
 useGriefPrevention: true
+useGMInventories: true
 
 # Änderungen an Fassinventaren mit LogBlock aufzeichen [true]
 useLogBlock: true
@@ -276,6 +422,9 @@ useLogBlock: true
 # Wie stark der Chat verändert wird hängt davon ab wie betrunken der Spieler ist
 # Unten kann noch eingestellt werden wie und was verändert wird
 enableChatDistortion: true
+
+# In den Serverlog loggen was der Spieler tatsächlich geschrieben hat, bevor seine Worte verändert wurden [false]
+logRealChat: false
 
 # Text nach den angegebenen Kommandos wird bei Trunkenheit ebenfalls Verändert (Liste) [- /gl]
 distortCommands:

@@ -1,17 +1,15 @@
-package com.dre.brewery.integration;
+package com.dre.brewery.integration.barrel;
 
 
-import org.bukkit.block.Block;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
-
-import com.dre.brewery.P;
 import com.sk89q.worldguard.bukkit.RegionQuery;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.bukkit.permission.RegionPermissionModel;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 
-public class WGBarrelNew implements WGBarrel {
+public class WGBarrel6 implements WGBarrel {
 
 	public boolean checkAccess(Player player, Block spigot, Plugin plugin) {
 		WorldGuardPlugin wg = (WorldGuardPlugin) plugin;
@@ -21,12 +19,8 @@ public class WGBarrelNew implements WGBarrel {
 
 		RegionQuery query = wg.getRegionContainer().createQuery();
 
-		if (!query.testBuild(spigot.getLocation(), player, DefaultFlag.USE, DefaultFlag.CHEST_ACCESS)) {
-			P.p.msg(player, P.p.languageReader.get("Error_NoBarrelAccess"));
-			return false;
-		}
+		return query.testBuild(spigot.getLocation(), player, DefaultFlag.USE, DefaultFlag.CHEST_ACCESS);
 
-		return true;
 	}
 
 }

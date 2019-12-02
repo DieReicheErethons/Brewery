@@ -1,0 +1,58 @@
+
+
+
+# -- Define custom items --
+# The defined id can then be used in recipes
+
+#  matchAny: true if it is already enough if one of the info matches
+#  material: Which type the item has to be
+#  name: Which name the item has to be (Formatting codes possible: such as &6)
+#  lore: What has to be in the lore of the item
+
+customItems:
+  ex-item:
+    # A Barrier item called Wall and has the given line in its lore
+%%%%MAT1%%%%
+    name: 'Wall'
+    lore:
+      - '&7Very well protected'
+
+  ex-item2:
+    # Using matchAny only one of the following has to match.
+    # In this case on of the door types, or an item called Beechwood Door, or an item with 'A door' in its lore
+    matchAny: true
+%%%%MAT2%%%%
+    name:
+      - 'Beechwood Door'
+    lore:
+      - 'A door'
+
+  rasp:
+    name: '&cRaspberry'
+
+
+# -- Ingredients in the Cauldron --
+# Which Ingredients are accepted by the Cauldron and the base potion resulting from them
+
+ # name: Name of the base potion coming out of the Cauldron (Formatting codes possible: such as &6)
+ # ingredients: List of 'material/amount'
+ #   With an item in your hand, use /brew ItemName to get its material for use in a recipe
+ #   (Item-ids instead of material are not supported by bukkit anymore and will not work)
+ #   A list of materials can be found here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
+ # color: Color of the potion from a cauldron.
+ #   Usable Colors: DARK_RED, RED, BRIGHT_RED, ORANGE, PINK, BLUE, CYAN, WATER, GREEN, BLACK, GREY, BRIGHT_GREY
+ #   Or RGB colors (hex: for example '99FF33') (with '') (search for "HTML color" on the internet)
+ # lore: List of additional text on the base potion. (Formatting codes possible: such as &6)
+
+cauldron:
+  ex:
+    name: Example
+    ingredients:
+      - Bedrock/2
+      - Diamond
+    color: BLACK
+    lore:
+      - An example for a Base Potion
+      - This is how it comes out of a Cauldron
+
+  # -- One Ingredient: --

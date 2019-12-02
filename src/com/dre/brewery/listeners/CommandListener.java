@@ -1,29 +1,28 @@
 package com.dre.brewery.listeners;
 
-import java.util.ArrayList;
-import java.util.Locale;
-
-import com.dre.brewery.Util;
+import com.dre.brewery.*;
+import com.dre.brewery.api.events.brew.BrewModifyEvent;
+import com.dre.brewery.filedata.BConfig;
+import com.dre.brewery.recipe.BRecipe;
+import com.dre.brewery.utility.BUtil;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.NotNull;
 
-import com.dre.brewery.BIngredients;
-import com.dre.brewery.BRecipe;
-import com.dre.brewery.P;
-import com.dre.brewery.Wakeup;
-import com.dre.brewery.BPlayer;
-import com.dre.brewery.Brew;
+import java.util.ArrayList;
+import java.util.Locale;
 
 public class CommandListener implements CommandExecutor {
 
 	public P p = P.p;
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+	public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
 
 		String cmd = "help";
 		if (args.length > 0) {
@@ -38,7 +37,6 @@ public class CommandListener implements CommandExecutor {
 
 			if (sender.hasPermission("brewery.cmd.reload")) {
 				p.reload(sender);
-				p.msg(sender, p.languageReader.get("CMD_Reload"));
 			} else {
 				p.msg(sender, p.languageReader.get("Error_NoPermissions"));
 			}
@@ -103,14 +101,6 @@ public class CommandListener implements CommandExecutor {
 				p.msg(sender, p.languageReader.get("Error_NoPermissions"));
 			}
 
-		} else if (cmd.equalsIgnoreCase("persist") || cmd.equalsIgnoreCase("persistent")) {
-
-			if (sender.hasPermission("brewery.cmd.persist")) {
-				cmdPersist(sender);
-			} else {
-				p.msg(sender, p.languageReader.get("Error_NoPermissions"));
-			}
-
 		} else if (cmd.equalsIgnoreCase("static")) {
 
 			if (sender.hasPermission("brewery.cmd.static")) {
@@ -167,7 +157,7 @@ public class CommandListener implements CommandExecutor {
 			p.msg(sender, "&6" + p.getDescription().getName() + " v" + p.getDescription().getVersion());
 		}
 
-		Util.list(sender, commands, page);
+		BUtil.list(sender, commands, page);
 
 	}
 
@@ -188,16 +178,17 @@ public class CommandListener implements CommandExecutor {
 			cmds.add (p.languageReader.get("Help_UnLabel"));
 		}
 
-		if (sender.hasPermission("brewery.cmd.copy")) {
-			cmds.add (p.languageReader.get("Help_Copy"));
-		}
-
-		if (sender.hasPermission("brewery.cmd.delete")) {
-			cmds.add (p.languageReader.get("Help_Delete"));
-		}
-
 		if (sender.hasPermission("brewery.cmd.infoOther")) {
 			cmds.add (p.languageReader.get("Help_InfoOther"));
+		}
+
+		if (sender.hasPermission("brewery.cmd.create")) {
+			cmds.add(p.languageReader.get("Help_Create"));
+		}
+
+		if (sender.hasPermission("brewery.cmd.reload")) {
+			cmds.add(p.languageReader.get("Help_Configname"));
+			cmds.add(p.languageReader.get("Help_Reload"));
 		}
 
 		if (sender.hasPermission("brewery.cmd.wakeup")) {
@@ -209,21 +200,16 @@ public class CommandListener implements CommandExecutor {
 			cmds.add(p.languageReader.get("Help_WakeupRemove"));
 		}
 
-		if (sender.hasPermission("brewery.cmd.reload")) {
-			cmds.add(p.languageReader.get("Help_Configname"));
-			cmds.add(p.languageReader.get("Help_Reload"));
-		}
-
-		if (sender.hasPermission("brewery.cmd.persist")) {
-			cmds.add(p.languageReader.get("Help_Persist"));
-		}
-
 		if (sender.hasPermission("brewery.cmd.static")) {
 			cmds.add(p.languageReader.get("Help_Static"));
 		}
 
-		if (sender.hasPermission("brewery.cmd.create")) {
-			cmds.add(p.languageReader.get("Help_Create"));
+		if (sender.hasPermission("brewery.cmd.copy")) {
+			cmds.add (p.languageReader.get("Help_Copy"));
+		}
+
+		if (sender.hasPermission("brewery.cmd.delete")) {
+			cmds.add (p.languageReader.get("Help_Delete"));
 		}
 
 		return cmds;
@@ -328,7 +314,7 @@ public class CommandListener implements CommandExecutor {
 			if (player != null) {
 				bPlayer.drinkCap(player);
 			} else {
-				if (!BPlayer.overdrinkKick) {
+				if (!BConfig.overdrinkKick) {
 					bPlayer.setData(100, 0);
 				}
 			}
@@ -365,162 +351,138 @@ public class CommandListener implements CommandExecutor {
 	}
 
 	public void cmdItemName(CommandSender sender) {
-		if (sender instanceof Player) {
-
-			Player player = (Player) sender;
-			ItemStack hand = P.use1_9 ? player.getInventory().getItemInMainHand() : player.getItemInHand();
-			if (hand != null) {
-				p.msg(sender, p.languageReader.get("CMD_Configname", hand.getType().name().toLowerCase(Locale.ENGLISH)));
-			} else {
-				p.msg(sender, p.languageReader.get("CMD_Configname_Error"));
-			}
-
-		} else {
+		if (!(sender instanceof Player)) {
 			p.msg(sender, p.languageReader.get("Error_PlayerCommand"));
+			return;
 		}
+
+		Player player = (Player) sender;
+		ItemStack hand = P.use1_9 ? player.getInventory().getItemInMainHand() : player.getItemInHand();
+		if (hand != null) {
+			p.msg(sender, p.languageReader.get("CMD_Configname", hand.getType().name().toLowerCase(Locale.ENGLISH)));
+		} else {
+			p.msg(sender, p.languageReader.get("CMD_Configname_Error"));
+		}
+
 	}
 
-	@SuppressWarnings("deprecation")
+	@Deprecated
 	public void cmdCopy(CommandSender sender, int count) {
 
-		if (sender instanceof Player) {
-			if (count < 1 || count > 36) {
-				p.msg(sender, p.languageReader.get("Etc_Usage"));
-				p.msg(sender, p.languageReader.get("Help_Copy"));
+		if (!(sender instanceof Player)) {
+			p.msg(sender, p.languageReader.get("Error_PlayerCommand"));
+			return;
+		}
+		if (count < 1 || count > 36) {
+			p.msg(sender, p.languageReader.get("Etc_Usage"));
+			p.msg(sender, p.languageReader.get("Help_Copy"));
+			return;
+		}
+		Player player = (Player) sender;
+		ItemStack hand = player.getItemInHand();
+		if (hand != null) {
+			if (Brew.isBrew(hand)) {
+				while (count > 0) {
+					ItemStack item = hand.clone();
+					if (!(player.getInventory().addItem(item)).isEmpty()) {
+						p.msg(sender, p.languageReader.get("CMD_Copy_Error", "" + count));
+						return;
+					}
+					count--;
+				}
 				return;
 			}
-			Player player = (Player) sender;
-			ItemStack hand = player.getItemInHand();
-			if (hand != null) {
-				Brew brew = Brew.get(hand);
-				if (brew != null) {
-					while (count > 0) {
-						ItemStack item = brew.copy(hand);
-						if (!(player.getInventory().addItem(item)).isEmpty()) {
-							p.msg(sender, p.languageReader.get("CMD_Copy_Error", "" + count));
-							return;
-						}
-						count--;
-					}
-					if (brew.isPersistent()) {
-						p.msg(sender, p.languageReader.get("CMD_CopyNotPersistent"));
-					}
-					return;
-				}
-			}
-
-			p.msg(sender, p.languageReader.get("Error_ItemNotPotion"));
-
-		} else {
-			p.msg(sender, p.languageReader.get("Error_PlayerCommand"));
 		}
+
+		p.msg(sender, p.languageReader.get("Error_ItemNotPotion"));
 
 	}
 
-	@SuppressWarnings("deprecation")
+	@Deprecated
 	public void cmdDelete(CommandSender sender) {
 
-		if (sender instanceof Player) {
-			Player player = (Player) sender;
-			ItemStack hand = player.getItemInHand();
-			if (hand != null) {
-				Brew brew = Brew.get(hand);
-				if (brew != null) {
-					if (brew.isPersistent()) {
-						p.msg(sender, p.languageReader.get("CMD_PersistRemove"));
-					} else {
-						brew.remove(hand);
-						player.setItemInHand(new ItemStack(Material.AIR));
-					}
-					return;
-				}
-			}
-			p.msg(sender, p.languageReader.get("Error_ItemNotPotion"));
-		} else {
+		if (!(sender instanceof Player)) {
 			p.msg(sender, p.languageReader.get("Error_PlayerCommand"));
+			return;
 		}
-
-	}
-
-	@SuppressWarnings("deprecation")
-	public void cmdPersist(CommandSender sender) {
-
-		if (sender instanceof Player) {
-			Player player = (Player) sender;
-			ItemStack hand = player.getItemInHand();
-			if (hand != null) {
-				Brew brew = Brew.get(hand);
-				if (brew != null) {
-					if (brew.isPersistent()) {
-						brew.removePersistence();
-						brew.setStatic(false, hand);
-						p.msg(sender, p.languageReader.get("CMD_UnPersist"));
-					} else {
-						brew.makePersistent();
-						brew.setStatic(true, hand);
-						p.msg(sender, p.languageReader.get("CMD_Persistent"));
-					}
-					brew.touch();
-					return;
-				}
+		Player player = (Player) sender;
+		ItemStack hand = player.getItemInHand();
+		if (hand != null) {
+			if (Brew.isBrew(hand)) {
+				player.setItemInHand(new ItemStack(Material.AIR));
+				return;
 			}
-			p.msg(sender, p.languageReader.get("Error_ItemNotPotion"));
-		} else {
-			p.msg(sender, p.languageReader.get("Error_PlayerCommand"));
 		}
+		p.msg(sender, p.languageReader.get("Error_ItemNotPotion"));
 
 	}
 
 	@SuppressWarnings("deprecation")
 	public void cmdStatic(CommandSender sender) {
 
-		if (sender instanceof Player) {
-			Player player = (Player) sender;
-			ItemStack hand = player.getItemInHand();
-			if (hand != null) {
-				Brew brew = Brew.get(hand);
-				if (brew != null) {
-					if (brew.isStatic()) {
-						if (!brew.isPersistent()) {
-							brew.setStatic(false, hand);
-							p.msg(sender, p.languageReader.get("CMD_NonStatic"));
-						} else {
-							p.msg(sender, p.languageReader.get("Error_PersistStatic"));
-						}
-					} else {
-						brew.setStatic(true, hand);
-						p.msg(sender, p.languageReader.get("CMD_Static"));
-					}
-					brew.touch();
+		if (!(sender instanceof Player)) {
+			p.msg(sender, p.languageReader.get("Error_PlayerCommand"));
+			return;
+		}
+		Player player = (Player) sender;
+		ItemStack hand = player.getItemInHand();
+		if (hand != null) {
+			Brew brew = Brew.get(hand);
+			if (brew != null) {
+				if (brew.isStatic()) {
+					brew.setStatic(false, hand);
+					p.msg(sender, p.languageReader.get("CMD_NonStatic"));
+				} else {
+					brew.setStatic(true, hand);
+					p.msg(sender, p.languageReader.get("CMD_Static"));
+				}
+				brew.touch();
+				ItemMeta meta = hand.getItemMeta();
+				assert meta != null;
+				BrewModifyEvent modifyEvent = new BrewModifyEvent(brew, meta, BrewModifyEvent.Type.STATIC);
+				P.p.getServer().getPluginManager().callEvent(modifyEvent);
+				if (modifyEvent.isCancelled()) {
 					return;
 				}
+				brew.save(meta);
+				hand.setItemMeta(meta);
+				return;
 			}
-			p.msg(sender, p.languageReader.get("Error_ItemNotPotion"));
-		} else {
-			p.msg(sender, p.languageReader.get("Error_PlayerCommand"));
 		}
+		p.msg(sender, p.languageReader.get("Error_ItemNotPotion"));
 
 	}
 
 	@SuppressWarnings("deprecation")
 	public void cmdUnlabel(CommandSender sender) {
 
-		if (sender instanceof Player) {
-			Player player = (Player) sender;
-			ItemStack hand = player.getItemInHand();
-			if (hand != null) {
-				Brew brew = Brew.get(hand);
-				if (brew != null) {
-					brew.unLabel(hand);
-					brew.touch();
-					p.msg(sender, p.languageReader.get("CMD_UnLabel"));
+		if (!(sender instanceof Player)) {
+			p.msg(sender, p.languageReader.get("Error_PlayerCommand"));
+			return;
+		}
+		Player player = (Player) sender;
+		ItemStack hand = player.getItemInHand();
+		if (hand != null) {
+			Brew brew = Brew.get(hand);
+			if (brew != null) {
+				ItemMeta origMeta = hand.getItemMeta();
+				brew.unLabel(hand);
+				brew.touch();
+				ItemMeta meta = hand.getItemMeta();
+				assert meta != null;
+				BrewModifyEvent modifyEvent = new BrewModifyEvent(brew, meta, BrewModifyEvent.Type.UNLABEL);
+				P.p.getServer().getPluginManager().callEvent(modifyEvent);
+				if (modifyEvent.isCancelled()) {
+					hand.setItemMeta(origMeta);
 					return;
 				}
+				brew.save(meta);
+				hand.setItemMeta(meta);
+				p.msg(sender, p.languageReader.get("CMD_UnLabel"));
+				return;
 			}
-			p.msg(sender, p.languageReader.get("Error_ItemNotPotion"));
-		} else {
-			p.msg(sender, p.languageReader.get("Error_PlayerCommand"));
 		}
+		p.msg(sender, p.languageReader.get("Error_ItemNotPotion"));
 
 	}
 
@@ -555,51 +517,56 @@ public class CommandListener implements CommandExecutor {
 			player = p.getServer().getPlayer(pName);
 		}
 
-		if (sender instanceof Player || player != null) {
-			if (player == null) {
-				player = ((Player) sender);
-			}
-			int stringLength = args.length - 1;
-			if (pName != null) {
-				stringLength--;
-			}
-			if (hasQuality) {
-				stringLength--;
-			}
-
-			String name;
-			if (stringLength > 1) {
-				StringBuilder builder = new StringBuilder(args[1]);
-
-				for (int i = 2; i < stringLength + 1; i++) {
-					builder.append(" ").append(args[i]);
-				}
-				name = builder.toString();
-			} else {
-				name = args[1];
-			}
-
-			if (player.getInventory().firstEmpty() == -1) {
-				p.msg(sender, p.languageReader.get("CMD_Copy_Error", "1"));
-				return;
-			}
-
-			BRecipe recipe = null;
-			for (BRecipe r : BIngredients.recipes) {
-				if (r.hasName(name)) {
-					recipe = r;
-					break;
-				}
-			}
-			if (recipe != null) {
-				player.getInventory().addItem(recipe.create(quality));
-			} else {
-				p.msg(sender, p.languageReader.get("Error_NoBrewName", name));
-			}
-
-		} else {
+		if (!(sender instanceof Player) && player == null) {
 			p.msg(sender, p.languageReader.get("Error_PlayerCommand"));
+			return;
 		}
+
+		if (player == null) {
+			player = ((Player) sender);
+		}
+		int stringLength = args.length - 1;
+		if (pName != null) {
+			stringLength--;
+		}
+		if (hasQuality) {
+			stringLength--;
+		}
+
+		String name;
+		if (stringLength > 1) {
+			StringBuilder builder = new StringBuilder(args[1]);
+
+			for (int i = 2; i < stringLength + 1; i++) {
+				builder.append(" ").append(args[i]);
+			}
+			name = builder.toString();
+		} else {
+			name = args[1];
+		}
+
+		if (player.getInventory().firstEmpty() == -1) {
+			p.msg(sender, p.languageReader.get("CMD_Copy_Error", "1"));
+			return;
+		}
+
+		BRecipe recipe = null;
+		for (BRecipe r : BRecipe.getAllRecipes()) {
+			if (r.hasName(name)) {
+				recipe = r;
+				break;
+			}
+		}
+		if (recipe != null) {
+			ItemStack item = recipe.create(quality);
+			if (item != null) {
+				player.getInventory().addItem(item);
+				p.msg(sender, p.languageReader.get("CMD_Created"));
+			}
+		} else {
+			p.msg(sender, p.languageReader.get("Error_NoBrewName", name));
+		}
+
 	}
 
 }

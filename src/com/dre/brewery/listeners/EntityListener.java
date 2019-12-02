@@ -1,51 +1,48 @@
 package com.dre.brewery.listeners;
 
-import java.util.ListIterator;
-
+import com.dre.brewery.Barrel;
+import com.dre.brewery.Brew;
+import com.dre.brewery.P;
+import com.dre.brewery.api.events.barrel.BarrelDestroyEvent;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Item;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
+import org.bukkit.event.entity.EntityCombustEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.ItemDespawnEvent;
-import org.bukkit.event.entity.EntityCombustEvent;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
 
-import com.dre.brewery.Barrel;
-import com.dre.brewery.Brew;
-import com.dre.brewery.P;
-import com.dre.brewery.integration.LWCBarrel;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ListIterator;
 
 public class EntityListener implements Listener {
 
-	// Remove the Potion from Brew when it despawns
+	// Legacy Brew removal
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onItemDespawn(ItemDespawnEvent event) {
+		if (Brew.noLegacy()) return;
 		ItemStack item = event.getEntity().getItemStack();
 		if (item.getType() == Material.POTION) {
-			Brew brew = Brew.get(item);
-			if (brew != null) {
-				brew.remove(item);
-			}
+			Brew.removeLegacy(item);
 		}
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onEntityCombust(EntityCombustEvent event) {
+		if (Brew.noLegacy()) return;
 		Entity entity = event.getEntity();
 		if (entity.getType() == EntityType.DROPPED_ITEM) {
 			if (entity instanceof Item) {
 				ItemStack item = ((Item) entity).getItemStack();
 				if (item.getType() == Material.POTION) {
-					Brew brew = Brew.get(item);
-					if (brew != null) {
-						brew.remove(item);
-					}
+					Brew.removeLegacy(item);
 				}
 			}
 		}
@@ -56,29 +53,31 @@ public class EntityListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onExplode(EntityExplodeEvent event) {
 		ListIterator<Block> iter = event.blockList().listIterator();
-		Barrel barrel = null;
-		boolean removedBarrel = false;
-		while (iter.hasNext()) {
-			Block block = iter.next();
-			if (barrel == null || !barrel.hasBlock(block)) {
-				barrel = Barrel.get(block);
-				removedBarrel = false;
-			}
-			if (!removedBarrel) {
-				if (barrel != null) {
-					if (P.p.useLWC) {
-						try {
-							if (LWCBarrel.blockExplosion(barrel, block)) {
-								iter.remove();
-							} else {
-								removedBarrel = true;
-							}
-						} catch (Exception e) {
-							P.p.errorLog("Failed to Check LWC on Barrel Explosion!");
-							e.printStackTrace();
-							removedBarrel = true;
+		if (!iter.hasNext()) return;
+		List<BarrelDestroyEvent> breakEvents = new ArrayList<>(6);
+		Block block;
+		blocks: while (iter.hasNext()) {
+			block = iter.next();
+			if (!breakEvents.isEmpty()) {
+				for (BarrelDestroyEvent breakEvent : breakEvents) {
+					if (breakEvent.getBarrel().hasBlock(block)) {
+						if (breakEvent.isCancelled()) {
+							iter.remove();
 						}
+						continue blocks;
 					}
+				}
+			}
+			Barrel barrel = Barrel.get(block);
+			if (barrel != null) {
+				BarrelDestroyEvent breakEvent = new BarrelDestroyEvent(barrel, block, BarrelDestroyEvent.Reason.EXPLODED, null);
+				// Listened to by LWCBarrel (IntegrationListener)
+				P.p.getServer().getPluginManager().callEvent(breakEvent);
+				breakEvents.add(breakEvent);
+				if (breakEvent.isCancelled()) {
+					iter.remove();
+				} else {
+					barrel.remove(block, null, true);
 				}
 			}
 		}

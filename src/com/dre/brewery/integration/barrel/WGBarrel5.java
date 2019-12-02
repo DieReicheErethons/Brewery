@@ -1,4 +1,4 @@
-package com.dre.brewery.integration;
+package com.dre.brewery.integration.barrel;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -17,13 +17,13 @@ import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 
 
-public class WGBarrelOld implements WGBarrel {
+public class WGBarrel5 implements WGBarrel {
 
 	private Method allows;
 	private Method canBuild;
 	private Method getApplicableRegions;
 
-	public WGBarrelOld() {
+	public WGBarrel5() {
 		try {
 			allows = ApplicableRegionSet.class.getMethod("allows", StateFlag.class, LocalPlayer.class);
 			canBuild = ApplicableRegionSet.class.getMethod("canBuild", LocalPlayer.class);
@@ -48,7 +48,6 @@ public class WGBarrelOld implements WGBarrel {
 
 					if (!(Boolean) allows.invoke(region, DefaultFlag.CHEST_ACCESS, localPlayer)) {
 						if (!(Boolean) canBuild.invoke(region, localPlayer)) {
-							P.p.msg(player, P.p.languageReader.get("Error_NoBarrelAccess"));
 							return false;
 						}
 					}

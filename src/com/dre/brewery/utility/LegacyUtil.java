@@ -1,13 +1,11 @@
-package com.dre.brewery;
+package com.dre.brewery.utility;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.TreeSpecies;
-import org.bukkit.World;
+import com.dre.brewery.P;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Levelled;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.Cauldron;
 import org.bukkit.material.MaterialData;
 import org.bukkit.material.Tree;
@@ -15,8 +13,12 @@ import org.bukkit.material.Wood;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.EnumSet;
+import java.util.Set;
+
+import static com.dre.brewery.BCauldron.EMPTY;
+import static com.dre.brewery.BCauldron.FULL;
+import static com.dre.brewery.BCauldron.SOME;
 
 @SuppressWarnings("JavaReflectionMemberAccess")
 public class LegacyUtil {
@@ -24,6 +26,8 @@ public class LegacyUtil {
 	private static Method GET_MATERIAL;
 	private static Method GET_BLOCK_TYPE_ID_AT;
 	private static Method SET_DATA;
+
+	public static boolean NewNbtVer;
 
 	static {
 		// <= 1.12.2 methods
@@ -38,7 +42,7 @@ public class LegacyUtil {
 		} catch (ClassNotFoundException | NoSuchMethodException | SecurityException ignored) {
 		}
 
-		List<Material> planks = new ArrayList<>(6);
+		Set<Material> planks = EnumSet.noneOf(Material.class);
 		for (Material m : Material.values()) {
 			if (m.name().endsWith("PLANKS")) {
 				planks.add(m);
@@ -46,7 +50,7 @@ public class LegacyUtil {
 		}
 		PLANKS = planks;
 
-		List<Material> fences = new ArrayList<>(7);
+		Set<Material> fences = EnumSet.noneOf(Material.class);
 		for (Material m : Material.values()) {
 			if (m.name().endsWith("FENCE")) {
 				fences.add(m);
@@ -64,8 +68,8 @@ public class LegacyUtil {
 	public static final Material JUNGLE_STAIRS = get("JUNGLE_STAIRS", "JUNGLE_WOOD_STAIRS");
 	public static final Material ACACIA_STAIRS = get("ACACIA_STAIRS");
 	public static final Material DARK_OAK_STAIRS = get("DARK_OAK_STAIRS");
-	public static final List<Material> PLANKS;
-	public static final List<Material> FENCES;
+	public static final Set<Material> PLANKS;
+	public static final Set<Material> FENCES;
 
 	// Materials removed in 1.13
 	public static final Material STATIONARY_LAVA = get("STATIONARY_LAVA");
@@ -187,35 +191,39 @@ public class LegacyUtil {
 		}
 	}
 
-	// 0 = empty, 1 = something in, 2 = full
+	/**
+	 * Get The Fill Level of a Cauldron Block, 0 = empty, 1 = something in, 2 = full
+	 *
+	 * @return 0 = empty, 1 = something in, 2 = full
+	 */
 	public static byte getFillLevel(Block block) {
 		if (block.getType() != Material.CAULDRON) {
-			return 0;
+			return EMPTY;
 		}
 
 		if (P.use1_13) {
 			Levelled cauldron = ((Levelled) block.getBlockData());
 			if (cauldron.getLevel() == 0) {
-				return 0;
+				return EMPTY;
 			} else if (cauldron.getLevel() == cauldron.getMaximumLevel()) {
-				return 2;
+				return FULL;
 			} else {
-				return 1;
+				return SOME;
 			}
 
 		} else {
 			Cauldron cauldron = (Cauldron) block.getState().getData();
 			if (cauldron.isEmpty()) {
-				return 0;
+				return EMPTY;
 			} else if (cauldron.isFull()) {
-				return 2;
+				return FULL;
 			} else {
-				return 1;
+				return SOME;
 			}
 		}
 	}
 
-	/*
+	/**
 	 * only used to convert a very old Datafile or config from a very old version
 	 */
 	public static Material getMaterial(int id) {
@@ -240,6 +248,59 @@ public class LegacyUtil {
 		try {
 			SET_DATA.invoke(block, data);
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ignored) {
+		}
+	}
+
+	/**
+	 * MC 1.13 uses a different NBT API than the newer versions..
+	 * We decide here which to use, the new or the old
+	 *
+	 * @return true if we can use nbt at all
+	 */
+	public static boolean initNbt() {
+		try {
+			Class.forName("org.bukkit.persistence.PersistentDataContainer");
+			NewNbtVer = true;
+			P.p.log("Using the NEW nbt api");
+			return true;
+		} catch (ClassNotFoundException e) {
+			try {
+				Class.forName("org.bukkit.inventory.meta.tags.CustomItemTagContainer");
+				NewNbtVer = false;
+				P.p.log("Using the OLD nbt api");
+				return true;
+			} catch (ClassNotFoundException ex) {
+				NewNbtVer = false;
+				P.p.log("No nbt api found, using Lore Save System");
+				return false;
+			}
+		}
+	}
+
+	@SuppressWarnings("deprecation")
+	public static void writeBytesItem(byte[] bytes, ItemMeta meta, NamespacedKey key) {
+		if (NewNbtVer) {
+			meta.getPersistentDataContainer().set(key, org.bukkit.persistence.PersistentDataType.BYTE_ARRAY, bytes);
+		} else {
+			meta.getCustomTagContainer().setCustomTag(key, org.bukkit.inventory.meta.tags.ItemTagType.BYTE_ARRAY, bytes);
+		}
+	}
+
+	@SuppressWarnings("deprecation")
+	public static byte[] readBytesItem(ItemMeta meta, NamespacedKey key) {
+		if (NewNbtVer) {
+			return meta.getPersistentDataContainer().get(key, org.bukkit.persistence.PersistentDataType.BYTE_ARRAY);
+		} else {
+			return meta.getCustomTagContainer().getCustomTag(key, org.bukkit.inventory.meta.tags.ItemTagType.BYTE_ARRAY);
+		}
+	}
+
+	@SuppressWarnings("deprecation")
+	public static boolean hasBytesItem(ItemMeta meta, NamespacedKey key) {
+		if (NewNbtVer) {
+			return meta.getPersistentDataContainer().has(key, org.bukkit.persistence.PersistentDataType.BYTE_ARRAY);
+		} else {
+			return meta.getCustomTagContainer().hasCustomTag(key, org.bukkit.inventory.meta.tags.ItemTagType.BYTE_ARRAY);
 		}
 	}
 

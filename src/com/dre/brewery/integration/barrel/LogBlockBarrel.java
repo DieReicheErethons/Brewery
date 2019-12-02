@@ -1,6 +1,6 @@
-package com.dre.brewery.integration;
+package com.dre.brewery.integration.barrel;
 
-import com.dre.brewery.LegacyUtil;
+import com.dre.brewery.utility.LegacyUtil;
 import com.dre.brewery.P;
 import de.diddiz.LogBlock.Actor;
 

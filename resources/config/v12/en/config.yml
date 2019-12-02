@@ -3,7 +3,6 @@
 
 # -- Settings --
 # Defaults are written in []
-# Deleting of single settings disables them
 
 # Languagefile to be used (found in plugins/Brewery/languages)
 language: en
@@ -51,11 +50,25 @@ hangoverDays: 7
 colorInBarrels: true
 colorInBrewer: true
 
+# Always show the 1-5 stars on the item depending on the quality. If false, they will only appear when brewing [true]
+alwaysShowQuality: true
+
+# Always show the alcohol content on the item. If false, it will only show in the brewing stand [false]
+alwaysShowAlc: false
+
 # If a Large Barrel can be opened by clicking on any of its blocks, not just Spigot or Sign. This is always true for Small Barrels. [true]
 openLargeBarrelEverywhere: true
 
 # How many Brewery drinks can be put into the Minecraft barrels [6]
 maxBrewsInMCBarrels: 6
+
+# The used Ingredients and other brewing-data is saved to all Brewery Items. To prevent
+# hacked clients from reading what exactly was used to brew an item, the data can be encoded/scrambled.
+# This is a fast process to stop players from hacking out recipes, once they get hold of a brew.
+# Only drawback: brew items can only be used on another server with the same encodeKey.
+# So enable this if you want to make recipe cheating harder, but don't share any brews by world download, schematics, or other means. [false]
+enableEncode: false
+encodeKey: 0
 
 # Enable checking for Updates, Checks the curseforge api for updates to Brewery [true]
 # If an Update is found a Message is logged on Server-start and displayed to OPs joining the game
@@ -64,9 +77,117 @@ updateCheck: true
 # Autosave interval in minutes [3]
 autosave: 3
 
+# Show debug messages in log [false]
+debug: false
+
 # Config Version
-version: '1.8'
+version: '2.0'
 oldMat: true
+
+
+
+# -- Define custom items --
+# The defined id can then be used in recipes
+
+#  matchAny: true if it is already enough if one of the info matches
+#  material: Which type the item has to be
+#  name: Which name the item has to be (Formatting codes possible: such as &6)
+#  lore: What has to be in the lore of the item
+
+customItems:
+  ex-item:
+    # A Bedrock item called Wall and has the given line in its lore
+    material: BEDROCK
+    name: 'Wall'
+    lore:
+      - '&7Very well protected'
+
+  ex-item2:
+    # Using matchAny only one of the following has to match.
+    # In this case on of the door types, or an item called Beechwood Door, or an item with 'A door' in its lore
+    matchAny: true
+    material:
+      - WOODEN_DOOR
+      - IRON_DOOR
+    name:
+      - 'Beechwood Door'
+    lore:
+      - 'A door'
+
+  rasp:
+    name: '&cRaspberry'
+
+
+# -- Ingredients in the Cauldron --
+# Which Ingredients are accepted by the Cauldron and the base potion resulting from them
+
+ # name: Name of the base potion coming out of the Cauldron (Formatting codes possible: such as &6)
+ # ingredients: List of 'material/amount'
+ #   With an item in your hand, use /brew ItemName to get its material for use in a recipe
+ #   (Item-ids instead of material are not supported by bukkit anymore and will not work)
+ #   A list of materials can be found here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
+ # color: Color of the potion from a cauldron.
+ #   Usable Colors: DARK_RED, RED, BRIGHT_RED, ORANGE, PINK, BLUE, CYAN, WATER, GREEN, BLACK, GREY, BRIGHT_GREY
+ #   Or RGB colors (hex: for example '99FF33') (with '') (search for "HTML color" on the internet)
+ # lore: List of additional text on the base potion. (Formatting codes possible: such as &6)
+
+cauldron:
+  ex:
+    name: Example
+    ingredients:
+      - BEDROCK/2
+      - DIAMOND
+    color: BLACK
+    lore:
+      - An example for a Base Potion
+      - This is how it comes out of a Cauldron
+
+  # -- One Ingredient: --
+  wheat:
+    name: Fermented wheat
+    ingredients: WHEAT
+
+  sugarcane:
+    name: Sugar brew
+    ingredients: SUGAR_CANE
+    color: 'f1ffad' # yellowish green
+
+  apple:
+    name: Apple cider
+    ingredients: APPLE
+
+  potato:
+    name: Potatomash
+    ingredients: POTATO_ITEM
+
+  grass:
+    name: Boiled herbs
+    ingredients: LONG_GRASS
+    color: '99ff66' # bright green
+
+  rmushroom:
+    name: Mushroom brew
+    ingredients: RED_MUSHROOM
+    color: 'ff5c33' # amber red
+
+  cocoa:
+    name: Chocolately brew
+    ingredients: INK_SACK
+    color: '804600' # mocca
+
+  milk:
+    name: Milky water
+    ingredients: MILK_BUCKET
+    color: BRIGHT_GREY
+
+  # -- Multiple Ingredients: --
+  apfelmet_base:
+    name: Apple-Sugar brew
+    ingredients:
+      - SUGAR_CANE/3
+      - APPLE
+    color: 'e1ff4d' # greenish yellow
+
 
 
 # -- Recipes for Potions --
@@ -77,8 +198,8 @@ oldMat: true
 #   (Item-ids instead of material are not supported by bukkit anymore and will not work)
 #   A list of materials can be found here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
 #   You can specify a data (durability) value, omitting it will ignore the data value of the added ingredient
-#   If Vault is installed normal names can be used instead of material or id, so using Vault is highly recommended.
-#   Vault will recognize things like "Jungle Leaves" instead of "LEAVES,3"
+#   Plugin items with 'plugin:id' (Currently supporting ExoticGarden, Slimefun, MMOItems, Brewery)
+#   Or a custom item defined above
 # cookingtime: Time in real minutes ingredients have to boil
 # distillruns: How often it has to be distilled for full alcohol (0=without distilling)
 # distilltime: How long (in seconds) one distill-run takes (0=Default time of 40 sec) MC Default would be 20 sec
@@ -90,6 +211,12 @@ oldMat: true
 #   Or RGB colors (hex: for example '99FF33') (with '') (search for "HTML color" on the internet)
 # difficulty: 1-10 accuracy needed to get good quality (1 = unaccurate/easy, 10 = very precise/hard)
 # alcohol: Absolute amount of alcohol 0-100 in a perfect potion (will be added directly to the player, where 100 means fainting)
+# lore: List of additional text on the finished brew. (Formatting codes possible: such as &6)
+#   Specific lore for quality possible, using + bad, ++ normal, +++ good, added to the front of the line.
+# servercommands: List of Commands executed by the Server when drinking the brew
+# playercommands: List of Commands executed by the Player when drinking the brew
+# drinkmessage: Chat-message to the Player when drinking the Brew
+# drinktitle: Title on Screen to the Player when drinking the Brew
 # effects: List of effect/level/duration  Special potion-effect when drinking, duration in sek.
 #   Suffix name with 'X' to hide effect from label. Sample: 'POISONX/2/10' (WEAKNESS, INCREASE_DAMAGE, SLOW and SPEED are always hidden.)
 #   Effects are always hidden in 1.9 and newer, because of changes in the potion mechanics.
@@ -100,16 +227,16 @@ oldMat: true
 
 recipes:
 #  Example Recipe with every possible entry first:
-   0:
+   ex:
       name: Bad Example/Example/Good Example
       ingredients:
-      - SUGAR_CANE/5
       - DIAMOND/1
       - INK_SACK,3/20
       - WOOD,1/8
+      - Brewery:Wheatbeer/2
+#     - ExoticGarden:Grape/3
       - BEDROCK/1
-#     - Jungle Leaves/64  # Only with Vault
-#     - Green Dye/6       # Only with Vault
+      - ex-item/4
       cookingtime: 3
       distillruns: 2
       distilltime: 60
@@ -118,12 +245,26 @@ recipes:
       color: DARK_RED
       difficulty: 3
       alcohol: 23
+      lore:
+      - This is an examble brew
+      - ++Just a normal Example
+      - This text would be on the brew
+      - + Smells disgusting
+      - ++ Smells alright
+      - +++ Smells really good
+      servercommands:
+      - weather clear
+      playercommands:
+      - homes
+      drinkmessage: Tastes good
+      drinktitle: Warms you from inside
       effects:
       - FIRE_RESISTANCE/20
       - HEAL/1
       - WEAKNESS/2-3/50-60
       - POISONX/1-0/20-0
-   1:
+
+   wheatbeer:
       name: Skunky Wheatbeer/Wheatbeer/Fine Wheatbeer
       ingredients:
       - WHEAT/3
@@ -134,7 +275,8 @@ recipes:
       color: BRIGHT_GREY
       difficulty: 1
       alcohol: 5
-   2:
+
+   beer:
       name: Skunky Beer/Beer/Fine Beer
       ingredients:
       - WHEAT/6
@@ -144,8 +286,11 @@ recipes:
       age: 3
       color: ORANGE
       difficulty: 1
+      lore:
+      - +++ &8Crisp taste
       alcohol: 6
-   3:
+
+   darkbeer:
       name: Skunky Darkbeer/Darkbeer/Fine Darkbeer
       ingredients:
       - WHEAT/6
@@ -155,8 +300,11 @@ recipes:
       age: 8
       color: BLACK
       difficulty: 2
+      lore:
+      - +++ &8Roasted taste
       alcohol: 7
-   4:
+
+   mead:
       name: Awkward Mead/Mead/&6Golden Mead
       ingredients:
       - SUGAR_CANE/6
@@ -166,8 +314,11 @@ recipes:
       age: 4
       color: ORANGE
       difficulty: 2
+      lore:
+      - +++ Has a golden shine
       alcohol: 9
-   5:
+
+   ap_mead:
       name: Apple Mead/Sweet Apple Mead/&6Sweet Golden Apple Mead
       ingredients:
       - SUGAR_CANE/6
@@ -179,9 +330,14 @@ recipes:
       color: ORANGE
       difficulty: 4
       alcohol: 12
+      lore:
+      - +Is there any Apple in this?
+      - ++Refreshing taste of Apple
+      - +++Sweetest hint of Apple
       effects:
       - WATER_BREATHINGX/1-2/150
-   6:
+
+   rum:
       name: Bitter Rum/Spicy Rum/&6Golden Rum
       ingredients:
       - SUGAR_CANE/14
@@ -196,7 +352,8 @@ recipes:
       effects:
       - FIRE_RESISTANCE/1/20-100
       - POISONX/1-0/30-0
-   7:
+
+   vodka:
       name: Lousy Vodka/Vodka/Russian Vodka
       ingredients:
       - POTATO_ITEM/10
@@ -206,10 +363,12 @@ recipes:
       color: BRIGHT_GREY
       difficulty: 4
       alcohol: 20
+      lore: +&8Almost undrinkable
       effects:
       - WEAKNESS/15
       - POISON/10
-   8:
+
+   absinthe:
       name: Poor Absinthe/Absinthe/Strong Absinthe
       ingredients:
       - LONG_GRASS/15
@@ -221,7 +380,8 @@ recipes:
       alcohol: 45
       effects:
       - POISON/20-30
-   9:
+
+   potato_soup:
       name: Potato soup
       ingredients:
       - POTATO_ITEM/5
@@ -231,7 +391,8 @@ recipes:
       difficulty: 1
       effects:
       - HEAL/0-1
-   10:
+
+   coffee:
       name: Stale Coffee/Coffee/Strong Coffee
       ingredients:
       - INK_SACK,3/12
@@ -239,6 +400,7 @@ recipes:
       cookingtime: 2
       color: BLACK
       difficulty: 3
+      lore: + &8Probably a week old
       effects:
       - REGENERATION/1/2-5
       - SPEED/1/30-140
@@ -248,28 +410,13 @@ recipes:
 # It is up to the Serveradmin to change and add Recipes, so players cannot cheat from the default config.
 
 
-
-# cooked: EVERY possible ingredient and the names for the originating potions after fermenting:
-# [Example] MATERIAL: Name after cooking
-
-cooked:
-   WHEAT: Fermented wheat
-   SUGAR_CANE: Sugar brew
-   APPLE: Apple cider
-   POTATO_ITEM: Potatomash
-   LONG_GRASS: Boiled herbs
-   RED_MUSHROOM: Mushroom brew
-   INK_SACK: Colored brew
-   MILK_BUCKET: Milky water
-
-
-
 # -- Plugin Compatibility --
 
 # Enable checking of other Plugins (if installed) for Barrel Permissions [true]
 useWorldGuard: true
 useLWC: true
 useGriefPrevention: true
+useGMInventories: true
 useCitadel: true
 
 # Enable the Logging of Barrel Inventories to LogBlock [true]
@@ -278,8 +425,7 @@ useLogBlock: true
 
 # -- Chat Distortion Settings --
 
-# If written Chat is distorted when the Player is Drunk,
-# so that it looks like drunk writing
+# If written Chat is distorted when the Player is Drunk, so that it looks like drunk writing
 # How much the chat is distorted depends on how drunk the Player is
 # Below are settings for what and how changes in chat occur
 enableChatDistortion: true

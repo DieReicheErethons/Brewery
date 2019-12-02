@@ -14,23 +14,21 @@ Brew_Woodtype: Tipo di legno
 Brew_Years: Anni
 Brew_fermented: fermentata
 Brew_minute: minuto
+Brew_Alc: Alc &v1ml
 
 # Comandi
-CMD_CopyNotPersistent: '&eLe copie di questa miscela non saranno né persistenti né statiche!'
 CMD_Copy_Error: '&6&v1 &cLe copie di questa pozione non stavano nell''inventario.'
 CMD_Info_Drunk: '&v1 è &6&v2% &fsbronzo, con una qualità di &6&v3'
 CMD_Info_NotDrunk: '&v1 non è sbronzo'
 CMD_NonStatic: '&eLa pozione non è più statica ed invecchierà normalmente nei barili'
-CMD_PersistRemove: '&cLe miscele persistenti non possono essere rimosse dal Database. Renderebbe le loro copie inutili!'
-CMD_Persistent: '&aLa pozione è ora persistente e statica e può essere copiata come qualunque altro oggetto. Puoi rimuovere la persistenza con lo stesso comando.'
 CMD_Player: '&a&v1 è ora &6&v2% &asbronzo, con una qualità di &6&v3'
 CMD_Player_Error: '&cLa qualità deve essere fra 1 e 10!'
 CMD_Reload: '&aLa configurazione è stata ricaricata con successo'
+CMD_Created: '&aBrew Created'
 CMD_Configname: '&aName for the Config is: &f&v1'
 CMD_Configname_Error: '&cCould not find item in your hand'
 CMD_Static: '&aLa pozione è ora statica e non cambierà né nei barili né negli alambicchi.'
 CMD_UnLabel: '&aEtichetta rimossa!'
-CMD_UnPersist: '&aPersistenza e staticità rimosse. &eOgni copia non fatta con ''/brew copy'' potrebbe diventare inutile ora!'
 
 # Errori
 Error_ConfigUpdate: 'Versione della configurazione di Brewery sconosciuta: v&v1, la configurazione non è stato aggiornata!'
@@ -38,11 +36,11 @@ Error_ItemNotPotion: '&cL''oggetto nella tua mano non è una pozione!'
 Error_NoBarrelAccess: '&cNon hai il permesso di aprire questo barile!'
 Error_NoBrewName: '&cNon è stata trovata nessuna ricetta chiamata ''&v1&c''!'
 Error_NoPermissions: '&cNon hai il permesso di farlo!'
-Error_PersistStatic: '&cLe pozioni persistenti sono sempre statiche!'
 Error_PlayerCommand: '&cQuesto comando può essere eseguito solo da un giocatore!'
 Error_Recipeload: '&cNon è stato possibile recuperare tutte le ricette: ulteriori informazioni nel file log!'
 Error_ShowHelp: Usa &6/brew help &fper visualizzare l''aiuto
 Error_UnknownCommand: Comando sconosciuto
+Error_YmlRead: 'Could not read file config.yml, please make sure the file is in valid yml format (correct spaces etc.)'
 
 # Varie
 Etc_Barrel: Barile
@@ -56,7 +54,6 @@ Help_Delete: '&6/brew delete &9Elimina la pozione nella tua mano'
 Help_Help: '&6/brew help <Pagina> &9Mostra una specifica pagina dell''aiuto'
 Help_Info: '&6/brew info&9 Mostra il tuo livello di sbronza attuale e la qualità'
 Help_InfoOther: '&6/brew info [Giocatore]&9 Mostra l''attuale livello di sbronza e la qualità di [Giocatore]'
-Help_Persist: '&6/brew persist &9Rendi una miscela persistente quindi copiabile normalmente in ogni modo e da ogni plugin.'
 Help_Player: '&6/brew <Giocatore> <%Sbronza> [Qualità]&9 Imposta livello di sbronza (e qualità) di un giocatore.'
 Help_Reload: '&6/brew reload &9Ricarica la configurazione'
 Help_Configname: '&6/brew ItemName &9Display name of item in hand for the config'

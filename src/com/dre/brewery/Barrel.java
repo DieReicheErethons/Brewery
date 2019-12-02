@@ -1,11 +1,19 @@
 package com.dre.brewery;
 
-import com.dre.brewery.integration.CitadelBarrel;
-import com.dre.brewery.integration.GriefPreventionBarrel;
-import com.dre.brewery.integration.LWCBarrel;
-import com.dre.brewery.integration.LogBlockBarrel;
-import org.apache.commons.lang.ArrayUtils;
+import com.dre.brewery.api.events.barrel.BarrelAccessEvent;
+import com.dre.brewery.api.events.barrel.BarrelCreateEvent;
+import com.dre.brewery.api.events.barrel.BarrelDestroyEvent;
+import com.dre.brewery.api.events.barrel.BarrelRemoveEvent;
+import com.dre.brewery.filedata.BConfig;
+import com.dre.brewery.integration.barrel.LogBlockBarrel;
+import com.dre.brewery.lore.BrewLore;
+import com.dre.brewery.utility.BUtil;
+import com.dre.brewery.utility.BoundingBox;
+import com.dre.brewery.utility.LegacyUtil;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.HumanEntity;
@@ -15,40 +23,47 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
 
+/**
+ * A Multi Block Barrel with Inventory
+ */
 public class Barrel implements InventoryHolder {
 
-	public static CopyOnWriteArrayList<Barrel> barrels = new CopyOnWriteArrayList<>();
-	private static int check = 0;
+	public static List<Barrel> barrels = new ArrayList<>();
+	private static int check = 0; // Which Barrel was last checked
 
-	private Block spigot;
-	private int[] woodsloc = null; // location of wood Blocks
-	private int[] stairsloc = null; // location of stair Blocks
-	private byte signoffset;
-	private boolean checked;
+	private final Block spigot;
+	private final BarrelBody body; // The Blocks that make up a Barrel in the World
+	private boolean checked; // Checked by the random BarrelCheck routine
 	private Inventory inventory;
 	private float time;
 
 	public Barrel(Block spigot, byte signoffset) {
 		this.spigot = spigot;
-		this.signoffset = signoffset;
+		if (isLarge()) {
+			inventory = P.p.getServer().createInventory(this, 27, P.p.languageReader.get("Etc_Barrel"));
+		} else {
+			inventory = P.p.getServer().createInventory(this, 9, P.p.languageReader.get("Etc_Barrel"));
+		}
+		body = new BarrelBody(this, signoffset);
 	}
 
-	// load from file
-	public Barrel(Block spigot, byte sign, String[] st, String[] wo, Map<String, Object> items, float time) {
+	/**
+	 * load from file
+	 */
+	public Barrel(Block spigot, byte sign, BoundingBox bounds, Map<String, Object> items, float time) {
 		this.spigot = spigot;
-		this.signoffset = sign;
 		if (isLarge()) {
-			this.inventory = org.bukkit.Bukkit.createInventory(this, 27, P.p.languageReader.get("Etc_Barrel"));
+			this.inventory = P.p.getServer().createInventory(this, 27, P.p.languageReader.get("Etc_Barrel"));
 		} else {
-			this.inventory = org.bukkit.Bukkit.createInventory(this, 9, P.p.languageReader.get("Etc_Barrel"));
+			this.inventory = P.p.getServer().createInventory(this, 9, P.p.languageReader.get("Etc_Barrel"));
 		}
 		if (items != null) {
 			for (String slot : items.keySet()) {
@@ -59,34 +74,7 @@ public class Barrel implements InventoryHolder {
 		}
 		this.time = time;
 
-		int i = 0;
-		if (wo.length > 1) {
-			woodsloc = new int[wo.length];
-			for (String wos : wo) {
-				woodsloc[i] = P.p.parseInt(wos);
-				i++;
-			}
-			i = 0;
-		}
-		if (st.length > 1) {
-			stairsloc = new int[st.length];
-			for (String sts : st) {
-				stairsloc[i] = P.p.parseInt(sts);
-				i++;
-			}
-		}
-
-		if (woodsloc == null && stairsloc == null) {
-			// If loading from old data, or block locations are missing, regenerate them
-			// This will only be done in those extreme cases.
-			Block broken = getBrokenBlock(true);
-			if (broken != null) {
-				remove(broken, null);
-				return;
-			}
-		}
-
-		barrels.add(this);
+		body = new BarrelBody(this, sign, bounds);
 	}
 
 	public static void onUpdate() {
@@ -94,12 +82,20 @@ public class Barrel implements InventoryHolder {
 			// Minecraft day is 20 min, so add 1/20 to the time every minute
 			barrel.time += (1.0 / 20.0);
 		}
-		if (check == 0 && barrels.size() > 0) {
-			Barrel random = barrels.get((int) Math.floor(Math.random() * barrels.size()));
+		int numBarrels = barrels.size();
+		if (check == 0 && numBarrels > 0) {
+			Barrel random = barrels.get((int) Math.floor(Math.random() * numBarrels));
 			if (random != null) {
 				// You have been selected for a random search
 				// We want to check at least one barrel every time
 				random.checked = false;
+			}
+			if (numBarrels > 50) {
+				Barrel randomInTheBack = barrels.get(numBarrels - 1 - (int) (Math.random() * (numBarrels >>> 2)));
+				if (randomInTheBack != null) {
+					// Prioritize checking one of the less recently used barrels as well
+					randomInTheBack.checked = false;
+				}
 			}
 			new BarrelCheck().runTaskTimer(P.p, 1, 1);
 		}
@@ -118,154 +114,36 @@ public class Barrel implements InventoryHolder {
 			}
 		}
 
-		if (P.p.useWG) {
-			Plugin plugin = P.p.getServer().getPluginManager().getPlugin("WorldGuard");
-			if (plugin != null) {
-				try {
-					if (!P.p.wg.checkAccess(player, spigot, plugin)) {
-						return false;
-					}
-				} catch (Throwable e) {
-					P.p.errorLog("Failed to Check WorldGuard for Barrel Open Permissions!");
-					P.p.errorLog("Brewery was tested with version 5.8, 6.1 to 7.0 of WorldGuard!");
-					P.p.errorLog("Disable the WorldGuard support in the config and do /brew reload");
-					e.printStackTrace();
-					if (player.hasPermission("brewery.admin") || player.hasPermission("brewery.mod")) {
-						P.p.msg(player, "&cWorldGuard check Error, Brewery was tested with up to v7.0 of Worldguard");
-						P.p.msg(player, "&cSet &7useWorldGuard: false &cin the config and /brew reload");
-					} else {
-						P.p.msg(player, "&cError opening Barrel, please report to an Admin!");
-					}
-					return false;
-				}
-			}
-		}
-
-		if (P.p.useGP) {
-			if (P.p.getServer().getPluginManager().isPluginEnabled("GriefPrevention")) {
-				try {
-					if (!GriefPreventionBarrel.checkAccess(player, spigot)) {
-						return false;
-					}
-				} catch (Throwable e) {
-					P.p.errorLog("Failed to Check GriefPrevention for Barrel Open Permissions!");
-					P.p.errorLog("Brewery was tested with GriefPrevention v14.5 - v16.9");
-					P.p.errorLog("Disable the GriefPrevention support in the config and do /brew reload");
-					e.printStackTrace();
-					if (player.hasPermission("brewery.admin") || player.hasPermission("brewery.mod")) {
-						P.p.msg(player, "&cGriefPrevention check Error, Brewery was tested with up to v16.9 of GriefPrevention");
-						P.p.msg(player, "&cSet &7useGriefPrevention: false &cin the config and /brew reload");
-					} else {
-						P.p.msg(player, "&cError opening Barrel, please report to an Admin!");
-					}
-					return false;
-				}
-			}
-		}
-
-		if (event != null && P.p.useLWC) {
-			Plugin plugin = P.p.getServer().getPluginManager().getPlugin("LWC");
-			if (plugin != null) {
-
-				// If the Clicked Block was the Sign, LWC already knows and we dont need to do anything here
-				if (!LegacyUtil.isSign(event.getClickedBlock().getType())) {
-					Block sign = getSignOfSpigot();
-					// If the Barrel does not have a Sign, it cannot be locked
-					if (!sign.equals(event.getClickedBlock())) {
-						try {
-							return LWCBarrel.checkAccess(player, sign, event, plugin);
-						} catch (Throwable e) {
-							P.p.errorLog("Failed to Check LWC for Barrel Open Permissions!");
-							P.p.errorLog("Brewery was tested with version 4.5.0 of LWC!");
-							P.p.errorLog("Disable the LWC support in the config and do /brew reload");
-							e.printStackTrace();
-							if (player.hasPermission("brewery.admin") || player.hasPermission("brewery.mod")) {
-								P.p.msg(player, "&cLWC check Error, Brewery was tested with up to v4.5.0 of LWC");
-								P.p.msg(player, "&cSet &7useLWC: false &cin the config and /brew reload");
-							} else {
-								P.p.msg(player, "&cError opening Barrel, please report to an Admin!");
-							}
-							return false;
-						}
-					}
-				}
-			}
-		}
-
-		if (event != null && P.p.useCitadel) {
-			Plugin plugin = P.p.getServer().getPluginManager().getPlugin("Citadel");
-			if (plugin != null) {
-				try {
-					if (LegacyUtil.isSign(event.getClickedBlock().getType())) {
-						return CitadelBarrel.checkAccess(player, getSignOfSpigot());
-					} else {
-						return CitadelBarrel.checkAccess(player, spigot);
-					}
-				} catch (Throwable e) {
-					P.p.errorLog("Failed to Check Citadel for Container Access Permissions!");
-					P.p.errorLog("Brewery was tested with version 3.9.1 of Citadel!");
-					P.p.errorLog("Disable Citadel support in the config and do /brew reload");
-					e.printStackTrace();
-					if (player.hasPermission("brewery.admin") || player.hasPermission("brewery.mod")) {
-						P.p.msg(player, "&cCitadel check Error, Brewery was tested with up to v3.9.1 of Citadel");
-					} else {
-						P.p.msg(player, "&cError opening Barrel, please report to an Admin!");
-					}
-					return false;
-				}
-			}
+		// Call event
+		BarrelAccessEvent accessEvent = new BarrelAccessEvent(this, player, event.getClickedBlock());
+		// Listened to by WGBarrel7, WGBarrelNew, WGBarrelOld, GriefPreventionBarrel (IntegrationListener)
+		P.p.getServer().getPluginManager().callEvent(accessEvent);
+		if (accessEvent.isCancelled()) {
+			return false;
 		}
 
 		return true;
 	}
 
-	// Ask for permission to destroy barrel, remove protection if has
-	public boolean hasPermsDestroy(Player player) {
-		if (player == null) {
-			willDestroy();
-			return true;
-		}
-		if (P.p.useLWC) {
-			try {
-				return LWCBarrel.checkDestroy(player, this);
-			} catch (Throwable e) {
-				P.p.errorLog("Failed to Check LWC for Barrel Break Permissions!");
-				P.p.errorLog("Brewery was tested with version 4.5.0 of LWC!");
-				P.p.errorLog("Disable the LWC support in the config and do /brew reload");
-				e.printStackTrace();
-				if (player.hasPermission("brewery.admin") || player.hasPermission("brewery.mod")) {
-					P.p.msg(player, "&cLWC check Error, Brewery was tested with up to v4.5.0 of LWC");
-					P.p.msg(player, "&cSet &7useLWC: false &cin the config and /brew reload");
-				} else {
-					P.p.msg(player, "&cError breaking Barrel, please report to an Admin!");
-				}
-				return false;
-			}
-		}
-
-		return true;
+	/**
+	 * Ask for permission to destroy barrel
+	 */
+	public boolean hasPermsDestroy(Player player, Block block, BarrelDestroyEvent.Reason reason) {
+		// Listened to by LWCBarrel (IntegrationListener)
+		BarrelDestroyEvent destroyEvent = new BarrelDestroyEvent(this, block, reason, player);
+		P.p.getServer().getPluginManager().callEvent(destroyEvent);
+		return !destroyEvent.isCancelled();
 	}
 
-	// If something other than the Player is destroying the barrel, inform protection plugins
-	public void willDestroy() {
-		if (P.p.useLWC) {
-			try {
-				LWCBarrel.remove(this);
-			} catch (Throwable e) {
-				P.p.errorLog("Failed to Remove LWC Lock from Barrel!");
-				P.p.errorLog("Brewery was tested with version 4.5.0 of LWC!");
-				e.printStackTrace();
-			}
-		}
-	}
-
-	// player opens the barrel
+	/**
+	 * player opens the barrel
+	 */
 	public void open(Player player) {
 		if (inventory == null) {
 			if (isLarge()) {
-				inventory = org.bukkit.Bukkit.createInventory(this, 27, P.p.languageReader.get("Etc_Barrel"));
+				inventory = P.p.getServer().createInventory(this, 27, P.p.languageReader.get("Etc_Barrel"));
 			} else {
-				inventory = org.bukkit.Bukkit.createInventory(this, 9, P.p.languageReader.get("Etc_Barrel"));
+				inventory = P.p.getServer().createInventory(this, 9, P.p.languageReader.get("Etc_Barrel"));
 			}
 		} else {
 			if (time > 0) {
@@ -273,7 +151,7 @@ public class Barrel implements InventoryHolder {
 				if (inventory.getViewers().isEmpty()) {
 					// if inventory contains potions
 					if (inventory.contains(Material.POTION)) {
-						byte wood = getWood();
+						byte wood = body.getWood();
 						long loadTime = System.nanoTime();
 						for (ItemStack item : inventory.getContents()) {
 							if (item != null) {
@@ -293,7 +171,7 @@ public class Barrel implements InventoryHolder {
 		// reset barreltime, potions have new age
 		time = 0;
 
-		if (P.p.useLB) {
+		if (BConfig.useLB) {
 			try {
 				LogBlockBarrel.openBarrel(player, inventory, spigot.getLocation());
 			} catch (Throwable e) {
@@ -305,78 +183,78 @@ public class Barrel implements InventoryHolder {
 		player.openInventory(inventory);
 	}
 
+	public void playOpeningSound() {
+		float randPitch = (float) (Math.random() * 0.1);
+		Location location = getSpigot().getLocation();
+		if (location.getWorld() == null) return;
+		if (isLarge()) {
+			location.getWorld().playSound(location, Sound.BLOCK_CHEST_OPEN, SoundCategory.BLOCKS, 0.4f, 0.55f + randPitch);
+			//getSpigot().getWorld().playSound(getSpigot().getLocation(), Sound.ITEM_BUCKET_EMPTY, SoundCategory.BLOCKS, 0.5f, 0.6f + randPitch);
+			location.getWorld().playSound(location, Sound.BLOCK_BREWING_STAND_BREW, SoundCategory.BLOCKS, 0.4f, 0.45f + randPitch);
+		} else {
+			location.getWorld().playSound(location, Sound.BLOCK_BARREL_OPEN, SoundCategory.BLOCKS, 0.5f, 0.8f + randPitch);
+		}
+	}
+
+	public void playClosingSound() {
+		float randPitch = (float) (Math.random() * 0.1);
+		Location location = getSpigot().getLocation();
+		if (location.getWorld() == null) return;
+		if (isLarge()) {
+			location.getWorld().playSound(location, Sound.BLOCK_BARREL_CLOSE, SoundCategory.BLOCKS, 0.5f, 0.5f + randPitch);
+			location.getWorld().playSound(location, Sound.ITEM_BUCKET_EMPTY, SoundCategory.BLOCKS, 0.2f, 0.6f + randPitch);
+		} else {
+			location.getWorld().playSound(location, Sound.BLOCK_BARREL_CLOSE, SoundCategory.BLOCKS, 0.5f, 0.8f + randPitch);
+		}
+	}
+
 	@Override
+	@NotNull
 	public Inventory getInventory() {
 		return inventory;
 	}
 
+	@NotNull
 	public Block getSpigot() {
 		return spigot;
 	}
 
-	// Returns true if this Block is part of this Barrel
+	@NotNull
+	public BarrelBody getBody() {
+		return body;
+	}
+
+	public float getTime() {
+		return time;
+	}
+
+	/**
+	 * Returns true if this Block is part of this Barrel
+	 */
 	public boolean hasBlock(Block block) {
-		if (block != null) {
-			if (LegacyUtil.isWoodPlanks(block.getType())) {
-				return hasWoodBlock(block);
-			} else if (LegacyUtil.isWoodStairs(block.getType())) {
-				return hasStairsBlock(block);
-			}
-		}
-		return false;
+		return body.hasBlock(block);
 	}
 
+	/**
+	 * @deprecated just use hasBlock
+	 */
+	@Deprecated
 	public boolean hasWoodBlock(Block block) {
-		if (woodsloc != null) {
-			if (spigot.getWorld() != null && spigot.getWorld().equals(block.getWorld())) {
-				if (woodsloc.length > 2) {
-					int x = block.getX();
-					if (Math.abs(x - woodsloc[0]) < 10) {
-						for (int i = 0; i < woodsloc.length - 2; i += 3) {
-							if (woodsloc[i] == x) {
-								if (woodsloc[i + 1] == block.getY()) {
-									if (woodsloc[i + 2] == block.getZ()) {
-										return true;
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		return false;
+		return body.hasBlock(block);
 	}
 
+	/**
+	 * @deprecated just use hasBlock
+	 */
+	@Deprecated
 	public boolean hasStairsBlock(Block block) {
-		if (stairsloc != null) {
-			if (spigot.getWorld() != null && spigot.getWorld().equals(block.getWorld())) {
-				if (stairsloc.length > 2) {
-					int x = block.getX();
-					if (Math.abs(x - stairsloc[0]) < 10) {
-						for (int i = 0; i < stairsloc.length - 2; i += 3) {
-							if (stairsloc[i] == x) {
-								if (stairsloc[i + 1] == block.getY()) {
-									if (stairsloc[i + 2] == block.getZ()) {
-										return true;
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		return false;
+		return body.hasBlock(block);
 	}
 
-	// Returns true if the Offset of the clicked Sign matches the Barrel.
-	// This prevents adding another sign to the barrel and clicking that.
-	public boolean isSignOfBarrel(byte offset) {
-		return offset == 0 || signoffset == 0 || signoffset == offset;
-	}
-
-	// Get the Barrel by Block, null if that block is not part of a barrel
+	/**
+	 * Get the Barrel by Block, null if that block is not part of a barrel
+	 */
+	@Nullable
 	public static Barrel get(Block block) {
 		if (block == null) {
 			return null;
@@ -384,57 +262,73 @@ public class Barrel implements InventoryHolder {
 		Material type = block.getType();
 		if (LegacyUtil.isFence(type) || LegacyUtil.isSign(type) ) {
 			return getBySpigot(block);
-		} else if (LegacyUtil.isWoodPlanks(type) || LegacyUtil.isWoodStairs(type)) {
+		} else {
 			return getByWood(block);
 		}
-		return null;
 	}
 
-	// Get the Barrel by Sign or Spigot (Fastest)
+	/**
+	 * Get the Barrel by Sign or Spigot (Fastest)
+	 */
+	@Nullable
 	public static Barrel getBySpigot(Block sign) {
 		// convert spigot if neccessary
-		Block spigot = getSpigotOfSign(sign);
+		Block spigot = BarrelBody.getSpigotOfSign(sign);
 
 		byte signoffset = 0;
 		if (!spigot.equals(sign)) {
 			signoffset = (byte) (sign.getY() - spigot.getY());
 		}
 
+		int i = 0;
 		for (Barrel barrel : barrels) {
-			if (barrel.isSignOfBarrel(signoffset)) {
+			if (barrel.body.isSignOfBarrel(signoffset)) {
 				if (barrel.spigot.equals(spigot)) {
-					if (barrel.signoffset == 0 && signoffset != 0) {
+					if (barrel.body.getSignoffset() == 0 && signoffset != 0) {
 						// Barrel has no signOffset even though we clicked a sign, may be old
-						barrel.signoffset = signoffset;
+						barrel.body.setSignoffset(signoffset);
 					}
+					moveMRU(i);
 					return barrel;
 				}
 			}
+			i++;
 		}
 		return null;
 	}
 
-	// Get the barrel by its corpus (Wood Planks, Stairs)
+	/**
+	 * Get the barrel by its corpus (Wood Planks, Stairs)
+	 */
+	@Nullable
 	public static Barrel getByWood(Block wood) {
-		if (LegacyUtil.isWoodPlanks(wood.getType())) {
+		if (LegacyUtil.isWoodPlanks(wood.getType()) || LegacyUtil.isWoodStairs(wood.getType())) {
+			int i = 0;
 			for (Barrel barrel : barrels) {
-				if (barrel.hasWoodBlock(wood)) {
+				if (barrel.getSpigot().getWorld().equals(wood.getWorld()) && barrel.body.getBounds().contains(wood)) {
+					moveMRU(i);
 					return barrel;
 				}
-			}
-		} else if (LegacyUtil.isWoodStairs(wood.getType())) {
-			for (Barrel barrel : Barrel.barrels) {
-				if (barrel.hasStairsBlock(wood)) {
-					return barrel;
-				}
+				i++;
 			}
 		}
 		return null;
 	}
 
-	// creates a new Barrel out of a sign
+	// Move Barrel that was recently used more towards the front of the List
+	// Optimizes retrieve by Block over time
+	private static void moveMRU(int index) {
+		if (index > 0) {
+			// Swap entry at the index with the one next to it
+			barrels.set(index - 1, barrels.set(index, barrels.get(index - 1)));
+		}
+	}
+
+	/**
+	 * creates a new Barrel out of a sign
+	 */
 	public static boolean create(Block sign, Player player) {
-		Block spigot = getSpigotOfSign(sign);
+		Block spigot = BarrelBody.getSpigotOfSign(sign);
 
 		byte signoffset = 0;
 		if (!spigot.equals(sign)) {
@@ -444,7 +338,7 @@ public class Barrel implements InventoryHolder {
 		Barrel barrel = getBySpigot(spigot);
 		if (barrel == null) {
 			barrel = new Barrel(spigot, signoffset);
-			if (barrel.getBrokenBlock(true) == null) {
+			if (barrel.body.getBrokenBlock(true) == null) {
 				if (LegacyUtil.isSign(spigot.getType())) {
 					if (!player.hasPermission("brewery.createbarrel.small")) {
 						P.p.msg(player, P.p.languageReader.get("Perms_NoSmallBarrelCreate"));
@@ -456,29 +350,43 @@ public class Barrel implements InventoryHolder {
 						return false;
 					}
 				}
-				barrels.add(barrel);
-				return true;
+				BarrelCreateEvent createEvent = new BarrelCreateEvent(barrel, player);
+				P.p.getServer().getPluginManager().callEvent(createEvent);
+				if (!createEvent.isCancelled()) {
+					barrels.add(0, barrel);
+					return true;
+				}
 			}
 		} else {
-			if (barrel.signoffset == 0 && signoffset != 0) {
-				barrel.signoffset = signoffset;
+			if (barrel.body.getSignoffset() == 0 && signoffset != 0) {
+				barrel.body.setSignoffset(signoffset);
 				return true;
 			}
 		}
 		return false;
 	}
 
-	// removes a barrel, throwing included potions to the ground
-	public void remove(Block broken, Player breaker) {
+	/**
+	 * Removes a barrel, throwing included potions to the ground
+	 *
+	 * @param broken The Block that was broken
+	 * @param breaker The Player that broke it, or null if not known
+	 * @param dropItems If the items in the barrels inventory should drop to the ground
+	 */
+	public void remove(@Nullable Block broken, @Nullable Player breaker, boolean dropItems) {
+		BarrelRemoveEvent event = new BarrelRemoveEvent(this, dropItems);
+		// Listened to by LWCBarrel (IntegrationListener)
+		P.p.getServer().getPluginManager().callEvent(event);
+
 		if (inventory != null) {
-			List<HumanEntity> viewers = new ArrayList(inventory.getViewers());
+			List<HumanEntity> viewers = new ArrayList<>(inventory.getViewers());
 			// Copy List to fix ConcModExc
 			for (HumanEntity viewer : viewers) {
 				viewer.closeInventory();
 			}
 			ItemStack[] items = inventory.getContents();
 			inventory.clear();
-			if (P.p.useLB && breaker != null) {
+			if (BConfig.useLB && breaker != null) {
 				try {
 					LogBlockBarrel.breakBarrel(breaker, items, spigot.getLocation());
 				} catch (Throwable e) {
@@ -487,23 +395,27 @@ public class Barrel implements InventoryHolder {
 					e.printStackTrace();
 				}
 			}
-			for (ItemStack item : items) {
-				if (item != null) {
-					Brew brew = Brew.get(item);
-					if (brew != null) {
-						// Brew before throwing
-						brew.age(item, time, getWood());
-						PotionMeta meta = (PotionMeta) item.getItemMeta();
-						if (Brew.hasColorLore(meta)) {
-							brew.convertLore(meta, false);
-							item.setItemMeta(meta);
+			if (event.willDropItems()) {
+				for (ItemStack item : items) {
+					if (item != null) {
+						Brew brew = Brew.get(item);
+						if (brew != null) {
+							// Brew before throwing
+							brew.age(item, time, body.getWood());
+							PotionMeta meta = (PotionMeta) item.getItemMeta();
+							if (BrewLore.hasColorLore(meta)) {
+								BrewLore lore = new BrewLore(brew, meta);
+								lore.convertLore(false);
+								lore.write();
+								item.setItemMeta(meta);
+							}
 						}
-					}
-					// "broken" is the block that destroyed, throw them there!
-					if (broken != null) {
-						broken.getWorld().dropItem(broken.getLocation(), item);
-					} else {
-						spigot.getWorld().dropItem(spigot.getLocation(), item);
+						// "broken" is the block that destroyed, throw them there!
+						if (broken != null) {
+							broken.getWorld().dropItem(broken.getLocation(), item);
+						} else {
+							spigot.getWorld().dropItem(spigot.getLocation(), item);
+						}
 					}
 				}
 			}
@@ -512,23 +424,56 @@ public class Barrel implements InventoryHolder {
 		barrels.remove(this);
 	}
 
-	//unloads barrels that are in a unloading world
+	/**
+	 * is this a Large barrel?
+	 */
+	public boolean isLarge() {
+		return !isSmall();
+	}
+
+	/**
+	 * is this a Small barrel?
+	 */
+	public boolean isSmall() {
+		return LegacyUtil.isSign(spigot.getType());
+	}
+
+	/**
+	 * returns the Sign of a large barrel, the spigot if there is none
+	 */
+	public Block getSignOfSpigot() {
+		return body.getSignOfSpigot();
+	}
+
+	/**
+	 * returns the fence above/below a block, itself if there is none
+	 */
+	public static Block getSpigotOfSign(Block block) {
+		return BarrelBody.getSpigotOfSign(block);
+	}
+
+	/**
+	 * returns null if Barrel is correctly placed; the block that is missing when not.
+	 * <p>The barrel needs to be formed correctly
+	 *
+	 * @param force to also check even if chunk is not loaded
+	 */
+	public Block getBrokenBlock(boolean force) {
+		return body.getBrokenBlock(force);
+	}
+
+	/**
+	 * unloads barrels that are in a unloading world
+	 */
 	public static void onUnload(String name) {
-		for (Barrel barrel : barrels) {
-			if (barrel.spigot.getWorld().getName().equals(name)) {
-				barrels.remove(barrel);
-			}
-		}
+		barrels.removeIf(barrel -> barrel.spigot.getWorld().getName().equals(name));
 	}
 
-	// If the Sign of a Large Barrel gets destroyed, set signOffset to 0
-	public void destroySign() {
-		signoffset = 0;
-	}
-
-	// Saves all data
+	/**
+	 * Saves all data
+	 */
 	public static void save(ConfigurationSection config, ConfigurationSection oldData) {
-		Util.createWorldSections(config);
+		BUtil.createWorldSections(config);
 
 		if (!barrels.isEmpty()) {
 			int id = 0;
@@ -538,7 +483,7 @@ public class Barrel implements InventoryHolder {
 				String prefix;
 
 				if (worldName.startsWith("DXL_")) {
-					prefix = Util.getDxlName(worldName) + "." + id;
+					prefix = BUtil.getDxlName(worldName) + "." + id;
 				} else {
 					prefix = barrel.spigot.getWorld().getUID().toString() + "." + id;
 				}
@@ -546,23 +491,8 @@ public class Barrel implements InventoryHolder {
 				// block: x/y/z
 				config.set(prefix + ".spigot", barrel.spigot.getX() + "/" + barrel.spigot.getY() + "/" + barrel.spigot.getZ());
 
-				if (barrel.signoffset != 0) {
-					config.set(prefix + ".sign", barrel.signoffset);
-				}
-				if (barrel.stairsloc != null && barrel.stairsloc.length > 0) {
-					StringBuilder st = new StringBuilder();
-					for (int i : barrel.stairsloc) {
-						st.append(i).append(",");
-					}
-					config.set(prefix + ".st", st.substring(0, st.length() - 1));
-				}
-				if (barrel.woodsloc != null && barrel.woodsloc.length > 0) {
-					StringBuilder wo = new StringBuilder();
-					for (int i : barrel.woodsloc) {
-						wo.append(i).append(",");
-					}
-					config.set(prefix + ".wo", wo.substring(0, wo.length() - 1));
-				}
+				// save the body data into the section as well
+				barrel.body.save(config, prefix);
 
 				if (barrel.inventory != null) {
 					int slot = 0;
@@ -599,280 +529,6 @@ public class Barrel implements InventoryHolder {
 		}
 	}
 
-	// direction of the barrel from the spigot
-	public static int getDirection(Block spigot) {
-		int direction = 0;// 1=x+ 2=x- 3=z+ 4=z-
-		Material type = spigot.getRelative(0, 0, 1).getType();
-		if (LegacyUtil.isWoodPlanks(type) || LegacyUtil.isWoodStairs(type)) {
-			direction = 3;
-		}
-		type = spigot.getRelative(0, 0, -1).getType();
-		if (LegacyUtil.isWoodPlanks(type) || LegacyUtil.isWoodStairs(type)) {
-			if (direction == 0) {
-				direction = 4;
-			} else {
-				return 0;
-			}
-		}
-		type = spigot.getRelative(1, 0, 0).getType();
-		if (LegacyUtil.isWoodPlanks(type) || LegacyUtil.isWoodStairs(type)) {
-			if (direction == 0) {
-				direction = 1;
-			} else {
-				return 0;
-			}
-		}
-		type = spigot.getRelative(-1, 0, 0).getType();
-		if (LegacyUtil.isWoodPlanks(type) || LegacyUtil.isWoodStairs(type)) {
-			if (direction == 0) {
-				direction = 2;
-			} else {
-				return 0;
-			}
-		}
-		return direction;
-	}
-
-	// is this a Large barrel?
-	public boolean isLarge() {
-		return !LegacyUtil.isSign(spigot.getType());
-	}
-
-	// woodtype of the block the spigot is attached to
-	public byte getWood() {
-		Block wood;
-		switch (getDirection(spigot)) { // 1=x+ 2=x- 3=z+ 4=z-
-			case 0:
-				return 0;
-			case 1:
-				wood = spigot.getRelative(1, 0, 0);
-				break;
-			case 2:
-				wood = spigot.getRelative(-1, 0, 0);
-				break;
-			case 3:
-				wood = spigot.getRelative(0, 0, 1);
-				break;
-			default:
-				wood = spigot.getRelative(0, 0, -1);
-		}
-		try {
-			return LegacyUtil.getWoodType(wood);
-		} catch (NoSuchFieldError | NoClassDefFoundError noSuchFieldError) {
-			// Using older minecraft versions some fields and classes do not exist
-			return 0;
-		}
-	}
-
-	// returns the Sign of a large barrel, the spigot if there is none
-	public Block getSignOfSpigot() {
-		if (signoffset != 0) {
-			if (LegacyUtil.isSign(spigot.getType())) {
-				return spigot;
-			}
-
-			if (LegacyUtil.isSign(spigot.getRelative(0, signoffset, 0).getType())) {
-				return spigot.getRelative(0, signoffset, 0);
-			} else {
-				signoffset = 0;
-			}
-		}
-		return spigot;
-	}
-
-	// returns the fence above/below a block, itself if there is none
-	public static Block getSpigotOfSign(Block block) {
-
-		int y = -2;
-		while (y <= 1) {
-			// Fence and Netherfence
-			Block relative = block.getRelative(0, y, 0);
-			if (LegacyUtil.isFence(relative.getType())) {
-				return (relative);
-			}
-			y++;
-		}
-		return block;
-	}
-
-	// returns null if Barrel is correctly placed; the block that is missing when not
-	// the barrel needs to be formed correctly
-	// flag force to also check if chunk is not loaded
-	public Block getBrokenBlock(boolean force) {
-		if (force || Util.isChunkLoaded(spigot)) {
-			spigot = getSpigotOfSign(spigot);
-			if (LegacyUtil.isSign(spigot.getType())) {
-				return checkSBarrel();
-			} else {
-				return checkLBarrel();
-			}
-		}
-		return null;
-	}
-
-	public Block checkSBarrel() {
-		int direction = getDirection(spigot);// 1=x+ 2=x- 3=z+ 4=z-
-		if (direction == 0) {
-			return spigot;
-		}
-		int startX;
-		int startZ;
-		int endX;
-		int endZ;
-
-		ArrayList<Integer> stairs = new ArrayList<>();
-
-		if (direction == 1) {
-			startX = 1;
-			endX = startX + 1;
-			startZ = -1;
-			endZ = 0;
-		} else if (direction == 2) {
-			startX = -2;
-			endX = startX + 1;
-			startZ = 0;
-			endZ = 1;
-		} else if (direction == 3) {
-			startX = 0;
-			endX = 1;
-			startZ = 1;
-			endZ = startZ + 1;
-		} else {
-			startX = -1;
-			endX = 0;
-			startZ = -2;
-			endZ = startZ + 1;
-		}
-
-		Material type;
-		int x = startX;
-		int y = 0;
-		int z = startZ;
-		while (y <= 1) {
-			while (x <= endX) {
-				while (z <= endZ) {
-					Block block = spigot.getRelative(x, y, z);
-					type = block.getType();
-
-					if (LegacyUtil.isWoodStairs(type)) {
-						if (y == 0) {
-							// stairs have to be upside down
-							if (!LegacyUtil.areStairsInverted(block)) {
-								return block;
-							}
-						}
-						stairs.add(block.getX());
-						stairs.add(block.getY());
-						stairs.add(block.getZ());
-						z++;
-					} else {
-						return spigot.getRelative(x, y, z);
-					}
-				}
-				z = startZ;
-				x++;
-			}
-			z = startZ;
-			x = startX;
-			y++;
-		}
-		stairsloc = ArrayUtils.toPrimitive(stairs.toArray(new Integer[0]));
-		return null;
-	}
-
-	public Block checkLBarrel() {
-		int direction = getDirection(spigot);// 1=x+ 2=x- 3=z+ 4=z-
-		if (direction == 0) {
-			return spigot;
-		}
-		int startX;
-		int startZ;
-		int endX;
-		int endZ;
-
-		ArrayList<Integer> stairs = new ArrayList<>();
-		ArrayList<Integer> woods = new ArrayList<>();
-
-		if (direction == 1) {
-			startX = 1;
-			endX = startX + 3;
-			startZ = -1;
-			endZ = 1;
-		} else if (direction == 2) {
-			startX = -4;
-			endX = startX + 3;
-			startZ = -1;
-			endZ = 1;
-		} else if (direction == 3) {
-			startX = -1;
-			endX = 1;
-			startZ = 1;
-			endZ = startZ + 3;
-		} else {
-			startX = -1;
-			endX = 1;
-			startZ = -4;
-			endZ = startZ + 3;
-		}
-
-		Material type;
-		int x = startX;
-		int y = 0;
-		int z = startZ;
-		while (y <= 2) {
-			while (x <= endX) {
-				while (z <= endZ) {
-					Block block = spigot.getRelative(x, y, z);
-					type = block.getType();
-					if (direction == 1 || direction == 2) {
-						if (y == 1 && z == 0) {
-							if (x == -1 || x == -4 || x == 1 || x == 4) {
-								woods.add(block.getX());
-								woods.add(block.getY());
-								woods.add(block.getZ());
-							}
-							z++;
-							continue;
-						}
-					} else {
-						if (y == 1 && x == 0) {
-							if (z == -1 || z == -4 || z == 1 || z == 4) {
-								woods.add(block.getX());
-								woods.add(block.getY());
-								woods.add(block.getZ());
-							}
-							z++;
-							continue;
-						}
-					}
-					if (LegacyUtil.isWoodPlanks(type) || LegacyUtil.isWoodStairs(type)) {
-						if (LegacyUtil.isWoodPlanks(type)) {
-							woods.add(block.getX());
-							woods.add(block.getY());
-							woods.add(block.getZ());
-						} else {
-							stairs.add(block.getX());
-							stairs.add(block.getY());
-							stairs.add(block.getZ());
-						}
-						z++;
-					} else {
-						return block;
-					}
-				}
-				z = startZ;
-				x++;
-			}
-			z = startZ;
-			x = startX;
-			y++;
-		}
-		stairsloc = ArrayUtils.toPrimitive(stairs.toArray(new Integer[0]));
-		woodsloc = ArrayUtils.toPrimitive(woods.toArray(new Integer[0]));
-
-		return null;
-	}
-
 	public static class BarrelCheck extends BukkitRunnable {
 		@Override
 		public void run() {
@@ -881,17 +537,17 @@ public class Barrel implements InventoryHolder {
 				if (check < barrels.size()) {
 					Barrel barrel = barrels.get(check);
 					if (!barrel.checked) {
-						Block broken = barrel.getBrokenBlock(false);
+						Block broken = barrel.body.getBrokenBlock(false);
 						if (broken != null) {
-							P.p.debugLog("Barrel at " + broken.getWorld().getName() + "/" + broken.getX() + "/" + broken.getY() + "/" + broken.getZ()
-									+ " has been destroyed unexpectedly, contents will drop");
+							P.p.debugLog("Barrel at "
+								+ broken.getWorld().getName() + "/" + broken.getX() + "/" + broken.getY() + "/" + broken.getZ()
+								+ " has been destroyed unexpectedly, contents will drop");
 							// remove the barrel if it was destroyed
-							barrel.willDestroy();
-							barrel.remove(broken, null);
+							barrel.remove(broken, null, true);
 						} else {
-							// Dont check this barrel again, its enough to check it once after every restart
-							// as now this is only the backup if we dont register the barrel breaking, as sample
-							// when removing it with some world editor
+							// Dont check this barrel again, its enough to check it once after every restart (and when randomly chosen)
+							// as now this is only the backup if we dont register the barrel breaking,
+							// for example when removing it with some world editor
 							barrel.checked = true;
 						}
 						repeat = false;

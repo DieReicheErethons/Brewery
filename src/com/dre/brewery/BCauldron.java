@@ -1,28 +1,42 @@
 package com.dre.brewery;
 
-import java.util.concurrent.CopyOnWriteArrayList;
-
-import org.bukkit.block.data.BlockData;
-import org.bukkit.block.data.Levelled;
-import org.bukkit.entity.Player;
+import com.dre.brewery.api.events.IngedientAddEvent;
+import com.dre.brewery.recipe.BCauldronRecipe;
+import com.dre.brewery.recipe.RecipeItem;
+import com.dre.brewery.utility.BUtil;
+import com.dre.brewery.utility.LegacyUtil;
+import org.bukkit.Effect;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.Effect;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.Levelled;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 public class BCauldron {
-	public static CopyOnWriteArrayList<BCauldron> bcauldrons = new CopyOnWriteArrayList<>();
+	public static final byte EMPTY = 0, SOME = 1, FULL = 2;
+	private static Set<UUID> plInteracted = new HashSet<>(); // Interact Event helper
+	public static Map<Block, BCauldron> bcauldrons = new HashMap<>(); // All active cauldrons. Mapped to their block for fast retrieve
 
 	private BIngredients ingredients = new BIngredients();
-	private Block block;
+	private final Block block;
 	private int state = 1;
-	private boolean someRemoved = false;
+	private boolean changed = false;
 
-	public BCauldron(Block block, ItemStack ingredient) {
+	public BCauldron(Block block) {
 		this.block = block;
-		add(ingredient);
-		bcauldrons.add(this);
+		bcauldrons.put(block, this);
 	}
 
 	// loading from file
@@ -30,29 +44,30 @@ public class BCauldron {
 		this.block = block;
 		this.state = state;
 		this.ingredients = ingredients;
-		bcauldrons.add(this);
+		bcauldrons.put(block, this);
 	}
 
 	public void onUpdate() {
 		// Check if fire still alive
-		if (!Util.isChunkLoaded(block) || LegacyUtil.isFireForCauldron(block.getRelative(BlockFace.DOWN))) {
+		if (!BUtil.isChunkLoaded(block) || LegacyUtil.isFireForCauldron(block.getRelative(BlockFace.DOWN))) {
 			// add a minute to cooking time
 			state++;
-			if (someRemoved) {
-				ingredients = ingredients.clone();
-				someRemoved = false;
+			if (changed) {
+				ingredients = ingredients.copy();
+				changed = false;
 			}
 		}
 	}
 
 	// add an ingredient to the cauldron
-	public void add(ItemStack ingredient) {
-		if (someRemoved) {
-			ingredients = ingredients.clone();
-			someRemoved = false;
+	public void add(ItemStack ingredient, RecipeItem rItem) {
+		if (ingredient == null || ingredient.getType() == Material.AIR) return;
+		if (changed) {
+			ingredients = ingredients.copy();
+			changed = false;
 		}
-		ingredient = new ItemStack(ingredient.getType(), 1, ingredient.getDurability());
-		ingredients.add(ingredient);
+
+		ingredients.add(ingredient, rItem);
 		block.getWorld().playEffect(block.getLocation(), Effect.EXTINGUISH, 0);
 		if (state > 1) {
 			state--;
@@ -60,88 +75,97 @@ public class BCauldron {
 	}
 
 	// get cauldron by Block
+	@Nullable
 	public static BCauldron get(Block block) {
-		for (BCauldron bcauldron : bcauldrons) {
-			if (bcauldron.block.equals(block)) {
-				return bcauldron;
-			}
-		}
-		return null;
+		return bcauldrons.get(block);
 	}
 
 	// get cauldron from block and add given ingredient
-	public static boolean ingredientAdd(Block block, ItemStack ingredient) {
+	// Calls the IngredientAddEvent and may be cancelled or changed
+	public static boolean ingredientAdd(Block block, ItemStack ingredient, Player player) {
 		// if not empty
-		if (LegacyUtil.getFillLevel(block) != 0) {
+		if (LegacyUtil.getFillLevel(block) != EMPTY) {
+
+			if (!BCauldronRecipe.acceptedMaterials.contains(ingredient.getType()) && !ingredient.hasItemMeta()) {
+				// Extremely fast way to check for most items
+				return false;
+			}
+			// If the Item is on the list, or customized, we have to do more checks
+			RecipeItem rItem = RecipeItem.getMatchingRecipeItem(ingredient, false);
+			if (rItem == null) {
+				return false;
+			}
+
 			BCauldron bcauldron = get(block);
-			if (bcauldron != null) {
-				bcauldron.add(ingredient);
-				return true;
+			if (bcauldron == null) {
+				bcauldron = new BCauldron(block);
+			}
+
+			IngedientAddEvent event = new IngedientAddEvent(player, block, bcauldron, ingredient.clone(), rItem);
+			P.p.getServer().getPluginManager().callEvent(event);
+			if (!event.isCancelled()) {
+				bcauldron.add(event.getIngredient(), event.getRecipeItem());
+				//P.p.debugLog("Cauldron add: t2 " + ((t2 - t1) / 1000) + " t3: " + ((t3 - t2) / 1000) + " t4: " + ((t4 - t3) / 1000) + " t5: " + ((t5 - t4) / 1000) + "µs");
+				return event.willTakeItem();
 			} else {
-				new BCauldron(block, ingredient);
-				return true;
+				return false;
 			}
 		}
 		return false;
 	}
 
 	// fills players bottle with cooked brew
-	public static boolean fill(Player player, Block block) {
-		BCauldron bcauldron = get(block);
-		if (bcauldron != null) {
-			if (!player.hasPermission("brewery.cauldron.fill")) {
-				P.p.msg(player, P.p.languageReader.get("Perms_NoCauldronFill"));
-				return true;
+	public boolean fill(Player player, Block block) {
+		if (!player.hasPermission("brewery.cauldron.fill")) {
+			P.p.msg(player, P.p.languageReader.get("Perms_NoCauldronFill"));
+			return true;
+		}
+		ItemStack potion = ingredients.cook(state);
+		if (potion == null) return false;
+
+		if (P.use1_13) {
+			BlockData data = block.getBlockData();
+			Levelled cauldron = ((Levelled) data);
+			if (cauldron.getLevel() <= 0) {
+				bcauldrons.remove(block);
+				return false;
 			}
-			ItemStack potion = bcauldron.ingredients.cook(bcauldron.state);
-			if (potion != null) {
+			cauldron.setLevel(cauldron.getLevel() - 1);
+			// Update the new Level to the Block
+			// We have to use the BlockData variable "data" here instead of the casted "cauldron"
+			// otherwise < 1.13 crashes on plugin load for not finding the BlockData Class
+			block.setBlockData(data);
 
-				if (P.use1_13) {
-					BlockData data = block.getBlockData();
-					Levelled cauldron = ((Levelled) data);
-					if (cauldron.getLevel() <= 0) {
-						bcauldrons.remove(bcauldron);
-						return false;
-					}
-					cauldron.setLevel(cauldron.getLevel() - 1);
-					// Update the new Level to the Block
-					// We have to use the BlockData variable "data" here instead of the casted "cauldron"
-					// otherwise < 1.13 crashes on plugin load for not finding the BlockData Class
-					block.setBlockData(data);
+			if (cauldron.getLevel() <= 0) {
+				bcauldrons.remove(block);
+			} else {
+				changed = true;
+			}
 
-					if (cauldron.getLevel() <= 0) {
-						bcauldrons.remove(bcauldron);
-					} else {
-						bcauldron.someRemoved = true;
-					}
+		} else {
+			byte data = block.getData();
+			if (data > 3) {
+				data = 3;
+			} else if (data <= 0) {
+				bcauldrons.remove(block);
+				return false;
+			}
+			data -= 1;
+			LegacyUtil.setData(block, data);
 
-				} else {
-					byte data = block.getData();
-					if (data > 3) {
-						data = 3;
-					} else if (data <= 0) {
-						bcauldrons.remove(bcauldron);
-						return false;
-					}
-					data -= 1;
-					LegacyUtil.setData(block, data);
-
-					if (data == 0) {
-						bcauldrons.remove(bcauldron);
-					} else {
-						bcauldron.someRemoved = true;
-					}
-				}
-				// Bukkit Bug, inventory not updating while in event so this
-				// will delay the give
-				// but could also just use deprecated updateInventory()
-				giveItem(player, potion);
-				// player.getInventory().addItem(potion);
-				// player.getInventory().updateInventory();
-				return true;
+			if (data == 0) {
+				bcauldrons.remove(block);
+			} else {
+				changed = true;
 			}
 		}
-		return false;
+		// Bukkit Bug, inventory not updating while in event so this
+		// will delay the give
+		// but could also just use deprecated updateInventory()
+		giveItem(player, potion);
+		// player.getInventory().addItem(potion);
+		// player.getInventory().updateInventory();
+		return true;
 	}
 
 	// prints the current cooking time to the player
@@ -160,37 +184,147 @@ public class BCauldron {
 		}
 	}
 
-	// reset to normal cauldron
-	public static void remove(Block block) {
-		if (LegacyUtil.getFillLevel(block) != 0) {
-			BCauldron bcauldron = get(block);
-			if (bcauldron != null) {
-				bcauldrons.remove(bcauldron);
+	public static void clickCauldron(PlayerInteractEvent event) {
+		Material materialInHand = event.getMaterial();
+		ItemStack item = event.getItem();
+		Player player = event.getPlayer();
+		Block clickedBlock = event.getClickedBlock();
+		assert clickedBlock != null;
+
+		if (materialInHand == null || materialInHand == Material.AIR || materialInHand == Material.BUCKET) {
+			return;
+
+		} else if (materialInHand == LegacyUtil.CLOCK) {
+			printTime(player, clickedBlock);
+			return;
+
+			// fill a glass bottle with potion
+		} else if (materialInHand == Material.GLASS_BOTTLE) {
+			assert item != null;
+			if (player.getInventory().firstEmpty() != -1 || item.getAmount() == 1) {
+				BCauldron bcauldron = get(clickedBlock);
+				if (bcauldron != null) {
+					if (bcauldron.fill(player, clickedBlock)) {
+						event.setCancelled(true);
+						if (player.hasPermission("brewery.cauldron.fill")) {
+							if (item.getAmount() > 1) {
+								item.setAmount(item.getAmount() - 1);
+							} else {
+								setItemInHand(event, Material.AIR, false);
+							}
+						}
+					}
+				}
+			} else {
+				event.setCancelled(true);
+			}
+			return;
+
+			// reset cauldron when refilling to prevent unlimited source of potions
+		} else if (materialInHand == Material.WATER_BUCKET) {
+			if (!P.use1_9) {
+				// We catch >=1.9 cases in the Cauldron Listener
+				if (LegacyUtil.getFillLevel(clickedBlock) == 1) {
+					// will only remove when existing
+					BCauldron.remove(clickedBlock);
+				}
+			}
+			return;
+		}
+
+		// Check if fire alive below cauldron when adding ingredients
+		Block down = clickedBlock.getRelative(BlockFace.DOWN);
+		if (LegacyUtil.isFireForCauldron(down)) {
+
+			event.setCancelled(true);
+			boolean handSwap = false;
+
+			// Interact event is called twice!!!?? in 1.9, once for each hand.
+			// Certain Items in Hand cause one of them to be cancelled or not called at all sometimes.
+			// We mark if a player had the event for the main hand
+			// If not, we handle the main hand in the event for the off hand
+			if (P.use1_9) {
+				if (event.getHand() == EquipmentSlot.HAND) {
+					final UUID id = player.getUniqueId();
+					plInteracted.add(id);
+					P.p.getServer().getScheduler().runTask(P.p, () -> plInteracted.remove(id));
+				} else if (event.getHand() == EquipmentSlot.OFF_HAND) {
+					if (!plInteracted.remove(player.getUniqueId())) {
+						item = player.getInventory().getItemInMainHand();
+						if (item != null && item.getType() != Material.AIR) {
+							materialInHand = item.getType();
+							handSwap = true;
+						} else {
+							item = event.getItem();
+						}
+					}
+				}
+			}
+			if (item == null) return;
+
+			if (!player.hasPermission("brewery.cauldron.insert")) {
+				P.p.msg(player, P.p.languageReader.get("Perms_NoCauldronInsert"));
+				return;
+			}
+			if (ingredientAdd(clickedBlock, item, player)) {
+				boolean isBucket = item.getType().equals(Material.WATER_BUCKET)
+					|| item.getType().equals(Material.LAVA_BUCKET)
+					|| item.getType().equals(Material.MILK_BUCKET);
+				if (item.getAmount() > 1) {
+					item.setAmount(item.getAmount() - 1);
+
+					if (isBucket) {
+						giveItem(player, new ItemStack(Material.BUCKET));
+					}
+				} else {
+					if (isBucket) {
+						setItemInHand(event, Material.BUCKET, handSwap);
+					} else {
+						setItemInHand(event, Material.AIR, handSwap);
+					}
+				}
 			}
 		}
+	}
+
+	@SuppressWarnings("deprecation")
+	public static void setItemInHand(PlayerInteractEvent event, Material mat, boolean swapped) {
+		if (P.use1_9) {
+			if ((event.getHand() == EquipmentSlot.OFF_HAND) != swapped) {
+				event.getPlayer().getInventory().setItemInOffHand(new ItemStack(mat));
+			} else {
+				event.getPlayer().getInventory().setItemInMainHand(new ItemStack(mat));
+			}
+		} else {
+			event.getPlayer().setItemInHand(new ItemStack(mat));
+		}
+	}
+
+	// reset to normal cauldron
+	public static boolean remove(Block block) {
+		if (LegacyUtil.getFillLevel(block) != EMPTY) {
+			return bcauldrons.remove(block) != null;
+		}
+		return false;
 	}
 
 	// unloads cauldrons that are in a unloading world
 	// as they were written to file just before, this is safe to do
 	public static void onUnload(String name) {
-		for (BCauldron bcauldron : bcauldrons) {
-			if (bcauldron.block.getWorld().getName().equals(name)) {
-				bcauldrons.remove(bcauldron);
-			}
-		}
+		bcauldrons.keySet().removeIf(block -> block.getWorld().getName().equals(name));
 	}
 
 	public static void save(ConfigurationSection config, ConfigurationSection oldData) {
-		Util.createWorldSections(config);
+		BUtil.createWorldSections(config);
 
 		if (!bcauldrons.isEmpty()) {
 			int id = 0;
-			for (BCauldron cauldron : bcauldrons) {
+			for (BCauldron cauldron : bcauldrons.values()) {
 				String worldName = cauldron.block.getWorld().getName();
 				String prefix;
 
 				if (worldName.startsWith("DXL_")) {
-					prefix = Util.getDxlName(worldName) + "." + id;
+					prefix = BUtil.getDxlName(worldName) + "." + id;
 				} else {
 					prefix = cauldron.block.getWorld().getUID().toString() + "." + id;
 				}
@@ -216,11 +350,7 @@ public class BCauldron {
 	// bukkit bug not updating the inventory while executing event, have to
 	// schedule the give
 	public static void giveItem(final Player player, final ItemStack item) {
-		P.p.getServer().getScheduler().runTaskLater(P.p, new Runnable() {
-			public void run() {
-				player.getInventory().addItem(item);
-			}
-		}, 1L);
+		P.p.getServer().getScheduler().runTaskLater(P.p, () -> player.getInventory().addItem(item), 1L);
 	}
 
 }

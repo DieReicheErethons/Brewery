@@ -1,5 +1,5 @@
 name: Brewery
-version: 1.8.2
+version: 1.8.3
 main: com.dre.brewery.P
 softdepend: [LWC, LogBlock, WorldGuard, GriefPrevention, Vault, Citadel]
 authors: [Milan Albrecht, Frank Baumann, ProgrammerDan, Daniel Saukel]
@@ -41,7 +41,6 @@ permissions:
       brewery.cmd.create: true
       brewery.cmd.copy: true
       brewery.cmd.delete: true
-      brewery.cmd.persist: true
       brewery.cmd.static: true
       brewery.cmd.reload: true
 # *
@@ -69,8 +68,6 @@ permissions:
     description: Copy Potions
   brewery.cmd.delete:
     description: Delete Potions
-  brewery.cmd.persist:
-    description: Make Potions Persistent
   brewery.cmd.static:
     description: Make Potions Static
   brewery.cmd.reload:

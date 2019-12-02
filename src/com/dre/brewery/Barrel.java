@@ -37,7 +37,7 @@ import java.util.Map;
 public class Barrel implements InventoryHolder {
 
 	public static List<Barrel> barrels = new ArrayList<>();
-	private static int check = 0;
+	private static int check = 0; // Which Barrel was last checked
 
 	private final Block spigot;
 	private final BarrelBody body; // The Blocks that make up a Barrel in the World

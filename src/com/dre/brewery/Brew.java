@@ -137,7 +137,6 @@ public class Brew implements Cloneable {
 			item.setItemMeta(meta);
 		} else if (brew != null && brew.needsSave) {
 			// Brew needs saving from a previous format
-			P.p.debugLog("Brew needs saving from previous format");
 			if (P.useNBT) {
 				new BrewLore(brew, (PotionMeta) meta).removeLoreData();
 				P.p.debugLog("removed Data from Lore");
@@ -823,13 +822,16 @@ public class Brew implements Cloneable {
 
 			XORUnscrambleStream.SuccessType successType = unscrambler.getSuccessType();
 			if (successType == XORUnscrambleStream.SuccessType.PREV_SEED) {
+				P.p.debugLog("Converting Brew from previous Seed");
 				brew.setNeedsSave(true);
 			} else if (BConfig.enableEncode != (successType == XORUnscrambleStream.SuccessType.MAIN_SEED)) {
 				// We have either enabled encode and the data was not encoded or the other way round
+				P.p.debugLog("Converting Brew to new encode setting");
 				brew.setNeedsSave(true);
 			} else if (P.useNBT && itemLoadStream instanceof Base91DecoderStream) {
 				// We are on a version that supports nbt but the data is still in the lore of the item
 				// Just save it again so that it gets saved to nbt
+				P.p.debugLog("Converting Brew to NBT");
 				brew.setNeedsSave(true);
 			}
 			return brew;

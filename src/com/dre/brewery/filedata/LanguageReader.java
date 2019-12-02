@@ -38,7 +38,6 @@ public class LanguageReader {
 	private void check(String defaultPath) {
 		FileConfiguration defaults = null;
 		ConfigUpdater updater = null;
-		int i = 0;
 		String line;
 		InputStream resource = P.p.getResource(defaultPath);
 		if (resource == null) return;
@@ -46,18 +45,18 @@ public class LanguageReader {
 			while ((line = reader.readLine()) != null) {
 				int index = line.indexOf(':');
 				if (index != -1) {
-					line = line.substring(0, index);
-					if (!entries.containsKey(line)) {
+					String key = line.substring(0, index);
+					if (!entries.containsKey(key)) {
 						if (defaults == null) {
 							defaults = new YamlConfiguration();
 							defaults.load(new BufferedReader(new InputStreamReader(Objects.requireNonNull(P.p.getResource(defaultPath)))));
 							updater = new ConfigUpdater(file);
+							updater.appendLines("", "# Updated");
 						}
-						entries.put(line, defaults.getString(line));
-						updater.addLines(i, line + ": '" + entries.get(line) + "'");
+						entries.put(key, defaults.getString(key));
+						updater.appendLines(line);
 					}
 				}
-				i++;
 			}
 			if (updater != null) {
 				createBackup();

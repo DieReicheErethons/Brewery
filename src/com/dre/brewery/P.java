@@ -13,6 +13,7 @@ import com.dre.brewery.recipe.BRecipe;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.LegacyUtil;
 import org.apache.commons.lang.math.NumberUtils;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -21,6 +22,9 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class P extends JavaPlugin {
 	public static P p;
@@ -220,7 +224,7 @@ public class P extends JavaPlugin {
 	}
 
 	private void setupMetrics() {
-		/*try {
+		try {
 			Metrics metrics = new Metrics(this);
 			metrics.addCustomChart(new Metrics.SingleLineChart("drunk_players", BPlayer::numDrunkPlayers));
 			metrics.addCustomChart(new Metrics.SingleLineChart("brews_in_existence", () -> brewsCreated));
@@ -321,7 +325,7 @@ public class P extends JavaPlugin {
 			}));
 		} catch (Throwable e) {
 			e.printStackTrace();
-		}*/
+		}
 	}
 
 	public void metricsForCreate(boolean byCmd) {

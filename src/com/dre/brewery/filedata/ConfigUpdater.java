@@ -1297,9 +1297,11 @@ public class ConfigUpdater {
 				"enableEncode: false",
 				"encodeKey: 0");
 
-		addLinesAt(new String[] {"autosave:", "version:"}, 1, "",
-			"# Debug Nachrichten im Log anzeigen [false]",
-			"debug: false");
+		if (indexOfStart("debug:") == -1) {
+			addLinesAt(new String[]{"autosave:", "version:"}, 1, "",
+				"# Debug Nachrichten im Log anzeigen [false]",
+				"debug: false");
+		}
 
 		index = indexOfStart("oldMat:") + 1;
 		if (index == 0) {
@@ -1396,9 +1398,11 @@ public class ConfigUpdater {
 			"enableEncode: false",
 			"encodeKey: 0");
 
-		addLinesAt(new String[] {"autosave:", "version:"}, 1, "",
-			"# Show debug messages in log [false]",
-			"debug: false");
+		if (indexOfStart("debug:") == -1) {
+			addLinesAt(new String[]{"autosave:", "version:"}, 1, "",
+				"# Show debug messages in log [false]",
+				"debug: false");
+		}
 
 		index = indexOfStart("oldMat:") + 1;
 		if (index == 0) {
@@ -1495,9 +1499,11 @@ public class ConfigUpdater {
 			"enableEncode: false",
 			"encodeKey: 0");
 
-		addLinesAt(new String[] {"autosave:", "version:"}, 1, "",
-			"# Show debug messages in log [false]",
-			"debug: false");
+		if (indexOfStart("debug:") == -1) {
+			addLinesAt(new String[]{"autosave:", "version:"}, 1, "",
+				"# Show debug messages in log [false]",
+				"debug: false");
+		}
 
 		index = indexOfStart("oldMat:") + 1;
 		if (index == 0) {

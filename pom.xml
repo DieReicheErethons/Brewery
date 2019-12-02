@@ -3,8 +3,8 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.dre</groupId>
-	<artifactId>brewery</artifactId>
-	<version>1.8.2</version>
+	<artifactId>Brewery</artifactId>
+	<version>1.8.3</version>
 	<name>Brewery</name>
 
 	<properties>

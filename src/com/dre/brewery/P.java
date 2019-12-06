@@ -253,18 +253,47 @@ public class P extends JavaPlugin {
 				} else if (recipes < 11) {
 					return "7-10";
 				} else if (recipes == 11) {
-					// There are 11 default recipes, so show this as its own slice
+					// There were 11 default recipes, so show this as its own slice
 					return "11";
-				} else if (recipes <= 31) {
+				} else if (recipes == 20) {
+					// There are 20 default recipes, so show this as its own slice
+					return "20";
+				} else if (recipes <= 29) {
 					if (recipes % 2 == 0) {
 						return recipes + "-" + (recipes + 1);
 					} else {
 						return (recipes - 1) + "-" + recipes;
 					}
+				} else if (recipes < 35) {
+					return "30-34";
+				} else if (recipes < 40) {
+					return "35-39";
+				} else if (recipes < 45) {
+					return "40-44";
+				} else if (recipes <= 50) {
+					return "45-50";
 				} else {
-					return "More than 31";
+					return "More than 50";
 				}
 
+			}));
+
+			metrics.addCustomChart(new Metrics.SimplePie("wakeups", () -> {
+				if (!BConfig.enableHome) {
+					return "disabled";
+				}
+				int wakeups = Wakeup.wakeups.size();
+				if (wakeups == 0) {
+					return "0";
+				} else if (wakeups <= 5) {
+					return "1-5";
+				} else if (wakeups <= 10) {
+					return "6-10";
+				} else if (wakeups <= 20) {
+					return "11-20";
+				} else {
+					return "More than 20";
+				}
 			}));
 			metrics.addCustomChart(new Metrics.SimplePie("v2_mc_version", () -> {
 				String mcv = Bukkit.getBukkitVersion();

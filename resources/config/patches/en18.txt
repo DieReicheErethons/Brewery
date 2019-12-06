@@ -10,6 +10,7 @@
 #  lore: What has to be in the lore of the item
 
 customItems:
+  # Three Example Items
   ex-item:
     # A Barrier item called Wall and has the given line in its lore
 %%%%MAT1%%%%
@@ -39,12 +40,13 @@ customItems:
  #   With an item in your hand, use /brew ItemName to get its material for use in a recipe
  #   (Item-ids instead of material are not supported by bukkit anymore and will not work)
  #   A list of materials can be found here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
- # color: Color of the potion from a cauldron.
- #   Usable Colors: DARK_RED, RED, BRIGHT_RED, ORANGE, PINK, BLUE, CYAN, WATER, GREEN, BLACK, GREY, BRIGHT_GREY
+ # color: Color of the potion from a cauldron. Defaults to CYAN
+ #   Usable Colors: DARK_RED, RED, BRIGHT_RED, ORANGE, YELLOW, PINK, PURPLE, BLUE, CYAN, WATER, TEAL, OLIVE, GREEN, LIME, BLACK, GREY, BRIGHT_GREY, WHITE
  #   Or RGB colors (hex: for example '99FF33') (with '') (search for "HTML color" on the internet)
  # lore: List of additional text on the base potion. (Formatting codes possible: such as &6)
 
 cauldron:
+  # Example with all possible entries
   ex:
     name: Example
     ingredients:

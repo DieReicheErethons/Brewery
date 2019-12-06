@@ -524,6 +524,7 @@ public class CommandListener implements CommandExecutor {
 
 		if (player == null) {
 			player = ((Player) sender);
+			pName = null;
 		}
 		int stringLength = args.length - 1;
 		if (pName != null) {

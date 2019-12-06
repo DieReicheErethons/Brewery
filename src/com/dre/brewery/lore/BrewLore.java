@@ -225,16 +225,23 @@ public class BrewLore {
 			return;
 		}
 		if (!brew.isUnlabeled() && brew.getQuality() > 0 && (qualityColor || BConfig.alwaysShowQuality)) {
-			int stars = (brew.getQuality() + 1) / 2;
-			StringBuilder b = new StringBuilder(stars);
-			for (; stars > 0; stars--) {
-				b.append("⭑");
-			}
+			int stars = (brew.getQuality()) / 2;
+			boolean half = (brew.getQuality()) % 2 > 0;
+			StringBuilder b = new StringBuilder(24);
 			String color;
 			if (qualityColor) {
 				color = getQualityColor(brew.getQuality());
 			} else {
-				color = brew.getQuality() >= 10 ? "§6" : "§8";
+				color = "§7";
+			}
+			for (; stars > 0; stars--) {
+				b.append("⭑");
+			}
+			if (half) {
+				if (!qualityColor) {
+					b.append("§8");
+				}
+				b.append("⭒");
 			}
 			addOrReplaceLore(Type.STARS, color, b.toString());
 		} else {
@@ -480,10 +487,10 @@ public class BrewLore {
 	 * Type of Lore Line
 	 */
 	public enum Type {
-		STARS("§s"),
 		CUSTOM("§t"),
 		SPACE("§u"),
 
+		STARS("§s"),
 		INGR("§v"),
 		COOK("§w"),
 		DISTILL("§x"),

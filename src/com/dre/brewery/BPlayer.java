@@ -183,6 +183,7 @@ public class BPlayer {
 		if (bPlayer.drunkeness > 100) {
 			bPlayer.drinkCap(player);
 		}
+		//player.sendMessage("Betrunkenheit: §8[§7⭑⭑⭑⭒§0⭑§8] §8[§6|||||||||||||||||§0|||||||||§8]");
 		return true;
 	}
 

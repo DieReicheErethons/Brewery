@@ -251,6 +251,12 @@ public abstract class RecipeItem implements Cloneable {
 			}
 			Material mat = Material.matchMaterial(ingredParts[0]);
 
+			if (mat == null && !P.use1_14 && ingredParts[0].equalsIgnoreCase("cornflower")) {
+				// Using this in default custom-items, but will error on < 1.14
+				materials.add(Material.BEDROCK);
+				continue;
+			}
+
 			if (mat == null && BConfig.hasVault) {
 				try {
 					net.milkbowl.vault.item.ItemInfo vaultItem = net.milkbowl.vault.item.Items.itemByString(ingredParts[0]);

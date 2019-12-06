@@ -10,6 +10,7 @@
 #  lore: Was in der Lore des Items stehen muss
 
 customItems:
+#  Drei Beispiel Items
   bsp-item:
 #  Ein Barriere Item das Mauer heißt und in der Lore die angegebene Zeile hat
 %%%%MAT1%%%%
@@ -39,12 +40,13 @@ customItems:
  #   Halte ein Item in der Hand und benutze /brew ItemName um dessen Material herauszufinden und für ein Rezept zu benutzen
  #   (Item-ids anstatt Material können in Bukkit nicht mehr benutzt werden)
  #   Eine Liste von allen Materialien kann hier gefunden werden: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
- # color: Farbe des Trankes der aus dem Kessel kommt
- #   Benutzbare Farben: DARK_RED, RED, BRIGHT_RED, ORANGE, PINK, BLUE, CYAN, WATER, GREEN, BLACK, GREY, BRIGHT_GREY
+ # color: Farbe des Trankes der aus dem Kessel kommt. (Standard ist CYAN)
+ #   Benutzbare Farben: DARK_RED, RED, BRIGHT_RED, ORANGE, YELLOW, PINK, PURPLE, BLUE, CYAN, WATER, TEAL, OLIVE, GREEN, LIME, BLACK, GREY, BRIGHT_GREY, WHITE
  #   Oder RGB Farben (Hex: also zB '99FF33') (Ohne #) (mit '') (Einfach nach "HTML color" im Internet suchen)
  # lore: Auflistung von zusätzlichem Text auf dem Trank. (Farbcodes möglich: z.b. &6)
 
 cauldron:
+#  Ein vollständiges Beispiel zuerst:
   bsp:
     name: Beispiel
     ingredients:

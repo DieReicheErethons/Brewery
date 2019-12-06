@@ -138,8 +138,20 @@ public class BCauldronRecipe {
 	/**
 	 * Find how much these ingredients match the given ones from 0-10.
 	 * <p>If any ingredient is missing, returns 0
-	 * <br>If all Ingredients and their amounts are equal, returns 10
-	 * <br>Returns something between 0 and 10 if all ingredients present, but differing amounts, depending on how much the amount differs.
+	 * <br>Any included item that is not in the recipe, will drive the number down most heavily.
+	 * <br>More Amount of any item, will logarithmically raise the number
+	 * <br>Difference in Amount to what the recipe expects will make a tiny difference on the number
+	 * <p>So apart from unexpected items, more amount of the correct item will make the number go up,
+	 * with a little dip for difference in expected amount.
+	 *
+	 * <p>The thought behind this is, that a given list of ingredients matches this recipe most, when:
+	 * <br>1. It is not missing ingredients,
+	 * <br>2. It has no unexpected ingredients
+	 * <br>3. It has a lot of the matching ingredients, so that for two recipes, both having the same
+	 * amount of unexpected ingredients, the one matching the item with the highest amounts wins.
+	 * <br> For Example | Recipe_1: (Wheat*1), Recipe_2: (Sugar*1) | Ingredients: (Wheat*10, Sugar*5), Recipe_1 should win,
+	 * even though the difference in expected amount (1) is lower for Recipe_2
+	 * <br>4. It has the least difference in expected ingredient amount.
 	 */
 	public float getIngredientMatch(List<Ingredient> items) {
 		if (items.size() < ingredients.size()) {
@@ -162,9 +174,6 @@ public class BCauldronRecipe {
 
 					P.p.debugLog("Mod for " + recipeIng + ": " + mod);
 
-
-
-
 					match *= mod;
 					continue search;
 				}
@@ -173,8 +182,9 @@ public class BCauldronRecipe {
 		}
 		if (items.size() > ingredients.size()) {
 			// If there are too many items in the List, multiply the match by 0.1 per Item thats too much
+			// So that even if every other ingredient is perfect, a recipe that expects all these items will fare better
 			float tooMuch = items.size() - ingredients.size();
-			float mod = 0.1f / tooMuch;
+			double mod = Math.pow(0.1, tooMuch);
 			match *= mod;
 		}
 		P.p.debugLog("Match for Cauldron Recipe " + name + ": " + match);

@@ -21,6 +21,12 @@ public class PotionColor {
 	public static final PotionColor WATER = new PotionColor(11, P.use1_9 ? PotionType.WATER_BREATHING : null, Color.BLUE);
 	public static final PotionColor DARK_RED = new PotionColor(12, PotionType.INSTANT_DAMAGE, Color.fromRGB(128,0,0));
 	public static final PotionColor BRIGHT_GREY = new PotionColor(14, PotionType.INVISIBILITY, Color.SILVER);
+	public static final PotionColor WHITE = new PotionColor(Color.WHITE);
+	public static final PotionColor LIME = new PotionColor(Color.LIME);
+	public static final PotionColor OLIVE = new PotionColor(Color.OLIVE);
+	public static final PotionColor PURPLE = new PotionColor(Color.PURPLE);
+	public static final PotionColor TEAL = new PotionColor(Color.TEAL);
+	public static final PotionColor YELLOW = new PotionColor(Color.YELLOW);
 
 	private final int colorId;
 	private final PotionType type;
@@ -33,7 +39,7 @@ public class PotionColor {
 	}
 
 	public PotionColor(Color color) {
-		colorId = -1;
+		colorId = WATER.colorId;
 		type = WATER.getType();
 		this.color = color;
 	}
@@ -86,6 +92,12 @@ public class PotionColor {
 			case "WATER": return WATER;
 			case "DARK_RED": return DARK_RED;
 			case "BRIGHT_GREY": return BRIGHT_GREY;
+			case "WHITE": return WHITE;
+			case "LIME": return LIME;
+			case "OLIVE": return OLIVE;
+			case "PURPLE": return PURPLE;
+			case "TEAL": return TEAL;
+			case "YELLOW": return YELLOW;
 			default:
 				try{
 					if (string.length() >= 7) {

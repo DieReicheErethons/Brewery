@@ -96,6 +96,7 @@ version: '2.0'
 #  lore: What has to be in the lore of the item
 
 customItems:
+  # Three Example Items
   ex-item:
     # A Barrier item called Wall and has the given line in its lore
     material: Barrier
@@ -119,6 +120,12 @@ customItems:
   rasp:
     name: '&cRaspberry'
 
+  blue-flowers:
+    matchAny: true
+    material:
+      - cornflower
+      - blue_orchid
+
 
 # -- Ingredients in the Cauldron --
 # Which Ingredients are accepted by the Cauldron and the base potion resulting from them
@@ -128,12 +135,13 @@ customItems:
  #   With an item in your hand, use /brew ItemName to get its material for use in a recipe
  #   (Item-ids instead of material are not supported by bukkit anymore and will not work)
  #   A list of materials can be found here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
- # color: Color of the potion from a cauldron.
- #   Usable Colors: DARK_RED, RED, BRIGHT_RED, ORANGE, PINK, BLUE, CYAN, WATER, GREEN, BLACK, GREY, BRIGHT_GREY
+ # color: Color of the potion from a cauldron. Defaults to CYAN
+ #   Usable Colors: DARK_RED, RED, BRIGHT_RED, ORANGE, YELLOW, PINK, PURPLE, BLUE, CYAN, WATER, TEAL, OLIVE, GREEN, LIME, BLACK, GREY, BRIGHT_GREY, WHITE
  #   Or RGB colors (hex: for example '99FF33') (with '') (search for "HTML color" on the internet)
  # lore: List of additional text on the base potion. (Formatting codes possible: such as &6)
 
 cauldron:
+  # Example with all possible entries
   ex:
     name: Example
     ingredients:
@@ -154,9 +162,18 @@ cauldron:
     ingredients: Sugar_Cane
     color: 'f1ffad' # yellowish green
 
+  sugar:
+    name: Sugarwater
+    ingredients: Sugar
+
   apple:
     name: 苹果汁
     ingredients: Apple
+
+  berries:
+    name: Grape must
+    ingredients: Sweet_Berries
+    color: RED
 
   potato:
     name: 土豆泥
@@ -172,6 +189,11 @@ cauldron:
     ingredients: Red_Mushroom
     color: 'ff5c33' # amber red
 
+  bmushroom:
+    name: Mushroom brew
+    ingredients: Brown_Mushroom
+    color: 'c68c53' # brighter brown
+
   cocoa:
     name: 上了色的水
     ingredients: Cocoa_Beans
@@ -182,13 +204,124 @@ cauldron:
     ingredients: Milk_Bucket
     color: BRIGHT_GREY
 
+  bl_flow:
+    name: Blueish brew
+    ingredients: blue-flowers
+    color: '0099ff' # sky blue
+
+  cactus:
+    name: Agave brew
+    ingredients: cactus
+    color: '00b300' # cactus green
+
+  poi_potato:
+    name: Poisonous Broth
+    ingredients: Poisonous_Potato
+
+  egg:
+    name: Sticky brew
+    ingredients: Egg
+
+
+  oak_sapling:
+    name: Stringy hebry broth
+    ingredients: Oak_Sapling
+
+  vine:
+    name: Boiled herbs
+    ingredients: vine
+    color: '99ff66' # bright green
+
+  rot_flesh:
+    name: Foul pest
+    ingredients: Rotten_Flesh
+    color: '263300' # brown green
+
+  melon:
+    name: Melon juice
+    ingredients: melon_slice
+
+  wheat_seeds:
+    name: Bitter brew
+    ingredients: Wheat_Seeds
+
+  melon_seeds:
+    name: Bitter brew
+    ingredients: Melon_Seeds
+
+  pumpkin_seeds:
+    name: Bitter brew
+    ingredients: Pumpkin_Seeds
+
+  bone_meal:
+    name: Bony Brew
+    ingredients: bone_meal
+    color: BRIGHT_GREY
+
+  cookie:
+    name: Chocolately sap
+    ingredients: Cookie
+    color: '804600' # mocca
+
+  fer_spid_eye:
+    name: Fermented Eye
+    ingredients: Fermented_Spider_Eye
+
+  ghast_tear:
+    name: Sad brew
+    ingredients: ghast_tear
+
+  snowball:
+    name: Icewater
+    ingredients: Snowball
+
+  Gold_Nugget:
+    name: Glistering brew
+    ingredients: Gold_Nugget
+    color: 'ffd11a' # gold
+
+  glowstone_dust:
+    name: Glowing brew
+    ingredients: Glowstone_Dust
+    color: 'ffff33' # bright yellow
+
   # -- Multiple Ingredients: --
-  apfelmet_base:
+  applemead_base:
     name: Apple-Sugar brew
     ingredients:
       - Sugar_Cane/3
       - Apple
     color: 'e1ff4d' # greenish yellow
+
+  poi_grass:
+    name: Boiled acidy herbs
+    ingredients:
+      - Grass
+      - Poisonous_Potato
+    color: '99ff66' # bright green
+
+  juniper:
+    name: Juniper brew
+    ingredients:
+      - blue-flowers
+      - wheat
+    color: '00ccff' # aqua
+
+  gin_base:
+    name: Fruity juniper brew
+    ingredients:
+      - blue-flowers
+      - wheat
+      - apple
+    color: '66e0ff' # lighter aqua
+
+  eggnog_base:
+    name: Smooth egg mixture
+    ingredients:
+      - egg
+      - sugar
+      - milk_bucket
+    color: 'ffecb3' # yellow-orange
 
 
 
@@ -209,7 +342,7 @@ cauldron:
 # age: 饮品需要在木桶中熟成所需要的时间(MC天). 0=无需熟成.
 # color: 饮品制成后的颜色.
 #   可用颜色列表:
-#   DARK_RED(深红), RED(红), BRIGHT_RED(亮红), ORANGE(橙黄), PINK(粉色), BLUE(蓝色), CYAN(靛青), WATER(水色), GREEN(绿色), BLACK(黑色), GREY(灰色), BRIGHT_GREY(亮灰色)
+#   DARK_RED(深红), RED(红), BRIGHT_RED(亮红), ORANGE(橙黄), PINK(粉色), BLUE(蓝色), CYAN(靛青), WATER(水色), GREEN(绿色), BLACK(黑色), GREY(灰色), BRIGHT_GREY(亮灰色), YELLOW, PURPLE, TEAL, OLIVE, LIME, WHITE
 #   也可以使用RGB颜色(十六进制, 如'99FF33', 必须包含两个单引号)(在线搜索"HTML 颜色"或者其他颜色库即刻获得你需要的颜色的十六进制表示)
 # difficulty: 酿制难度, 1 = 不需要非常精确的操作就可以制出优质饮品, 10 = 需要非常精确的操作才可以制出优质饮品.
 # alcohol: 完美质量的饮品所含有的酒精度(百分数, 会被直接添加到玩家身上, 100意为直接昏迷)
@@ -244,7 +377,7 @@ recipes:
     age: 11
     color: DARK_RED
     difficulty: 3
-    alcohol: 23
+    alcohol: 14
     lore:
       - This is an examble brew
       - ++Just a normal Example
@@ -272,9 +405,10 @@ recipes:
     distillruns: 0
     wood: 1
     age: 2
-    color: BRIGHT_GREY
+    color: 'ffb84d' # Orange
     difficulty: 1
     alcohol: 5
+    lore: +++ &8Refreshing
 
   2:
     name: 劣质啤酒/啤酒/鲜啤
@@ -284,8 +418,10 @@ recipes:
     distillruns: 0
     wood: 0
     age: 3
-    color: ORANGE
+    color: 'ffd333' # Bright Orange
     difficulty: 1
+    lore:
+      - +++ &8Crisp taste
     alcohol: 6
 
   3:
@@ -294,11 +430,30 @@ recipes:
       - Wheat/6
     cookingtime: 8
     distillruns: 0
-    wood: 4
+    wood: 6
     age: 8
-    color: BLACK
+    color: '650013' # Dark Red-Brown
     difficulty: 2
+    lore:
+      - +++ &8Roasted taste
     alcohol: 7
+
+  wine:
+    name: Red Wine
+    ingredients:
+      - Sweet_Berries/5
+    cookingtime: 5
+    distillruns: 0
+    wood: 0
+    age: 20
+    color: RED
+    difficulty: 4
+    alcohol: 8
+    lore:
+      - '+ &8Harsh'
+      - '+ &8Corked'
+      - '++ &8Mellow'
+      - '+++ &8Full-Bodied'
 
   4:
     name: 粗制蜜酒/蜜酒/黄金蜜酒
@@ -310,6 +465,8 @@ recipes:
     age: 4
     color: ORANGE
     difficulty: 2
+    lore:
+      - +++ Has a golden shine
     alcohol: 9
 
   5:
@@ -323,15 +480,59 @@ recipes:
     age: 4
     color: ORANGE
     difficulty: 4
-    alcohol: 12
+    alcohol: 11
+    lore:
+      - +Is there any Apple in this?
+      - ++Refreshing taste of Apple
+      - +++Sweetest hint of Apple
     effects:
       - WATER_BREATHING/1-2/150
 
   6:
     name: 苦涩的朗姆/辛辣的朗姆/金品朗姆
     ingredients:
-      - Sugar_Cane/14
-    cookingtime: 5
+      - Apple/14
+    cookingtime: 7
+    distillruns: 0
+    wood: 0
+    age: 3
+    color: 'f86820' # Red-Orange
+    difficulty: 4
+    alcohol: 7
+
+  apple_liquor:
+    name: Sour Apple Liquor/Apple Liquor/Calvados
+    ingredients:
+      - Apple/12
+    cookingtime: 16
+    distillruns: 3
+    wood: 5
+    age: 6
+    color: BRIGHT_RED
+    difficulty: 5
+    alcohol: 14
+    lore:
+      - +Sour like Acid
+
+  whiskey:
+    name: Unsightly Whiskey/Whiskey/Scotch Whiskey
+    ingredients:
+      - Wheat/10
+    cookingtime: 10
+    distillruns: 2
+    distilltime: 50
+    wood: 4
+    age: 18
+    color: ORANGE
+    difficulty: 7
+    alcohol: 26
+    lore: '&7Single Malt'
+
+  rum:
+    name: Bitter Rum/Spicy Rum/&6Golden Rum
+    ingredients:
+      - Sugar_Cane/18
+    cookingtime: 6
     distillruns: 2
     distilltime: 30
     wood: 2
@@ -342,6 +543,10 @@ recipes:
     effects:
       - FIRE_RESISTANCE/1/20-100
       - POISON/1-0/30-0
+    lore:
+      - +&8Too bitter to drink
+      - ++&8Spiced by the barrel
+      - +++&eSpiced Gold
 
   7:
     name: 劣质伏特加/伏特加/纯正俄式风味伏特加
@@ -350,12 +555,63 @@ recipes:
     cookingtime: 15
     distillruns: 3
     age: 0
-    color: BRIGHT_GREY
+    color: WHITE
     difficulty: 4
     alcohol: 20
+    lore: + &8Almost undrinkable
     effects:
       - WEAKNESS/15
       - POISON/10
+
+  shroom_vodka:
+    name: Mushroom Vodka/Mushroom Vodka/Glowing Mushroom Vodka
+    ingredients:
+      - Potato/10
+      - Red_Mushroom/3
+      - Brown_Mushroom/3
+    cookingtime: 18
+    distillruns: 5
+    age: 0
+    color: 'ff9999' # Pink-Red
+    difficulty: 7
+    alcohol: 18
+    lore: +++&aGlows in the dark
+    effects:
+      - WEAKNESS/80
+      - CONFUSION/27
+      - NIGHT_VISION/50-80
+      - BLINDNESS/12-2
+      - SLOW/10-3
+
+    gin:
+      name: Pale Gin/Gin/Old Tom Gin
+      ingredients:
+        - Wheat/9
+        - blue-flowers/6  # Custom-Item: Blue Orchids or Cornflowers
+        - Apple/1
+      cookingtime: 6
+      distillruns: 2
+      color: '99ddff' # Very light blue
+      difficulty: 6
+      alcohol: 20
+      lore:
+        - ++ With the
+        - ++ taste of juniper
+        - +++ Perfectly finished off
+        - +++ with juniper
+
+    tequila:
+      name: Mezcal/Tequila/Tequila anejo
+      ingredients:
+        - cactus/8
+      cookingtime: 15
+      distillruns: 2
+      color: 'f5f07e' # Green-Orange
+      difficulty: 5
+      wood: 1
+      age: 12
+      alcohol: 20
+      lore: Desert spirit
 
   8:
     name: 劣质苦艾酒/苦艾酒/劲猛苦艾酒
@@ -366,9 +622,27 @@ recipes:
     distilltime: 80
     color: GREEN
     difficulty: 8
-    alcohol: 45
+    alcohol: 42
     effects:
-      - POISON/20-30
+      - POISON/15-25
+    lore: '+++&8High proof liquor'
+
+  gr_absinthe:
+    name: Poor Absinthe/Green Absinthe/Bright Green Absinthe
+    ingredients:
+      - Grass/17
+      - Poisonous_Potato/2
+    cookingtime: 5
+    distillruns: 6
+    distilltime: 85
+    color: LIME
+    difficulty: 9
+    alcohol: 46
+    effects:
+      - POISON/25-40
+      - HARM/2
+      - NIGHT_VISION/40-60
+    lore: '&aLooks poisonous'
 
   9:
     name: 土豆汤
@@ -376,7 +650,7 @@ recipes:
       - Potato/5
       - Grass/3
     cookingtime: 3
-    color: PINK
+    color: ORANGE
     difficulty: 1
     effects:
       - HEAL/0-1
@@ -389,13 +663,106 @@ recipes:
     cookingtime: 2
     color: BLACK
     difficulty: 3
+    lore: + &8Probably a week old
     effects:
       - REGENERATION/1/2-5
       - SPEED/1/30-140
 
-# 未来可能加入的酒品配方: 卡沙夏酒, 琴酒, 威士忌, 特基拉酒, 果酒等. 并改进一些物品名称.
+  eggnog:
+    name: Egg Liquor/Eggnog/Advocaat
+    ingredients:
+      - Egg/5
+      - Sugar/2
+      - Milk_Bucket/1
+    cookingtime: 2
+    color: 'ffe680'
+    difficulty: 4
+    alcohol: 10
+    wood: 0
+    age: 3
+    lore: Made with raw egg
+
+
+
+
 # 并不会直接加入到默认配置中, 这会导致游戏玩家偷看配方表进行作弊.
 # 插件的本意是让玩家自行实验饮品制造配方, 所以未来的新配方由服管决定是否加入.
+  # Some suggestions for recipes you could use:
+
+  # g_vodka:
+  #   name: 'Rancid Vodka/&6Golden Vodka/&6Shimmering Golden Vodka'
+  #   ingredients:
+  #     - Potato/10
+  #     - Gold_Nugget/2
+  #   cookingtime: 18
+  #   distillruns: 3
+  #   age: 0
+  #   color: ORANGE
+  #   difficulty: 6
+  #   alcohol: 20
+  #   effects:
+  #     - WEAKNESS/28
+  #     - POISON/4
+
+  # fire_whiskey:
+  #   name: Powdery Whiskey/Burning Whiskey/Blazing Whiskey
+  #   ingredients:
+  #     - Wheat/10
+  #     - Blaze_Powder/2
+  #   cookingtime: 12
+  #   distillruns: 3
+  #   distilltime: 55
+  #   wood: 4
+  #   age: 18
+  #   color: ORANGE
+  #   difficulty: 7
+  #   alcohol: 28
+  #   drinkmessage: 'You get a burning feeling in your mouth'
+
+  # Without Alcohol:
+
+  # hot_choc:
+  #   name: Hot Chocolate
+  #   ingredients:
+  #     - cookie/3
+  #   cookingtime: 2
+  #   color: DARK_RED
+  #   difficulty: 2
+  #   effects:
+  #     - FAST_DIGGING/40
+
+  # iced_coffee:
+  #   name: Watery Coffee/Iced Coffee/Strong Iced Coffee
+  #   ingredients:
+  #     - cookie/8
+  #     - snowball/4
+  #     - milk_bucket/1
+  #   cookingtime: 1
+  #   color: BLACK
+  #   difficulty: 4
+  #   effects:
+  #     - REGENERATION/30
+  #     - SPEED/10
+
+
+# More Recipe ideas:
+# Dandelion Liquor
+# Beetroot Spirit,
+# Poppy Liquor: Macum/Grand Poppy,
+# Bamboo Liquor: Chu Yeh Ching,
+# Cachaca,
+# Cognac,
+# Sake,
+# Buorbon,
+# Moonshine,
+# Different Wines,
+# Brandy,
+# Amaretto,
+# etc. as well as variations like,
+# Pumpkin Spice Beer,
+# Melon Vodka
+
+# There are a lot of items in Minecraft like Vines and items added by plugins that would make great ingredients.
 
 
 # -- 插件兼容性 --

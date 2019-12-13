@@ -36,6 +36,7 @@ public class BarrelBody {
 		if (bounds == null || bounds.area() > 64 ) {
 			// If loading from old data, or block locations are missing, or other error, regenerate BoundingBox
 			// This will only be done in those extreme cases.
+			P.p.log("Regenerating Barrel BoundingBox: " + (bounds == null ? "was null" : "area=" + bounds.area()));
 			Block broken = getBrokenBlock(true);
 			if (broken != null) {
 				barrel.remove(broken, null, true);

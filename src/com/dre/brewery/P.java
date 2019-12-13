@@ -298,6 +298,10 @@ public class P extends JavaPlugin {
 			metrics.addCustomChart(new Metrics.SimplePie("v2_mc_version", () -> {
 				String mcv = Bukkit.getBukkitVersion();
 				mcv = mcv.substring(0, mcv.indexOf('.', 2));
+				int index = mcv.indexOf('-');
+				if (index > -1) {
+					mcv = mcv.substring(0, index);
+				}
 				if (mcv.matches("^\\d\\.\\d{1,2}$")) {
 					// Start, digit, dot, 1-2 digits, end
 					return mcv;
@@ -309,6 +313,10 @@ public class P extends JavaPlugin {
 				Map<String, Map<String, Integer>> map = new HashMap<>(3);
 				String mcv = Bukkit.getBukkitVersion();
 				mcv = mcv.substring(0, mcv.indexOf('.', 2));
+				int index = mcv.indexOf('-');
+				if (index > -1) {
+					mcv = mcv.substring(0, index);
+				}
 				if (mcv.matches("^\\d\\.\\d{1,2}$")) {
 					// Start, digit, dot, 1-2 digits, end
 					mcv = "MC " + mcv;

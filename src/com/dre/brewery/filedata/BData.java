@@ -337,7 +337,11 @@ public class BData {
 								System.arraycopy(wo, 0, points, st.length, woLength);
 							}
 							int[] locs = ArrayUtils.toPrimitive(Arrays.stream(points).map(s -> P.p.parseInt(s)).toArray(Integer[]::new));
-							box = BoundingBox.fromPoints(locs);
+							try {
+								box = BoundingBox.fromPoints(locs);
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
 						}
 
 						Barrel b;

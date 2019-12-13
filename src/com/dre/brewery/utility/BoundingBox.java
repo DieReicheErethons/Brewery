@@ -28,8 +28,8 @@ public class BoundingBox {
 		return contains(block.getX(), block.getY(), block.getZ());
 	}
 
-	public int area() {
-		return (x2 - x1 + 1) * (y2 - y1 + 1) * (z2 - z1 + 1);
+	public long area() {
+		return ((long) (x2 - x1 + 1)) * ((long) (y2 - y1 + 1)) * ((long) (z2 - z1 + 1));
 	}
 
 	public String serialize() {
@@ -39,14 +39,15 @@ public class BoundingBox {
 	public static BoundingBox fromPoints(int[] locations) {
 		if (locations.length % 3 != 0) throw new IllegalArgumentException("Locations has to be pairs of three");
 
-		int length = locations.length / 3;
+		int length = locations.length - 2;
+
 		int minx = Integer.MAX_VALUE,
 			miny = Integer.MAX_VALUE,
 			minz = Integer.MAX_VALUE,
 			maxx = Integer.MIN_VALUE,
 			maxy = Integer.MIN_VALUE,
 			maxz = Integer.MIN_VALUE;
-		for (int i = 0; i < length; i++) {
+		for (int i = 0; i < length; i += 3) {
 			minx = Math.min(locations[i], minx);
 			miny = Math.min(locations[i + 1], miny);
 			minz = Math.min(locations[i + 2], minz);

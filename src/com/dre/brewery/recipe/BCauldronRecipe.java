@@ -172,8 +172,6 @@ public class BCauldronRecipe {
 					//double mod = 0.1 + (0.9 * Math.exp(-0.03 * difference)); // logarithmic curve from 1 to 0.1
 					double mod = 1 + (0.9 * -Math.exp(-0.03 * factor)); // logarithmic curve from 0.1 to 1, small for a low factor
 
-					P.p.debugLog("Mod for " + recipeIng + ": " + mod);
-
 					match *= mod;
 					continue search;
 				}

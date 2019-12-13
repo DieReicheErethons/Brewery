@@ -65,8 +65,6 @@ public class PlayerListener implements Listener {
 		if (barrel != null) {
 			event.setCancelled(true);
 
-			P.p.debugLog("Barrel has area of: " + barrel.getBody().getBounds().area());
-
 			if (!barrel.hasPermsOpen(player, event)) {
 				return;
 			}

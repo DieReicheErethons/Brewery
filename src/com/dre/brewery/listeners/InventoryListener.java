@@ -126,16 +126,10 @@ public class InventoryListener implements Listener {
 						}
 					}
 				}
-				//long t1 = System.nanoTime();
-				Brew brew = Brew.get(item);
-				//long t2 = System.nanoTime();
+				/*Brew brew = Brew.get(item);
 				if (brew != null) {
-					P.p.log(brew.toString());
-
-					//P.p.log("Brew.get(): " + (t2 - t1) / 1000000.0 + "ms");
-
-					//brew.touch();
-				}
+					brew.touch();
+				}*/
 			}
 		}
 	}

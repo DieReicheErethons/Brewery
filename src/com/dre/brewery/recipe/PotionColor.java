@@ -6,6 +6,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionData;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
 
 public class PotionColor {
@@ -75,6 +76,8 @@ public class PotionColor {
 			}
 		} else {
 			potion.setDurability(getColorId(destillable));
+			// To stop 1.8 from showing the potioneffect for the color id, add a dummy Effect
+			meta.addCustomEffect(PotionEffectType.REGENERATION.createEffect(0, 0), true);
 		}
 	}
 

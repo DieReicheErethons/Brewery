@@ -513,6 +513,7 @@ recipes:
     alcohol: 14
     lore:
       - +Sour like Acid
+      - +++ Good Apple Liquor
 
   whiskey:
     name: Unsightly Whiskey/Whiskey/Scotch Whiskey

@@ -98,11 +98,6 @@
 			<url>https://zebradrive.de/maven/</url>
 		</repository>
 		<repository>
-			<!-- Citadel -->
-			<id>devoted-repo</id>
-			<url>https://build.devotedmc.com/plugin/repository/everything/</url>
-		</repository>
-		<repository>
 			<!-- bStats -->
 			<id>CodeMC</id>
 			<url>https://repo.codemc.org/repository/maven-public</url>
@@ -113,7 +108,7 @@
 		<dependency>
 			<groupId>org.bukkit</groupId>
 			<artifactId>bukkit</artifactId>
-			<version>1.14.4-R0.1-SNAPSHOT</version>
+			<version>1.15-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
@@ -131,30 +126,6 @@
 			<artifactId>VaultAPI</artifactId>
 			<version>1.6</version>
 			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>vg.civcraft.mc.citadel</groupId>
-			<artifactId>Citadel</artifactId>
-			<version>3.9.1</version>
-			<scope>provided</scope>
-			<exclusions>
-				<exclusion>
-					<artifactId>*</artifactId>
-					<groupId>*</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>vg.civcraft.mc.civmodcore</groupId>
-			<artifactId>CivModCore</artifactId>
-			<version>1.6.0</version>
-			<scope>provided</scope>
-			<exclusions>
-				<exclusion>
-					<artifactId>*</artifactId>
-					<groupId>*</groupId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.sk89q</groupId>

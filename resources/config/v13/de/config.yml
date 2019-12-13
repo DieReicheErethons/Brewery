@@ -510,6 +510,7 @@ recipes:
     alcohol: 14
     lore:
       - + &8Viel zu sauer
+      - +++ Guter Apfelschnaps
 
   whiskey:
     name: Unschöner Whiskey/Whiskey/Scotch Whiskey

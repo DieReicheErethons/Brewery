@@ -304,15 +304,17 @@ public class BrewLore {
  	 */
 	public int addOrReplaceLore(Type type, String prefix, String line) {
 		int index = type.findInLore(lore);
-		if (index == -1) {
-			index = BUtil.indexOfSubstring(lore, line);
-		}
 		if (index > -1) {
 			lore.set(index, type.id + prefix + line);
 			return index;
-		} else {
-			return addLore(type, prefix, line);
 		}
+
+		// Could not find Lore by type, find and replace by substring
+		index = BUtil.indexOfSubstring(lore, line);
+		if (index > -1) {
+			lore.remove(index);
+		}
+		return addLore(type, prefix, line);
 	}
 
 	/**

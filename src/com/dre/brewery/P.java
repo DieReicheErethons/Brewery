@@ -23,6 +23,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -150,6 +151,14 @@ public class P extends JavaPlugin {
 
 		// save Data to Disk
 		DataSave.save(true);
+
+		if (BConfig.sqlSync != null) {
+			try {
+				BConfig.sqlSync.closeConnection();
+			} catch (SQLException ignored) {
+			}
+			BConfig.sqlSync = null;
+		}
 
 		// delete config data, in case this is a reload and to clear up some ram
 		clearConfigData();

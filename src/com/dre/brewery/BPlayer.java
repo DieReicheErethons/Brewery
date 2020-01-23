@@ -723,4 +723,11 @@ public class BPlayer {
 		return -getQuality() + 11;
 	}
 
+	/**
+	 * Drunkeness at the time he went offline
+	 */
+	public int getOfflineDrunkeness() {
+		return offlineDrunk;
+	}
+
 }

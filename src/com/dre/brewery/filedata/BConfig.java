@@ -17,6 +17,7 @@ import com.dre.brewery.recipe.BRecipe;
 import com.dre.brewery.recipe.PluginItem;
 import com.dre.brewery.recipe.RecipeItem;
 import com.dre.brewery.utility.BUtil;
+import com.dre.brewery.utility.SQLSync;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
@@ -29,6 +30,7 @@ import org.bukkit.plugin.PluginManager;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -75,6 +77,12 @@ public class BConfig {
 
 	//Item
 	public static List<RecipeItem> customItems = new ArrayList<>();
+
+	//MySQL
+	public static String sqlHost, sqlPort, sqlDB;
+	private static String sqlUser, sqlPW;
+	public static SQLSync sqlSync;
+	public static boolean sqlDrunkSync;
 
 	public static P p = P.p;
 
@@ -321,6 +329,31 @@ public class BConfig {
 		}
 		DistortChat.log = config.getBoolean("logRealChat", false);
 		DistortChat.doSigns = config.getBoolean("distortSignText", false);
+
+		// init SQL
+		if (sqlSync != null) {
+			try {
+				sqlSync.closeConnection();
+			} catch (SQLException ignored) {
+			}
+			sqlSync = null;
+		}
+		sqlDrunkSync = false;
+
+		ConfigurationSection sqlCfg = config.getConfigurationSection("multiServerDB");
+		if (sqlCfg != null && sqlCfg.getBoolean("enabled")) {
+			sqlDrunkSync = sqlCfg.getBoolean("syncDrunkeness");
+			sqlHost = sqlCfg.getString("host", null);
+			sqlPort = sqlCfg.getString("port", null);
+			sqlUser = sqlCfg.getString("user", null);
+			sqlDB = sqlCfg.getString("database", null);
+			sqlPW = sqlCfg.getString("password", null);
+
+			sqlSync = new SQLSync();
+			if (!sqlSync.init(sqlUser, sqlPW)) {
+				sqlSync = null;
+			}
+		}
 
 		// The Config was reloaded, call Event
 		ConfigLoadEvent event = new ConfigLoadEvent();

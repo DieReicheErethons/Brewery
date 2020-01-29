@@ -65,6 +65,7 @@ maxBrewsInMCBarrels: 6
 # Benutzte Zutaten und andere Brau-Daten werden in allen Brewery Tränken gespeichert. Um zu verhindern,
 # dass gehackte clients diese Daten auslesen um Rezepte herauszufinden, können diese encodiert werden.
 # Einziger Nachteil: Tränke können nur auf Servern mit dem gleichen encodeKey benutzt werden.
+# Wenn Brewery Tränke auf mehreren (Bungeecord) Servern benutzt werden, unten unter 'multiServerDB' eine gemeinsame Datenbank eintragen.
 # Dies kann also aktiviert werden um Rezept-cheating schwerer zu machen, aber keine Tränke per World Download, Schematic, o.ä. geteilt werden. [false]
 enableEncode: false
 encodeKey: 0
@@ -778,6 +779,23 @@ useGMInventories: true
 
 # Änderungen an Fassinventaren mit LogBlock aufzeichen [true]
 useLogBlock: true
+
+
+# -- MultiServer/BungeeCord --
+# Wenn Brewery auf mehreren Servern läuft und diese zB mit BungeeCord verbunden sind,
+# sollte hier eine gemeinsame Datenbank eingetragen werden.
+# Dann wird Betrunkenheit auf den Servern synchronisiert und encodierte Tränke können auf allen Servern benutzt werden.
+
+multiServerDB:
+  # Soll die Datenbank-Synchronisation aktiviert sein
+  enabled: false
+  # Soll die Betrunkenheit von Spielern synchronisiert werden
+  syncDrunkeness: true
+  host: localhost
+  port: '3306'
+  user: minec
+  password: xyz
+  database: base
 
 
 # -- Chat Veränderungs Einstellungen --

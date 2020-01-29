@@ -29,7 +29,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 
 public class BPlayer {
-	private static Map<String, BPlayer> players = new HashMap<>();// Players name/uuid and BPlayer
+	private static Map<String, BPlayer> players = new HashMap<>();// Players uuid and BPlayer
 	private static Map<Player, MutableInt> pTasks = new HashMap<>();// Player and count
 	private static int taskId;
 	private static boolean modAge = true;
@@ -37,21 +37,24 @@ public class BPlayer {
 	private static Method itemHandle;
 	private static Field age;
 
+	private final String uuid;
 	private int quality = 0;// = quality of drunkeness * drunkeness
 	private int drunkeness = 0;// = amount of drunkeness
 	private int offlineDrunk = 0;// drunkeness when gone offline
 	private Vector push = new Vector(0, 0, 0);
 	private int time = 20;
 
-	public BPlayer() {
+	public BPlayer(String uuid) {
+		this.uuid = uuid;
 	}
 
 	// reading from file
-	public BPlayer(String name, int quality, int drunkeness, int offlineDrunk) {
+	public BPlayer(String uuid, int quality, int drunkeness, int offlineDrunk) {
 		this.quality = quality;
 		this.drunkeness = drunkeness;
 		this.offlineDrunk = offlineDrunk;
-		players.put(name, this);
+		this.uuid = uuid;
+		players.put(uuid, this);
 	}
 
 	@Nullable
@@ -111,13 +114,16 @@ public class BPlayer {
 
 	// Create a new BPlayer and add it to the list
 	public static BPlayer addPlayer(Player player) {
-		BPlayer bPlayer = new BPlayer();
+		BPlayer bPlayer = new BPlayer(BUtil.playerString(player));
 		players.put(BUtil.playerString(player), bPlayer);
 		return bPlayer;
 	}
 
 	public static void remove(Player player) {
 		players.remove(BUtil.playerString(player));
+		if (BConfig.sqlDrunkSync && BConfig.sqlSync != null) {
+			BConfig.sqlSync.removePlayer(player.getUniqueId());
+		}
 	}
 
 	public static int numDrunkPlayers() {
@@ -128,6 +134,9 @@ public class BPlayer {
 		for (Iterator<Map.Entry<String, BPlayer>> iterator = players.entrySet().iterator(); iterator.hasNext(); ) {
 			Map.Entry<String, BPlayer> entry = iterator.next();
 			if (entry.getValue() == this) {
+				if (BConfig.sqlDrunkSync && BConfig.sqlSync != null) {
+					BConfig.sqlSync.removePlayer(UUID.fromString(entry.getKey()));
+				}
 				iterator.remove();
 				return;
 			}
@@ -183,6 +192,7 @@ public class BPlayer {
 		if (bPlayer.drunkeness > 100) {
 			bPlayer.drinkCap(player);
 		}
+		bPlayer.syncToSQL();
 		//player.sendMessage("Betrunkenheit: §8[§7⭑⭑⭑⭒§0⭑§8] §8[§6|||||||||||||||||§0|||||||||§8]");
 		return true;
 	}
@@ -191,6 +201,7 @@ public class BPlayer {
 	public void drinkCap(Player player) {
 		quality = getQuality() * 100;
 		drunkeness = 100;
+		syncToSQL();
 		if (BConfig.overdrinkKick && !player.hasPermission("brewery.bypass.overdrink")) {
 			P.p.getServer().getScheduler().scheduleSyncDelayedTask(P.p, () -> passOut(player), 1);
 		} else {
@@ -233,9 +244,11 @@ public class BPlayer {
 			}
 			quality = getQuality();
 			if (drunkeness <= -offlineDrunk) {
+				syncToSQL();
 				return drunkeness <= -BConfig.hangoverTime;
 			}
 		}
+		syncToSQL();
 		return false;
 	}
 
@@ -291,6 +304,7 @@ public class BPlayer {
 	public void passOut(Player player) {
 		player.kickPlayer(P.p.languageReader.get("Player_DrunkPassOut"));
 		offlineDrunk = drunkeness;
+		syncToSQL();
 	}
 
 
@@ -344,7 +358,7 @@ public class BPlayer {
 			}
 			hangoverEffects(player);
 			// wird der spieler noch gebraucht?
-			players.remove(BUtil.playerString(player));
+			remove(player);
 
 		} else if (offlineDrunk - drunkeness >= 30) {
 			Location randomLoc = Wakeup.getRandom(player.getLocation());
@@ -357,10 +371,13 @@ public class BPlayer {
 		}
 
 		offlineDrunk = 0;
+		syncToSQL();
+
 	}
 
 	public void disconnecting() {
 		offlineDrunk = drunkeness;
+		syncToSQL();
 	}
 
 	public void goHome(final Player player) {
@@ -658,16 +675,26 @@ public class BPlayer {
 			Iterator<Map.Entry<String, BPlayer>> iter = players.entrySet().iterator();
 			while (iter.hasNext()) {
 				Map.Entry<String, BPlayer> entry = iter.next();
-				String name = entry.getKey();
+				String uuid = entry.getKey();
 				BPlayer bplayer = entry.getValue();
 				if (bplayer.drunkeness == soberPerMin) {
 					// Prevent 0 drunkeness
 					soberPerMin++;
 				}
-				if (bplayer.drain(BUtil.getPlayerfromString(name), soberPerMin)) {
+				if (bplayer.drain(BUtil.getPlayerfromString(uuid), soberPerMin)) {
 					iter.remove();
+					if (BConfig.sqlDrunkSync && BConfig.sqlSync != null) {
+						BConfig.sqlSync.removePlayer(UUID.fromString(uuid));
+					}
 				}
 			}
+		}
+	}
+
+	// Sync Drunkeness Data to SQL if enabled
+	public void syncToSQL() {
+		if (BConfig.sqlDrunkSync && BConfig.sqlSync != null) {
+			BConfig.sqlSync.updatePlayer(UUID.fromString(uuid), this);
 		}
 	}
 
@@ -687,6 +714,11 @@ public class BPlayer {
 
 	// #### getter/setter ####
 
+
+	public String getUuid() {
+		return uuid;
+	}
+
 	public int getDrunkeness() {
 		return drunkeness;
 	}
@@ -702,6 +734,7 @@ public class BPlayer {
 			}
 		}
 		this.drunkeness = drunkeness;
+		syncToSQL();
 	}
 
 	public int getQuality() {

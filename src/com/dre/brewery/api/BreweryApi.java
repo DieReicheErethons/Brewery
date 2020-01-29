@@ -28,6 +28,14 @@ import java.util.List;
 public class BreweryApi {
 
 	/**
+	 * Get the Current Version of the Brewery API.
+	 * <p>Higher numbers mean newer API, but it doesn't necessarily mean that something has changed, may be additions only
+	 */
+	public static int getApiVersion() {
+		return 2;
+	}
+
+	/**
 	 * Remove any data that this Plugin may associate with the given Block.
 	 * <p>Currently Cauldrons and Barrels (Cauldron, Wood, Woodstairs, Fence, Sign)
 	 * <p>Does not remove any actual Blocks

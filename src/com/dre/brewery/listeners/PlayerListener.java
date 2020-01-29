@@ -186,8 +186,17 @@ public class PlayerListener implements Listener {
 		DistortChat.playerCommand(event);
 	}
 
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	public void onPlayerLoginAsync(AsyncPlayerPreLoginEvent event) {
+		if (event.getLoginResult() == AsyncPlayerPreLoginEvent.Result.ALLOWED) {
+			if (BConfig.sqlDrunkSync && BConfig.sqlSync != null) {
+				BConfig.sqlSync.fetchPlayerLoginData(event.getUniqueId());
+			}
+		}
+	}
+
 	// player joins while passed out
-	@EventHandler()
+	@EventHandler
 	public void onPlayerLogin(PlayerLoginEvent event) {
 		if (event.getResult() == PlayerLoginEvent.Result.ALLOWED) {
 			final Player player = event.getPlayer();

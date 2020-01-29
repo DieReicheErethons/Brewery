@@ -80,7 +80,6 @@ public class BConfig {
 
 	//MySQL
 	public static String sqlHost, sqlPort, sqlDB;
-	private static String sqlUser, sqlPW;
 	public static SQLSync sqlSync;
 	public static boolean sqlDrunkSync;
 
@@ -345,9 +344,9 @@ public class BConfig {
 			sqlDrunkSync = sqlCfg.getBoolean("syncDrunkeness");
 			sqlHost = sqlCfg.getString("host", null);
 			sqlPort = sqlCfg.getString("port", null);
-			sqlUser = sqlCfg.getString("user", null);
 			sqlDB = sqlCfg.getString("database", null);
-			sqlPW = sqlCfg.getString("password", null);
+			String sqlUser = sqlCfg.getString("user", null);
+			String sqlPW = sqlCfg.getString("password", null);
 
 			sqlSync = new SQLSync();
 			if (!sqlSync.init(sqlUser, sqlPW)) {

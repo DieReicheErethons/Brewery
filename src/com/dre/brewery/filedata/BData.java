@@ -164,11 +164,11 @@ public class BData {
 			// loading BPlayer
 			section = data.getConfigurationSection("Player");
 			if (section != null) {
-				// keys have players name
-				for (String name : section.getKeys(false)) {
+				// keys have players uuid
+				for (String uuid : section.getKeys(false)) {
 					try {
 						//noinspection ResultOfMethodCallIgnored
-						UUID.fromString(name);
+						UUID.fromString(uuid);
 						if (!P.useUUID) {
 							continue;
 						}
@@ -178,11 +178,11 @@ public class BData {
 						}
 					}
 
-					int quality = section.getInt(name + ".quality");
-					int drunk = section.getInt(name + ".drunk");
-					int offDrunk = section.getInt(name + ".offDrunk", 0);
+					int quality = section.getInt(uuid + ".quality");
+					int drunk = section.getInt(uuid + ".drunk");
+					int offDrunk = section.getInt(uuid + ".offDrunk", 0);
 
-					new BPlayer(name, quality, drunk, offDrunk);
+					new BPlayer(uuid, quality, drunk, offDrunk);
 				}
 			}
 

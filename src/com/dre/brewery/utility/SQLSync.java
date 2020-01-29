@@ -3,13 +3,8 @@ package com.dre.brewery.utility;
 import com.dre.brewery.BPlayer;
 import com.dre.brewery.P;
 import com.dre.brewery.filedata.BConfig;
-import org.bukkit.entity.Player;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.UUID;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -24,10 +19,10 @@ public class SQLSync {
 	private String user, password;
 
 
-	public void updatePlayer(Player player, BPlayer bPlayer) {
-		removePlayer(player.getUniqueId());
+	public void updatePlayer(UUID uuid, BPlayer bPlayer) {
+		removePlayer(uuid);
 		SQLData_BP bP = new SQLData_BP();
-		bP.uuid = player.getUniqueId();
+		bP.uuid = uuid;
 		bP.drunkeness = bPlayer.getDrunkeness();
 		bP.offlineDrunk = bPlayer.getOfflineDrunkeness();
 		bP.quality = bPlayer.getQuality();
@@ -68,6 +63,32 @@ public class SQLSync {
 				P.p.errorLog("SQL saving queue overrun, disabling SQL saving");
 			}
 		} catch (InterruptedException | SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	// Run Async
+	public void fetchPlayerLoginData(final UUID uuid) {
+		try {
+			if (!checkConnection()) {
+				if (!openConnection()) {
+					P.p.errorLog("Opening SQL Connection failed");
+					return;
+				}
+			}
+
+			Statement statement = connection.createStatement();
+			if (statement.execute("SELECT * FROM BreweryZ_BPlayers WHERE uuid = " + uuid.toString() + ";")) {
+				final ResultSet result = statement.getResultSet();
+				P.p.getServer().getScheduler().runTask(P.p, () -> {
+					try {
+						new BPlayer(uuid.toString(), result.getInt("quality"), result.getInt("drunkeness"), result.getInt("offlineDrunk"));
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
+				});
+			}
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

@@ -103,7 +103,7 @@ public class P extends JavaPlugin {
 		playerListener = new PlayerListener();
 		entityListener = new EntityListener();
 		inventoryListener = new InventoryListener();
-		worldListener = new WorldListener();
+		worldListener = new WorldListener(this);
 		integrationListener = new IntegrationListener();
 		PluginCommand c = getCommand("Brewery");
 		if (c != null) {

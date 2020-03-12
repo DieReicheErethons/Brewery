@@ -8,6 +8,7 @@ import com.dre.brewery.filedata.BData;
 import com.dre.brewery.filedata.DataSave;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -17,6 +18,7 @@ import org.bukkit.event.world.WorldUnloadEvent;
 public class WorldListener implements Listener {
 
 	private final P p;
+	private FileConfiguration worldData;
 
 	public WorldListener(P p) {
 		this.p = p;
@@ -26,13 +28,12 @@ public class WorldListener implements Listener {
 	public void onWorldLoad(WorldLoadEvent event) {
 		World world = event.getWorld();
 
-		Bukkit.getScheduler().runTaskAsynchronously(p, () -> {
-			if (world.getName().startsWith("DXL_")) {
-				BData.loadWorldData(BUtil.getDxlName(world.getName()), world, null);
-			} else {
-				BData.loadWorldData(world.getUID().toString(), world, null);
-			}
-		});
+		if (worldData == null) {
+			worldData = BData.loadWorldData(world.getName().startsWith("DXL_") ? BUtil.getDxlName(world.getName()) : world.getUID().toString(), world, null);
+		} else {
+			Bukkit.getScheduler().runTaskAsynchronously(p,
+				() -> BData.loadWorldData(world.getName().startsWith("DXL_") ? BUtil.getDxlName(world.getName()) : world.getUID().toString(), world, worldData));
+		}
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

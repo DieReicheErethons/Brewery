@@ -266,14 +266,14 @@ public class BData {
 	}
 
 	// load Block locations of given world
-	public static void loadWorldData(String uuid, World world, FileConfiguration data) {
+	public static FileConfiguration loadWorldData(String uuid, World world, FileConfiguration data) {
 
 		if (data == null) {
 			File file = new File(P.p.getDataFolder(), "data.yml");
 			if (file.exists()) {
 				data = YamlConfiguration.loadConfiguration(file);
 			} else {
-				return;
+				return null;
 			}
 		}
 
@@ -393,5 +393,6 @@ public class BData {
 			}
 		}
 
+		return data;
 	}
 }

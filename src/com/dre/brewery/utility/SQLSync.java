@@ -19,20 +19,19 @@ public class SQLSync {
 	private String user, password;
 
 
-	public void updatePlayer(UUID uuid, BPlayer bPlayer) {
-		removePlayer(uuid);
+	public void updatePlayer(UUID uuid, BPlayer bPlayer, boolean offlineDrain) {
 		SQLData_BP bP = new SQLData_BP();
 		bP.uuid = uuid;
 		bP.drunkeness = bPlayer.getDrunkeness();
 		bP.offlineDrunk = bPlayer.getOfflineDrunkeness();
-		bP.quality = bPlayer.getQuality();
+		bP.quality = bPlayer.getQualityData();
 		bP.data = null;
+		bP.offlineDrain = offlineDrain;
 
 		addSaveData(bP);
 	}
 
 	public void updateData(String name, String data) {
-		removeData(name);
 		SQLData_BD bD = new SQLData_BD();
 		bD.name = name;
 		bD.data = data;
@@ -78,16 +77,20 @@ public class SQLSync {
 			}
 
 			Statement statement = connection.createStatement();
-			if (statement.execute("SELECT * FROM BreweryZ_BPlayers WHERE uuid = " + uuid.toString() + ";")) {
+			if (statement.execute("SELECT * FROM Brewery_Z_BPlayers WHERE uuid = '" + uuid.toString() + "';")) {
 				final ResultSet result = statement.getResultSet();
-				P.p.getServer().getScheduler().runTask(P.p, () -> {
-					try {
-						new BPlayer(uuid.toString(), result.getInt("quality"), result.getInt("drunkeness"), result.getInt("offlineDrunk"));
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				});
+				if (result.next()) {
+					P.p.getServer().getScheduler().runTask(P.p, () -> {
+						try {
+							new BPlayer(uuid.toString(), result.getInt("quality"), result.getInt("drunkeness"), result.getInt("offlineDrunk"));
+						} catch (SQLException e) {
+							e.printStackTrace();
+						}
+					});
+					return;
+				}
 			}
+			P.p.getServer().getScheduler().runTask(P.p, () -> BPlayer.sqlRemoved(uuid));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -115,7 +118,7 @@ public class SQLSync {
 			connection = DriverManager.getConnection(str, user, password);
 
 			Statement statement = connection.createStatement();
-			statement.execute("CREATE TABLE IF NOT EXISTS BreweryZ_BPlayers (" +
+			statement.execute("CREATE TABLE IF NOT EXISTS Brewery_Z_BPlayers (" +
 				"uuid CHAR(36) NOT NULL, " +
 				"quality INT, " +
 				"drunkeness INT, " +
@@ -123,8 +126,8 @@ public class SQLSync {
 				"data VARCHAR(127), " +
 				"PRIMARY KEY (uuid));");
 			statement = connection.createStatement();
-			statement.execute("CREATE TABLE IF NOT EXISTS BreweryZ_BData (" +
-				"id SMALLINT AUTOINCREMENT, " +
+			statement.execute("CREATE TABLE IF NOT EXISTS Brewery_Z_BData (" +
+				"id SMALLINT AUTO_INCREMENT, " +
 				"name VARCHAR(127) NOT NULL UNIQUE, " +
 				"data TEXT, " +
 				"PRIMARY KEY (id));");
@@ -169,6 +172,7 @@ public class SQLSync {
 		public int drunkeness;
 		public int offlineDrunk;
 		public String data;
+		public boolean offlineDrain;
 	}
 
 	private static class SQLData_BD {
@@ -202,7 +206,27 @@ public class SQLSync {
 
 						if (o instanceof SQLData_BP) {
 							SQLData_BP d = ((SQLData_BP) o);
-							PreparedStatement ps = connection.prepareStatement("INSERT INTO BreweryZ_BPlayers (uuid, quality, drunkeness, offlineDrunk, data) VALUES (?, ?, ?, ?, ?);");
+							PreparedStatement ps;
+
+							if (d.offlineDrain) {
+								// We need to check if the player data is changed by some other server
+								// and if so, we ignore him from now on
+								ps = connection.prepareStatement("SELECT offlineDrunk FROM Brewery_Z_BPlayers WHERE uuid = ?;");
+								ps.setString(1, d.uuid.toString());
+
+								ResultSet resultSet = ps.executeQuery();
+								if (resultSet.next()) {
+									int storedOfflineDrunk = resultSet.getInt("offlineDrunk");
+									if (storedOfflineDrunk != d.offlineDrunk) {
+										// The player is not offlineDrunk anymore,
+										// Someone else is changing the mysql data
+										P.p.getServer().getScheduler().runTask(P.p, () -> BPlayer.sqlRemoved(d.uuid));
+										continue;
+									}
+								}
+							}
+
+							ps = connection.prepareStatement("REPLACE INTO Brewery_Z_BPlayers (uuid, quality, drunkeness, offlineDrunk, data) VALUES (?, ?, ?, ?, ?);");
 							ps.setString(1, d.uuid.toString());
 							ps.setInt(2, d.quality);
 							ps.setInt(3, d.drunkeness);
@@ -212,20 +236,20 @@ public class SQLSync {
 							ps.executeUpdate();
 						} else if (o instanceof SQLData_BD) {
 							SQLData_BD d = ((SQLData_BD) o);
-							PreparedStatement ps = connection.prepareStatement("INSERT INTO BreweryZ_BData (name, data) VALUES (?, ?);");
+							PreparedStatement ps = connection.prepareStatement("REPLACE INTO Brewery_Z_BData (name, data) VALUES (?, ?);");
 							ps.setString(1, d.name);
 							ps.setString(2, d.data);
 
 							ps.executeUpdate();
 						} else if (o instanceof SQLRemove_BP) {
 							SQLRemove_BP r = ((SQLRemove_BP) o);
-							PreparedStatement ps = connection.prepareStatement("DELETE FROM BreweryZ_BPlayers WHERE uuid = ?;");
+							PreparedStatement ps = connection.prepareStatement("DELETE FROM Brewery_Z_BPlayers WHERE uuid = ?;");
 							ps.setString(1, r.uuid.toString());
 
 							ps.executeUpdate();
 						} else if (o instanceof SQLRemove_BD) {
 							SQLRemove_BD r = ((SQLRemove_BD) o);
-							PreparedStatement ps = connection.prepareStatement("DELETE FROM BreweryZ_BData WHERE name = ?;");
+							PreparedStatement ps = connection.prepareStatement("DELETE FROM Brewery_Z_BData WHERE name = ?;");
 							ps.setString(1, r.name);
 
 							ps.executeUpdate();

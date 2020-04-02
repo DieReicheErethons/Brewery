@@ -126,6 +126,10 @@ public class BPlayer {
 		}
 	}
 
+	public static void sqlRemoved(UUID uuid) {
+		players.remove(uuid.toString());
+	}
+
 	public static int numDrunkPlayers() {
 		return players.size();
 	}
@@ -192,7 +196,7 @@ public class BPlayer {
 		if (bPlayer.drunkeness > 100) {
 			bPlayer.drinkCap(player);
 		}
-		bPlayer.syncToSQL();
+		bPlayer.syncToSQL(false);
 		//player.sendMessage("Betrunkenheit: §8[§7⭑⭑⭑⭒§0⭑§8] §8[§6|||||||||||||||||§0|||||||||§8]");
 		return true;
 	}
@@ -201,7 +205,7 @@ public class BPlayer {
 	public void drinkCap(Player player) {
 		quality = getQuality() * 100;
 		drunkeness = 100;
-		syncToSQL();
+		syncToSQL(false);
 		if (BConfig.overdrinkKick && !player.hasPermission("brewery.bypass.overdrink")) {
 			P.p.getServer().getScheduler().scheduleSyncDelayedTask(P.p, () -> passOut(player), 1);
 		} else {
@@ -244,11 +248,11 @@ public class BPlayer {
 			}
 			quality = getQuality();
 			if (drunkeness <= -offlineDrunk) {
-				syncToSQL();
+				syncToSQL(true);
 				return drunkeness <= -BConfig.hangoverTime;
 			}
 		}
-		syncToSQL();
+		syncToSQL(offlineDrunk > 0);
 		return false;
 	}
 
@@ -304,7 +308,7 @@ public class BPlayer {
 	public void passOut(Player player) {
 		player.kickPlayer(P.p.languageReader.get("Player_DrunkPassOut"));
 		offlineDrunk = drunkeness;
-		syncToSQL();
+		syncToSQL(false);
 	}
 
 
@@ -356,9 +360,13 @@ public class BPlayer {
 					goHome(player);
 				}
 			}
-			hangoverEffects(player);
-			// wird der spieler noch gebraucht?
-			remove(player);
+			if (offlineDrunk > 20) {
+				hangoverEffects(player);
+			}
+			if (drunkeness <= 0) {
+				// wird der spieler noch gebraucht?
+				remove(player);
+			}
 
 		} else if (offlineDrunk - drunkeness >= 30) {
 			Location randomLoc = Wakeup.getRandom(player.getLocation());
@@ -368,16 +376,15 @@ public class BPlayer {
 					P.p.msg(player, P.p.languageReader.get("Player_Wake"));
 				}
 			}
+			offlineDrunk = 0;
+			syncToSQL(false);
 		}
-
 		offlineDrunk = 0;
-		syncToSQL();
-
 	}
 
 	public void disconnecting() {
 		offlineDrunk = drunkeness;
-		syncToSQL();
+		syncToSQL(false);
 	}
 
 	public void goHome(final Player player) {
@@ -692,9 +699,9 @@ public class BPlayer {
 	}
 
 	// Sync Drunkeness Data to SQL if enabled
-	public void syncToSQL() {
+	public void syncToSQL(boolean playerOffline) {
 		if (BConfig.sqlDrunkSync && BConfig.sqlSync != null) {
-			BConfig.sqlSync.updatePlayer(UUID.fromString(uuid), this);
+			BConfig.sqlSync.updatePlayer(UUID.fromString(uuid), this, playerOffline);
 		}
 	}
 
@@ -734,7 +741,7 @@ public class BPlayer {
 			}
 		}
 		this.drunkeness = drunkeness;
-		syncToSQL();
+		syncToSQL(false);
 	}
 
 	public int getQuality() {
@@ -746,6 +753,10 @@ public class BPlayer {
 			return quality;
 		}
 		return Math.round((float) quality / (float) drunkeness);
+	}
+
+	public int getQualityData() {
+		return quality;
 	}
 
 	// opposite of quality

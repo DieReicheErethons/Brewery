@@ -28,6 +28,7 @@ public class SlimefunPluginItem extends PluginItem {
 		} catch (Throwable e) {
 			e.printStackTrace();
 			P.p.errorLog("Could not check Slimefun for Item ID");
+			BConfig.hasSlimefun = false;
 			return false;
 		}
 		return false;

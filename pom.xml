@@ -108,7 +108,7 @@
 		<dependency>
 			<groupId>org.bukkit</groupId>
 			<artifactId>bukkit</artifactId>
-			<version>1.15-R0.1-SNAPSHOT</version>
+			<version>1.15.2-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
@@ -205,11 +205,17 @@
 			<version>4bb9abd247</version>
 			<scope>provided</scope>
 		</dependency>
-		<dependency>
-			<!-- Contains proprietary api that we use for integration -->
+		<!--<dependency>
+			Contains proprietary api that we use for integration
 			<groupId>com.dre</groupId>
 			<artifactId>ExtPluginBridge</artifactId>
 			<version>1.0</version>
+			<scope>provided</scope>
+		</dependency>-->
+		<dependency>
+			<groupId>net.mmogroup</groupId>
+			<artifactId>mmolib</artifactId>
+			<version>1.0.9</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

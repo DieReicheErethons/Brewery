@@ -135,7 +135,7 @@ public class BIngredients {
 			// new base potion
 			brew = new Brew(this);
 
-			if (state <= 1) {
+			if (state <= 0) {
 				cookedName = P.p.languageReader.get("Brew_ThickBrew");
 				PotionColor.BLUE.colorBrew(potionMeta, potion, false);
 			} else {
@@ -357,7 +357,7 @@ public class BIngredients {
 		int quality = 10 - (int) Math.round(((float) Math.abs(cookedTime - recipe.getCookingTime()) / recipe.allowedTimeDiff(recipe.getCookingTime())) * 10.0);
 
 		if (quality >= 0) {
-			if (cookedTime <= 1) {
+			if (cookedTime < 1) {
 				return 0;
 			}
 			return quality;

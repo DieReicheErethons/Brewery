@@ -289,7 +289,7 @@ public class BData {
 
 						Block worldBlock = world.getBlockAt(P.p.parseInt(splitted[0]), P.p.parseInt(splitted[1]), P.p.parseInt(splitted[2]));
 						BIngredients ingredients = loadCauldronIng(section, cauldron + ".ingredients");
-						int state = section.getInt(cauldron + ".state", 1);
+						int state = section.getInt(cauldron + ".state", 0);
 
 						new BCauldron(worldBlock, ingredients, state);
 					} else {

@@ -31,7 +31,7 @@ public class BCauldron {
 
 	private BIngredients ingredients = new BIngredients();
 	private final Block block;
-	private int state = 1;
+	private int state = 0;
 	private boolean changed = false;
 
 	public BCauldron(Block block) {
@@ -69,7 +69,7 @@ public class BCauldron {
 
 		ingredients.add(ingredient, rItem);
 		block.getWorld().playEffect(block.getLocation(), Effect.EXTINGUISH, 0);
-		if (state > 1) {
+		if (state > 0) {
 			state--;
 		}
 	}
@@ -330,7 +330,7 @@ public class BCauldron {
 				}
 
 				config.set(prefix + ".block", cauldron.block.getX() + "/" + cauldron.block.getY() + "/" + cauldron.block.getZ());
-				if (cauldron.state != 1) {
+				if (cauldron.state != 0) {
 					config.set(prefix + ".state", cauldron.state);
 				}
 				config.set(prefix + ".ingredients", cauldron.ingredients.serializeIngredients());

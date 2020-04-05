@@ -430,8 +430,13 @@ public class CommandListener implements CommandExecutor {
 			Brew brew = Brew.get(hand);
 			if (brew != null) {
 				if (brew.isStatic()) {
-					brew.setStatic(false, hand);
-					p.msg(sender, p.languageReader.get("CMD_NonStatic"));
+					if (!brew.isStripped()) {
+						brew.setStatic(false, hand);
+						p.msg(sender, p.languageReader.get("CMD_NonStatic"));
+					} else {
+						p.msg(sender, p.languageReader.get("Error_SealedAlwaysStatic"));
+						return;
+					}
 				} else {
 					brew.setStatic(true, hand);
 					p.msg(sender, p.languageReader.get("CMD_Static"));
@@ -465,21 +470,26 @@ public class CommandListener implements CommandExecutor {
 		if (hand != null) {
 			Brew brew = Brew.get(hand);
 			if (brew != null) {
-				ItemMeta origMeta = hand.getItemMeta();
-				brew.unLabel(hand);
-				brew.touch();
-				ItemMeta meta = hand.getItemMeta();
-				assert meta != null;
-				BrewModifyEvent modifyEvent = new BrewModifyEvent(brew, meta, BrewModifyEvent.Type.UNLABEL);
-				P.p.getServer().getPluginManager().callEvent(modifyEvent);
-				if (modifyEvent.isCancelled()) {
-					hand.setItemMeta(origMeta);
+				if (!brew.isUnlabeled()) {
+					ItemMeta origMeta = hand.getItemMeta();
+					brew.unLabel(hand);
+					brew.touch();
+					ItemMeta meta = hand.getItemMeta();
+					assert meta != null;
+					BrewModifyEvent modifyEvent = new BrewModifyEvent(brew, meta, BrewModifyEvent.Type.UNLABEL);
+					P.p.getServer().getPluginManager().callEvent(modifyEvent);
+					if (modifyEvent.isCancelled()) {
+						hand.setItemMeta(origMeta);
+						return;
+					}
+					brew.save(meta);
+					hand.setItemMeta(meta);
+					p.msg(sender, p.languageReader.get("CMD_UnLabel"));
+					return;
+				} else {
+					p.msg(sender, p.languageReader.get("Error_AlreadyUnlabeled"));
 					return;
 				}
-				brew.save(meta);
-				hand.setItemMeta(meta);
-				p.msg(sender, p.languageReader.get("CMD_UnLabel"));
-				return;
 			}
 		}
 		p.msg(sender, p.languageReader.get("Error_ItemNotPotion"));

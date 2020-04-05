@@ -4,6 +4,7 @@ Brew_BadPotion: Ruined Potion
 Brew_BarrelRiped: Barrel aged
 Brew_DistillUndefined: Murky Distillate
 Brew_Distilled: Distilled
+Brew_LessDistilled: Less Distilled
 Brew_HundredsOfYears: Hundreds of Years
 Brew_Ingredients: Ingredients
 Brew_MinutePluralPostfix: s
@@ -33,6 +34,8 @@ CMD_UnLabel: '&aLabel removed!'
 # Error
 Error_ConfigUpdate: 'Unknown Brewery config version: v&v1, config was not updated!'
 Error_ItemNotPotion: '&cThe item in your hand could not be identified as a potion!'
+Error_SealedAlwaysStatic: 'Sealed Brews are always static!'
+Error_AlreadyUnlabeled: '&cThe Brew in your hand is already unlabeled!'
 Error_NoBarrelAccess: '&cYou don''t have permissions to access this barrel!'
 Error_NoBrewName: '&cNo Recipe with Name: ''&v1&c'' found!'
 Error_NoPermissions: '&cYou don''t have permissions to do this!'

@@ -133,8 +133,18 @@ public class SQLSync {
 				"PRIMARY KEY (id));");
 
 			connector = str;
+
 		} catch (SQLException | ClassNotFoundException e) {
-			e.printStackTrace();
+			if (P.debug) {
+				e.printStackTrace();
+			} else {
+				P.p.errorLog("SQL Exception occured, set 'debug: true' for more info");
+				P.p.errorLog(e.getMessage());
+				Throwable cause = e.getCause();
+				if (cause != null) {
+					P.p.errorLog(cause.getMessage());
+				}
+			}
 			return false;
 		}
 

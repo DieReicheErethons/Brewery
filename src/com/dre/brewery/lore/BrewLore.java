@@ -111,7 +111,7 @@ public class BrewLore {
 	 * @param qualityColor If the lore should have colors according to quality
 	 */
 	public void updateIngredientLore(boolean qualityColor) {
-		if (qualityColor && brew.hasRecipe()) {
+		if (qualityColor && brew.hasRecipe() && !brew.isStripped()) {
 			String prefix = getQualityColor(brew.getIngredients().getIngredientQuality(brew.getCurrentRecipe()));
 			addOrReplaceLore(Type.INGR, prefix, P.p.languageReader.get("Brew_Ingredients"));
 		} else {
@@ -125,7 +125,7 @@ public class BrewLore {
 	 * @param qualityColor If the lore should have colors according to quality
 	 */
 	public void updateCookLore(boolean qualityColor) {
-		if (qualityColor && brew.hasRecipe() && brew.getDistillRuns() > 0 == brew.getCurrentRecipe().needsDistilling()) {
+		if (qualityColor && brew.hasRecipe() && brew.getDistillRuns() > 0 == brew.getCurrentRecipe().needsDistilling() && !brew.isStripped()) {
 			BIngredients ingredients = brew.getIngredients();
 			int quality = ingredients.getCookingQuality(brew.getCurrentRecipe(), brew.getDistillRuns() > 0);
 			String prefix = getQualityColor(quality) + ingredients.getCookedTime() + " " + P.p.languageReader.get("Brew_minute");
@@ -157,7 +157,11 @@ public class BrewLore {
 				prefix = prefix + distillRuns + P.p.languageReader.get("Brew_-times") + " ";
 			}
 		}
-		addOrReplaceLore(Type.DISTILL, prefix, P.p.languageReader.get("Brew_Distilled"));
+		if (brew.isUnlabeled() && brew.hasRecipe() && distillRuns < brew.getCurrentRecipe().getDistillRuns()) {
+			addOrReplaceLore(Type.DISTILL, prefix, P.p.languageReader.get("Brew_LessDistilled"));
+		} else {
+			addOrReplaceLore(Type.DISTILL, prefix, P.p.languageReader.get("Brew_Distilled"));
+		}
 	}
 
 	/**
@@ -166,6 +170,7 @@ public class BrewLore {
 	 * @param qualityColor If the lore should have colors according to quality
 	 */
 	public void updateAgeLore(boolean qualityColor) {
+		if (brew.isStripped()) return;
 		String prefix;
 		float age = brew.getAgeTime();
 		if (qualityColor && !brew.isUnlabeled() && brew.hasRecipe()) {
@@ -221,18 +226,29 @@ public class BrewLore {
 	}
 
 	public void updateQualityStars(boolean qualityColor) {
+		updateQualityStars(qualityColor, false);
+	}
+
+
+	public void updateQualityStars(boolean qualityColor, boolean withBars) {
+		if (brew.isStripped()) return;
 		if (brew.hasRecipe() && brew.getCurrentRecipe().needsToAge() && brew.getAgeTime() < 0.5) {
 			return;
 		}
-		if (!brew.isUnlabeled() && brew.getQuality() > 0 && (qualityColor || BConfig.alwaysShowQuality)) {
-			int stars = (brew.getQuality()) / 2;
-			boolean half = (brew.getQuality()) % 2 > 0;
+		int quality = brew.getQuality();
+		if (quality > 0 && (qualityColor || BConfig.alwaysShowQuality)) {
+			int stars = quality / 2;
+			boolean half = quality % 2 > 0;
+			int noStars = 5 - stars - (half ? 1 : 0);
 			StringBuilder b = new StringBuilder(24);
 			String color;
 			if (qualityColor) {
-				color = getQualityColor(brew.getQuality());
+				color = getQualityColor(quality);
 			} else {
 				color = "§7";
+			}
+			if (withBars) {
+				color = "§8[" + color;
 			}
 			for (; stars > 0; stars--) {
 				b.append("⭑");
@@ -243,11 +259,34 @@ public class BrewLore {
 				}
 				b.append("⭒");
 			}
+			if (withBars) {
+				if (noStars > 0) {
+					b.append("§0");
+					for (; noStars > 0; noStars--) {
+						b.append("⭑");
+					}
+				}
+				b.append("§8]");
+			}
 			addOrReplaceLore(Type.STARS, color, b.toString());
 		} else {
 			removeLore(Type.STARS);
 		}
 	}
+
+	/**
+	 * Show the Seal-bars |*****| around the Lore Quality-Stars
+	 */
+	/*public void showSeal() {
+		int starsLine = Type.STARS.findInLore(lore);
+		if (starsLine > -1) {
+			StringBuilder lineEdit = new StringBuilder(lore.get(starsLine));
+			int index = Type.STARS.id.length();
+			lineEdit.insert(index, "§8[");
+			lineEdit.append("§8]");
+			lore.set(starsLine, lineEdit.toString());
+		}
+	}*/
 
 	public void updateAlc(boolean inDistiller) {
 		if (!brew.isUnlabeled() && (inDistiller || BConfig.alwaysShowAlc) && (!brew.hasRecipe() || brew.getCurrentRecipe().getAlcohol() > 0)) {

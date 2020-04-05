@@ -57,7 +57,7 @@ public class MCBarrel {
 					for (ItemStack item : inv.getContents()) {
 						if (item != null) {
 							Brew brew = Brew.get(item);
-							if (brew != null) {
+							if (brew != null && !brew.isStatic()) {
 								if (brews < maxBrews || maxBrews < 0) {
 									// The time is in minutes, but brew.age() expects time in mc-days
 									brew.age(item, ((float) time) / 20f, OAK);
@@ -66,9 +66,11 @@ public class MCBarrel {
 							}
 						}
 					}
-					loadTime = System.nanoTime() - loadTime;
-					float ftime = (float) (loadTime / 1000000.0);
-					P.p.debugLog("opening MC Barrel with potions (" + ftime + "ms)");
+					if (P.debug) {
+						loadTime = System.nanoTime() - loadTime;
+						float ftime = (float) (loadTime / 1000000.0);
+						P.p.debugLog("opening MC Barrel with potions (" + ftime + "ms)");
+					}
 				}
 			}
 		}

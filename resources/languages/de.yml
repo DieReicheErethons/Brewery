@@ -4,6 +4,7 @@ Brew_BadPotion: Verdorbenes Gebräu
 Brew_BarrelRiped: Fassgereift
 Brew_DistillUndefined: Graues Destillat
 Brew_Distilled: Destilliert
+Brew_LessDistilled: Wenig Destilliert
 Brew_HundredsOfYears: Hunderte Jahre
 Brew_Ingredients: Zutaten
 Brew_MinutePluralPostfix: n
@@ -33,6 +34,8 @@ CMD_NonStatic: '&eTrank ist wieder veränderlich und kann normal gereift oder de
 # Error
 Error_ConfigUpdate: 'Unbekannte Brewery Config Version: v&v1, Config wurde nicht geupdated!'
 Error_ItemNotPotion: '&cDas Item in deiner Hand konnte nicht als Trank identifiziert werden'
+Error_SealedAlwaysStatic: 'Versiegelte Tränke sind immer unveränderlich!'
+Error_AlreadyUnlabeled: '&cDer Trank in deiner Hand ist bereits Entlabelt!'
 Error_NoBarrelAccess: '&cDu hast keine Rechte dieses Fass zu öffnen!'
 Error_NoBrewName: '&cKein Rezept mit Namen: "&v1&c" gefunden!'
 Error_NoPermissions: '&cDu hast keine Rechte dies zu tun!'

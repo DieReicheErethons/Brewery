@@ -125,6 +125,10 @@ public class P extends JavaPlugin {
 		p.getServer().getScheduler().runTaskTimer(p, new BreweryRunnable(), 650, 1200);
 		p.getServer().getScheduler().runTaskTimer(p, new DrunkRunnable(), 120, 120);
 
+		if (P.use1_14) {
+			BSealer.registerRecipe();
+		}
+
 		if (BConfig.updateCheck) {
 			try {
 				p.getServer().getScheduler().runTaskLaterAsynchronously(p, new UpdateChecker(), 135);

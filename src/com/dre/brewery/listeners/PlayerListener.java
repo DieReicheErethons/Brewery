@@ -6,6 +6,7 @@ import com.dre.brewery.filedata.UpdateChecker;
 import com.dre.brewery.utility.LegacyUtil;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.Nameable;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -38,6 +39,16 @@ public class PlayerListener implements Listener {
 			// The Event might get cancelled in here
 			BCauldron.clickCauldron(event);
 			return;
+		}
+
+		if (P.use1_14 && type == Material.SMOKER) {
+			Nameable smoker = (Nameable) clickedBlock.getState();
+			if (smoker.getCustomName() != null && smoker.getCustomName().equals(BSealer.TABLE_NAME)) {
+				event.setCancelled(true);
+				BSealer sealer = new BSealer(player);
+				event.getPlayer().openInventory(sealer.getInventory());
+				return;
+			}
 		}
 
 		// Do not process Off Hand for Barrel interaction

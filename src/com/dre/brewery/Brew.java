@@ -46,10 +46,11 @@ public class Brew implements Cloneable {
 	private byte distillRuns;
 	private float ageTime;
 	private float wood;
-	private BRecipe currentRecipe; // Recipe this Brew is currently Based off. May change between modifications and is often null when not modifying
+	private BRecipe currentRecipe; // Recipe this Brew is currently based off. May change between modifications and is often null when not modifying
 	private boolean unlabeled;
 	private boolean persistent; // Only for legacy
 	private boolean immutable; // static/immutable potions should not be changed
+	private boolean stripped; // Most Brewing information removed, only drinking and rough quality information available. Brew should not change anymore
 	private int lastUpdate; // last update in hours after install time
 	private boolean needsSave; // There was a change that has not yet been saved
 
@@ -291,6 +292,7 @@ public class Brew implements Cloneable {
 				unlabeled == brew.unlabeled &&
 				persistent == brew.persistent &&
 				immutable == brew.immutable &&
+				stripped == brew.stripped &&
 				ingredients.equals(brew.ingredients) &&
 				(Objects.equals(currentRecipe, brew.currentRecipe));
 	}
@@ -321,6 +323,7 @@ public class Brew implements Cloneable {
 				", currentRecipe=" + currentRecipe +
 				", unlabeled=" + unlabeled +
 				", immutable=" + immutable +
+				", stripped=" + stripped +
 				'}';
 	}
 
@@ -422,6 +425,7 @@ public class Brew implements Cloneable {
 	 * @param item The Item this Brew is on
 	 */
 	public void unLabel(ItemStack item) {
+		if (unlabeled) return;
 		unlabeled = true;
 		ItemMeta meta = item.getItemMeta();
 		if (meta instanceof PotionMeta && meta.hasLore()) {
@@ -437,6 +441,49 @@ public class Brew implements Cloneable {
 			lore.write();
 			item.setItemMeta(meta);
 		}
+	}
+
+	/**
+	 * Sealing the Brew to make it Immutable, Unlabeled and Stripped
+	 * <p>This makes it easier to sell in shops as Brews that are mostly the same will be equal after
+	 *
+	 * @param potion The Item this Brew is on
+	 */
+	public void seal(ItemStack potion) {
+		if (stripped) return;
+		ItemMeta origMeta = potion.getItemMeta();
+		if (!(origMeta instanceof PotionMeta)) return;
+
+		if (quality == 1) {
+			quality = 2;
+		} else if (quality % 2 == 1) {
+			quality--;
+		}
+		alc = calcAlcohol();
+
+		setStatic(true, potion);
+		unLabel(potion);
+		PotionMeta meta = (PotionMeta) potion.getItemMeta();
+		BrewLore lore = new BrewLore(this, meta);
+		lore.updateQualityStars(false, true);
+		lore.write();
+
+		stripped = true;
+		ingredients = new BIngredients();
+		ageTime = 0;
+		wood = -1;
+		touch();
+
+		BrewModifyEvent modifyEvent = new BrewModifyEvent(this, meta, BrewModifyEvent.Type.SEAL);
+		P.p.getServer().getPluginManager().callEvent(modifyEvent);
+		if (modifyEvent.isCancelled()) {
+			// As the brew and everything connected to it is only saved on the meta from now on,
+			// restoring the origMeta is enough in this case
+			potion.setItemMeta(origMeta);
+			return;
+		}
+		save(meta);
+		potion.setItemMeta(meta);
 	}
 
 	/**
@@ -491,6 +538,14 @@ public class Brew implements Cloneable {
 		return unlabeled;
 	}
 
+	public boolean isStripped() {
+		return stripped;
+	}
+
+	public boolean isSealed() {
+		return stripped && immutable;
+	}
+
 	public boolean needsSave() {
 		return needsSave;
 	}
@@ -503,14 +558,17 @@ public class Brew implements Cloneable {
 	 * Set the Static flag, so potion is unchangeable
 	 */
 	public void setStatic(boolean immutable, ItemStack potion) {
-		this.immutable = immutable;
-		if (currentRecipe != null && canDistill()) {
+		if (!immutable && isStripped()) {
+			throw new IllegalStateException("Cannot make stripped Brews non-static");
+		}
+		if (!P.use1_9 && currentRecipe != null && canDistill()) {
 			if (immutable) {
 				currentRecipe.getColor().colorBrew(((PotionMeta) potion.getItemMeta()), potion, false);
 			} else {
 				currentRecipe.getColor().colorBrew(((PotionMeta) potion.getItemMeta()), potion, true);
 			}
 		}
+		this.immutable = immutable;
 	}
 
 	public int getLastUpdate() {
@@ -671,6 +729,7 @@ public class Brew implements Cloneable {
 	 * Slowly shift the wood of the Brew to the new Type
 	 */
 	public void woodShift(float time, byte to) {
+		if (immutable) return;
 		float factor = 1;
 		if (ageTime > 5) {
 			factor = 2;
@@ -815,7 +874,7 @@ public class Brew implements Cloneable {
 					if (parityFailed) {
 						P.p.errorLog("Failed to load Brew. Maybe something corrupted the Lore of the Item?");
 					} else {
-						P.p.errorLog("Brew has data stored in v" + ver + " this Plugin version supports up to v1");
+						P.p.errorLog("Brew has data stored in v" + ver + " this Plugin version supports up to v" + SAVE_VER);
 					}
 					return null;
 			}
@@ -824,7 +883,7 @@ public class Brew implements Cloneable {
 			if (successType == XORUnscrambleStream.SuccessType.PREV_SEED) {
 				P.p.debugLog("Converting Brew from previous Seed");
 				brew.setNeedsSave(true);
-			} else if (BConfig.enableEncode != (successType == XORUnscrambleStream.SuccessType.MAIN_SEED)) {
+			} else if ((BConfig.enableEncode && !brew.isStripped()) != (successType == XORUnscrambleStream.SuccessType.MAIN_SEED)) {
 				// We have either enabled encode and the data was not encoded or the other way round
 				P.p.debugLog("Converting Brew to new encode setting");
 				brew.setNeedsSave(true);
@@ -866,6 +925,7 @@ public class Brew implements Cloneable {
 		}
 		unlabeled = (bools & 16) != 0;
 		immutable = (bools & 32) != 0;
+		stripped = (bools & 128) != 0;
 		ingredients = BIngredients.load(in, dataVersion);
 		setRecipeFromString(recipe);
 	}
@@ -885,7 +945,8 @@ public class Brew implements Cloneable {
 		try (DataOutputStream out = new DataOutputStream(scrambler)) {
 			out.writeByte(86); // Parity/sanity
 			out.writeByte(SAVE_VER); // Version
-			if (BConfig.enableEncode) {
+			// If Stripped of data, we can save everything unscrambled
+			if (BConfig.enableEncode && !isStripped()) {
 				scrambler.start();
 			} else {
 				scrambler.startUnscrambled();
@@ -928,6 +989,7 @@ public class Brew implements Cloneable {
 		bools |= (unlabeled ? 16 : 0);
 		bools |= (immutable ? 32 : 0);
 		bools |= (alc > 0 ? 64 : 0);
+		bools |= (stripped ? 128 : 0);
 		out.writeByte(bools);
 		if (alc > 0) {
 			out.writeShort(alc);

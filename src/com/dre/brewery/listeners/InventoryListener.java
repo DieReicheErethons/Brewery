@@ -1,10 +1,6 @@
 package com.dre.brewery.listeners;
 
-import com.dre.brewery.BDistiller;
-import com.dre.brewery.Barrel;
-import com.dre.brewery.Brew;
-import com.dre.brewery.MCBarrel;
-import com.dre.brewery.P;
+import com.dre.brewery.*;
 import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.lore.BrewLore;
 import org.bukkit.Material;
@@ -16,6 +12,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.*;
 import org.bukkit.inventory.BrewerInventory;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
@@ -193,6 +190,16 @@ public class InventoryListener implements Listener {
 		barrel.clickInv(event);
 	}
 
+	// Handle the Brew Sealer Inventory
+	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+	public void onInventoryClickBSealer(InventoryClickEvent event) {
+		InventoryHolder holder = event.getInventory().getHolder();
+		if (!(holder instanceof BSealer)) {
+			return;
+		}
+		((BSealer) holder).clickInv();
+	}
+
 	//public static boolean opening = false;
 
 	@SuppressWarnings("deprecation")
@@ -289,6 +296,10 @@ public class InventoryListener implements Listener {
 
 	@EventHandler
 	public void onInventoryClose(InventoryCloseEvent event) {
+		if (event.getInventory().getHolder() instanceof BSealer) {
+			((BSealer) event.getInventory().getHolder()).closeInv();
+		}
+
 		if (!P.use1_14) return;
 
 		// Barrel Closing Sound

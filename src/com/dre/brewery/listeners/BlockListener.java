@@ -1,21 +1,22 @@
 package com.dre.brewery.listeners;
 
 import com.dre.brewery.BPlayer;
-import com.dre.brewery.utility.BUtil;
+import com.dre.brewery.BSealer;
 import com.dre.brewery.Barrel;
-import com.dre.brewery.P;
 import com.dre.brewery.DistortChat;
+import com.dre.brewery.P;
 import com.dre.brewery.api.events.barrel.BarrelDestroyEvent;
+import com.dre.brewery.utility.BUtil;
+import org.bukkit.Material;
+import org.bukkit.Nameable;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.data.Directional;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockBurnEvent;
-import org.bukkit.event.block.BlockPistonExtendEvent;
-import org.bukkit.event.block.BlockPistonRetractEvent;
-import org.bukkit.event.block.SignChangeEvent;
+import org.bukkit.event.block.*;
 
 public class BlockListener implements Listener {
 
@@ -40,6 +41,21 @@ public class BlockListener implements Listener {
 		if (DistortChat.doSigns) {
 			if (BPlayer.hasPlayer(event.getPlayer())) {
 				DistortChat.signWrite(event);
+			}
+		}
+	}
+
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void onBlockPlace(BlockPlaceEvent event) {
+		if (!P.use1_14) return;
+		if (event.getBlock().getType() == Material.SMOKER) {
+			BlockState state = event.getBlock().getState();
+			Nameable name = (Nameable) state;
+			if (name.getCustomName() != null && name.getCustomName().equals(BSealer.TABLE_NAME)) {
+				// Rotate the Block 180° so it doesn't look like a Smoker
+				Directional dir = (Directional) state.getBlockData();
+				dir.setFacing(dir.getFacing().getOppositeFace());
+				event.getBlock().setBlockData(dir);
 			}
 		}
 	}

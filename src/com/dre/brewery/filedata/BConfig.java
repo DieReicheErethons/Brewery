@@ -1,5 +1,6 @@
 package com.dre.brewery.filedata;
 
+import com.dre.brewery.BSealer;
 import com.dre.brewery.Brew;
 import com.dre.brewery.DistortChat;
 import com.dre.brewery.MCBarrel;
@@ -74,6 +75,10 @@ public class BConfig {
 	public static boolean enableEncode;
 	public static boolean alwaysShowQuality; // Always show quality stars
 	public static boolean alwaysShowAlc; // Always show alc%
+
+	//Features
+	public static boolean craftSealingTable; // Allow Crafting of Sealing Table
+	public static boolean enableSealingTable; // Allow Usage of Sealing Table
 
 	//Item
 	public static List<RecipeItem> customItems = new ArrayList<>();
@@ -221,6 +226,8 @@ public class BConfig {
 		enablePuke = config.getBoolean("enablePuke", false);
 		pukeDespawntime = config.getInt("pukeDespawntime", 60) * 20;
 		homeType = config.getString("homeType", null);
+		craftSealingTable = config.getBoolean("craftSealingTable", false);
+		enableSealingTable = config.getBoolean("enableSealingTable", false);
 		colorInBarrels = config.getBoolean("colorInBarrels", false);
 		colorInBrewer = config.getBoolean("colorInBrewer", false);
 		alwaysShowQuality = config.getBoolean("alwaysShowQuality", false);
@@ -328,6 +335,15 @@ public class BConfig {
 		}
 		DistortChat.log = config.getBoolean("logRealChat", false);
 		DistortChat.doSigns = config.getBoolean("distortSignText", false);
+
+		// Register Sealing Table Recipe
+		if (P.use1_14) {
+			if (craftSealingTable && !BSealer.recipeRegistered) {
+				BSealer.registerRecipe();
+			} else if (!craftSealingTable && BSealer.recipeRegistered) {
+				BSealer.unregisterRecipe();
+			}
+		}
 
 		// init SQL
 		if (sqlSync != null) {

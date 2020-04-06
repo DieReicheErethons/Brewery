@@ -34,6 +34,7 @@ CMD_NonStatic: '&eTrank ist wieder veränderlich und kann normal gereift oder de
 # Error
 Error_ConfigUpdate: 'Unbekannte Brewery Config Version: v&v1, Config wurde nicht geupdated!'
 Error_ItemNotPotion: '&cDas Item in deiner Hand konnte nicht als Trank identifiziert werden'
+Error_SealingTableDisabled: '&cDer Trankversiegler ist deaktiviert'
 Error_SealedAlwaysStatic: 'Versiegelte Tränke sind immer unveränderlich!'
 Error_AlreadyUnlabeled: '&cDer Trank in deiner Hand ist bereits Entlabelt!'
 Error_NoBarrelAccess: '&cDu hast keine Rechte dieses Fass zu öffnen!'
@@ -49,6 +50,7 @@ Error_YmlRead: 'config.yml konnte nicht gelesen werden, ist die Datei im korrekt
 Etc_Page: Seite
 Etc_Usage: 'Benutzung:'
 Etc_Barrel: Fass
+Etc_SealingTable: Trankversiegler
 
 # Help
 Help_Copy: '&6/brew Copy [Anzahl]&9 Kopiert den Trank in deiner Hand'

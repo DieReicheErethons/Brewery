@@ -34,6 +34,7 @@ CMD_UnLabel: '&aLabel removed!'
 # Error
 Error_ConfigUpdate: 'Unknown Brewery config version: v&v1, config was not updated!'
 Error_ItemNotPotion: '&cThe item in your hand could not be identified as a potion!'
+Error_SealingTableDisabled: '&cThe Sealing Table is disabled'
 Error_SealedAlwaysStatic: 'Sealed Brews are always static!'
 Error_AlreadyUnlabeled: '&cThe Brew in your hand is already unlabeled!'
 Error_NoBarrelAccess: '&cYou don''t have permissions to access this barrel!'
@@ -49,6 +50,7 @@ Error_YmlRead: 'Could not read file config.yml, please make sure the file is in 
 Etc_Barrel: Barrel
 Etc_Page: Page
 Etc_Usage: 'Usage:'
+Etc_SealingTable: Brew Sealing Table
 
 # Help
 Help_Copy: '&6/brew copy [Quantity]&9 Copies the potion in your hand'

@@ -46,6 +46,10 @@ drainItems:
 # Zeit (in Tagen) die Trunkenheitsdaten nach offlinegehen eines Spielers im Speicher verbleiben, um z.B. Kater-Effekte anzuwenden. [7]
 hangoverDays: 7
 
+# Ob das craften und das benutzen des Trank-Versiegelungs-Tisches aktiviert ist (2 Flaschen über 4 Holz) [true, true]
+craftSealingTable: true
+enableSealingTable: true
+
 # Färben der Iteminformationen je nach Qualität während sie sich 1. im Fass und/oder 2. im Braustand befinden [true, true]
 colorInBarrels: true
 colorInBrewer: true

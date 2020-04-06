@@ -274,20 +274,6 @@ public class BrewLore {
 		}
 	}
 
-	/**
-	 * Show the Seal-bars |*****| around the Lore Quality-Stars
-	 */
-	/*public void showSeal() {
-		int starsLine = Type.STARS.findInLore(lore);
-		if (starsLine > -1) {
-			StringBuilder lineEdit = new StringBuilder(lore.get(starsLine));
-			int index = Type.STARS.id.length();
-			lineEdit.insert(index, "§8[");
-			lineEdit.append("§8]");
-			lore.set(starsLine, lineEdit.toString());
-		}
-	}*/
-
 	public void updateAlc(boolean inDistiller) {
 		if (!brew.isUnlabeled() && (inDistiller || BConfig.alwaysShowAlc) && (!brew.hasRecipe() || brew.getCurrentRecipe().getAlcohol() > 0)) {
 			int alc = brew.getOrCalcAlc();

@@ -4,6 +4,9 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.Tag;
+import org.bukkit.block.Block;
+import org.bukkit.block.Container;
+import org.bukkit.block.data.Directional;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
@@ -11,13 +14,14 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.RecipeChoice;
 import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 
 public class BSealer implements InventoryHolder {
-	public static final String TABLE_NAME = "§eBrew Sealing Table";
+	public static final NamespacedKey TAG_KEY = new NamespacedKey(P.p, "SealingTable");
+	public static boolean recipeRegistered = false;
 
 	private final Inventory inventory;
 	private final Player player;
@@ -27,7 +31,7 @@ public class BSealer implements InventoryHolder {
 
 	public BSealer(Player player) {
 		this.player = player;
-		inventory = P.p.getServer().createInventory(this, InventoryType.DISPENSER, "Brew Sealing Table");
+		inventory = P.p.getServer().createInventory(this, InventoryType.DISPENSER, P.p.languageReader.get("Etc_SealingTable"));
 	}
 
 	@Override
@@ -86,12 +90,43 @@ public class BSealer implements InventoryHolder {
 		}
 	}
 
+	public static boolean isBSealer(Block block) {
+		if (P.use1_14 && block.getType() == Material.SMOKER) {
+			Container smoker = (Container) block.getState();
+			if (smoker.getCustomName() != null) {
+				if (smoker.getCustomName().equals("§e" + P.p.languageReader.get("Etc_SealingTable"))) {
+					return true;
+				} else
+					return smoker.getPersistentDataContainer().has(TAG_KEY, PersistentDataType.BYTE);
+			}
+		}
+		return false;
+	}
+
+	public static void blockPlace(ItemStack item, Block block) {
+		if (item.getType() == Material.SMOKER && item.hasItemMeta()) {
+			ItemMeta itemMeta = item.getItemMeta();
+			assert itemMeta != null;
+			if ((itemMeta.hasDisplayName() && itemMeta.getDisplayName().equals("§e" + P.p.languageReader.get("Etc_SealingTable"))) ||
+				itemMeta.getPersistentDataContainer().has(BSealer.TAG_KEY, PersistentDataType.BYTE)) {
+				Container smoker = (Container) block.getState();
+				// Rotate the Block 180° so it doesn't look like a Smoker
+				Directional dir = (Directional) smoker.getBlockData();
+				dir.setFacing(dir.getFacing().getOppositeFace());
+				smoker.setBlockData(dir);
+				smoker.getPersistentDataContainer().set(BSealer.TAG_KEY, PersistentDataType.BYTE, (byte)1);
+				smoker.update();
+			}
+		}
+	}
 
 	public static void registerRecipe() {
+		recipeRegistered = true;
 		ItemStack sealingTableItem = new ItemStack(Material.SMOKER);
 		ItemMeta meta = P.p.getServer().getItemFactory().getItemMeta(Material.SMOKER);
 		if (meta == null) return;
-		meta.setDisplayName(TABLE_NAME);
+		meta.setDisplayName("§e" + P.p.languageReader.get("Etc_SealingTable"));
+		meta.getPersistentDataContainer().set(TAG_KEY, PersistentDataType.BYTE, (byte)1);
 		sealingTableItem.setItemMeta(meta);
 
 		ShapedRecipe recipe = new ShapedRecipe(new NamespacedKey(P.p, "SealingTable"), sealingTableItem);
@@ -102,5 +137,10 @@ public class BSealer implements InventoryHolder {
 		recipe.setIngredient('w', new RecipeChoice.MaterialChoice(Tag.PLANKS));
 
 		P.p.getServer().addRecipe(recipe);
+	}
+
+	public static void unregisterRecipe() {
+		recipeRegistered = false;
+		P.p.getServer().removeRecipe(new NamespacedKey(P.p, "SealingTable"));
 	}
 }

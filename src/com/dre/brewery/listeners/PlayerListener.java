@@ -41,14 +41,16 @@ public class PlayerListener implements Listener {
 			return;
 		}
 
-		if (P.use1_14 && type == Material.SMOKER) {
-			Nameable smoker = (Nameable) clickedBlock.getState();
-			if (smoker.getCustomName() != null && smoker.getCustomName().equals(BSealer.TABLE_NAME)) {
-				event.setCancelled(true);
+
+		if (BSealer.isBSealer(clickedBlock)) {
+			event.setCancelled(true);
+			if (BConfig.enableSealingTable) {
 				BSealer sealer = new BSealer(player);
 				event.getPlayer().openInventory(sealer.getInventory());
-				return;
+			} else {
+				P.p.msg(player, P.p.languageReader.get("Error_SealingTableDisabled"));
 			}
+			return;
 		}
 
 		// Do not process Off Hand for Barrel interaction

@@ -11,12 +11,16 @@ import org.bukkit.Material;
 import org.bukkit.Nameable;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
+import org.bukkit.block.Container;
 import org.bukkit.block.data.Directional;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 
 public class BlockListener implements Listener {
 
@@ -47,17 +51,8 @@ public class BlockListener implements Listener {
 
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onBlockPlace(BlockPlaceEvent event) {
-		if (!P.use1_14) return;
-		if (event.getBlock().getType() == Material.SMOKER) {
-			BlockState state = event.getBlock().getState();
-			Nameable name = (Nameable) state;
-			if (name.getCustomName() != null && name.getCustomName().equals(BSealer.TABLE_NAME)) {
-				// Rotate the Block 180° so it doesn't look like a Smoker
-				Directional dir = (Directional) state.getBlockData();
-				dir.setFacing(dir.getFacing().getOppositeFace());
-				event.getBlock().setBlockData(dir);
-			}
-		}
+		if (!P.use1_14 || event.getBlock().getType() != Material.SMOKER) return;
+		BSealer.blockPlace(event.getItemInHand(), event.getBlock());
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)

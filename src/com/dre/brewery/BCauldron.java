@@ -36,7 +36,6 @@ public class BCauldron {
 
 	public BCauldron(Block block) {
 		this.block = block;
-		bcauldrons.put(block, this);
 	}
 
 	// loading from file
@@ -44,7 +43,6 @@ public class BCauldron {
 		this.block = block;
 		this.state = state;
 		this.ingredients = ingredients;
-		bcauldrons.put(block, this);
 	}
 
 	public void onUpdate() {
@@ -74,6 +72,20 @@ public class BCauldron {
 		}
 	}
 
+	/**
+	 * Get the Block that this BCauldron represents
+	 */
+	public Block getBlock() {
+		return block;
+	}
+
+	/**
+	 * Get the State (Time in Minutes) that this Cauldron currently has
+	 */
+	public int getState() {
+		return state;
+	}
+
 	// get cauldron by Block
 	@Nullable
 	public static BCauldron get(Block block) {
@@ -99,6 +111,7 @@ public class BCauldron {
 			BCauldron bcauldron = get(block);
 			if (bcauldron == null) {
 				bcauldron = new BCauldron(block);
+				BCauldron.bcauldrons.put(block, bcauldron);
 			}
 
 			IngedientAddEvent event = new IngedientAddEvent(player, block, bcauldron, ingredient.clone(), rItem);

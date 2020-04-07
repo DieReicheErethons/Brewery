@@ -34,75 +34,87 @@ public class DataSave extends BukkitRunnable {
 	@Override
 	public void run() {
 		long saveTime = System.nanoTime();
-		FileConfiguration oldData;
-		if (read != null) {
-			if (!read.done) {
-				// Wait for async thread to load old data
-				if (System.currentTimeMillis() - time > 30000) {
-					P.p.errorLog("Old Data took too long to load!");
-					cancel();
+		// Mutex has been acquired in ReadOldData
+		try {
+			FileConfiguration oldData;
+			if (read != null) {
+				if (!read.done) {
+					// Wait for async thread to load old data
+					if (System.currentTimeMillis() - time > 50000) {
+						P.p.errorLog("Old Data took too long to load! Mutex: " + BData.dataMutex.get());
+						try {
+							cancel();
+							read.cancel();
+						} catch (IllegalStateException ignored) {
+						}
+						running = null;
+						BData.dataMutex.set(0);
+					}
 					return;
 				}
-				return;
+				oldData = read.getData();
+			} else {
+				oldData = new YamlConfiguration();
 			}
-			oldData = read.getData();
-		} else {
-			oldData = new YamlConfiguration();
-		}
-		try {
-			cancel();
-		} catch (IllegalStateException ignored) {
-		}
+			try {
+				cancel();
+			} catch (IllegalStateException ignored) {
+			}
 
-		FileConfiguration configFile = new YamlConfiguration();
+			FileConfiguration configFile = new YamlConfiguration();
 
-		configFile.set("installTime", Brew.installTime);
-		configFile.set("MCBarrelTime", MCBarrel.mcBarrelTime);
+			configFile.set("installTime", Brew.installTime);
+			configFile.set("MCBarrelTime", MCBarrel.mcBarrelTime);
 
-		Brew.writePrevSeeds(configFile);
+			Brew.writePrevSeeds(configFile);
 
-		List<Integer> brewsCreated = new ArrayList<>(7);
-		brewsCreated.add(P.p.brewsCreated);
-		brewsCreated.add(P.p.brewsCreatedCmd);
-		brewsCreated.add(P.p.exc);
-		brewsCreated.add(P.p.good);
-		brewsCreated.add(P.p.norm);
-		brewsCreated.add(P.p.bad);
-		brewsCreated.add(P.p.terr);
-		configFile.set("brewsCreated", brewsCreated);
-		configFile.set("brewsCreatedH", brewsCreated.hashCode());
+			List<Integer> brewsCreated = new ArrayList<>(7);
+			brewsCreated.add(P.p.brewsCreated);
+			brewsCreated.add(P.p.brewsCreatedCmd);
+			brewsCreated.add(P.p.exc);
+			brewsCreated.add(P.p.good);
+			brewsCreated.add(P.p.norm);
+			brewsCreated.add(P.p.bad);
+			brewsCreated.add(P.p.terr);
+			configFile.set("brewsCreated", brewsCreated);
+			configFile.set("brewsCreatedH", brewsCreated.hashCode());
 
-		if (!Brew.legacyPotions.isEmpty()) {
-			Brew.saveLegacy(configFile.createSection("Brew"));
-		}
+			if (!Brew.legacyPotions.isEmpty()) {
+				Brew.saveLegacy(configFile.createSection("Brew"));
+			}
 
-		if (!BCauldron.bcauldrons.isEmpty() || oldData.contains("BCauldron")) {
-			BCauldron.save(configFile.createSection("BCauldron"), oldData.getConfigurationSection("BCauldron"));
-		}
+			if (!BCauldron.bcauldrons.isEmpty() || oldData.contains("BCauldron")) {
+				BCauldron.save(configFile.createSection("BCauldron"), oldData.getConfigurationSection("BCauldron"));
+			}
 
-		if (!Barrel.barrels.isEmpty() || oldData.contains("Barrel")) {
-			Barrel.save(configFile.createSection("Barrel"), oldData.getConfigurationSection("Barrel"));
-		}
+			if (!Barrel.barrels.isEmpty() || oldData.contains("Barrel")) {
+				Barrel.save(configFile.createSection("Barrel"), oldData.getConfigurationSection("Barrel"));
+			}
 
-		if (!BPlayer.isEmpty()) {
-			BPlayer.save(configFile.createSection("Player"));
-		}
+			if (!BPlayer.isEmpty()) {
+				BPlayer.save(configFile.createSection("Player"));
+			}
 
-		if (!Wakeup.wakeups.isEmpty() || oldData.contains("Wakeup")) {
-			Wakeup.save(configFile.createSection("Wakeup"), oldData.getConfigurationSection("Wakeup"));
-		}
+			if (!Wakeup.wakeups.isEmpty() || oldData.contains("Wakeup")) {
+				Wakeup.save(configFile.createSection("Wakeup"), oldData.getConfigurationSection("Wakeup"));
+			}
 
-		saveWorldNames(configFile, oldData.getConfigurationSection("Worlds"));
-		configFile.set("Version", dataVersion);
+			saveWorldNames(configFile, oldData.getConfigurationSection("Worlds"));
+			configFile.set("Version", dataVersion);
 
-		collected = true;
+			collected = true;
 
-		P.p.debugLog("saving: " + ((System.nanoTime() - saveTime) / 1000000.0) + "ms");
+			P.p.debugLog("saving: " + ((System.nanoTime() - saveTime) / 1000000.0) + "ms");
 
-		if (P.p.isEnabled()) {
-			P.p.getServer().getScheduler().runTaskAsynchronously(P.p, new WriteData(configFile));
-		} else {
-			new WriteData(configFile).run();
+			if (P.p.isEnabled()) {
+				P.p.getServer().getScheduler().runTaskAsynchronously(P.p, new WriteData(configFile));
+			} else {
+				new WriteData(configFile).run();
+			}
+			// Mutex will be released in WriteData
+		} catch (Exception e) {
+			e.printStackTrace();
+			BData.dataMutex.set(0);
 		}
 	}
 

@@ -17,6 +17,22 @@ public class ReadOldData extends BukkitRunnable {
 	@SuppressWarnings("ResultOfMethodCallIgnored")
 	@Override
 	public void run() {
+		int wait = 0;
+		// Set the Data Mutex to -1 if it is 0=Free
+		while (!BData.dataMutex.compareAndSet(0, -1)) {
+			if (wait > 300) {
+				P.p.errorLog("Loading Process active for too long while trying to save! Mutex: " + BData.dataMutex.get());
+				return;
+			}
+			wait++;
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				return;
+			}
+		}
+
+
 		File datafile = new File(P.p.getDataFolder(), "data.yml");
 		if (!datafile.exists()) {
 			data = new YamlConfiguration();

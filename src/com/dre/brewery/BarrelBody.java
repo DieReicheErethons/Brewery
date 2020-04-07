@@ -30,17 +30,17 @@ public class BarrelBody {
 	/**
 	 * Loading from file
 	 */
-	public BarrelBody(Barrel barrel, byte signoffset, BoundingBox bounds) {
+	public BarrelBody(Barrel barrel, byte signoffset, BoundingBox bounds, boolean async) {
 		this(barrel, signoffset);
 
-		if (bounds == null || bounds.area() > 64 ) {
+		if (boundsSeemBad(bounds)) {
+			if (async) {
+				this.bounds = null;
+				return;
+			}
 			// If loading from old data, or block locations are missing, or other error, regenerate BoundingBox
 			// This will only be done in those extreme cases.
-			P.p.log("Regenerating Barrel BoundingBox: " + (bounds == null ? "was null" : "area=" + bounds.area()));
-			Block broken = getBrokenBlock(true);
-			if (broken != null) {
-				barrel.remove(broken, null, true);
-			}
+			regenerateBounds();
 		} else {
 			this.bounds = bounds;
 		}
@@ -77,6 +77,15 @@ public class BarrelBody {
 	 */
 	public void destroySign() {
 		signoffset = 0;
+	}
+
+	/**
+	 * Quick check if the bounds are valid or seem corrupt
+	 */
+	public static boolean boundsSeemBad(BoundingBox bounds) {
+		if (bounds == null) return true;
+		long area = bounds.area();
+		return area > 64 || area < 4;
 	}
 
 	/**
@@ -216,6 +225,21 @@ public class BarrelBody {
 			y++;
 		}
 		return block;
+	}
+
+	/**
+	 * Regenerate the Barrel Bounds.
+	 *
+	 * @return true if successful, false if Barrel was broken and should be removed.
+	 */
+	public boolean regenerateBounds() {
+		P.p.log("Regenerating Barrel BoundingBox: " + (bounds == null ? "was null" : "area=" + bounds.area()));
+		Block broken = getBrokenBlock(true);
+		if (broken != null) {
+			barrel.remove(broken, null, true);
+			return false;
+		}
+		return true;
 	}
 
 	/**

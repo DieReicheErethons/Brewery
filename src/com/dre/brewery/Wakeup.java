@@ -266,4 +266,8 @@ public class Wakeup {
 		}
 	}
 
+	public static void onUnload(String worldName) {
+		wakeups.removeIf(wakeup -> wakeup.loc.getWorld().getName().equals(worldName));
+	}
+
 }

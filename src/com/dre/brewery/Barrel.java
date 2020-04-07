@@ -59,6 +59,15 @@ public class Barrel implements InventoryHolder {
 	 * load from file
 	 */
 	public Barrel(Block spigot, byte sign, BoundingBox bounds, Map<String, Object> items, float time) {
+		this(spigot, sign, bounds, items, time, false);
+	}
+
+	/**
+	 * Load from File
+	 * <p>If async: true, The Barrel Bounds will not be recreated when missing/corrupt, getBody().getBounds() will be null if it needs recreating
+	 *
+	 */
+	public Barrel(Block spigot, byte sign, BoundingBox bounds, Map<String, Object> items, float time, boolean async) {
 		this.spigot = spigot;
 		if (isLarge()) {
 			this.inventory = P.p.getServer().createInventory(this, 27, P.p.languageReader.get("Etc_Barrel"));
@@ -74,7 +83,7 @@ public class Barrel implements InventoryHolder {
 		}
 		this.time = time;
 
-		body = new BarrelBody(this, sign, bounds);
+		body = new BarrelBody(this, sign, bounds, async);
 	}
 
 	public static void onUpdate() {

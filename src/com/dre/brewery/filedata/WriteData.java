@@ -25,11 +25,12 @@ public class WriteData implements Runnable {
 
 		try {
 			data.save(datafile);
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 		DataSave.lastSave = 1;
 		DataSave.running = null;
+		BData.dataMutex.set(0);
 	}
 }

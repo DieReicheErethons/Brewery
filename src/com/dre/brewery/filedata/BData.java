@@ -23,8 +23,11 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class BData {
+
+	public static AtomicInteger dataMutex = new AtomicInteger(0); // -1 = Saving, 0 = Free, >= 1 = Loading
 
 
 	// load all Data
@@ -136,7 +139,7 @@ public class BData {
 				P.p.bad = 0;
 				P.p.terr = 0;
 				if (!Brew.noLegacy()) {
-					for (Brew brew : Brew.legacyPotions.values()) {
+					for (int i = Brew.legacyPotions.size(); i > 0; i--) {
 						P.p.metricsForCreate(false);
 					}
 				}
@@ -186,13 +189,27 @@ public class BData {
 				}
 			}
 
-			for (World world : P.p.getServer().getWorlds()) {
-				if (world.getName().startsWith("DXL_")) {
-					loadWorldData(BUtil.getDxlName(world.getName()), world, data);
-				} else {
-					loadWorldData(world.getUID().toString(), world, data);
+
+			final FileConfiguration finalData = data;
+			final List<World> worlds = P.p.getServer().getWorlds();
+			P.p.getServer().getScheduler().runTaskAsynchronously(P.p, () -> {
+				if (!acquireDataLoadMutex()) return; // Tries for 60 sec
+
+				try {
+					for (World world : worlds) {
+						P.p.log("World Init: " + world.getName());
+						if (world.getName().startsWith("DXL_")) {
+							loadWorldData(BUtil.getDxlName(world.getName()), world, finalData);
+						} else {
+							loadWorldData(world.getUID().toString(), world, finalData);
+						}
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				} finally {
+					releaseDataLoadMutex();
 				}
-			}
+			});
 
 		} else {
 			P.p.log("No data.yml found, will create new one!");
@@ -266,6 +283,7 @@ public class BData {
 	}
 
 	// load Block locations of given world
+	// can be run async
 	public static void loadWorldData(String uuid, World world, FileConfiguration data) {
 
 		if (data == null) {
@@ -278,6 +296,7 @@ public class BData {
 		}
 
 		// loading BCauldron
+		final Map<Block, BCauldron> initCauldrons = new HashMap<>();
 		if (data.contains("BCauldron." + uuid)) {
 			ConfigurationSection section = data.getConfigurationSection("BCauldron." + uuid);
 			for (String cauldron : section.getKeys(false)) {
@@ -291,7 +310,7 @@ public class BData {
 						BIngredients ingredients = loadCauldronIng(section, cauldron + ".ingredients");
 						int state = section.getInt(cauldron + ".state", 0);
 
-						new BCauldron(worldBlock, ingredients, state);
+						initCauldrons.put(worldBlock, new BCauldron(worldBlock, ingredients, state));
 					} else {
 						P.p.errorLog("Incomplete Block-Data in data.yml: " + section.getCurrentPath() + "." + cauldron);
 					}
@@ -302,6 +321,8 @@ public class BData {
 		}
 
 		// loading Barrel
+		final List<Barrel> initBarrels = new ArrayList<>();
+		final List<Barrel> initBadBarrels = new ArrayList<>();
 		if (data.contains("Barrel." + uuid)) {
 			ConfigurationSection section = data.getConfigurationSection("Barrel." + uuid);
 			for (String barrel : section.getKeys(false)) {
@@ -346,16 +367,17 @@ public class BData {
 
 						Barrel b;
 						if (invSection != null) {
-							b = new Barrel(block, sign, box, invSection.getValues(true), time);
+							b = new Barrel(block, sign, box, invSection.getValues(true), time, true);
 						} else {
 							// Barrel has no inventory
-							b = new Barrel(block, sign, box, null, time);
+							b = new Barrel(block, sign, box, null, time, true);
 						}
 
-						// In case Barrel Block locations were missing and could not be recreated: do not add the barrel
-
 						if (b.getBody().getBounds() != null) {
-							Barrel.barrels.add(b);
+							initBarrels.add(b);
+						} else {
+							// The Barrel Bounds need recreating, as they were missing or corrupt
+							initBadBarrels.add(b);
 						}
 
 					} else {
@@ -368,6 +390,7 @@ public class BData {
 		}
 
 		// loading Wakeup
+		final List<Wakeup> initWakeups = new ArrayList<>();
 		if (data.contains("Wakeup." + uuid)) {
 			ConfigurationSection section = data.getConfigurationSection("Wakeup." + uuid);
 			for (String wakeup : section.getKeys(false)) {
@@ -384,7 +407,7 @@ public class BData {
 						float yaw = NumberUtils.toFloat(splitted[4]);
 						Location location = new Location(world, x, y, z, yaw, pitch);
 
-						Wakeup.wakeups.add(new Wakeup(location));
+						initWakeups.add(new Wakeup(location));
 
 					} else {
 						P.p.errorLog("Incomplete Location-Data in data.yml: " + section.getCurrentPath() + "." + wakeup);
@@ -393,5 +416,51 @@ public class BData {
 			}
 		}
 
+		// Merge Loaded Data in Main Thred
+		P.p.getServer().getScheduler().runTask(P.p, () -> {
+			if (P.p.getServer().getWorld(world.getUID()) == null) {
+				return;
+			}
+			if (!initCauldrons.isEmpty()) {
+				BCauldron.bcauldrons.putAll(initCauldrons);
+			}
+			if (!initBarrels.isEmpty()) {
+				Barrel.barrels.addAll(initBarrels);
+			}
+			if (!initBadBarrels.isEmpty()) {
+				for (Barrel badBarrel : initBadBarrels) {
+					if (badBarrel.getBody().regenerateBounds()) {
+						Barrel.barrels.add(badBarrel);
+					}
+					// In case Barrel Block locations were missing and could not be recreated: do not add the barrel
+				}
+
+			}
+			if (!initWakeups.isEmpty()) {
+				Wakeup.wakeups.addAll(initWakeups);
+			}
+		});
+	}
+
+	public static boolean acquireDataLoadMutex() {
+		int wait = 0;
+		// Increment the Data Mutex if it is not -1
+		while (BData.dataMutex.updateAndGet(i -> i >= 0 ? i + 1 : i) <= 0) {
+			wait++;
+			if (wait > 60) {
+				P.p.errorLog("Could not load World Data, Mutex: " + BData.dataMutex.get());
+				return false;
+			}
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public static void releaseDataLoadMutex() {
+		dataMutex.decrementAndGet();
 	}
 }

@@ -33,17 +33,21 @@ public class ReadOldData extends BukkitRunnable {
 		}
 
 
-		File datafile = new File(P.p.getDataFolder(), "data.yml");
-		if (!datafile.exists()) {
-			data = new YamlConfiguration();
-			done = true;
-			return;
+		File worldDataFile = new File(P.p.getDataFolder(), "worlddata.yml");
+		if (BData.worldData == null) {
+			if (!worldDataFile.exists()) {
+				data = new YamlConfiguration();
+				done = true;
+				return;
+			}
+
+			data = YamlConfiguration.loadConfiguration(worldDataFile);
+		} else {
+			data = BData.worldData;
 		}
 
-		data = YamlConfiguration.loadConfiguration(datafile);
-
 		if (DataSave.lastBackup > 10) {
-			datafile.renameTo(new File(P.p.getDataFolder(), "dataBackup.yml"));
+			worldDataFile.renameTo(new File(P.p.getDataFolder(), "worlddataBackup.yml"));
 			DataSave.lastBackup = 0;
 		} else {
 			DataSave.lastBackup++;

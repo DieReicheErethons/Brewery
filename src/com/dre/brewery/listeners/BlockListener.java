@@ -6,21 +6,15 @@ import com.dre.brewery.Barrel;
 import com.dre.brewery.DistortChat;
 import com.dre.brewery.P;
 import com.dre.brewery.api.events.barrel.BarrelDestroyEvent;
+import com.dre.brewery.filedata.BData;
 import com.dre.brewery.utility.BUtil;
 import org.bukkit.Material;
-import org.bukkit.Nameable;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockState;
-import org.bukkit.block.Container;
-import org.bukkit.block.data.Directional;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataType;
 
 public class BlockListener implements Listener {
 
@@ -32,6 +26,10 @@ public class BlockListener implements Listener {
 			Player player = event.getPlayer();
 			if (!player.hasPermission("brewery.createbarrel.small") && !player.hasPermission("brewery.createbarrel.big")) {
 				P.p.msg(player, P.p.languageReader.get("Perms_NoBarrelCreate"));
+				return;
+			}
+			if (BData.dataMutex.get() > 0) {
+				P.p.msg(player, "§cCurrently loading Data");
 				return;
 			}
 			if (Barrel.create(event.getBlock(), player)) {

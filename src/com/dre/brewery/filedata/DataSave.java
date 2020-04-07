@@ -17,7 +17,7 @@ public class DataSave extends BukkitRunnable {
 	public static int lastBackup = 0;
 	public static int lastSave = 1;
 	public static int autosave = 3;
-	final public static String dataVersion = "1.1";
+	final public static String dataVersion = "1.2";
 	public static DataSave running;
 
 	public ReadOldData read;
@@ -33,10 +33,10 @@ public class DataSave extends BukkitRunnable {
 
 	@Override
 	public void run() {
-		long saveTime = System.nanoTime();
-		// Mutex has been acquired in ReadOldData
 		try {
-			FileConfiguration oldData;
+			long saveTime = System.nanoTime();
+			// Mutex has been acquired in ReadOldData
+			FileConfiguration oldWorldData;
 			if (read != null) {
 				if (!read.done) {
 					// Wait for async thread to load old data
@@ -52,21 +52,23 @@ public class DataSave extends BukkitRunnable {
 					}
 					return;
 				}
-				oldData = read.getData();
+				oldWorldData = read.getData();
 			} else {
-				oldData = new YamlConfiguration();
+				oldWorldData = new YamlConfiguration();
 			}
 			try {
 				cancel();
 			} catch (IllegalStateException ignored) {
 			}
+			BData.worldData = null;
 
-			FileConfiguration configFile = new YamlConfiguration();
+			FileConfiguration data = new YamlConfiguration();
+			FileConfiguration worldData = new YamlConfiguration();
 
-			configFile.set("installTime", Brew.installTime);
-			configFile.set("MCBarrelTime", MCBarrel.mcBarrelTime);
+			data.set("installTime", Brew.installTime);
+			data.set("MCBarrelTime", MCBarrel.mcBarrelTime);
 
-			Brew.writePrevSeeds(configFile);
+			Brew.writePrevSeeds(data);
 
 			List<Integer> brewsCreated = new ArrayList<>(7);
 			brewsCreated.add(P.p.brewsCreated);
@@ -76,40 +78,41 @@ public class DataSave extends BukkitRunnable {
 			brewsCreated.add(P.p.norm);
 			brewsCreated.add(P.p.bad);
 			brewsCreated.add(P.p.terr);
-			configFile.set("brewsCreated", brewsCreated);
-			configFile.set("brewsCreatedH", brewsCreated.hashCode());
+			data.set("brewsCreated", brewsCreated);
+			data.set("brewsCreatedH", brewsCreated.hashCode());
 
 			if (!Brew.legacyPotions.isEmpty()) {
-				Brew.saveLegacy(configFile.createSection("Brew"));
-			}
-
-			if (!BCauldron.bcauldrons.isEmpty() || oldData.contains("BCauldron")) {
-				BCauldron.save(configFile.createSection("BCauldron"), oldData.getConfigurationSection("BCauldron"));
-			}
-
-			if (!Barrel.barrels.isEmpty() || oldData.contains("Barrel")) {
-				Barrel.save(configFile.createSection("Barrel"), oldData.getConfigurationSection("Barrel"));
+				Brew.saveLegacy(data.createSection("Brew"));
 			}
 
 			if (!BPlayer.isEmpty()) {
-				BPlayer.save(configFile.createSection("Player"));
+				BPlayer.save(data.createSection("Player"));
 			}
 
-			if (!Wakeup.wakeups.isEmpty() || oldData.contains("Wakeup")) {
-				Wakeup.save(configFile.createSection("Wakeup"), oldData.getConfigurationSection("Wakeup"));
+			if (!BCauldron.bcauldrons.isEmpty() || oldWorldData.contains("BCauldron")) {
+				BCauldron.save(worldData.createSection("BCauldron"), oldWorldData.getConfigurationSection("BCauldron"));
 			}
 
-			saveWorldNames(configFile, oldData.getConfigurationSection("Worlds"));
-			configFile.set("Version", dataVersion);
+			if (!Barrel.barrels.isEmpty() || oldWorldData.contains("Barrel")) {
+				Barrel.save(worldData.createSection("Barrel"), oldWorldData.getConfigurationSection("Barrel"));
+			}
+
+			if (!Wakeup.wakeups.isEmpty() || oldWorldData.contains("Wakeup")) {
+				Wakeup.save(worldData.createSection("Wakeup"), oldWorldData.getConfigurationSection("Wakeup"));
+			}
+
+			saveWorldNames(worldData, oldWorldData.getConfigurationSection("Worlds"));
+
+			data.set("Version", dataVersion);
 
 			collected = true;
 
 			P.p.debugLog("saving: " + ((System.nanoTime() - saveTime) / 1000000.0) + "ms");
 
 			if (P.p.isEnabled()) {
-				P.p.getServer().getScheduler().runTaskAsynchronously(P.p, new WriteData(configFile));
+				P.p.getServer().getScheduler().runTaskAsynchronously(P.p, new WriteData(data, worldData));
 			} else {
-				new WriteData(configFile).run();
+				new WriteData(data, worldData).run();
 			}
 			// Mutex will be released in WriteData
 		} catch (Exception e) {

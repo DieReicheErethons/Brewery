@@ -27,26 +27,32 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class BData {
 
-	public static AtomicInteger dataMutex = new AtomicInteger(0); // -1 = Saving, 0 = Free, >= 1 = Loading
+	public static AtomicInteger dataMutex = new AtomicInteger(0); // WorldData: -1 = Saving, 0 = Free, >= 1 = Loading
+	public static FileConfiguration worldData = null; // World Data Cache for consecutive loading of Worlds. Nulled after a data save
 
 
 	// load all Data
 	public static void readData() {
 		File file = new File(P.p.getDataFolder(), "data.yml");
 		if (file.exists()) {
-
 			long t1 = System.currentTimeMillis();
 
 			FileConfiguration data = YamlConfiguration.loadConfiguration(file);
 
 			long t2 = System.currentTimeMillis();
 
-			if (t2 - t1 > 8000) {
-				// Spigot is very slow at loading inventories from yml. Notify Admin that loading Data took long
-				P.p.log("Bukkit took " + (t2 - t1) / 1000.0 + "s to load the Data File,");
-				P.p.log("consider switching to Paper, or have less items in Barrels");
-			} else {
-				P.p.debugLog("Loading data.yml: " + (t2 - t1) + "ms");
+			P.p.debugLog("Loading data.yml: " + (t2 - t1) + "ms");
+
+			// Check if data is the newest version
+			String version = data.getString("Version", null);
+			if (version != null) {
+				if (!version.equals(DataSave.dataVersion)) {
+					P.p.log("Data File is being updated...");
+					File worldFile = new File(P.p.getDataFolder(), "worlddata.yml");
+					new DataUpdater(data, file, worldFile).update(version);
+					data = YamlConfiguration.loadConfiguration(file);
+					P.p.log("Data Updated to version: " + DataSave.dataVersion);
+				}
 			}
 
 			Brew.installTime = data.getLong("installTime", System.currentTimeMillis());
@@ -66,17 +72,6 @@ public class BData {
 					P.p.norm = brewsCreated.get(4);
 					P.p.bad = brewsCreated.get(5);
 					P.p.terr = brewsCreated.get(6);
-				}
-			}
-
-			// Check if data is the newest version
-			String version = data.getString("Version", null);
-			if (version != null) {
-				if (!version.equals(DataSave.dataVersion)) {
-					P.p.log("Data File is being updated...");
-					new DataUpdater(data, file).update(version);
-					data = YamlConfiguration.loadConfiguration(file);
-					P.p.log("Data Updated to version: " + DataSave.dataVersion);
 				}
 			}
 
@@ -190,24 +185,25 @@ public class BData {
 			}
 
 
-			final FileConfiguration finalData = data;
 			final List<World> worlds = P.p.getServer().getWorlds();
 			P.p.getServer().getScheduler().runTaskAsynchronously(P.p, () -> {
 				if (!acquireDataLoadMutex()) return; // Tries for 60 sec
 
 				try {
 					for (World world : worlds) {
-						P.p.log("World Init: " + world.getName());
 						if (world.getName().startsWith("DXL_")) {
-							loadWorldData(BUtil.getDxlName(world.getName()), world, finalData);
+							loadWorldData(BUtil.getDxlName(world.getName()), world);
 						} else {
-							loadWorldData(world.getUID().toString(), world, finalData);
+							loadWorldData(world.getUID().toString(), world);
 						}
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
 				} finally {
 					releaseDataLoadMutex();
+					if (BData.dataMutex.get() == 0) {
+						P.p.log("Background data loading complete.");
+					}
 				}
 			});
 
@@ -284,12 +280,21 @@ public class BData {
 
 	// load Block locations of given world
 	// can be run async
-	public static void loadWorldData(String uuid, World world, FileConfiguration data) {
-
-		if (data == null) {
-			File file = new File(P.p.getDataFolder(), "data.yml");
+	public static void loadWorldData(String uuid, World world) {
+		if (BData.worldData == null) {
+			File file = new File(P.p.getDataFolder(), "worlddata.yml");
 			if (file.exists()) {
-				data = YamlConfiguration.loadConfiguration(file);
+				long t1 = System.currentTimeMillis();
+				BData.worldData = YamlConfiguration.loadConfiguration(file);
+				long t2 = System.currentTimeMillis();
+				if (t2 - t1 > 15000) {
+					// Spigot is _very_ slow at loading inventories from yml. Paper is way faster.
+					// Notify Admin that loading Data took long (its async so not much of a problem)
+					P.p.log("Bukkit took " + (t2 - t1) / 1000.0 + "s to load Inventories from the World-Data File (in the Background),");
+					P.p.log("consider switching to Paper, or have less items in Barrels if it takes a long time for Barrels to become available");
+				} else {
+					P.p.debugLog("Loading worlddata.yml: " + (t2 - t1) + "ms");
+				}
 			} else {
 				return;
 			}
@@ -297,8 +302,8 @@ public class BData {
 
 		// loading BCauldron
 		final Map<Block, BCauldron> initCauldrons = new HashMap<>();
-		if (data.contains("BCauldron." + uuid)) {
-			ConfigurationSection section = data.getConfigurationSection("BCauldron." + uuid);
+		if (BData.worldData.contains("BCauldron." + uuid)) {
+			ConfigurationSection section = BData.worldData.getConfigurationSection("BCauldron." + uuid);
 			for (String cauldron : section.getKeys(false)) {
 				// block is splitted into x/y/z
 				String block = section.getString(cauldron + ".block");
@@ -323,8 +328,8 @@ public class BData {
 		// loading Barrel
 		final List<Barrel> initBarrels = new ArrayList<>();
 		final List<Barrel> initBadBarrels = new ArrayList<>();
-		if (data.contains("Barrel." + uuid)) {
-			ConfigurationSection section = data.getConfigurationSection("Barrel." + uuid);
+		if (BData.worldData.contains("Barrel." + uuid)) {
+			ConfigurationSection section = BData.worldData.getConfigurationSection("Barrel." + uuid);
 			for (String barrel : section.getKeys(false)) {
 				// block spigot is splitted into x/y/z
 				String spigot = section.getString(barrel + ".spigot");
@@ -391,8 +396,8 @@ public class BData {
 
 		// loading Wakeup
 		final List<Wakeup> initWakeups = new ArrayList<>();
-		if (data.contains("Wakeup." + uuid)) {
-			ConfigurationSection section = data.getConfigurationSection("Wakeup." + uuid);
+		if (BData.worldData.contains("Wakeup." + uuid)) {
+			ConfigurationSection section = BData.worldData.getConfigurationSection("Wakeup." + uuid);
 			for (String wakeup : section.getKeys(false)) {
 				// loc of wakeup is splitted into x/y/z/pitch/yaw
 				String loc = section.getString(wakeup);

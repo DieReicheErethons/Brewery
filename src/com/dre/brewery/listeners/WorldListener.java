@@ -4,9 +4,9 @@ import com.dre.brewery.BCauldron;
 import com.dre.brewery.Barrel;
 import com.dre.brewery.P;
 import com.dre.brewery.Wakeup;
-import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.filedata.BData;
 import com.dre.brewery.filedata.DataSave;
+import com.dre.brewery.utility.BUtil;
 import org.bukkit.World;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -19,16 +19,14 @@ public class WorldListener implements Listener {
 	@EventHandler
 	public void onWorldLoad(WorldLoadEvent event) {
 		final World world = event.getWorld();
-		P.p.log("World Load: " + event.getWorld().getName());
-
 		P.p.getServer().getScheduler().runTaskAsynchronously(P.p, () -> {
 			if (!BData.acquireDataLoadMutex()) return;  // Tries for 60 sec
 
 			try {
 				if (world.getName().startsWith("DXL_")) {
-					BData.loadWorldData(BUtil.getDxlName(world.getName()), world, null);
+					BData.loadWorldData(BUtil.getDxlName(world.getName()), world);
 				} else {
-					BData.loadWorldData(world.getUID().toString(), world, null);
+					BData.loadWorldData(world.getUID().toString(), world);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();

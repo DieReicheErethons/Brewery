@@ -6,7 +6,6 @@ import com.dre.brewery.filedata.UpdateChecker;
 import com.dre.brewery.utility.LegacyUtil;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
-import org.bukkit.Nameable;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -42,7 +41,7 @@ public class PlayerListener implements Listener {
 		}
 
 
-		if (BSealer.isBSealer(clickedBlock)) {
+		if (P.use1_14 && BSealer.isBSealer(clickedBlock)) {
 			event.setCancelled(true);
 			if (BConfig.enableSealingTable) {
 				BSealer sealer = new BSealer(player);

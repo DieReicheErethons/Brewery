@@ -9,16 +9,18 @@ import org.bukkit.block.Container;
 import org.bukkit.block.data.Directional;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.RecipeChoice;
-import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Iterator;
+
+/**
+ * The Sealing Inventory that is being checked for Brews and seals them after a second.
+ * <p>Class doesn't load in mc <= 1.12 (Can't find RecipeChoice, BlockData and NamespacedKey)
+ */
 public class BSealer implements InventoryHolder {
 	public static final NamespacedKey TAG_KEY = new NamespacedKey(P.p, "SealingTable");
 	public static boolean recipeRegistered = false;
@@ -27,8 +29,8 @@ public class BSealer implements InventoryHolder {
 	private final Inventory inventory;
 	private final Player player;
 	private short[] slotTime = new short[9];
-	ItemStack[] contents = null;
-	BukkitTask task;
+	private ItemStack[] contents = null;
+	private BukkitTask task;
 
 	public BSealer(Player player) {
 		this.player = player;
@@ -91,7 +93,7 @@ public class BSealer implements InventoryHolder {
 				Brew brew = Brew.get(contents[i]);
 				if (brew != null && !brew.isStripped()) {
 					brew.seal(contents[i]);
-					if (playerValid) {
+					if (playerValid && P.use1_9) {
 						player.playSound(player.getLocation(), Sound.ITEM_BOTTLE_FILL_DRAGONBREATH, 1, 1.5f + (float) (Math.random() * 0.2));
 					}
 				}
@@ -152,6 +154,14 @@ public class BSealer implements InventoryHolder {
 
 	public static void unregisterRecipe() {
 		recipeRegistered = false;
-		P.p.getServer().removeRecipe(new NamespacedKey(P.p, "SealingTable"));
+		//P.p.getServer().removeRecipe(new NamespacedKey(P.p, "SealingTable"));    1.15 Method
+		Iterator<Recipe> recipeIterator = P.p.getServer().recipeIterator();
+		while (recipeIterator.hasNext()) {
+			Recipe next = recipeIterator.next();
+			if (next instanceof ShapedRecipe && ((ShapedRecipe) next).getKey().equals(TAG_KEY)) {
+				recipeIterator.remove();
+				return;
+			}
+		}
 	}
 }

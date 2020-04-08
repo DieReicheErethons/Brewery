@@ -121,7 +121,7 @@ public class P extends JavaPlugin {
 		if (use1_9) {
 			p.getServer().getPluginManager().registerEvents(new CauldronListener(), p);
 		}
-		if (BConfig.hasChestShop) {
+		if (BConfig.hasChestShop && use1_13) {
 			p.getServer().getPluginManager().registerEvents(new ChestShopListener(), p);
 		}
 

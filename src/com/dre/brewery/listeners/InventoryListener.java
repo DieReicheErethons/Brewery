@@ -193,6 +193,7 @@ public class InventoryListener implements Listener {
 	// Handle the Brew Sealer Inventory
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onInventoryClickBSealer(InventoryClickEvent event) {
+		if (!P.use1_13) return;
 		InventoryHolder holder = event.getInventory().getHolder();
 		if (!(holder instanceof BSealer)) {
 			return;
@@ -296,6 +297,7 @@ public class InventoryListener implements Listener {
 
 	@EventHandler
 	public void onInventoryClose(InventoryCloseEvent event) {
+		if (!P.use1_13) return;
 		if (event.getInventory().getHolder() instanceof BSealer) {
 			((BSealer) event.getInventory().getHolder()).closeInv();
 		}

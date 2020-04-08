@@ -81,6 +81,14 @@ public class CommandListener implements CommandExecutor {
 				}
 			}
 
+		} else if (cmd.equalsIgnoreCase("seal") || cmd.startsWith("seal") || cmd.startsWith("Seal")) {
+
+			if (sender.hasPermission("brewery.cmd.seal")) {
+				cmdSeal(sender);
+			} else {
+				p.msg(sender, p.languageReader.get("Error_NoPermissions"));
+			}
+
 		} else if (cmd.equalsIgnoreCase("copy") || cmd.equalsIgnoreCase("cp")) {
 
 			if (sender.hasPermission("brewery.cmd.copy")) {
@@ -172,6 +180,10 @@ public class CommandListener implements CommandExecutor {
 
 		if (sender.hasPermission("brewery.cmd.info")) {
 			cmds.add (p.languageReader.get("Help_Info"));
+		}
+
+		if (P.use1_13 && sender.hasPermission("brewery.cmd.seal")) {
+			cmds.add (p.languageReader.get("Help_Seal"));
 		}
 
 		if (sender.hasPermission("brewery.cmd.unlabel")) {
@@ -364,6 +376,20 @@ public class CommandListener implements CommandExecutor {
 			p.msg(sender, p.languageReader.get("CMD_Configname_Error"));
 		}
 
+	}
+
+	public void cmdSeal(CommandSender sender) {
+		if (!P.use1_13) {
+			P.p.msg(sender, "Sealing requires minecraft 1.13 or higher");
+			return;
+		}
+		if (!(sender instanceof Player)) {
+			p.msg(sender, p.languageReader.get("Error_PlayerCommand"));
+			return;
+		}
+
+		Player player = (Player) sender;
+		player.openInventory(new BSealer(player).getInventory());
 	}
 
 	@Deprecated

@@ -37,6 +37,7 @@ permissions:
       brewery.mod: true
       brewery.cmd.info: true
       brewery.cmd.infoOther: true
+      brewery.cmd.seal: true
       brewery.cmd.player: true
       brewery.cmd.create: true
       brewery.cmd.copy: true
@@ -60,6 +61,8 @@ permissions:
     description: Information about your own drunkeness
   brewery.cmd.infoOther:
     description: Information about the drunkeness of another Player
+  brewery.cmd.seal:
+    description: Open the Brew Sealer by command
   brewery.cmd.player:
     description: Set Player-values
   brewery.cmd.wakeup:

@@ -47,6 +47,10 @@ drainItems:
 # Temps (en jours) pour que les données d'ivresse restent sauvergardées lorsque le joueur est déconnecté, pour appliquer les effets. [7]
 hangoverDays: 7
 
+# If crafting and using of the Brew Sealing Table is enabled (2 Bottles over 4 Planks) [true, true]
+craftSealingTable: true
+enableSealingTable: true
+
 # Colorer les informations d'objets (lore) au dépend de la qualité dans un tonneau et/ou dans un stand de brassage (l'alambic) [true, true]
 colorInBarrels: true
 colorInBrewer: true
@@ -67,6 +71,7 @@ maxBrewsInMCBarrels: 6
 # Pour empêcher les clients piratés de lire exactement ce qui a été utilisé pour infuser un élément, les données peuvent être encodées/brouillées.
 # Il s'agit d'un processus rapide pour empêcher les joueurs de pirater des recettes, une fois qu'ils mettent la main sur une bière.
 # Seul inconvénient: Les boissons brassicoles ne peuvent être utilisés que sur un autre serveur avec la même clé de chiffrement.
+# Lorsque vous utilisez des boissons brassicoles sur plusieurs serveurs (BungeeCord), définissez une base de données partagée ci-dessous à "multiServerDB".
 # Activez cette option si vous voulez rendre la tricherie des recettes plus difficile, mais ne partagez pas les infusions par téléchargement mondial, schémas ou autres moyens.
 enableEncode: false
 encodeKey: 0
@@ -82,7 +87,7 @@ autosave: 3
 debug: false
 
 # Version de configuration
-version: '2.0'
+version: '2.1'
 oldMat: true
 
 
@@ -416,6 +421,28 @@ useCitadel: true
 
 # Activer l'historique du contenu des tonneaux avec LogBlock [true]
 useLogBlock: true
+
+
+# -- MultiServer/BungeeCord --
+# Si Brewery est exécuté sur plusieurs serveurs connectés (via BungeeCord), une base de données partagée peut être utilisée
+# ici pour synchroniser l'ivresse et pour pouvoir utiliser des boissons codées entre elles.
+
+multiServerDB:
+  # Si l'utilisation de la base de données est activée
+  enabled: false
+  # Si l'ivresse des joueurs devait être synchronisée entre les serveurs
+  syncDrunkeness: true
+  host: localhost
+  port: '3306'
+  user: minec
+  password: xyz
+  database: base
+
+
+# -- Divers autres paramètres --
+
+# If items in Offhand should be added to the cauldron as well [false]
+useOffhandForCauldron: false
 
 
 # -- Paramètres de la distorsion du Chat --

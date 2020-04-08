@@ -39,7 +39,7 @@ import java.util.Map;
 
 public class BConfig {
 
-	public static final String configVersion = "2.0";
+	public static final String configVersion = "2.1";
 	public static boolean updateCheck;
 	public static CommandSender reloader;
 
@@ -58,6 +58,9 @@ public class BConfig {
 
 	// Barrel
 	public static boolean openEverywhere;
+
+	// Cauldron
+	public static boolean useOffhandForCauldron;
 
 	//BPlayer
 	public static Map<Material, Integer> drainItems = new HashMap<>();// DrainItem Material and Strength
@@ -237,6 +240,7 @@ public class BConfig {
 		enableEncode = config.getBoolean("enableEncode", false);
 		openEverywhere = config.getBoolean("openLargeBarrelEverywhere", false);
 		MCBarrel.maxBrews = config.getInt("maxBrewsInMCBarrels", 6);
+		useOffhandForCauldron = config.getBoolean("useOffhandForCauldron", false);
 
 		Brew.loadSeed(config, new File(P.p.getDataFolder(), "config.yml"));
 

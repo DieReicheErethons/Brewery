@@ -4,6 +4,7 @@ Brew_BadPotion: 酿坏了的废液
 Brew_BarrelRiped: 木桶熟成
 Brew_DistillUndefined: 未名蒸馏液
 Brew_Distilled: 蒸馏
+Brew_LessDistilled: Less Distilled
 Brew_HundredsOfYears: 百年陈酿
 Brew_Ingredients: 原料
 Brew_MinutePluralPostfix: ''
@@ -33,6 +34,9 @@ CMD_UnLabel: '&a标签已被去除!'
 # Error
 Error_ConfigUpdate: '未知的配置版本:v&v1, 插件配置未更新!'
 Error_ItemNotPotion: '&c你手上的物品并未成功地被认定为饮品!'
+Error_SealingTableDisabled: '&cThe Sealing Table is disabled'
+Error_SealedAlwaysStatic: 'Sealed Brews are always static!'
+Error_AlreadyUnlabeled: '&cThe Brew in your hand is already unlabeled!'
 Error_NoBarrelAccess: '&c你没有权限与该木桶互动!'
 Error_NoBrewName: '&c未找到名字为''&v1&c''的饮品!'
 Error_NoPermissions: '&c你没有权限这样做.'
@@ -46,6 +50,7 @@ Error_YmlRead: '无法读取config.yml, 请保证该文件符合正确的yml格�
 Etc_Barrel: 木桶
 Etc_Page: 页
 Etc_Usage: '用途:'
+Etc_SealingTable: Brew Sealing Table
 
 # Help
 Help_Copy: '&6/brew copy [数量] &9复制当前手中的饮品.'
@@ -59,6 +64,7 @@ Help_Reload: '&6/brew reload &9重载插件配置, 可用以重载饮品配方.'
 Help_Configname: '&6/brew ItemName &9显示手中物品的配置名称'
 Help_Static: '&6/brew static &9将手中饮品静滞化, 这将阻止其被蒸馏或继续熟成.'
 Help_UnLabel: '&6/brew unlabel &9去除饮品的附加信息.'
+Help_Seal: '&6/brew seal &9Seal Brews for selling in shops'
 Help_Wakeup: '&6/brew wakeup list <页数> &9列出所有的苏醒处, 醉酒后下线的玩家再上线可能会在这些地方醒来.'
 Help_WakeupAdd: '&6/brew wakeup add &9添加苏醒处.'
 Help_WakeupCheck: '&6/brew wakeup check &9传送至每一个苏醒处进行一一检查.'
@@ -96,3 +102,4 @@ Player_WakeNoCheck: '&c目前没有执行苏醒处检查.'
 Player_WakeNoPoints: '&c目前没有设定任何一个苏醒处!'
 Player_WakeNotExist: '&cid为: &6&v1 &c的苏醒处并不存在!'
 Player_WakeTeleport: '前往id为: &6&v1 &f坐标为: &6&v2 &v3, &v4, &v5 &r的苏醒处.'
+Player_ShopSealBrew: '&eBrews should be sealed before selling them'

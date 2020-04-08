@@ -4,6 +4,7 @@ Brew_BadPotion: 失敗的藥水
 Brew_BarrelRiped: 貯存陳化
 Brew_DistillUndefined: 無法確定的蒸餾
 Brew_Distilled: 蒸餾
+Brew_LessDistilled: Less Distilled
 Brew_HundredsOfYears: 數百年
 Brew_Ingredients: 配料
 Brew_MinutePluralPostfix: 的
@@ -33,6 +34,9 @@ CMD_UnLabel: '&a標籤已刪除！'
 # Error
 Error_ConfigUpdate: '未知 釀酒 設定檔版本: v&v1,設定檔沒有更新!'
 Error_ItemNotPotion: '&c你手上的物品不能確定為藥水'
+Error_SealingTableDisabled: '&cThe Sealing Table is disabled'
+Error_SealedAlwaysStatic: 'Sealed Brews are always static!'
+Error_AlreadyUnlabeled: '&cThe Brew in your hand is already unlabeled!'
 Error_NoBarrelAccess: '&c你沒有權限存取！'
 Error_NoBrewName: '&c沒有這個配方: ''&v1&c'' 找到!'
 Error_NoPermissions: '&c你沒有權限這樣做！'
@@ -46,6 +50,7 @@ Error_YmlRead: 'Could not read file config.yml, please make sure the file is in 
 Etc_Barrel: 釀造桶
 Etc_Page: 頁數
 Etc_Usage: '用法:'
+Etc_SealingTable: Brew Sealing Table
 
 # Help
 Help_Copy: '&6/brew copy [數量]&9 複製手中的藥水'
@@ -59,6 +64,7 @@ Help_Reload: '&6/brew reload &9重新加載設定檔'
 Help_Configname: '&6/brew ItemName &9Display name of item in hand for the config'
 Help_Static: '&6/brew static &9使釀造靜止 - >不再進一步老化或蒸餾'
 Help_UnLabel: '&6/brew unlabel &9刪除藥水的詳細標籤'
+Help_Seal: '&6/brew seal &9Seal Brews for selling in shops'
 Help_Wakeup: '&6/brew wakeup list <頁數>&9 列出所有喚醒點'
 Help_WakeupAdd: '&6/brew wakeup add &9在當前位置添加喚醒點'
 Help_WakeupCheck: '&6/brew wakeup check &9傳送到所有喚醒點'
@@ -96,3 +102,4 @@ Player_WakeNoCheck: '&c目前沒有喚醒點是處於活動狀態'
 Player_WakeNoPoints: '&c沒有喚醒點!'
 Player_WakeNotExist: '&c這個喚醒點 id: &6&v1 &c不存在!'
 Player_WakeTeleport: '傳送到這個喚醒點 id: &6&v1&f 在位置: &6&v2 &v3, &v4, &v5'
+Player_ShopSealBrew: '&eBrews should be sealed before selling them'

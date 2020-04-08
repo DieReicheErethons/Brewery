@@ -4,6 +4,7 @@ Brew_BadPotion: Potion ruinée
 Brew_BarrelRiped: Baril âgé
 Brew_DistillUndefined: Distillation indéfinie
 Brew_Distilled: Distillé
+Brew_LessDistilled: Moins distillé
 Brew_HundredsOfYears: Centaines d´années
 Brew_Ingredients: Ingrédients
 Brew_MinutePluralPostfix: s
@@ -33,6 +34,9 @@ CMD_UnLabel: '&aLabel supprimé!'
 # Erreurs
 Error_ConfigUpdate: 'La version de la configuration de Brewery est inconnue: v&v1, la config n´a pas été mise à jour !'
 Error_ItemNotPotion: '&cL´item dans votre main n´a pas pu être identifié comme une potion !'
+Error_SealingTableDisabled: '&cLa table de scellage est désactivée'
+Error_SealedAlwaysStatic: 'Les boissons scellées sont toujours statiques!'
+Error_AlreadyUnlabeled: '&cLe label est déjà supprimé!'
 Error_NoBarrelAccess: '&cVous n´avez pas la permission d´acceder à ce baril !'
 Error_NoBrewName: '&cAucune recette avec le nom: &v1&c n´a été trouvée!'
 Error_NoPermissions: '&cVous ne pouvez pas faire ça !'
@@ -46,6 +50,7 @@ Error_YmlRead: 'Could not read file config.yml, please make sure the file is in 
 Etc_Barrel: Baril
 Etc_Page: Page
 Etc_Usage: 'Utilise:'
+Etc_SealingTable: 'Table de scellage des boissons'
 
 # Aide
 Help_Copy: '&6/brew copy [Quantity]&9 Copie la potion qui est dans votre main'
@@ -59,6 +64,7 @@ Help_Reload: '&6/brew reload &9Reload la config'
 Help_Configname: '&6/brew ItemName &9Display name of item in hand for the config'
 Help_Static: '&6/brew static &9Rend une boisson statique -> Plus affectée par l´âge ou la distillation'
 Help_UnLabel: '&6/brew unlabel &9Supprime l´étiquette détaillée d´une potion'
+Help_Seal: '&6/brew seal &9Sceller les boissons à vendre en magasin'
 Help_Wakeup: '&6/brew wakeup list <Page>&9 Affiche une liste de tous les points de réveil'
 Help_WakeupAdd: '&6/brew wakeup add &9Ajoute un point de réveil à votre position'
 Help_WakeupCheck: '&6/brew wakeup check &9Téléportation vers tous les points de réveil'
@@ -96,3 +102,4 @@ Player_WakeNoCheck: '&cAucun point de réveil n´est actif pour le moment !'
 Player_WakeNoPoints: '&cIl n´y a pas de point de réveil !'
 Player_WakeNotExist: '&cLe point de réveil avec l´ID: &6&v1 &cdn´existe pas !'
 Player_WakeTeleport: 'Téléportation vers le point de réveil avec l´ID : &6&v1&f A la position: &6&v2 &v3, &v4, &v5'
+Player_ShopSealBrew: '&eles boissons doivent être scellées avant d´être vendues'

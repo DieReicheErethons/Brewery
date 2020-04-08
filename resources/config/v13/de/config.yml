@@ -85,7 +85,7 @@ autosave: 3
 debug: false
 
 # Config Version
-version: '2.0'
+version: '2.1'
 
 
 
@@ -800,6 +800,12 @@ multiServerDB:
   user: minec
   password: xyz
   database: base
+
+
+# -- Verschiedene weitere Einstellungen --
+
+# Ob Items in der Zweithand auch in den Kessel geworfen werden sollen [false]
+useOffhandForCauldron: false
 
 
 # -- Chat Veränderungs Einstellungen --

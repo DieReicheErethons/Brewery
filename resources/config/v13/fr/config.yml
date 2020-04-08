@@ -47,6 +47,10 @@ drainItems:
 # Temps (en jours) pour que les données d'ivresse restent sauvergardées lorsque le joueur est déconnecté, pour appliquer les effets. [7]
 hangoverDays: 7
 
+# If crafting and using of the Brew Sealing Table is enabled (2 Bottles over 4 Planks) [true, true]
+craftSealingTable: true
+enableSealingTable: true
+
 # Colorer les informations d'objets (lore) au dépend de la qualité dans un tonneau et/ou dans un stand de brassage (l'alambic) [true, true]
 colorInBarrels: true
 colorInBrewer: true
@@ -83,7 +87,7 @@ autosave: 3
 debug: false
 
 # Version de configuration
-version: '2.0'
+version: '2.1'
 
 
 
@@ -795,6 +799,12 @@ multiServerDB:
   user: minec
   password: xyz
   database: base
+
+
+# -- Divers autres paramètres --
+
+# If items in Offhand should be added to the cauldron as well [false]
+useOffhandForCauldron: false
 
 
 # -- Paramètres de la distorsion du Chat --

@@ -213,8 +213,19 @@ public class ConfigUpdater {
 			} else {
 				update18en(yml);
 			}
+			fromVersion = "2.0";
+		}
+
+		if (fromVersion.equals("2.0")) {
+			if (de) {
+				update20de();
+			} else if (lang.equals("fr")) {
+				update20fr();
+			} else {
+				update20en();
+			}
 			updateVersion(BConfig.configVersion);
-			fromVersion = BConfig.configVersion;
+			fromVersion = "2.1";
 		}
 
 		if (P.use1_13 && oldMat) {
@@ -1576,6 +1587,94 @@ public class ConfigUpdater {
 			removeLine(index);
 		}
 
+	}
+
+	private void update20de() {
+		addLinesAt(new String[]{"hangoverDays", "colorInBrewer", "encodeKey"}, 1, "",
+			"# Ob das craften und das benutzen des Trank-Versiegelungs-Tisches aktiviert ist (2 Flaschen über 4 Holz) [true, true]",
+			"craftSealingTable: true",
+			"enableSealingTable: true");
+
+		addLinesAt(new String[]{"useLogBlock", "useGMInventories", "# -- Plugin Kompatibli", "# Es gibt noch viele Minecraft Items", "version"}, 1, "", "",
+			"# -- MultiServer/BungeeCord --",
+			"# Wenn Brewery auf mehreren Servern läuft und diese zB mit BungeeCord verbunden sind,",
+			"# sollte hier eine gemeinsame Datenbank eingetragen werden.",
+			"# Dann wird Betrunkenheit auf den Servern synchronisiert und encodierte Tränke können auf allen Servern benutzt werden.",
+			"",
+			"multiServerDB:",
+			"  # Soll die Datenbank-Synchronisation aktiviert sein",
+			"  enabled: false",
+			"  # Soll die Betrunkenheit von Spielern synchronisiert werden",
+			"  syncDrunkeness: true",
+			"  host: localhost",
+			"  port: '3306'",
+			"  user: minec",
+			"  password: xyz",
+			"  database: base",
+			"",
+			"",
+			"# -- Verschiedene weitere Einstellungen --",
+			"",
+			"# Ob Items in der Zweithand auch in den Kessel geworfen werden sollen [false]",
+			"useOffhandForCauldron: false");
+	}
+
+	private void update20fr() {
+		addLinesAt(new String[]{"hangoverDays", "colorInBrewer", "encodeKey"}, 1, "",
+			"# If crafting and using of the Brew Sealing Table is enabled (2 Bottles over 4 Planks) [true, true]",
+			"craftSealingTable: true",
+			"enableSealingTable: true");
+
+		addLinesAt(new String[]{"useLogBlock", "useGMInventories", "# -- Compatibilit", "# There are a lot of items in Minecraft ", "version"}, 1, "", "",
+			"# -- MultiServer/BungeeCord --",
+			"# Si Brewery est exécuté sur plusieurs serveurs connectés (via BungeeCord), une base de données partagée peut être utilisée",
+			"# ici pour synchroniser l'ivresse et pour pouvoir utiliser des boissons codées entre elles.",
+			"",
+			"multiServerDB:",
+			"  # Si l'utilisation de la base de données est activée",
+			"  enabled: false",
+			"  # Si l'ivresse des joueurs devait être synchronisée entre les serveurs",
+			"  syncDrunkeness: true",
+			"  host: localhost",
+			"  port: '3306'",
+			"  user: minec",
+			"  password: xyz",
+			"  database: base",
+			"",
+			"",
+			"# -- Divers autres paramètres --",
+			"",
+			"# If items in Offhand should be added to the cauldron as well [false]",
+			"useOffhandForCauldron: false");
+	}
+
+	private void update20en() {
+		addLinesAt(new String[]{"hangoverDays", "colorInBrewer", "encodeKey"}, 1, "",
+			"# If crafting and using of the Brew Sealing Table is enabled (2 Bottles over 4 Planks) [true, true]",
+			"craftSealingTable: true",
+			"enableSealingTable: true");
+
+		addLinesAt(new String[]{"useLogBlock", "useGMInventories", "# -- Plugin Compatibility", "# # There are a lot of items in Minecraft", "version"}, 1, "", "",
+			"# -- MultiServer/BungeeCord --",
+			"# If Brewery is running on multiple connected Servers (via BungeeCord)",
+			"# a shared Database can be used here to synchronise drunkeness and to be able to use encoded brews between them.",
+			"",
+			"multiServerDB:",
+			"  # If using the Database is enabled",
+			"  enabled: false",
+			"  # If the drunkeness of players should be synchronised between Servers",
+			"  syncDrunkeness: true",
+			"  host: localhost",
+			"  port: '3306'",
+			"  user: minec",
+			"  password: xyz",
+			"  database: base",
+			"",
+			"",
+			"# -- Various Other Settings --",
+			"",
+			"# If items in Offhand should be added to the cauldron as well [false]",
+			"useOffhandForCauldron: false");
 	}
 
 

@@ -86,7 +86,7 @@ autosave: 3
 debug: false
 
 # Config Version
-version: '2.0'
+version: '2.1'
 
 
 
@@ -793,6 +793,12 @@ multiServerDB:
   user: minec
   password: xyz
   database: base
+
+
+# -- Various Other Settings --
+
+# If items in Offhand should be added to the cauldron as well [false]
+useOffhandForCauldron: false
 
 
 # -- Chat Distortion Settings --

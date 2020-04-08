@@ -92,10 +92,13 @@ permissions:
     children:
       brewery.openbarrel.small: true
       brewery.openbarrel.big: true
+      brewery.openbarrel.mc: true
   brewery.openbarrel.small:
     description: Allow to open small Barrels
   brewery.openbarrel.big:
     description: Allow to open big Barrels
+  brewery.openbarrel.mc:
+    description: Allow to open Minecraft Barrels
 
 # -- Cauldron --
   brewery.cauldron.time:

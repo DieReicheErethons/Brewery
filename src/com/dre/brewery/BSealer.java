@@ -22,6 +22,7 @@ import org.jetbrains.annotations.NotNull;
 public class BSealer implements InventoryHolder {
 	public static final NamespacedKey TAG_KEY = new NamespacedKey(P.p, "SealingTable");
 	public static boolean recipeRegistered = false;
+	public static boolean inventoryHolderWorking = true;
 
 	private final Inventory inventory;
 	private final Player player;
@@ -31,7 +32,17 @@ public class BSealer implements InventoryHolder {
 
 	public BSealer(Player player) {
 		this.player = player;
-		inventory = P.p.getServer().createInventory(this, InventoryType.DISPENSER, P.p.languageReader.get("Etc_SealingTable"));
+		if (inventoryHolderWorking) {
+			Inventory inv = P.p.getServer().createInventory(this, InventoryType.DISPENSER, P.p.languageReader.get("Etc_SealingTable"));
+			// Inventory Holder (for DISPENSER, ...) is only passed in Paper, not in Spigot. Doing inventory.getHolder() will return null in spigot :/
+			if (inv.getHolder() == this) {
+				inventory = inv;
+				return;
+			} else {
+				inventoryHolderWorking = false;
+			}
+		}
+		inventory = P.p.getServer().createInventory(this, 9, P.p.languageReader.get("Etc_SealingTable"));
 	}
 
 	@Override

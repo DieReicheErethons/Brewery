@@ -54,6 +54,7 @@ public class BConfig {
 	public static boolean useGMInventories; // GamemodeInventories
 	public static Boolean hasSlimefun = null; // Slimefun ; Null if not checked
 	public static Boolean hasMMOItems = null; // MMOItems ; Null if not checked
+	public static boolean hasChestShop;
 
 	// Barrel
 	public static boolean openEverywhere;
@@ -214,6 +215,7 @@ public class BConfig {
 		// The item util has been removed in Vault 1.7+
 		hasVault = plMan.isPluginEnabled("Vault")
 			&& Integer.parseInt(plMan.getPlugin("Vault").getDescription().getVersion().split("\\.")[1]) <= 6;
+		hasChestShop = plMan.isPluginEnabled("ChestShop");
 
 		// various Settings
 		DataSave.autosave = config.getInt("autosave", 3);

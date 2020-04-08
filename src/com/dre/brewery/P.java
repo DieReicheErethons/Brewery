@@ -5,6 +5,7 @@ import com.dre.brewery.filedata.BData;
 import com.dre.brewery.filedata.DataSave;
 import com.dre.brewery.filedata.LanguageReader;
 import com.dre.brewery.filedata.UpdateChecker;
+import com.dre.brewery.integration.ChestShopListener;
 import com.dre.brewery.integration.IntegrationListener;
 import com.dre.brewery.integration.barrel.LogBlockBarrel;
 import com.dre.brewery.listeners.*;
@@ -119,6 +120,9 @@ public class P extends JavaPlugin {
 		p.getServer().getPluginManager().registerEvents(integrationListener, p);
 		if (use1_9) {
 			p.getServer().getPluginManager().registerEvents(new CauldronListener(), p);
+		}
+		if (BConfig.hasChestShop) {
+			p.getServer().getPluginManager().registerEvents(new ChestShopListener(), p);
 		}
 
 		// Heartbeat

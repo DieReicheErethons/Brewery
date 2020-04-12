@@ -409,6 +409,27 @@ public class Brew implements Cloneable {
 		}
 	}
 
+	public void updateCustomModelData(ItemMeta meta) {
+		if (!P.use1_14) return;
+		if (currentRecipe != null && currentRecipe.getCmData() != null) {
+			int cm;
+			if (quality > 7) {
+				cm = currentRecipe.getCmData()[2];
+			} else if (quality > 3) {
+				cm = currentRecipe.getCmData()[1];
+			} else {
+				cm = currentRecipe.getCmData()[0];
+			}
+			if (cm == 0) {
+				meta.setCustomModelData(null);
+			} else {
+				meta.setCustomModelData(cm);
+			}
+		} else {
+			meta.setCustomModelData(null);
+		}
+	}
+
 	/**
 	 * Get Special Drink Effects
 	 */
@@ -621,6 +642,7 @@ public class Brew implements Cloneable {
 			PotionColor.GREY.colorBrew(potionMeta, slotItem, canDistill());
 		}
 		alc = calcAlcohol();
+		updateCustomModelData(potionMeta);
 
 		// Distill Lore
 		if (currentRecipe != null && BConfig.colorInBrewer != BrewLore.hasColorLore(potionMeta)) {
@@ -695,6 +717,7 @@ public class Brew implements Cloneable {
 			}
 		}
 		alc = calcAlcohol();
+		updateCustomModelData(potionMeta);
 
 		// Lore
 		if (currentRecipe != null && BConfig.colorInBarrels != BrewLore.hasColorLore(potionMeta)) {
@@ -779,6 +802,7 @@ public class Brew implements Cloneable {
 		PotionMeta potionMeta = (PotionMeta) potion.getItemMeta();
 
 		recipe.getColor().colorBrew(potionMeta, potion, false);
+		updateCustomModelData(potionMeta);
 		potionMeta.setDisplayName(P.p.color("&f" + recipe.getName(quality)));
 		//if (!P.use1_14) {
 		// Before 1.14 the effects duration would strangely be only a quarter of what we tell it to be

@@ -133,6 +133,7 @@ customItems:
 
 # -- Ingrédients dans le chaudron --
 # Quels sont les ingrédients acceptés par le chaudron et la potion de base qui en résulte
+# Il vous suffit d'ajouter quelque chose ici si vous voulez spécifier un nom ou une couleur pour la potion de base
 
  # name: Nom de la potion de base qui sort du chaudron (codes de formatage possibles : tels que &6)
  # ingredients: Liste des 'matériaux/montant'
@@ -144,6 +145,7 @@ customItems:
  #     (Dans l'ordre : Rouge foncé, Rouge, Rouge clair, Orange, Jaune, Rose, Pourpre, Bleu, Cyan, Eau, Sarcelle, Olive, Vert, Vert lime, Noir, Gris, Gris clair, Blanc)
  #   Ou couleurs RGB (hex: par exemple '99FF33') (avec '') (recherche de "HTML color" sur internet)
  # lore: Liste de texte supplémentaire sur la potion de base. (Formatting codes possible: such as &6)
+ # customModelData: Custom Model Data Tag. This is a number that can be used to add custom textures to the item.
 
 cauldron:
   #  Exemple avec tous les paramètres possibles :
@@ -156,6 +158,7 @@ cauldron:
     lore:
       - Un exemple pour une potion de base
       - Voici comment il sort d'un chaudron
+    customModelData: 545
 
   # -- Un ingrédient: --
   wheat:
@@ -354,10 +357,12 @@ cauldron:
 # alcohol: Le montant d'alcool absolu dans une boisson parfaite (cela sera ajouté directement au joueur, où 100% entraînera l'évanouissement), un degré d'alcooléisme en fait
 # lore: Liste des textes supplémentaires sur le breuvage fini. (Codes de formatage possibles : tels que &6)
 #   Texte spécifique de qualité possible, en utilisant + mauvais, ++ normal, +++ bon, ajouté à l'avant de la ligne.
-# servercommands: Liste des commandes exécutées par le serveur lors de la consommation de la potion
-# playercommands: Liste des commandes exécutées par le joueur lors de la consommation de la potion
+# servercommands: Liste des commandes exécutées par le serveur lors de la consommation de la potion (Peut utiliser %player_name%)
+# playercommands: Liste des commandes exécutées par le joueur lors de la consommation de la potion (Peut utiliser %player_name%)
 # drinkmessage: Chat-message au joueur lorsqu'il boit la potion
 # drinktitle: Titre à l'écran du joueur lorsqu'il boit la potion
+# customModelData: Custom Model Data Tag. This is a number that can be used to add custom textures to the item.
+#   Can specify one for all, or one for each quality, separated by /
 # effects: Liste des effets/durée en secondes lors de la consommation.
 #   Effets posssible: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/potion/PotionEffectType.html
 #   POUR LES EFFETS EN FONCTIONS DE LA QUALITE : Les Niveaux (I ou II) ou les Intervalles de durées d'effets doivent être spécifiés avec un "-".
@@ -399,6 +404,7 @@ recipes:
       - homes
     drinkmessage: C'est bon au goût
     drinktitle: vous réchauffe à l'intérieur
+    customModelData: 556/557/557
     effects:
       - FIRE_RESISTANCE/20
       - HEAL/1
@@ -805,6 +811,9 @@ multiServerDB:
 
 # If items in Offhand should be added to the cauldron as well [false]
 useOffhandForCauldron: false
+
+# If Barrel and Cauldron data can be loaded Async/in the Background [true]
+loadDataAsync: true
 
 
 # -- Paramètres de la distorsion du Chat --

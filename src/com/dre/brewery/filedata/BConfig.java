@@ -58,7 +58,7 @@ public class BConfig {
 
 	// Barrel
 	public static boolean openEverywhere;
-	public static boolean loadDataAsync = true;
+	public static boolean loadDataAsync;
 
 	// Cauldron
 	public static boolean useOffhandForCauldron;
@@ -242,6 +242,7 @@ public class BConfig {
 		openEverywhere = config.getBoolean("openLargeBarrelEverywhere", false);
 		MCBarrel.maxBrews = config.getInt("maxBrewsInMCBarrels", 6);
 		useOffhandForCauldron = config.getBoolean("useOffhandForCauldron", false);
+		loadDataAsync = config.getBoolean("loadDataAsync", true);
 
 		Brew.loadSeed(config, new File(P.p.getDataFolder(), "config.yml"));
 

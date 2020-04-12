@@ -45,6 +45,7 @@ public class BRecipe {
 	private PotionColor color; // color of the distilled/finished potion
 	private int alcohol; // Alcohol in perfect potion
 	private List<Tuple<Integer, String>> lore; // Custom Lore on the Potion. The int is for Quality Lore, 0 = any, 1,2,3 = Bad,Middle,Good
+	private int[] cmData; // Custom Model Data[3] for each quality
 
 	// drinking
 	private List<BEffect> effects = new ArrayList<>(); // Special Effects when drinking
@@ -150,6 +151,23 @@ public class BRecipe {
 
 		recipe.drinkMsg = P.p.color(BUtil.loadCfgString(configSectionRecipes, recipeId + ".drinkmessage"));
 		recipe.drinkTitle = P.p.color(BUtil.loadCfgString(configSectionRecipes, recipeId + ".drinktitle"));
+		if (configSectionRecipes.isString(recipeId + ".customModelData")) {
+			String[] cmdParts = configSectionRecipes.getString(recipeId + ".customModelData", "").split("/");
+			if (cmdParts.length == 3) {
+				recipe.cmData = new int[]{P.p.parseInt(cmdParts[0]), P.p.parseInt(cmdParts[1]), P.p.parseInt(cmdParts[2])};
+				if (recipe.cmData[0] == 0 && recipe.cmData[1] == 0 && recipe.cmData[2] == 0) {
+					P.p.errorLog("Invalid customModelData in Recipe: " + recipe.getRecipeName());
+					recipe.cmData = null;
+				}
+			} else {
+				P.p.errorLog("Invalid customModelData in Recipe: " + recipe.getRecipeName());
+			}
+		} else {
+			int cmd = configSectionRecipes.getInt(recipeId + ".customModelData", 0);
+			if (cmd != 0) {
+				recipe.cmData = new int[]{cmd, cmd, cmd};
+			}
+		}
 
 		List<String> effectStringList = configSectionRecipes.getStringList(recipeId + ".effects");
 		if (effectStringList != null) {
@@ -628,6 +646,13 @@ public class BRecipe {
 		return list;
 	}
 
+	/**
+	 * Get the Custom Model Data array for bad, normal, good quality
+	 */
+	public int[] getCmData() {
+		return cmData;
+	}
+
 	public List<String> getPlayercmds() {
 		return playercmds;
 	}
@@ -886,6 +911,14 @@ public class BRecipe {
 		 */
 		public Builder drinkTitle(String title) {
 			recipe.drinkTitle = title;
+			return this;
+		}
+
+		/**
+		 * Add Custom Model Data for each Quality
+		 */
+		public Builder addCustomModelData(int bad, int normal, int good) {
+			recipe.cmData = new int[] {bad, normal, good};
 			return this;
 		}
 

@@ -130,6 +130,7 @@ public class BIngredients {
 
 			cookedName = cookRecipe.getName(quality);
 			cookRecipe.getColor().colorBrew(potionMeta, potion, false);
+			brew.updateCustomModelData(potionMeta);
 
 		} else {
 			// new base potion
@@ -149,6 +150,9 @@ public class BIngredients {
 						lore.write();
 					}
 					cauldronRecipe.getColor().colorBrew(potionMeta, potion, true);
+					if (P.use1_14 && cauldronRecipe.getCmData() != 0) {
+						potionMeta.setCustomModelData(cauldronRecipe.getCmData());
+					}
 				}
 			}
 		}

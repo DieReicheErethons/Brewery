@@ -31,6 +31,7 @@ public class BCauldronRecipe {
 	//private List<String> particles
 	private PotionColor color;
 	private List<String> lore;
+	private int cmData; // Custom Model Data
 	private boolean saveInData; // If this recipe should be saved in data and loaded again when the server restarts. Applicable to non-config recipes
 
 
@@ -83,6 +84,8 @@ public class BCauldronRecipe {
 			recipe.lore = lore.stream().map(Tuple::second).collect(Collectors.toList());
 		}
 
+		recipe.cmData = cfg.getInt(id + ".customModelData", 0);
+
 		return recipe;
 	}
 
@@ -129,6 +132,13 @@ public class BCauldronRecipe {
 
 	public void setLore(List<String> lore) {
 		this.lore = lore;
+	}
+
+	/**
+	 * Get the Custom Model Data
+	 */
+	public int getCmData() {
+		return cmData;
 	}
 
 	public void setSaveInData(boolean saveInData) {

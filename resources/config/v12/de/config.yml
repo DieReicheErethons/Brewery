@@ -124,6 +124,7 @@ customItems:
 
 # -- Zutaten im Kessel --
 # Hier kann angegeben werden welche Zutaten in den Kessel getan werden können und was mit ihnen geschieht.
+# Es braucht nur etwas hier eingetragen werden falls der Basistrank besondere Eigenschaften wie Name und Farbe haben soll
 
  # name: Name des Basistrankes der aus dem Kessel kommt (Farbcodes möglich: z.b. &6)
  # ingredients: Auflistung von 'Material/Anzahl'
@@ -134,6 +135,7 @@ customItems:
  #   Benutzbare Farben: DARK_RED, RED, BRIGHT_RED, ORANGE, PINK, BLUE, CYAN, WATER, GREEN, BLACK, GREY, BRIGHT_GREY
  #   Oder RGB Farben (Hex: also zB '99FF33') (Ohne #) (mit '') (Einfach nach "HTML color" im Internet suchen)
  # lore: Auflistung von zusätzlichem Text auf dem Trank. (Farbcodes möglich: z.b. &6)
+ # customModelData: Custom Model Data Modelldaten. Mit dieser Zahl kann die Tranktextur mit einem Resourcepack geändert werden
 
 
 cauldron:
@@ -146,6 +148,7 @@ cauldron:
     lore:
       - Ein Beispiel für einen Basistrank
       - So kommt er aus dem Kessel
+    customModelData: 545
 
 # -- Eine Zutat: --
   wheat:
@@ -217,10 +220,12 @@ cauldron:
 # alcohol: Alkoholgehalt 0-100 in absoluter Menge bei perfektem Getränk (wird dem Spieler hinzugefügt, bei 100 = tot)
 # lore: Auflistung von zusätzlichem Text auf dem fertigen Trank. (Farbcodes möglich: z.b. &6)
 #   Lore nur für bestimmte Qualität möglich mit + Schlecht, ++ Mittel, +++ Gut, vorne anhängen.
-# servercommands: Liste von Befehlen ausgeführt vom Server wenn der Trank getrunken wird
-# playercommands: Liste von Befehlen ausgeführt vom Spieler wenn der Trank getrunken wird
+# servercommands: Liste von Befehlen ausgeführt vom -Server- wenn der Trank getrunken wird (%player_name% benutzbar)
+# playercommands: Liste von Befehlen ausgeführt vom -Spieler- wenn der Trank getrunken wird (%player_name% benutzbar)
 # drinkmessage: Nachricht im Chat beim trinken des Trankes
 # drinktitle: Nachricht als Titel auf dem Bildschirm an den Spieler beim trinken des Trankes
+# customModelData: Custom Model Data Modelldaten. Mit dieser Zahl kann die Tranktextur mit einem Resourcepack geändert werden
+#   Es kann eine für alle, oder drei für die qualitäten schlecht/normal/gut agegeben werden, mit / getrennt
 # effects: Auflistung Effekt/Level/Dauer  Besonderere Trank-Effekte beim Trinken, Dauer in sek.
 #   Ein 'X' an den Namen anhängen, um ihn zu verbergen. Bsp: 'POISONX/2/10' (WEAKNESS, INCREASE_DAMAGE, SLOW und SPEED sind immer verborgen.)
 #   Effekte sind ab der 1.9 immer verborgen, wegen Änderungen an den Tränken.
@@ -262,6 +267,7 @@ recipes:
       - homes
       drinkmessage: Schmeckt toll
       drinktitle: Wärmt dich von innen
+      customModelData: 556/557/557
       effects:
       - FIRE_RESISTANCE/20
       - HEAL/1
@@ -447,6 +453,9 @@ multiServerDB:
 
 # Ob Items in der Zweithand auch in den Kessel geworfen werden sollen [false]
 useOffhandForCauldron: false
+
+# Of Fass- und Kesseldaten Async/im Hintergrund geladen werden können [true]
+loadDataAsync: true
 
 
 # -- Chat Veränderungs Einstellungen --

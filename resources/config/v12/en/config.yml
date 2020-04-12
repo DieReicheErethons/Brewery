@@ -125,6 +125,7 @@ customItems:
 
 # -- Ingredients in the Cauldron --
 # Which Ingredients are accepted by the Cauldron and the base potion resulting from them
+# You only need to add something here if you want to specify a custom name or color for the base potion
 
  # name: Name of the base potion coming out of the Cauldron (Formatting codes possible: such as &6)
  # ingredients: List of 'material/amount'
@@ -135,6 +136,7 @@ customItems:
  #   Usable Colors: DARK_RED, RED, BRIGHT_RED, ORANGE, PINK, BLUE, CYAN, WATER, GREEN, BLACK, GREY, BRIGHT_GREY
  #   Or RGB colors (hex: for example '99FF33') (with '') (search for "HTML color" on the internet)
  # lore: List of additional text on the base potion. (Formatting codes possible: such as &6)
+ # customModelData: Custom Model Data Tag. This is a number that can be used to add custom textures to the item.
 
 cauldron:
   ex:
@@ -146,6 +148,7 @@ cauldron:
     lore:
       - An example for a Base Potion
       - This is how it comes out of a Cauldron
+    customModelData: 545
 
   # -- One Ingredient: --
   wheat:
@@ -218,10 +221,12 @@ cauldron:
 # alcohol: Absolute amount of alcohol 0-100 in a perfect potion (will be added directly to the player, where 100 means fainting)
 # lore: List of additional text on the finished brew. (Formatting codes possible: such as &6)
 #   Specific lore for quality possible, using + bad, ++ normal, +++ good, added to the front of the line.
-# servercommands: List of Commands executed by the Server when drinking the brew
-# playercommands: List of Commands executed by the Player when drinking the brew
+# servercommands: List of Commands executed by the -Server- when drinking the brew (Can use %player_name%)
+# playercommands: List of Commands executed by the -Player- when drinking the brew (Can use %player_name%)
 # drinkmessage: Chat-message to the Player when drinking the Brew
 # drinktitle: Title on Screen to the Player when drinking the Brew
+# customModelData: Custom Model Data Tag. This is a number that can be used to add custom textures to the item.
+#   Can specify one for all, or one for each quality, separated by /
 # effects: List of effect/level/duration  Special potion-effect when drinking, duration in sek.
 #   Suffix name with 'X' to hide effect from label. Sample: 'POISONX/2/10' (WEAKNESS, INCREASE_DAMAGE, SLOW and SPEED are always hidden.)
 #   Effects are always hidden in 1.9 and newer, because of changes in the potion mechanics.
@@ -263,6 +268,7 @@ recipes:
       - homes
       drinkmessage: Tastes good
       drinktitle: Warms you from inside
+      customModelData: 556/557/557
       effects:
       - FIRE_RESISTANCE/20
       - HEAL/1
@@ -448,6 +454,9 @@ multiServerDB:
 
 # If items in Offhand should be added to the cauldron as well [false]
 useOffhandForCauldron: false
+
+# If Barrel and Cauldron data can be loaded Async/in the Background [true]
+loadDataAsync: true
 
 
 # -- Chat Distortion Settings --

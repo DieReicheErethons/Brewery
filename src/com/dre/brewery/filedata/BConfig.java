@@ -58,6 +58,7 @@ public class BConfig {
 
 	// Barrel
 	public static boolean openEverywhere;
+	public static boolean loadDataAsync = true;
 
 	// Cauldron
 	public static boolean useOffhandForCauldron;
@@ -243,6 +244,11 @@ public class BConfig {
 		useOffhandForCauldron = config.getBoolean("useOffhandForCauldron", false);
 
 		Brew.loadSeed(config, new File(P.p.getDataFolder(), "config.yml"));
+
+		if (!P.use1_13) {
+			// world.getBlockAt loads Chunks in 1.12 and lower. Can't load async
+			loadDataAsync = false;
+		}
 
 		PluginItem.registerForConfig("brewery", BreweryPluginItem::new);
 		PluginItem.registerForConfig("mmoitems", MMOItemsPluginItem::new);

@@ -186,26 +186,11 @@ public class BData {
 
 
 			final List<World> worlds = P.p.getServer().getWorlds();
-			P.p.getServer().getScheduler().runTaskAsynchronously(P.p, () -> {
-				if (!acquireDataLoadMutex()) return; // Tries for 60 sec
-
-				try {
-					for (World world : worlds) {
-						if (world.getName().startsWith("DXL_")) {
-							loadWorldData(BUtil.getDxlName(world.getName()), world);
-						} else {
-							loadWorldData(world.getUID().toString(), world);
-						}
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				} finally {
-					releaseDataLoadMutex();
-					if (BData.dataMutex.get() == 0) {
-						P.p.log("Background data loading complete.");
-					}
-				}
-			});
+			if (BConfig.loadDataAsync) {
+				P.p.getServer().getScheduler().runTaskAsynchronously(P.p, () -> lwDataTask(worlds));
+			} else {
+				lwDataTask(worlds);
+			}
 
 		} else {
 			P.p.log("No data.yml found, will create new one!");
@@ -275,6 +260,27 @@ public class BData {
 		} else {
 			// New way of saving ingredients
 			return deserializeIngredients(section.getString(path));
+		}
+	}
+
+	public static void lwDataTask(List<World> worlds) {
+		if (!acquireDataLoadMutex()) return; // Tries for 60 sec
+
+		try {
+			for (World world : worlds) {
+				if (world.getName().startsWith("DXL_")) {
+					loadWorldData(BUtil.getDxlName(world.getName()), world);
+				} else {
+					loadWorldData(world.getUID().toString(), world);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			releaseDataLoadMutex();
+			if (BConfig.loadDataAsync && BData.dataMutex.get() == 0) {
+				P.p.log("Background data loading complete.");
+			}
 		}
 	}
 
@@ -421,7 +427,7 @@ public class BData {
 			}
 		}
 
-		// Merge Loaded Data in Main Thred
+		// Merge Loaded Data in Main Thread
 		P.p.getServer().getScheduler().runTask(P.p, () -> {
 			if (P.p.getServer().getWorld(world.getUID()) == null) {
 				return;

@@ -4,6 +4,7 @@ import com.dre.brewery.BCauldron;
 import com.dre.brewery.Barrel;
 import com.dre.brewery.P;
 import com.dre.brewery.Wakeup;
+import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.filedata.BData;
 import com.dre.brewery.filedata.DataSave;
 import com.dre.brewery.utility.BUtil;
@@ -19,23 +20,27 @@ public class WorldListener implements Listener {
 	@EventHandler
 	public void onWorldLoad(WorldLoadEvent event) {
 		final World world = event.getWorld();
-		P.p.getServer().getScheduler().runTaskAsynchronously(P.p, () -> {
-			if (!BData.acquireDataLoadMutex()) return;  // Tries for 60 sec
+		if (BConfig.loadDataAsync) {
+			P.p.getServer().getScheduler().runTaskAsynchronously(P.p, () -> lwDataTask(world));
+		} else {
+			lwDataTask(world);
+		}
+	}
 
-			try {
-				if (world.getName().startsWith("DXL_")) {
-					BData.loadWorldData(BUtil.getDxlName(world.getName()), world);
-				} else {
-					BData.loadWorldData(world.getUID().toString(), world);
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			} finally {
-				BData.releaseDataLoadMutex();
+	private void lwDataTask(World world) {
+		if (!BData.acquireDataLoadMutex()) return;  // Tries for 60 sec
+
+		try {
+			if (world.getName().startsWith("DXL_")) {
+				BData.loadWorldData(BUtil.getDxlName(world.getName()), world);
+			} else {
+				BData.loadWorldData(world.getUID().toString(), world);
 			}
-
-		});
-
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			BData.releaseDataLoadMutex();
+		}
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

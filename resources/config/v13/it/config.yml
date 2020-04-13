@@ -354,8 +354,8 @@ cauldron:
 # alcohol: Volume alcolico da 0 a 100 nella versione perfetta (sarà aggiunta direttamente al giocatore, dove 100 è la quantità massima di alcohol assorbibile.
 # lore: List of additional text on the finished brew. (Formatting codes possible: such as &6)
 #   Specific lore for quality possible, using + bad, ++ normal, +++ good, added to the front of the line.
-# servercommands: List of Commands executed by the -Server- when drinking the brew (Can use %player_name%)
-# playercommands: List of Commands executed by the -Player- when drinking the brew (Can use %player_name%)
+# servercommands: List of Commands executed by the -Server- when drinking the brew (Can use %player_name%  %quality%)
+# playercommands: List of Commands executed by the -Player- when drinking the brew (Can use %player_name%  %quality%)
 # drinkmessage: Chat-message to the Player when drinking the Brew
 # drinktitle: Title on Screen to the Player when drinking the Brew
 # customModelData: Custom Model Data Tag. This is a number that can be used to add custom textures to the item.

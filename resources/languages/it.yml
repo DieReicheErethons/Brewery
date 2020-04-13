@@ -44,7 +44,7 @@ Error_PlayerCommand: '&cQuesto comando può essere eseguito solo da un giocatore
 Error_Recipeload: '&cNon è stato possibile recuperare tutte le ricette: ulteriori informazioni nel file log!'
 Error_ShowHelp: Usa &6/brew help &fper visualizzare l''aiuto
 Error_UnknownCommand: Comando sconosciuto
-Error_YmlRead: 'Could not read file config.yml, please make sure the file is in valid yml format (correct spaces etc.)'
+Error_YmlRead: 'Could not read file config.yml, please make sure the file is in valid yml format (correct spaces, using '' '' etc.)'
 
 # Varie
 Etc_Barrel: Barile

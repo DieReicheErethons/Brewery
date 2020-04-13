@@ -281,18 +281,21 @@ public class BCauldron {
 				return;
 			}
 			if (ingredientAdd(clickedBlock, item, player)) {
-				boolean isBucket = item.getType().equals(Material.WATER_BUCKET)
-					|| item.getType().equals(Material.LAVA_BUCKET)
-					|| item.getType().equals(Material.MILK_BUCKET);
+				boolean isBucket = item.getType().name().endsWith("_BUCKET");
+				boolean isBottle = LegacyUtil.isBottle(item.getType());
 				if (item.getAmount() > 1) {
 					item.setAmount(item.getAmount() - 1);
 
 					if (isBucket) {
 						giveItem(player, new ItemStack(Material.BUCKET));
+					} else if (isBottle) {
+						giveItem(player, new ItemStack(Material.GLASS_BOTTLE));
 					}
 				} else {
 					if (isBucket) {
 						setItemInHand(event, Material.BUCKET, handSwap);
+					} else if (isBottle) {
+						setItemInHand(event, Material.GLASS_BOTTLE, handSwap);
 					} else {
 						setItemInHand(event, Material.AIR, handSwap);
 					}

@@ -129,6 +129,15 @@ public class LegacyUtil {
 		return false;
 	}
 
+	public static boolean isBottle(Material type) {
+		if (type == Material.POTION) return true;
+		if (!P.use1_9) return false;
+		if (type == Material.LINGERING_POTION || type == Material.SPLASH_POTION) return true;
+		if (!P.use1_13) return false;
+		if (type == Material.EXPERIENCE_BOTTLE) return true;
+		return type.name().equals("HONEY_BOTTLE");
+	}
+
 	public static boolean areStairsInverted(Block block) {
 		if (!P.use1_13) {
 			@SuppressWarnings("deprecation")

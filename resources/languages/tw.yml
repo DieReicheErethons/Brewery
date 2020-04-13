@@ -44,7 +44,7 @@ Error_PlayerCommand: '&c這個指令只能由玩家執行！'
 Error_Recipeload: '&c並非所有配方都可以有用：服務器日誌中的更多信息！'
 Error_ShowHelp: 使用 &6/brew help &f顯示幫助
 Error_UnknownCommand: 未知的指令
-Error_YmlRead: 'Could not read file config.yml, please make sure the file is in valid yml format (correct spaces etc.)'
+Error_YmlRead: 'Could not read file config.yml, please make sure the file is in valid yml format (correct spaces, using '' '' etc.)'
 
 # Etc
 Etc_Barrel: 釀造桶

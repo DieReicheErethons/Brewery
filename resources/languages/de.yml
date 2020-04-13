@@ -44,7 +44,7 @@ Error_PlayerCommand: '&cDieser Befehl kann nur als Spieler ausgeführt werden'
 Error_Recipeload: '&cEs konnten nicht alle Rezepte wiederhergesellt werden: Siehe Serverlog!'
 Error_ShowHelp: 'Benutze &6/brew help &fum die Hilfe anzuzeigen'
 Error_UnknownCommand: Unbekannter Befehl
-Error_YmlRead: 'config.yml konnte nicht gelesen werden, ist die Datei im korrekten yml-Format (korrekte Leerzeichen usw.)?'
+Error_YmlRead: 'config.yml konnte nicht gelesen werden, ist die Datei im korrekten yml-Format (korrekte Leerzeichen, Strings mit '' '' usw.)?'
 
 # Etc
 Etc_Page: Seite

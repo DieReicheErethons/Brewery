@@ -448,22 +448,22 @@ public class BRecipe {
 		return false;
 	}
 
-	public void applyDrinkFeatures(Player player) {
+	public void applyDrinkFeatures(Player player, int quality) {
 		if (playercmds != null && !playercmds.isEmpty()) {
 			for (String cmd : playercmds) {
-				player.performCommand(cmd.replaceAll("%player_name%", player.getName()));
+				player.performCommand(BUtil.applyPlaceholders(cmd, player.getName(), quality));
 			}
 		}
 		if (servercmds != null && !servercmds.isEmpty()) {
 			for (String cmd : servercmds) {
-				P.p.getServer().dispatchCommand(P.p.getServer().getConsoleSender(), cmd.replaceAll("%player_name%", player.getName()));
+				P.p.getServer().dispatchCommand(P.p.getServer().getConsoleSender(), BUtil.applyPlaceholders(cmd, player.getName(), quality));
 			}
 		}
 		if (drinkMsg != null) {
-			player.sendMessage(drinkMsg.replaceAll("%player_name%", player.getName()));
+			player.sendMessage(BUtil.applyPlaceholders(drinkMsg, player.getName(), quality));
 		}
 		if (drinkTitle != null) {
-			player.sendTitle("", drinkTitle.replaceAll("%player_name%", player.getName()), 10, 90, 30);
+			player.sendTitle("", BUtil.applyPlaceholders(drinkTitle, player.getName(), quality), 10, 90, 30);
 		}
 	}
 

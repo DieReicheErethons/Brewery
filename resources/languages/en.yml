@@ -44,7 +44,7 @@ Error_PlayerCommand: '&cThis command can only be executed as a player!'
 Error_Recipeload: '&cNot all recipes could be restored: More information in the server log!'
 Error_ShowHelp: Use &6/brew help &fto display the help
 Error_UnknownCommand: Unknown Command
-Error_YmlRead: 'Could not read file config.yml, please make sure the file is in valid yml format (correct spaces etc.)'
+Error_YmlRead: 'Could not read file config.yml, please make sure the file is in valid yml format (correct spaces, using '' '' etc.)'
 
 # Etc
 Etc_Barrel: Barrel

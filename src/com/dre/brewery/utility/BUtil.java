@@ -164,6 +164,18 @@ public class BUtil {
 		return -1;
 	}
 
+	/**
+	 * Replaces the Placeholders %player_name% and %quality% in the given input string
+	 *
+	 * @param input The String to replace the placeholders in
+	 * @param player Player Name to replace %player_name%
+	 * @param quality Quality to replace %quality%
+	 * @return The String with all placeholders replaced
+	 */
+	public static String applyPlaceholders(String input, String player, int quality) {
+		return input.replaceAll("%player_name%", player).replaceAll("%quality%", String.valueOf(quality));
+	}
+
 	/* **************************************** */
 	/* *********                      ********* */
 	/* *********     Brewery Utils    ********* */

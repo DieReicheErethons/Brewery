@@ -195,9 +195,9 @@ public class BIngredients {
 		return count;
 	}
 
-	/*public Map<Material, Integer> getIngredients() {
+	public List<Ingredient> getIngredientList() {
 		return ingredients;
-	}*/
+	}
 
 	public int getCookedTime() {
 		return cookedTime;

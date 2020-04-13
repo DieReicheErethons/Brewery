@@ -240,9 +240,13 @@ public class BConfig {
 		alwaysShowAlc = config.getBoolean("alwaysShowAlc", false);
 		enableEncode = config.getBoolean("enableEncode", false);
 		openEverywhere = config.getBoolean("openLargeBarrelEverywhere", false);
-		MCBarrel.maxBrews = config.getInt("maxBrewsInMCBarrels", 6);
 		useOffhandForCauldron = config.getBoolean("useOffhandForCauldron", false);
 		loadDataAsync = config.getBoolean("loadDataAsync", true);
+
+		if (P.use1_14) {
+			MCBarrel.maxBrews = config.getInt("maxBrewsInMCBarrels", 6);
+			MCBarrel.enableAging = config.getBoolean("ageInMCBarrels", true);
+		}
 
 		Brew.loadSeed(config, new File(P.p.getDataFolder(), "config.yml"));
 

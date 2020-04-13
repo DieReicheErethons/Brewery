@@ -63,7 +63,8 @@ alwaysShowAlc: false
 # Se un barile grande può essere aperto  cliccandoci sopra, non solo sul cartello e sulla staccionata. Questo è sempre true per i barili piccoli. [true]
 openLargeBarrelEverywhere: true
 
-# How many Brewery drinks can be put into the Minecraft barrels [6]
+# If aging in -Minecraft- Barrels in enabled [true] and how many Brewery drinks can be put into them [6]
+ageInMCBarrels: true
 maxBrewsInMCBarrels: 6
 
 # The used Ingredients and other brewing-data is saved to all Brewery Items. To prevent

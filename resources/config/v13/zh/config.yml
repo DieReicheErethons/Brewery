@@ -66,6 +66,7 @@ alwaysShowAlc: false
 openLargeBarrelEverywhere: false
 
 # MC自带的桶内可以存放多少饮品 [6]
+ageInMCBarrels: true
 maxBrewsInMCBarrels: 6
 
 # The used Ingredients and other brewing-data is saved to all Brewery Items. To prevent

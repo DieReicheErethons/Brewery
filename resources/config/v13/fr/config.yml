@@ -64,7 +64,8 @@ alwaysShowAlc: false
 # Si le grand tonneau peut être ouvert en cliquant sur n'importe quel bloc, non seulement le robinet ou le panneau. Toujours "true" pour les petits tonneaux. [true]
 openLargeBarrelEverywhere: true
 
-# Combien de boissons de brasserie peuvent être mises dans les barils Minecraft [6]
+# Combien de boissons de brasserie peuvent être mises dans les barils -Minecraft- [6]
+ageInMCBarrels: true
 maxBrewsInMCBarrels: 6
 
 # Les ingrédients et autres données de brassage utilisés sont sauvegardés dans tous les articles de brasserie. [false]

@@ -177,6 +177,7 @@ public class InventoryListener implements Listener {
 	public void onInventoryClickMCBarrel(InventoryClickEvent event) {
 		if (!P.use1_14) return;
 		if (event.getInventory().getType() != InventoryType.BARREL) return;
+		if (!MCBarrel.enableAging) return;
 
 		Inventory inv = event.getInventory();
 		for (MCBarrel barrel : MCBarrel.openBarrels) {
@@ -227,6 +228,7 @@ public class InventoryListener implements Listener {
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onInventoryOpen(InventoryOpenEvent event) {
 		if (!P.use1_14) return;
+		if (!MCBarrel.enableAging) return;
 
 		/*Barrel x = null;
 		if (event.getInventory().getHolder() instanceof Barrel) {
@@ -311,7 +313,7 @@ public class InventoryListener implements Listener {
 		}
 
 		// Check for MC Barrel
-		if (event.getInventory().getType() == InventoryType.BARREL) {
+		if (MCBarrel.enableAging && event.getInventory().getType() == InventoryType.BARREL) {
 			Inventory inv = event.getInventory();
 			for (Iterator<MCBarrel> iter = MCBarrel.openBarrels.iterator(); iter.hasNext(); ) {
 				MCBarrel barrel = iter.next();

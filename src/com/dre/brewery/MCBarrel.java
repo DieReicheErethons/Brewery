@@ -19,6 +19,7 @@ public class MCBarrel {
 	public static final byte OAK = 2;
 	public static final String TAG = "Btime";
 	public static int maxBrews = 6;
+	public static boolean enableAging = true;
 
 	public static long mcBarrelTime; // Globally stored Barrel time. Difference between this and the time stored on each mc-barrel will give the barrel age time
 	public static List<MCBarrel> openBarrels = new ArrayList<>();
@@ -115,7 +116,9 @@ public class MCBarrel {
 
 
 	public static void onUpdate() {
-		mcBarrelTime++;
+		if (enableAging) {
+			mcBarrelTime++;
+		}
 	}
 
 	// Used to visually stop Players from placing more than 6 (configurable) brews in the MC Barrels.

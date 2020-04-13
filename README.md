@@ -20,7 +20,7 @@ Also see  [Wiki](https://github.com/DieReicheErethons/Brewery/wiki) | [Releases]
 <dependency>
    <groupId>com.de</groupId>
    <artifactId>Brewery</artifactId>
-   <version>2.1</version>
+   <version>2.1.1</version>
    <scope>provided</scope>
 </dependency>
 ```

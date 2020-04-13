@@ -86,7 +86,7 @@ autosave: 3
 debug: false
 
 # Config Version
-version: '2.1'
+version: '2.1.1'
 oldMat: true
 
 

@@ -89,7 +89,7 @@ autosave: 3
 debug: false
 
 # 配置文件版本
-version: '2.1'
+version: '2.1.1'
 
 
 

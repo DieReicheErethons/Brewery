@@ -39,7 +39,7 @@ import java.util.Map;
 
 public class BConfig {
 
-	public static final String configVersion = "2.1";
+	public static final String configVersion = "2.1.1";
 	public static boolean updateCheck;
 	public static CommandSender reloader;
 

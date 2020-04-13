@@ -88,7 +88,7 @@ autosave: 3
 debug: false
 
 # Version de configuration
-version: '2.1'
+version: '2.1.1'
 
 
 
@@ -358,8 +358,8 @@ cauldron:
 # alcohol: Le montant d'alcool absolu dans une boisson parfaite (cela sera ajouté directement au joueur, où 100% entraînera l'évanouissement), un degré d'alcooléisme en fait
 # lore: Liste des textes supplémentaires sur le breuvage fini. (Codes de formatage possibles : tels que &6)
 #   Texte spécifique de qualité possible, en utilisant + mauvais, ++ normal, +++ bon, ajouté à l'avant de la ligne.
-# servercommands: Liste des commandes exécutées par le serveur lors de la consommation de la potion (Peut utiliser %player_name%  %quality%)
-# playercommands: Liste des commandes exécutées par le joueur lors de la consommation de la potion (Peut utiliser %player_name%  %quality%)
+# servercommands: Liste des commandes exécutées par le -serveur- lors de la consommation de la potion (Peut utiliser %player_name%  %quality%)
+# playercommands: Liste des commandes exécutées par le -joueur- lors de la consommation de la potion (Peut utiliser %player_name%  %quality%)
 # drinkmessage: Chat-message au joueur lorsqu'il boit la potion
 # drinktitle: Titre à l'écran du joueur lorsqu'il boit la potion
 # customModelData: Custom Model Data Tag. This is a number that can be used to add custom textures to the item.

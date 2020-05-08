@@ -21,6 +21,9 @@ public interface StringParser {
 				plus = 1;
 				line = line.substring(1);
 			}
+			if (line.startsWith(" ")) {
+				line = line.substring(1);
+			}
 			if (line.startsWith("/")) {
 				line = line.substring(1);
 			}

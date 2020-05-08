@@ -5,6 +5,7 @@ import com.dre.brewery.Brew;
 import com.dre.brewery.P;
 import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.utility.BUtil;
+import com.dre.brewery.utility.StringParser;
 import com.dre.brewery.utility.Tuple;
 import org.apache.commons.lang.NotImplementedException;
 import org.bukkit.Color;
@@ -49,8 +50,8 @@ public class BRecipe {
 
 	// drinking
 	private List<BEffect> effects = new ArrayList<>(); // Special Effects when drinking
-	private List<String> playercmds; // Commands executed as the player when drinking
-	private List<String> servercmds; // Commands executed as the server when drinking
+	private @Nullable List<Tuple<Integer, String>> playercmds; // Commands executed as the player when drinking
+	private @Nullable List<Tuple<Integer, String>> servercmds; // Commands executed as the server when drinking
 	private String drinkMsg; // Message when drinking
 	private String drinkTitle; // Title to show when drinking
 
@@ -127,27 +128,36 @@ public class BRecipe {
 			return null;
 		}
 
-		recipe.lore = loadQualityStringList(configSectionRecipes, recipeId + ".lore");
-
-		recipe.servercmds = BUtil.loadCfgStringList(configSectionRecipes, recipeId + ".servercommands");
-		recipe.playercmds = BUtil.loadCfgStringList(configSectionRecipes, recipeId + ".playercommands");
-
-		if (recipe.servercmds != null && !recipe.servercmds.isEmpty()) {
-			for (ListIterator<String> iter = recipe.servercmds.listIterator(); iter.hasNext(); ) {
-				String cmd = iter.next();
-				if (cmd.startsWith("/")) {
-					iter.set(cmd.substring(1));
+		// parsers can be created inline:
+		StringParser loreParser =  new StringParser() {
+			@Override
+			public Object parse(String line) {
+				line = P.p.color(line);
+				int plus = 0;
+				if (line.startsWith("+++")) {
+					plus = 3;
+					line = line.substring(3);
+				} else if (line.startsWith("++")) {
+					plus = 2;
+					line = line.substring(2);
+				} else if (line.startsWith("+")) {
+					plus = 1;
+					line = line.substring(1);
 				}
-			}
-		}
-		if (recipe.playercmds != null && !recipe.playercmds.isEmpty()) {
-			for (ListIterator<String> iter = recipe.playercmds.listIterator(); iter.hasNext(); ) {
-				String cmd = iter.next();
-				if (cmd.startsWith("/")) {
-					iter.set(cmd.substring(1));
+				if (line.startsWith(" ")) {
+					line = line.substring(1);
 				}
+				if (!line.startsWith("§")) {
+					line = "§9" + line;
+				}
+				return new Tuple<>(plus, line);
 			}
-		}
+		};
+		recipe.lore = loadQualityStringList(configSectionRecipes, recipeId + ".lore", loreParser);
+
+		// or parsers can be predefined in the interface itself:
+		recipe.servercmds = loadQualityStringList(configSectionRecipes, recipeId + ".servercommands", StringParser.cmdParser());
+		recipe.playercmds = loadQualityStringList(configSectionRecipes, recipeId + ".playercommands", StringParser.cmdParser());
 
 		recipe.drinkMsg = P.p.color(BUtil.loadCfgString(configSectionRecipes, recipeId + ".drinkmessage"));
 		recipe.drinkTitle = P.p.color(BUtil.loadCfgString(configSectionRecipes, recipeId + ".drinktitle"));
@@ -311,30 +321,20 @@ public class BRecipe {
 	 * Load a list of strings from a ConfigurationSection and parse preceded pluses.
 	 */
 	@Nullable
-	public static List<Tuple<Integer, String>> loadQualityStringList(ConfigurationSection cfg, String path) {
+	public static List<Tuple<Integer, String>> loadQualityStringList(ConfigurationSection cfg, String path, StringParser p) {
 		List<String> load = BUtil.loadCfgStringList(cfg, path);
 		if (load != null) {
 			List<Tuple<Integer, String>> list = new ArrayList<>(load.size());
+			if (p == null){
+				p = new StringParser() {
+					@Override
+					public Object parse(String line) {
+						return new Tuple<Integer, String>(0, line);
+					}
+				};
+			}
 			for (String line : load) {
-				line = P.p.color(line);
-				int plus = 0;
-				if (line.startsWith("+++")) {
-					plus = 3;
-					line = line.substring(3);
-				} else if (line.startsWith("++")) {
-					plus = 2;
-					line = line.substring(2);
-				} else if (line.startsWith("+")) {
-					plus = 1;
-					line = line.substring(1);
-				}
-				if (line.startsWith(" ")) {
-					line = line.substring(1);
-				}
-				if (!line.startsWith("§")) {
-					line = "§9" + line;
-				}
-				list.add(new Tuple<>(plus, line));
+				list.add((Tuple<Integer, String>) p.parse(line));
 			}
 			return list;
 		}
@@ -634,6 +634,16 @@ public class BRecipe {
 		return getStringForQuality(quality, lore);
 	}
 
+	@Nullable
+	public List<String> getPlayercmdsForQuality(int quality) {
+		return getStringForQuality(quality, playercmds);
+	}
+
+	@Nullable
+	public List<String> getServercmdsForQuality(int quality) {
+		return getStringForQuality(quality, servercmds);
+	}
+
 	/**
 	 * Get a quality filtered list of supported attributes
 	 */
@@ -664,11 +674,13 @@ public class BRecipe {
 		return cmData;
 	}
 
-	public List<String> getPlayercmds() {
+	@Nullable
+	public List<Tuple<Integer, String>> getPlayercmds() {
 		return playercmds;
 	}
 
-	public List<String> getServercmds() {
+	@Nullable
+	public List<Tuple<Integer, String>> getServercmds() {
 		return servercmds;
 	}
 
@@ -891,10 +903,17 @@ public class BRecipe {
 		 * Add Commands that are executed by the player on drinking
 		 */
 		public Builder addPlayerCmds(String... cmds) {
-			if (recipe.playercmds == null) {
-				recipe.playercmds = new ArrayList<>(cmds.length);
+			ArrayList<Tuple<Integer,String>> playercmds = new ArrayList<Tuple<Integer, String>>(cmds.length);
+
+			StringParser p = StringParser.cmdParser();
+			for (String cmd : cmds) {
+				playercmds.add((Tuple<Integer, String>) p.parse(cmd));
 			}
-			Collections.addAll(recipe.playercmds, cmds);
+			if (recipe.playercmds == null) {
+				recipe.playercmds = playercmds;
+			} else {
+				recipe.playercmds.addAll(playercmds);
+			}
 			return this;
 		}
 
@@ -902,10 +921,17 @@ public class BRecipe {
 		 * Add Commands that are executed by the server on drinking
 		 */
 		public Builder addServerCmds(String... cmds) {
-			if (recipe.servercmds == null) {
-				recipe.servercmds = new ArrayList<>(cmds.length);
+			ArrayList<Tuple<Integer,String>> servercmds = new ArrayList<Tuple<Integer, String>>(cmds.length);
+
+			StringParser p = StringParser.cmdParser();
+			for (String cmd : cmds) {
+				servercmds.add((Tuple<Integer, String>) p.parse(cmd));
 			}
-			Collections.addAll(recipe.servercmds, cmds);
+			if (recipe.servercmds == null) {
+				recipe.servercmds = servercmds;
+			} else {
+				recipe.servercmds.addAll(servercmds);
+			}
 			return this;
 		}
 

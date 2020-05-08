@@ -127,7 +127,7 @@ public class BRecipe {
 			return null;
 		}
 
-		recipe.lore = loadLore(configSectionRecipes, recipeId + ".lore");
+		recipe.lore = loadQualityStringList(configSectionRecipes, recipeId + ".lore");
 
 		recipe.servercmds = BUtil.loadCfgStringList(configSectionRecipes, recipeId + ".servercommands");
 		recipe.playercmds = BUtil.loadCfgStringList(configSectionRecipes, recipeId + ".playercommands");
@@ -307,11 +307,14 @@ public class BRecipe {
 		return ingredients;
 	}
 
+	/**
+	 * Load a list of strings from a ConfigurationSection and parse preceded pluses.
+	 */
 	@Nullable
-	public static List<Tuple<Integer, String>> loadLore(ConfigurationSection cfg, String path) {
+	public static List<Tuple<Integer, String>> loadQualityStringList(ConfigurationSection cfg, String path) {
 		List<String> load = BUtil.loadCfgStringList(cfg, path);
 		if (load != null) {
-			List<Tuple<Integer, String>> lore = new ArrayList<>(load.size());
+			List<Tuple<Integer, String>> list = new ArrayList<>(load.size());
 			for (String line : load) {
 				line = P.p.color(line);
 				int plus = 0;
@@ -331,9 +334,9 @@ public class BRecipe {
 				if (!line.startsWith("§")) {
 					line = "§9" + line;
 				}
-				lore.add(new Tuple<>(plus, line));
+				list.add(new Tuple<>(plus, line));
 			}
-			return lore;
+			return list;
 		}
 		return null;
 	}

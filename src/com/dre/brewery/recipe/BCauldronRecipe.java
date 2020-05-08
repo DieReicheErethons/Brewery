@@ -79,7 +79,7 @@ public class BCauldronRecipe {
 		}
 
 
-		List<Tuple<Integer,String>> lore = BRecipe.loadLore(cfg, id + ".lore");
+		List<Tuple<Integer,String>> lore = BRecipe.loadQualityStringList(cfg, id + ".lore");
 		if (lore != null && !lore.isEmpty()) {
 			recipe.lore = lore.stream().map(Tuple::second).collect(Collectors.toList());
 		}

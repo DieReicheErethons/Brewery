@@ -631,7 +631,15 @@ public class BRecipe {
 
 	@Nullable
 	public List<String> getLoreForQuality(int quality) {
-		if (lore == null) return null;
+		return getStringForQuality(quality, lore);
+	}
+
+	/**
+	 * Get a quality filtered list of supported attributes
+	 */
+	@Nullable
+	public List<String> getStringForQuality(int quality, List<Tuple<Integer, String>> source) {
+		if (source == null) return null;
 		int plus;
 		if (quality <= 3) {
 			plus = 1;
@@ -640,8 +648,8 @@ public class BRecipe {
 		} else {
 			plus = 3;
 		}
-		List<String> list = new ArrayList<>(lore.size());
-		for (Tuple<Integer, String> line : lore) {
+		List<String> list = new ArrayList<>(source.size());
+		for (Tuple<Integer, String> line : source) {
 			if (line.first() == 0 || line.first() == plus) {
 				list.add(line.second());
 			}

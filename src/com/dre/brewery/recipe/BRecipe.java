@@ -128,36 +128,10 @@ public class BRecipe {
 			return null;
 		}
 
-		// parsers can be created inline:
-		StringParser loreParser =  new StringParser() {
-			@Override
-			public Object parse(String line) {
-				line = P.p.color(line);
-				int plus = 0;
-				if (line.startsWith("+++")) {
-					plus = 3;
-					line = line.substring(3);
-				} else if (line.startsWith("++")) {
-					plus = 2;
-					line = line.substring(2);
-				} else if (line.startsWith("+")) {
-					plus = 1;
-					line = line.substring(1);
-				}
-				if (line.startsWith(" ")) {
-					line = line.substring(1);
-				}
-				if (!line.startsWith("§")) {
-					line = "§9" + line;
-				}
-				return new Tuple<>(plus, line);
-			}
-		};
-		recipe.lore = loadQualityStringList(configSectionRecipes, recipeId + ".lore", loreParser);
+		recipe.lore = loadQualityStringList(configSectionRecipes, recipeId + ".lore", StringParser.loreParser);
 
-		// or parsers can be predefined in the interface itself:
-		recipe.servercmds = loadQualityStringList(configSectionRecipes, recipeId + ".servercommands", StringParser.cmdParser());
-		recipe.playercmds = loadQualityStringList(configSectionRecipes, recipeId + ".playercommands", StringParser.cmdParser());
+		recipe.servercmds = loadQualityStringList(configSectionRecipes, recipeId + ".servercommands", StringParser.cmdParser);
+		recipe.playercmds = loadQualityStringList(configSectionRecipes, recipeId + ".playercommands", StringParser.cmdParser);
 
 		recipe.drinkMsg = P.p.color(BUtil.loadCfgString(configSectionRecipes, recipeId + ".drinkmessage"));
 		recipe.drinkTitle = P.p.color(BUtil.loadCfgString(configSectionRecipes, recipeId + ".drinktitle"));
@@ -318,13 +292,14 @@ public class BRecipe {
 	}
 
 	/**
-	 * Load a list of strings from a ConfigurationSection and parse preceded pluses.
+	 * Load a list of strings from a ConfigurationSection and parse it accordingly using a parser.
 	 */
 	@Nullable
 	public static List<Tuple<Integer, String>> loadQualityStringList(ConfigurationSection cfg, String path, StringParser p) {
 		List<String> load = BUtil.loadCfgStringList(cfg, path);
 		if (load != null) {
 			List<Tuple<Integer, String>> list = new ArrayList<>(load.size());
+			// create fallback parser, so passing null will convert the String to a Touple without furter processing.
 			if (p == null){
 				p = new StringParser() {
 					@Override
@@ -453,12 +428,12 @@ public class BRecipe {
 
 	public void applyDrinkFeatures(Player player, int quality) {
 		if (playercmds != null && !playercmds.isEmpty()) {
-			for (String cmd : playercmds) {
+			for (String cmd : getPlayercmdsForQuality(quality)) {
 				player.performCommand(BUtil.applyPlaceholders(cmd, player.getName(), quality));
 			}
 		}
 		if (servercmds != null && !servercmds.isEmpty()) {
-			for (String cmd : servercmds) {
+			for (String cmd : getServercmdsForQuality(quality)) {
 				P.p.getServer().dispatchCommand(P.p.getServer().getConsoleSender(), BUtil.applyPlaceholders(cmd, player.getName(), quality));
 			}
 		}
@@ -905,9 +880,8 @@ public class BRecipe {
 		public Builder addPlayerCmds(String... cmds) {
 			ArrayList<Tuple<Integer,String>> playercmds = new ArrayList<Tuple<Integer, String>>(cmds.length);
 
-			StringParser p = StringParser.cmdParser();
 			for (String cmd : cmds) {
-				playercmds.add((Tuple<Integer, String>) p.parse(cmd));
+				playercmds.add((Tuple<Integer, String>) StringParser.cmdParser.parse(cmd));
 			}
 			if (recipe.playercmds == null) {
 				recipe.playercmds = playercmds;
@@ -923,9 +897,8 @@ public class BRecipe {
 		public Builder addServerCmds(String... cmds) {
 			ArrayList<Tuple<Integer,String>> servercmds = new ArrayList<Tuple<Integer, String>>(cmds.length);
 
-			StringParser p = StringParser.cmdParser();
 			for (String cmd : cmds) {
-				servercmds.add((Tuple<Integer, String>) p.parse(cmd));
+				servercmds.add((Tuple<Integer, String>) StringParser.cmdParser.parse(cmd));
 			}
 			if (recipe.servercmds == null) {
 				recipe.servercmds = servercmds;

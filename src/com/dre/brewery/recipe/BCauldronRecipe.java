@@ -1,6 +1,7 @@
 package com.dre.brewery.recipe;
 
 import com.dre.brewery.P;
+import com.dre.brewery.utility.StringParser;
 import com.dre.brewery.utility.Tuple;
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -79,7 +80,7 @@ public class BCauldronRecipe {
 		}
 
 
-		List<Tuple<Integer,String>> lore = BRecipe.loadQualityStringList(cfg, id + ".lore");
+		List<Tuple<Integer,String>> lore = BRecipe.loadQualityStringList(cfg, id + ".lore", StringParser.loreParser);
 		if (lore != null && !lore.isEmpty()) {
 			recipe.lore = lore.stream().map(Tuple::second).collect(Collectors.toList());
 		}

@@ -18,8 +18,8 @@ Also see  [Wiki](https://github.com/DieReicheErethons/Brewery/wiki) | [Releases]
 </repository>
 
 <dependency>
-   <groupId>com.de</groupId>
-   <artifactId>Brewery</artifactId>
+   <groupId>com.dre</groupId>
+   <artifactId>brewery</artifactId>
    <version>2.1.1</version>
    <scope>provided</scope>
 </dependency>

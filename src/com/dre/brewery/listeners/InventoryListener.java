@@ -72,7 +72,7 @@ public class InventoryListener implements Listener {
 	 */
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onBrewerClick(InventoryClickEvent event) {
-		if(TownyUtil.isInsideTown(event.getClickedInventory().getLocation(),(Player) event.getWhoClicked())) return;
+		if(!TownyUtil.isInsideTown(event.getClickedInventory().getLocation())) return;
 		if(!TownyUtil.isInsideTown(event.getClickedInventory().getLocation(),(Player) event.getWhoClicked())) {
 			event.setCancelled(true);
 			return;

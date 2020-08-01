@@ -214,8 +214,9 @@ public class BCauldron {
 		if (materialInHand == null || materialInHand == Material.AIR || materialInHand == Material.BUCKET) {
 			return;
 		}
+		if(!TownyUtil.isInsideTown(clickedBlock.getLocation())) return;
 		if(!TownyUtil.isInsideTown(clickedBlock.getLocation(), player)){
-			P.p.msg(player, "§You shall not steal from another Town!");
+			P.p.msg(player, "§cYou shall not steal from another Town!");
 			return;
 		}
 		if (materialInHand == LegacyUtil.CLOCK) {

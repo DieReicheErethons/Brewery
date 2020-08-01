@@ -1,6 +1,8 @@
-name: Brewery
-version: 2.1.1
+name: ${project.name}
+version: ${project.version}
 main: com.dre.brewery.P
+description: ${project.description}
+depend: [Towny]
 softdepend: [LWC, LogBlock, WorldGuard, GriefPrevention, Vault, ChestShop]
 authors: [Milan Albrecht, Frank Baumann, ProgrammerDan, Daniel Saukel]
 api-version: 1.13

@@ -3,13 +3,16 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.dre</groupId>
-	<artifactId>Brewery</artifactId>
-	<version>2.1.1</version>
+	<artifactId>Brewery-Towny</artifactId>
+	<version>2.1.1.5-DEV</version>
 	<name>Brewery</name>
+	<description>A plugin to make brews and drinks through mixing, fermentation and aging</description>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
 	</properties>
 
 	<build>
@@ -34,37 +37,23 @@
 
 		<plugins>
 			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.8.0</version>
-				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
-					<encoding>UTF-8</encoding>
-				</configuration>
-			</plugin>
-			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
-				<version>3.2.1</version>
+				<version>3.2.4</version>
 				<executions>
 					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>shade</goal>
-						</goals>
-						<configuration>
-							<artifactSet>
-								<includes>
-									<include>org.bstats:bstats-bukkit</include>
-								</includes>
-							</artifactSet>
-							<relocations>
-								<relocation>
-									<pattern>org.bstats.bukkit</pattern>
-									<shadedPattern>com.dre.brewery.integration</shadedPattern>
-								</relocation>
-							</relocations>
-						</configuration>
+					<phase>package</phase>
+					<goals>
+						<goal>shade</goal>
+					</goals>
+					<configuration>
+						<relocations>
+						<relocation>
+							<pattern>org.bstats.bukkit</pattern>
+							<shadedPattern>com.dre.brewery.integration</shadedPattern>
+						</relocation>
+						</relocations>
+					</configuration>
 					</execution>
 				</executions>
 			</plugin>
@@ -89,7 +78,7 @@
 			<url>http://maven.sk89q.com/repo/</url>
 		</repository>
 		<repository>
-			<!-- GriefPrevention, SlimeFun -->
+			<!-- GriefPrevention, SlimeFun, Towny -->
 			<id>jitpack.io</id>
 			<url>https://jitpack.io</url>
 		</repository>
@@ -109,6 +98,12 @@
 	</repositories>
 
 	<dependencies>
+		<dependency>
+			<groupId>com.github.TownyAdvanced</groupId>
+			<artifactId>Towny</artifactId>
+			<version>0.96.2.0</version>
+			<scope>provided</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.bukkit</groupId>
 			<artifactId>bukkit</artifactId>
@@ -225,7 +220,7 @@
 		<dependency>
 			<groupId>com.acrobot.chestshop</groupId>
 			<artifactId>chestshop</artifactId>
-			<version>3.10.1</version>
+			<version>3.10</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

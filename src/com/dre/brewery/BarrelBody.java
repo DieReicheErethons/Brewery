@@ -3,9 +3,12 @@ package com.dre.brewery;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.BoundingBox;
 import com.dre.brewery.utility.LegacyUtil;
+import com.dre.brewery.utility.TownyUtil;
+
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -249,18 +252,22 @@ public class BarrelBody {
 	 * @param force to also check even if chunk is not loaded
 	 */
 	public Block getBrokenBlock(boolean force) {
+		return getBrokenBlock(force, null);
+	}
+
+	public Block getBrokenBlock(boolean force, Player player) {
 		if (force || BUtil.isChunkLoaded(spigot)) {
 			//spigot = getSpigotOfSign(spigot);
 			if (LegacyUtil.isSign(spigot.getType())) {
-				return checkSBarrel();
+				return checkSBarrel(player);
 			} else {
-				return checkLBarrel();
+				return checkLBarrel(player);
 			}
 		}
 		return null;
 	}
 
-	public Block checkSBarrel() {
+	public Block checkSBarrel(Player player) {
 		int direction = getDirection(spigot);// 1=x+ 2=x- 3=z+ 4=z-
 		if (direction == 0) {
 			return spigot;
@@ -294,6 +301,13 @@ public class BarrelBody {
 			while (x <= endX) {
 				while (z <= endZ) {
 					Block block = spigot.getRelative(x, y, z);
+					
+					if(!TownyUtil.isInsideTown(block.getLocation(), player)){
+						if(player != null)
+							P.p.msg(player, "§cBarrel goes over your Towns boarder!");
+						return block;
+					}
+					
 					type = block.getType();
 
 					if (LegacyUtil.isWoodStairs(type)) {
@@ -325,7 +339,7 @@ public class BarrelBody {
 		return null;
 	}
 
-	public Block checkLBarrel() {
+	public Block checkLBarrel(Player player) {
 		int direction = getDirection(spigot);// 1=x+ 2=x- 3=z+ 4=z-
 		if (direction == 0) {
 			return spigot;
@@ -364,6 +378,13 @@ public class BarrelBody {
 			while (x <= endX) {
 				while (z <= endZ) {
 					Block block = spigot.getRelative(x, y, z);
+
+					if(!TownyUtil.isInsideTown(block.getLocation(), player)){
+						if(player != null)
+							P.p.msg(player, "§cBarrel goes over your Towns boarder!");
+						return block;
+					}
+
 					type = block.getType();
 					if (direction == 1 || direction == 2) {
 						if (y == 1 && z == 0) {

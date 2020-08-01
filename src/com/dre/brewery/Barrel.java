@@ -347,7 +347,7 @@ public class Barrel implements InventoryHolder {
 		Barrel barrel = getBySpigot(spigot);
 		if (barrel == null) {
 			barrel = new Barrel(spigot, signoffset);
-			if (barrel.body.getBrokenBlock(true) == null) {
+			if (barrel.body.getBrokenBlock(true, player) == null) {
 				if (LegacyUtil.isSign(spigot.getType())) {
 					if (!player.hasPermission("brewery.createbarrel.small")) {
 						P.p.msg(player, P.p.languageReader.get("Perms_NoSmallBarrelCreate"));

@@ -14,6 +14,9 @@
 /.idea
 /*.iml
 
+# Visual Stidio Code
+/.vscode
+
 # various other potential build files
 /build
 /bin

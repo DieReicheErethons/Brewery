@@ -8,6 +8,8 @@ import com.dre.brewery.P;
 import com.dre.brewery.api.events.barrel.BarrelDestroyEvent;
 import com.dre.brewery.filedata.BData;
 import com.dre.brewery.utility.BUtil;
+import com.dre.brewery.utility.TownyUtil;
+
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -32,8 +34,13 @@ public class BlockListener implements Listener {
 				P.p.msg(player, "§cCurrently loading Data");
 				return;
 			}
-			if (Barrel.create(event.getBlock(), player)) {
+			if(!TownyUtil.isInsideTown(event.getBlock().getLocation(), player)) {
+				P.p.msg(player, "§cYou can't create Barrels outside of your town!");
+				return;
+			}
+			if ( Barrel.create(event.getBlock(), player)) {
 				P.p.msg(player, P.p.languageReader.get("Player_BarrelCreated"));
+				return;
 			}
 		}
 	}

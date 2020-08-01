@@ -3,6 +3,8 @@ package com.dre.brewery.listeners;
 import com.dre.brewery.*;
 import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.lore.BrewLore;
+import com.dre.brewery.utility.TownyUtil;
+
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -70,6 +72,11 @@ public class InventoryListener implements Listener {
 	 */
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onBrewerClick(InventoryClickEvent event) {
+		if(TownyUtil.isInsideTown(event.getClickedInventory().getLocation(),(Player) event.getWhoClicked())) return;
+		if(!TownyUtil.isInsideTown(event.getClickedInventory().getLocation(),(Player) event.getWhoClicked())) {
+			event.setCancelled(true);
+			return;
+		}
 		if (!P.use1_9) return;
 
 		HumanEntity player = event.getWhoClicked();
@@ -87,6 +94,7 @@ public class InventoryListener implements Listener {
 
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onBrew(BrewEvent event) {
+		if(!TownyUtil.isInsideTown(event.getBlock().getLocation())) return;
 		if (P.use1_9) {
 			if (BDistiller.hasBrew(event.getContents(), BDistiller.getDistillContents(event.getContents())) != 0) {
 				event.setCancelled(true);

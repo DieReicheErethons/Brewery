@@ -4,6 +4,8 @@ import com.dre.brewery.*;
 import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.filedata.UpdateChecker;
 import com.dre.brewery.utility.LegacyUtil;
+import com.dre.brewery.utility.TownyUtil;
+
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -36,6 +38,10 @@ public class PlayerListener implements Listener {
 		if (type == Material.CAULDRON) {
 			// Handle the Cauldron Interact
 			// The Event might get cancelled in here
+			if(!TownyUtil.isInsideTown(clickedBlock.getLocation(), player)) {
+				P.p.msg(player, "§cYou can only brew in your own town!");
+				return;
+			}
 			BCauldron.clickCauldron(event);
 			return;
 		}
@@ -43,6 +49,10 @@ public class PlayerListener implements Listener {
 
 		if (P.use1_14 && BSealer.isBSealer(clickedBlock)) {
 			event.setCancelled(true);
+			if(!TownyUtil.isInsideTown(clickedBlock.getLocation(), player)) {
+				P.p.msg(player, "§cYou can only open Sealing Tables in your own Town!");
+				return;
+			}
 			if (BConfig.enableSealingTable) {
 				BSealer sealer = new BSealer(player);
 				event.getPlayer().openInventory(sealer.getInventory());
@@ -61,6 +71,12 @@ public class PlayerListener implements Listener {
 
 		// Do not process Off Hand for Barrel interaction
 		if (P.use1_9 && event.getHand() != EquipmentSlot.HAND) {
+			return;
+		}
+		
+		if(!TownyUtil.isInsideTown(clickedBlock.getLocation(), player)) {
+			event.setCancelled(true);
+			P.p.msg(player, "§cYou can only open Barrels in your own Town!");
 			return;
 		}
 

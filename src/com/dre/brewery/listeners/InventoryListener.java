@@ -72,11 +72,6 @@ public class InventoryListener implements Listener {
 	 */
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onBrewerClick(InventoryClickEvent event) {
-		if(!TownyUtil.isInsideTown(event.getClickedInventory().getLocation())) return;
-		if(!TownyUtil.isInsideTown(event.getClickedInventory().getLocation(),(Player) event.getWhoClicked())) {
-			event.setCancelled(true);
-			return;
-		}
 		if (!P.use1_9) return;
 
 		HumanEntity player = event.getWhoClicked();
@@ -89,6 +84,13 @@ public class InventoryListener implements Listener {
 		if (InventoryType.BREWING != inv.getType()) return;
 		if (event.getAction() == InventoryAction.NOTHING) return; // Ignore clicks that do nothing
 
+		if(!TownyUtil.isInsideTown(event.getClickedInventory().getLocation())) return;
+		if(!TownyUtil.isInsideTown(event.getClickedInventory().getLocation(),(Player) event.getWhoClicked())) {
+			P.p.msg((Player) event.getWhoClicked(), "§cYou cant modify a brewer in another Town");
+			event.setCancelled(true);
+			return;
+		}
+		
 		BDistiller.distillerClick(event);
 	}
 
@@ -186,7 +188,7 @@ public class InventoryListener implements Listener {
 		if (!P.use1_14) return;
 		if (event.getInventory().getType() != InventoryType.BARREL) return;
 		if (!MCBarrel.enableAging) return;
-
+		
 		Inventory inv = event.getInventory();
 		for (MCBarrel barrel : MCBarrel.openBarrels) {
 			if (barrel.getInventory().equals(inv)) {
@@ -251,6 +253,12 @@ public class InventoryListener implements Listener {
 
 		// Check for MC Barrel
 		if (event.getInventory().getType() == InventoryType.BARREL) {
+			if(!TownyUtil.isInsideTown(event.getInventory().getLocation())) return;
+			if(!TownyUtil.isInsideTown(event.getInventory().getLocation(),(Player)event.getPlayer())) {
+				P.p.msg(event.getPlayer(), "§cYou cant opem barrels in another Town");
+				event.setCancelled(true);
+				return;
+			}
 			Inventory inv = event.getInventory();
 			for (MCBarrel barrel : MCBarrel.openBarrels) {
 				if (barrel.getInventory().equals(inv)) {

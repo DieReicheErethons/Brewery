@@ -38,10 +38,6 @@ public class PlayerListener implements Listener {
 		if (type == Material.CAULDRON) {
 			// Handle the Cauldron Interact
 			// The Event might get cancelled in here
-			if(!TownyUtil.isInsideTown(clickedBlock.getLocation(), player)) {
-				P.p.msg(player, "§cYou can only brew in your own town!");
-				return;
-			}
 			BCauldron.clickCauldron(event);
 			return;
 		}
@@ -74,11 +70,6 @@ public class PlayerListener implements Listener {
 			return;
 		}
 		
-		if(!TownyUtil.isInsideTown(clickedBlock.getLocation(), player)) {
-			event.setCancelled(true);
-			P.p.msg(player, "§cYou can only open Barrels in your own Town!");
-			return;
-		}
 
 		// Access a Barrel
 		Barrel barrel = null;
@@ -98,7 +89,13 @@ public class PlayerListener implements Listener {
 		}
 
 		if (barrel != null) {
+			
 			event.setCancelled(true);
+
+			if(!TownyUtil.isInsideTown(clickedBlock.getLocation(), player)) {
+				P.p.msg(player, "§cYou can only open Barrels in your own Town!");
+				return;
+			}
 
 			if (!barrel.hasPermsOpen(player, event)) {
 				return;

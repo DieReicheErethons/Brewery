@@ -4,6 +4,7 @@ import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.Resident;
 import com.palmergames.bukkit.towny.object.Town;
+import com.palmergames.bukkit.towny.object.TownBlock;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -11,10 +12,13 @@ import org.bukkit.entity.Player;
 public class TownyUtil {
     public static boolean isInsideTown(Location location) {
         try {
-            final Town town = TownyAPI.getInstance().getTownBlock(location).getTown();
-            if(town != null) {
-            //Execute your code here
-                return true;
+            final TownBlock townBlock = TownyAPI.getInstance().getTownBlock(location);
+            if(townBlock != null) {
+                final Town town = TownyAPI.getInstance().getTownBlock(location).getTown();
+                if(town != null){
+                //Execute your code here
+                    return true;
+                }
             }
         }  catch (NullPointerException | NotRegisteredException e) { }
         return false;

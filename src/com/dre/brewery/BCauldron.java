@@ -6,6 +6,8 @@ import com.dre.brewery.recipe.BCauldronRecipe;
 import com.dre.brewery.recipe.RecipeItem;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.LegacyUtil;
+import com.dre.brewery.utility.TownyUtil;
+
 import org.bukkit.Effect;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -98,6 +100,10 @@ public class BCauldron {
 	public static boolean ingredientAdd(Block block, ItemStack ingredient, Player player) {
 		// if not empty
 		if (LegacyUtil.getFillLevel(block) != EMPTY) {
+			if(!TownyUtil.isInsideTown(block.getLocation(),player)) {
+				P.p.msg(player, "§cYou can only brew in your own town!");
+				return false;
+			}
 
 			if (!BCauldronRecipe.acceptedMaterials.contains(ingredient.getType()) && !ingredient.hasItemMeta()) {
 				// Extremely fast way to check for most items
@@ -207,8 +213,12 @@ public class BCauldron {
 
 		if (materialInHand == null || materialInHand == Material.AIR || materialInHand == Material.BUCKET) {
 			return;
-
-		} else if (materialInHand == LegacyUtil.CLOCK) {
+		}
+		if(!TownyUtil.isInsideTown(clickedBlock.getLocation(), player)){
+			P.p.msg(player, "§You shall not steal from another Town!")
+			return;
+		}
+		if (materialInHand == LegacyUtil.CLOCK) {
 			printTime(player, clickedBlock);
 			return;
 

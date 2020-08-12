@@ -26,7 +26,7 @@ public class PlayerListener implements Listener {
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		Block clickedBlock = event.getClickedBlock();
 		if (clickedBlock == null) return;
-
+		
 		if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
 
 		Player player = event.getPlayer();
@@ -58,7 +58,7 @@ public class PlayerListener implements Listener {
 			return;
 		}
 		if (P.use1_14 && type == Material.BARREL) {
-			if (!player.hasPermission("brewery.openbarrel.mc")) {
+			if (!player.hasPermission("brewery.openbarrel.mc") && TownyUtil.isInsideTown(clickedBlock.getLocation())) {
 				event.setCancelled(true);
 				P.p.msg(player, P.p.languageReader.get("Error_NoPermissions"));
 			}

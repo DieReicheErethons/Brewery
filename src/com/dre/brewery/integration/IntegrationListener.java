@@ -13,7 +13,6 @@ import com.dre.brewery.integration.item.MMOItemsPluginItem;
 import com.dre.brewery.recipe.BCauldronRecipe;
 import com.dre.brewery.recipe.RecipeItem;
 import com.dre.brewery.utility.LegacyUtil;
-import net.mmogroup.mmolib.MMOLib;
 import net.mmogroup.mmolib.api.item.NBTItem;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -228,7 +227,7 @@ public class IntegrationListener implements Listener {
 		try {
 			if (event.getAction() == Action.RIGHT_CLICK_BLOCK && event.hasItem() && event.getHand() == EquipmentSlot.HAND) {
 				if (event.getClickedBlock() != null && event.getClickedBlock().getType() == Material.CAULDRON) {
-					NBTItem item = MMOLib.plugin.getNMS().getNBTItem(event.getItem());
+					NBTItem item = NBTItem.get(event.getItem());
 					if (item.hasType()) {
 						for (RecipeItem rItem : BCauldronRecipe.acceptedCustom) {
 							if (rItem instanceof MMOItemsPluginItem) {

@@ -61,6 +61,8 @@ public class LegacyUtil {
 
 	public static final Material MAGMA_BLOCK = get("MAGMA_BLOCK", "MAGMA");
 	public static final Material CAMPFIRE = get("CAMPFIRE");
+	public static final Material SOUL_CAMPFIRE = get("SOUL_CAMPFIRE");
+	public static final Material SOUL_FIRE = get("SOUL_FIRE");
 	public static final Material CLOCK = get("CLOCK", "WATCH");
 	public static final Material OAK_STAIRS = get("OAK_STAIRS", "WOOD_STAIRS");
 	public static final Material SPRUCE_STAIRS = get("SPRUCE_STAIRS", "SPRUCE_WOOD_STAIRS");
@@ -111,7 +113,7 @@ public class LegacyUtil {
 
 	public static boolean isFireForCauldron(Block block) {
 		Material type = block.getType();
-		return type != null && (type == Material.FIRE || type == MAGMA_BLOCK || litCampfire(block) || isLava(type));
+		return type != null && (type == Material.FIRE || type == SOUL_FIRE || type == MAGMA_BLOCK || litCampfire(block) || isLava(type));
 	}
 
 	// LAVA and STATIONARY_LAVA are merged as of 1.13
@@ -120,7 +122,7 @@ public class LegacyUtil {
 	}
 
 	public static boolean litCampfire(Block block) {
-		if (block.getType() == CAMPFIRE) {
+		if (block.getType() == CAMPFIRE || block.getType() == SOUL_CAMPFIRE) {
 			BlockData data = block.getBlockData();
 			if (data instanceof org.bukkit.block.data.Lightable) {
 				return ((org.bukkit.block.data.Lightable) data).isLit();
@@ -135,6 +137,7 @@ public class LegacyUtil {
 		if (type == Material.LINGERING_POTION || type == Material.SPLASH_POTION) return true;
 		if (!P.use1_13) return false;
 		if (type == Material.EXPERIENCE_BOTTLE) return true;
+		if (type.name().equals("DRAGON_BREATH")) return true;
 		return type.name().equals("HONEY_BOTTLE");
 	}
 

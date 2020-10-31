@@ -211,7 +211,7 @@
 		<dependency>
 			<groupId>com.github.TheBusyBiscuit</groupId>
 			<artifactId>Slimefun4</artifactId>
-			<version>156683f318</version>
+			<version>RC-17</version>
 			<scope>provided</scope>
 		</dependency>
 		<!--<dependency>

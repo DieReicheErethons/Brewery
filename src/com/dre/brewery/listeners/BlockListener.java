@@ -70,10 +70,11 @@ public class BlockListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onPistonRetract(BlockPistonRetractEvent event) {
 		if (event.isSticky()) {
-			Block block = event.getRetractLocation().getBlock();
-
-			if (Barrel.get(block) != null) {
-				event.setCancelled(true);
+			for (Block block : event.getBlocks()) {
+				if (Barrel.get(block) != null) {
+					event.setCancelled(true);
+					return;
+				}
 			}
 		}
 	}

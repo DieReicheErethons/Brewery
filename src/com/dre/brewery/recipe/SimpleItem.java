@@ -132,8 +132,9 @@ public class SimpleItem extends RecipeItem implements Ingredient {
 		try {
 			DataInputStream in = loader.getInputStream();
 			Material mat = Material.getMaterial(in.readUTF());
+			short dur = in.readShort();
 			if (mat != null) {
-				SimpleItem item = new SimpleItem(mat, in.readShort());
+				SimpleItem item = new SimpleItem(mat, dur);
 				return item;
 			}
 		} catch (IOException e) {

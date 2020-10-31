@@ -471,13 +471,15 @@ public class BIngredients {
 		List<Ingredient> ing = new ArrayList<>(size);
 		for (; size > 0; size--) {
 			ItemLoader itemLoader = new ItemLoader(dataVersion, in, in.readUTF());
-			if (Ingredient.LOADERS.containsKey(itemLoader.getSaveID())) {
-				Ingredient loaded = Ingredient.LOADERS.get(itemLoader.getSaveID()).apply(itemLoader);
-				int amount = in.readShort();
-				if (loaded != null) {
-					loaded.setAmount(amount);
-					ing.add(loaded);
-				}
+			if (!Ingredient.LOADERS.containsKey(itemLoader.getSaveID())) {
+				P.p.errorLog("Ingredient Loader not found: " + itemLoader.getSaveID());
+				break;
+			}
+			Ingredient loaded = Ingredient.LOADERS.get(itemLoader.getSaveID()).apply(itemLoader);
+			int amount = in.readShort();
+			if (loaded != null) {
+				loaded.setAmount(amount);
+				ing.add(loaded);
 			}
 		}
 		return new BIngredients(ing, cookedTime);

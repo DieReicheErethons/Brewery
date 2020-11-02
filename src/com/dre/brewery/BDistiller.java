@@ -89,7 +89,7 @@ public class BDistiller {
 		for (int slot = 0; slot < 3; slot++) {
 			if (contents[slot] != null) {
 				item = inv.getItem(slot);
-				if (item == null || !Brew.isBrew(item)) {
+				if (!Brew.isBrew(item)) {
 					contents[slot] = null;
 				}
 			}
@@ -168,7 +168,7 @@ public class BDistiller {
 	}
 
 	public class DistillRunnable extends BukkitRunnable {
-		Brew[] contents = null;
+		private Brew[] contents = null;
 
 		@Override
 		public void run() {
@@ -176,42 +176,7 @@ public class BDistiller {
 			if (now instanceof BrewingStand) {
 				BrewingStand stand = (BrewingStand) now;
 				if (brewTime == -1) { // only check at the beginning (and end) for distillables
-					BrewerInventory inventory = stand.getInventory();
-					if (contents == null) {
-						contents = getDistillContents(inventory);
-					} else {
-						checkContents(inventory, contents);
-					}
-					switch (hasBrew(inventory, contents)) {
-						case 1:
-							// Custom potion but not for distilling. Stop any brewing and cancel this task
-							if (stand.getBrewingTime() > 0) {
-								if (P.use1_11) {
-									// The trick below doesnt work in 1.11, but we dont need it anymore
-									// This should only happen with older Brews that have been made with the old Potion Color System
-									stand.setBrewingTime(Short.MAX_VALUE);
-								} else {
-									// Brewing time is sent and stored as short
-									// This sends a negative short value to the Client
-									// In the client the Brewer will look like it is not doing anything
-									stand.setBrewingTime(Short.MAX_VALUE << 1);
-								}
-								stand.setFuelLevel(fuel);
-								stand.update();
-							}
-						case 0:
-							// No custom potion, cancel and ignore
-							this.cancel();
-							trackedDistillers.remove(standBlock);
-							showAlc(inventory, contents);
-							P.p.debugLog("nothing to distill");
-							return;
-						default:
-							runTime = getLongestDistillTime(contents);
-							brewTime = runTime;
-							P.p.debugLog("using brewtime: " + runTime);
-
-					}
+					prepareForDistillables(stand);
 				}
 
 				brewTime--; // count down.
@@ -236,6 +201,45 @@ public class BDistiller {
 				this.cancel();
 				trackedDistillers.remove(standBlock);
 				P.p.debugLog("The block was replaced; not a brewing stand.");
+			}
+		}
+
+		private void prepareForDistillables(BrewingStand stand) {
+			BrewerInventory inventory = stand.getInventory();
+			if (contents == null) {
+				contents = getDistillContents(inventory);
+			} else {
+				checkContents(inventory, contents);
+			}
+			switch (hasBrew(inventory, contents)) {
+				case 1:
+					// Custom potion but not for distilling. Stop any brewing and cancel this task
+					if (stand.getBrewingTime() > 0) {
+						if (P.use1_11) {
+							// The trick below doesnt work in 1.11, but we dont need it anymore
+							// This should only happen with older Brews that have been made with the old Potion Color System
+							stand.setBrewingTime(Short.MAX_VALUE);
+						} else {
+							// Brewing time is sent and stored as short
+							// This sends a negative short value to the Client
+							// In the client the Brewer will look like it is not doing anything
+							stand.setBrewingTime(Short.MAX_VALUE << 1);
+						}
+						stand.setFuelLevel(fuel);
+						stand.update();
+					}
+				case 0:
+					// No custom potion, cancel and ignore
+					this.cancel();
+					trackedDistillers.remove(standBlock);
+					showAlc(inventory, contents);
+					P.p.debugLog("nothing to distill");
+					return;
+				default:
+					runTime = getLongestDistillTime(contents);
+					brewTime = runTime;
+					P.p.debugLog("using brewtime: " + runTime);
+
 			}
 		}
 	}

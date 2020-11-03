@@ -45,7 +45,7 @@ public class WorldListener implements Listener {
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onWorldUnload(WorldUnloadEvent event) {
-		DataSave.save(true);
+		DataSave.save(P.p.shuttingDown);
 		String worldName = event.getWorld().getName();
 		Barrel.onUnload(worldName);
 		BCauldron.onUnload(worldName);

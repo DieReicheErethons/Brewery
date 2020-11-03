@@ -55,6 +55,9 @@ public class P extends JavaPlugin {
 	public int brewsCreatedCmd; // Created by command
 	public int exc, good, norm, bad, terr; // Brews drunken with quality
 
+	// States
+	public boolean shuttingDown;
+
 	@Override
 	public void onEnable() {
 		p = this;
@@ -142,6 +145,7 @@ public class P extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
+		shuttingDown = true;
 
 		// Disable listeners
 		HandlerList.unregisterAll(this);

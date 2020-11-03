@@ -89,7 +89,7 @@
 			<url>http://maven.sk89q.com/repo/</url>
 		</repository>
 		<repository>
-			<!-- GriefPrevention, SlimeFun -->
+			<!-- GriefPrevention, SlimeFun, Towny -->
 			<id>jitpack.io</id>
 			<url>https://jitpack.io</url>
 		</repository>
@@ -231,6 +231,12 @@
 			<groupId>com.acrobot.chestshop</groupId>
 			<artifactId>chestshop</artifactId>
 			<version>3.11</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.github.TownyAdvanced</groupId>
+			<artifactId>Towny</artifactId>
+			<version>0.96.3.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

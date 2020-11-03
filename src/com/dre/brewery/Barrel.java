@@ -124,7 +124,7 @@ public class Barrel implements InventoryHolder {
 		}
 
 		// Call event
-		BarrelAccessEvent accessEvent = new BarrelAccessEvent(this, player, event.getClickedBlock());
+		BarrelAccessEvent accessEvent = new BarrelAccessEvent(this, player, event.getClickedBlock(), event.getBlockFace());
 		// Listened to by WGBarrel7, WGBarrelNew, WGBarrelOld, GriefPreventionBarrel (IntegrationListener)
 		P.p.getServer().getPluginManager().callEvent(accessEvent);
 		if (accessEvent.isCancelled()) {

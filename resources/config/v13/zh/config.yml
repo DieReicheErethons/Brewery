@@ -784,7 +784,12 @@ recipes:
 useWorldGuard: true
 useLWC: true
 useGriefPrevention: true
+useTowny: true
 useGMInventories: true
+
+# Use a virtual chest when opening a Barrel to check with all other protection plugins
+# This could confuse Anti-Cheat plugins, but is otherwise good to use
+useVirtualChestPerms: false
 
 # 对LogBlock启用方块数据录入[true]
 useLogBlock: true

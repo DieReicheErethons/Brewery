@@ -49,6 +49,7 @@ public class BConfig {
 	public static boolean useLWC; //LWC
 	public static boolean useLB; //LogBlock
 	public static boolean useGP; //GriefPrevention
+	public static boolean useTowny; //Towny
 	public static boolean hasVault; // Vault
 	public static boolean useCitadel; // CivCraft/DevotedMC Citadel
 	public static boolean useGMInventories; // GamemodeInventories
@@ -59,6 +60,7 @@ public class BConfig {
 	// Barrel
 	public static boolean openEverywhere;
 	public static boolean loadDataAsync;
+	public static boolean virtualChestPerms;
 
 	// Cauldron
 	public static boolean useOffhandForCauldron;
@@ -212,10 +214,12 @@ public class BConfig {
 			}
 		}
 		useLWC = config.getBoolean("useLWC", true) && plMan.isPluginEnabled("LWC");
+		useTowny = config.getBoolean("useTowny", true) && plMan.isPluginEnabled("Towny");
 		useGP = config.getBoolean("useGriefPrevention", true) && plMan.isPluginEnabled("GriefPrevention");
 		useLB = config.getBoolean("useLogBlock", false) && plMan.isPluginEnabled("LogBlock");
 		useGMInventories = config.getBoolean("useGMInventories", false);
 		useCitadel = config.getBoolean("useCitadel", false) && plMan.isPluginEnabled("Citadel");
+		virtualChestPerms = config.getBoolean("useVirtualChestPerms", false);
 		// The item util has been removed in Vault 1.7+
 		hasVault = plMan.isPluginEnabled("Vault")
 			&& Integer.parseInt(plMan.getPlugin("Vault").getDescription().getVersion().split("\\.")[1]) <= 6;

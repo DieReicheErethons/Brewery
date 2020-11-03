@@ -786,7 +786,13 @@ recipes:
 useWorldGuard: true
 useLWC: true
 useGriefPrevention: true
+useTowny: true
 useGMInventories: true
+
+# Beim Fass öffnen eine virtuelle Kiste nutzen um Rechte bei alle anderen Plugins abzufragen
+# Könnte Anti-Cheat plugins verwirren aber sonst ok zu aktivieren
+useVirtualChestPerms: false
+
 
 # Änderungen an Fassinventaren mit LogBlock aufzeichen [true]
 useLogBlock: true

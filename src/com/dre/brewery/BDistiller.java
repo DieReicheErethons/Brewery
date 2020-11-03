@@ -176,7 +176,9 @@ public class BDistiller {
 			if (now instanceof BrewingStand) {
 				BrewingStand stand = (BrewingStand) now;
 				if (brewTime == -1) { // only check at the beginning (and end) for distillables
-					prepareForDistillables(stand);
+					if (!prepareForDistillables(stand)) {
+						return;
+					}
 				}
 
 				brewTime--; // count down.
@@ -204,7 +206,7 @@ public class BDistiller {
 			}
 		}
 
-		private void prepareForDistillables(BrewingStand stand) {
+		private boolean prepareForDistillables(BrewingStand stand) {
 			BrewerInventory inventory = stand.getInventory();
 			if (contents == null) {
 				contents = getDistillContents(inventory);
@@ -234,13 +236,14 @@ public class BDistiller {
 					trackedDistillers.remove(standBlock);
 					showAlc(inventory, contents);
 					P.p.debugLog("nothing to distill");
-					return;
+					return false;
 				default:
 					runTime = getLongestDistillTime(contents);
 					brewTime = runTime;
 					P.p.debugLog("using brewtime: " + runTime);
 
 			}
+			return true;
 		}
 	}
 }

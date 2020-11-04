@@ -5,6 +5,7 @@ Brew_BadPotion: Poción arruinada
 Brew_BarrelRiped: en el barril envejecido
 Brew_DistillUndefined: Destilado turbio
 Brew_Distilled: Destilado
+Brew_LessDistilled: Menos destilado
 Brew_HundredsOfYears: Cientos de años
 Brew_Ingredients: Ingredientes
 Brew_MinutePluralPostfix: s
@@ -34,6 +35,9 @@ CMD_UnLabel: '&aEtiqueta eliminada!'
 # Error
 Error_ConfigUpdate: 'Versión de configuración de Brewery desconocida: v&v1, ¡la configuración no se actualizó!'
 Error_ItemNotPotion: '&c¡El objeto en tu mano no se pudo identificar como una poción!'
+Error_SealingTableDisabled: '&cLa tabla de sellado está desactivada'
+Error_SealedAlwaysStatic: '¡Las cervezas selladas son siempre estáticas!'
+Error_AlreadyUnlabeled: '&c¡La cerveza en tu mano ya no está etiquetada!'
 Error_NoBarrelAccess: '&c¡No tienes permisos para acceder a este barril!'
 Error_NoBrewName: '&cNinguna receta con nombre: ''&v1&c'' encontrada!'
 Error_NoPermissions: '&c¡No tienes permisos para hacer esto!'
@@ -47,6 +51,7 @@ Error_YmlRead: 'No se pudo leer el archivo config.yml, asegúrese de que el arch
 Etc_Barrel: Barril
 Etc_Page: Página
 Etc_Usage: 'Usa:'
+Etc_SealingTable: Mesa de sellado
 
 # Help
 Help_Copy: '&6/brew copy [Cantidad]&9 Copia la poción en tu mano'
@@ -60,6 +65,7 @@ Help_Reload: '&6/brew reload &9Recarga la configuración'
 Help_Configname: '&6/brew ItemName &9Muestra el nombre del elemento disponible para la configuración'
 Help_Static: '&6/brew static &9Hace la preparación estática -> No más envejecimiento o destilación'
 Help_UnLabel: '&6/brew unlabel &9Elimina la etiqueta detallada de una poción.'
+Help_Seal: '&6/brew seal &9Sellos de cerveza para vender en tiendas'
 Help_Wakeup: '&6/brew wakeup list <Página>&9 Enumera todos los puntos de activación.'
 Help_WakeupAdd: '&6/brew wakeup add &9Agrega un punto de activación en su posición actual'
 Help_WakeupCheck: '&6/brew wakeup check &9Teletransporta a todos los puntos de atención'
@@ -97,12 +103,4 @@ Player_WakeNoCheck: '&cNinguna verificación de punto de activación está activ
 Player_WakeNoPoints: '&c¡No hay puntos de activación!'
 Player_WakeNotExist: '&cEl Punto de Despertar con el id: &6&v1 &c¡No existe!'
 Player_WakeTeleport: 'Teletransporte al punto de activación con la identificación: &6&v1&f En la posición: &6&v2 &v3, &v4, &v5'
-
-# Updated
-Brew_LessDistilled: Menos destilado
-Error_SealingTableDisabled: '&cLa tabla de sellado está desactivada'
-Error_SealedAlwaysStatic: '¡Las cervezas selladas son siempre estáticas!'
-Error_AlreadyUnlabeled: '&c¡La cerveza en tu mano ya no está etiquetada!'
-Etc_SealingTable: Mesa de sellado
-Help_Seal: '&6/brew seal &9Sellos de cerveza para vender en tiendas'
 Player_ShopSealBrew: '&eLas cervezas deben sellarse antes de venderlas.'

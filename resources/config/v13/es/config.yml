@@ -36,7 +36,7 @@ pukeItem: Soul_Sand
 
 # Time in seconds until the pukeitems despawn, (mc default is 300 = 5 min) [60]
 # If the item despawn time was changed in the spigot.yml, the pukeDespawntime changes as well.
-pukeDespawntime: 10
+pukeDespawntime: 60
 
 # Consumable Item/strength. Decreases the alcohol level by <strength> when consumed. (list)
 drainItems:

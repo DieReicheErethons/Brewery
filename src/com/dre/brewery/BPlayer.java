@@ -5,8 +5,11 @@ import com.dre.brewery.api.events.PlayerPukeEvent;
 import com.dre.brewery.api.events.PlayerPushEvent;
 import com.dre.brewery.api.events.brew.BrewDrinkEvent;
 import com.dre.brewery.filedata.BConfig;
+import com.dre.brewery.lore.BrewLore;
 import com.dre.brewery.recipe.BEffect;
 import com.dre.brewery.utility.BUtil;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.apache.commons.lang.mutable.MutableInt;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -197,8 +200,115 @@ public class BPlayer {
 			bPlayer.drinkCap(player);
 		}
 		bPlayer.syncToSQL(false);
-		//player.sendMessage("Betrunkenheit: §8[§7⭑⭑⭑⭒§0⭑§8] §8[§6|||||||||||||||||§0|||||||||§8]");
+		bPlayer.showDrunkeness(player);
 		return true;
+	}
+
+	/**
+	 * Show the Player his current drunkeness and quality as an Actionbar graphic or when unsupported, in chat
+	 */
+	public void showDrunkeness(Player player) {
+		try {
+			final int cacheHangover = sendDrunkenessMessage(player, 0);
+			// It this returns -1, then the Action Bar is not supported. Do not repeat the message as it was sent into chat
+			if (cacheHangover >= 0) {
+				// We need to cache the hangover, as this value is removed from them player on login.
+				// When we display the message again, use the cached hangover value
+				P.p.getServer().getScheduler().scheduleSyncDelayedTask(P.p, () -> sendDrunkenessMessage(player, cacheHangover), 40);
+				P.p.getServer().getScheduler().scheduleSyncDelayedTask(P.p, () -> sendDrunkenessMessage(player, cacheHangover), 80);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Send one Message to the player, showing his drunkeness or hangover
+	 *
+	 * @param player The Player to send the message to
+	 * @param cacheHangover if > 0 Show him a cached hangover strength
+	 * @return -1 if the message should not be repeated. if not 0, it is the hangover we should cache
+	 */
+	public int sendDrunkenessMessage(Player player, int cacheHangover) {
+		StringBuilder b = new StringBuilder(100);
+
+		int strength = drunkeness;
+		boolean hangover = false;
+		int hangoverStrength = cacheHangover > 0 ? cacheHangover : offlineDrunk;
+		if (hangoverStrength > 0) {
+			strength = hangoverStrength;
+			hangover = true;
+		} else {
+			hangoverStrength = 0;
+		}
+
+		b.append(P.p.languageReader.get(hangover ? "Player_Hangover" : "Player_Drunkeness"));
+
+		// Drunkeness or Hangover Strength Bars
+		b.append(": §7[");
+		// Show 25 Bars, color one per 4 drunkeness
+		int bars;
+		if (strength <= 0) {
+			bars = 0;
+		} else if (strength == 1) {
+			bars = 1;
+		} else {
+			bars = Math.round(strength / 4.0f);
+		}
+		int noBars = 25 - bars;
+		if (bars > 0) {
+			b.append(hangover ? "§c" : "§6");
+		}
+		for (int addedBars = 0; addedBars < bars; addedBars++) {
+			b.append("|");
+			if (addedBars == 20) {
+				// color the last 4 bars red
+				b.append("§c");
+			}
+		}
+		if (noBars > 0) {
+			b.append("§0");
+			for (; noBars > 0; noBars--) {
+				b.append("|");
+			}
+		}
+		b.append("§7] ");
+
+
+		int quality;
+		if (hangover) {
+			quality = 11 - getHangoverQuality();
+		} else {
+			quality = strength > 0 ? getQuality() : 0;
+		}
+
+		// Quality Stars
+		int stars = quality / 2;
+		boolean half = quality % 2 > 0;
+		int noStars = 5 - stars - (half ? 1 : 0);
+
+		b.append("§7[").append(BrewLore.getQualityColor(quality));
+		for (; stars > 0; stars--) {
+			b.append("⭑");
+		}
+		if (half) {
+			b.append("⭒");
+		}
+		if (noStars > 0) {
+			b.append("§0");
+			for (; noStars > 0; noStars--) {
+				b.append("⭑");
+			}
+		}
+		b.append("§7]");
+		String text = b.toString();
+		try {
+			player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(text));
+			return hangoverStrength;
+		} catch (UnsupportedOperationException | NoSuchMethodError e) {
+			player.sendMessage(text);
+			return -1;
+		}
 	}
 
 	// Player has drunken too much
@@ -245,6 +355,9 @@ public class BPlayer {
 		} else {
 			if (offlineDrunk == 0) {
 				return true;
+			}
+			if (drunkeness == 0) {
+				drunkeness--;
 			}
 			quality = getQuality();
 			if (drunkeness <= -offlineDrunk) {
@@ -362,6 +475,7 @@ public class BPlayer {
 			}
 			if (offlineDrunk > 20) {
 				hangoverEffects(player);
+				showDrunkeness(player);
 			}
 			if (drunkeness <= 0) {
 				// wird der spieler noch gebraucht?

@@ -68,6 +68,7 @@ public class BConfig {
 	//BPlayer
 	public static Map<Material, Integer> drainItems = new HashMap<>();// DrainItem Material and Strength
 	public static Material pukeItem;
+	public static boolean showStatusOnDrink;
 	public static int pukeDespawntime;
 	public static int hangoverTime;
 	public static boolean overdrinkKick;
@@ -235,6 +236,7 @@ public class BConfig {
 		enableLoginDisallow = config.getBoolean("enableLoginDisallow", false);
 		enablePuke = config.getBoolean("enablePuke", false);
 		pukeDespawntime = config.getInt("pukeDespawntime", 60) * 20;
+		showStatusOnDrink = config.getBoolean("showStatusOnDrink", false);
 		homeType = config.getString("homeType", null);
 		craftSealingTable = config.getBoolean("craftSealingTable", false);
 		enableSealingTable = config.getBoolean("enableSealingTable", false);

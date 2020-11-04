@@ -40,6 +40,9 @@ pukeItem: Soul_Sand
 # 如果spigot.yml中的物品消失时间被变更, 此处也会变更.
 pukeDespawntime: 60
 
+# Display his drunkeness to the player when he drinks a brew or eats a drainItem [true]
+showStatusOnDrink: true
+
 # 解酒物/解酒强度. 降低玩家一定程度的醉酒程度, 解救强度为百分数.(下列)
 drainItems:
 - Bread/4

@@ -39,6 +39,9 @@ pukeItem: Soul_Sand
 # If the item despawn time was changed in the spigot.yml, the pukeDespawntime changes as well.
 pukeDespawntime: 60
 
+# Display his drunkeness to the player when he drinks a brew or eats a drainItem [true]
+showStatusOnDrink: true
+
 # Consommables Objet/Force. Réduit le montant d'alcool par <Force> lors de la consommation. (list)
 drainItems:
   - Bread/4

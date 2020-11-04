@@ -200,7 +200,9 @@ public class BPlayer {
 			bPlayer.drinkCap(player);
 		}
 		bPlayer.syncToSQL(false);
-		bPlayer.showDrunkeness(player);
+		if (BConfig.showStatusOnDrink) {
+			bPlayer.showDrunkeness(player);
+		}
 		return true;
 	}
 

@@ -331,7 +331,9 @@ public class CommandListener implements CommandExecutor {
 			bPlayer.remove();
 		} else {
 			bPlayer.setData(drunkeness, quality);
-			bPlayer.showDrunkeness(player);
+			if (BConfig.showStatusOnDrink) {
+				bPlayer.showDrunkeness(player);
+			}
 		}
 
 		if (drunkeness > 100) {

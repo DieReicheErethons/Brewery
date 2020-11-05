@@ -40,6 +40,11 @@ public class PlayerListener implements Listener {
 			return;
 		}
 
+		// Interacting with a Sink
+		if (type == Material.HOPPER) {
+			BSink.clickSink(event);
+			return;
+		}
 
 		if (P.use1_14 && BSealer.isBSealer(clickedBlock)) {
 			event.setCancelled(true);

@@ -18,7 +18,6 @@ import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -27,6 +26,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 public class P extends JavaPlugin {
@@ -34,7 +34,6 @@ public class P extends JavaPlugin {
 	public static boolean debug;
 	public static boolean useUUID;
 	public static boolean useNBT;
-	public boolean hasSpigot;
 	public static boolean use1_9;
 	public static boolean use1_11;
 	public static boolean use1_13;
@@ -68,13 +67,6 @@ public class P extends JavaPlugin {
 		use1_11 = !v.matches("(^|.*[^.\\d])1\\.10([^\\d].*|$)") && !v.matches("(^|.*[^.\\d])1\\.[0-9]([^\\d].*|$)");
 		use1_13 = !v.matches("(^|.*[^.\\d])1\\.1[0-2]([^\\d].*|$)") && !v.matches("(^|.*[^.\\d])1\\.[0-9]([^\\d].*|$)");
 		use1_14 = !v.matches("(^|.*[^.\\d])1\\.1[0-3]([^\\d].*|$)") && !v.matches("(^|.*[^.\\d])1\\.[0-9]([^\\d].*|$)");
-
-		try {
-			Class c = World.Spigot.class;
-			hasSpigot = true;
-		} catch (LinkageError e) {
-			hasSpigot = false;
-		}
 
 		//MC 1.13 uses a different NBT API than the newer versions..
 		// We decide here which to use, the new or the old or none at all
@@ -462,8 +454,12 @@ public class P extends JavaPlugin {
 		public void run() {
 			long t1 = System.nanoTime();
 			BConfig.reloader = null;
-			for (BCauldron cauldron : BCauldron.bcauldrons.values()) {
-				cauldron.onUpdate();// runs every min to update cooking time
+			Iterator<BCauldron> iter = BCauldron.bcauldrons.values().iterator();
+			while (iter.hasNext()) {
+				// runs every min to update cooking time
+				if (!iter.next().onUpdate()) {
+					iter.remove();
+				}
 			}
 			long t2 = System.nanoTime();
 			Barrel.onUpdate();// runs every min to check and update ageing time

@@ -53,15 +53,36 @@ public class BCauldron {
 		particleLocation = block.getLocation().add(0.5, 0.8, 0.5);
 	}
 
-	public void onUpdate() {
-		// Check if fire still alive
-		if (!BUtil.isChunkLoaded(block) || LegacyUtil.isCauldronHeatsource(block.getRelative(BlockFace.DOWN))) {
-			// add a minute to cooking time
-			state++;
-			if (changed) {
-				ingredients = ingredients.copy();
-				changed = false;
+	/**
+	 * Updates this Cauldron, increasing the cook time and checking for Heatsource
+	 *
+	 * @return false if Cauldron needs to be removed
+	 */
+	public boolean onUpdate() {
+		// add a minute to cooking time
+		if (!BUtil.isChunkLoaded(block)) {
+			increaseState();
+		} else {
+			if (block.getType() != Material.CAULDRON) {
+				// Catch any WorldEdit etc. removal
+				return false;
 			}
+			// Check if fire still alive
+			if (LegacyUtil.isCauldronHeatsource(block.getRelative(BlockFace.DOWN))) {
+				increaseState();
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Will add a minute to the cooking time
+	 */
+	public void increaseState() {
+		state++;
+		if (changed) {
+			ingredients = ingredients.copy();
+			changed = false;
 		}
 	}
 
@@ -79,9 +100,8 @@ public class BCauldron {
 			state--;
 		}
 		if (BConfig.enableCauldronParticles) {
-			//block.getWorld().spawnParticle(Particle.SPELL_INSTANT, getRandomized(),0, -0.5 + particleRandom.nextFloat(), 1, -0.5 + particleRandom.nextFloat());
+			// Few little sparks and lots of water splashes. Offset by 0.2 in x and z
 			block.getWorld().spawnParticle(Particle.SPELL_INSTANT, particleLocation,3, 0.2, 0, 0.2);
-			//block.getWorld().spawnParticle(Particle.REDSTONE, pLoc1, 15, 0.5, 0.4, 0.5, new Particle.DustOptions(Color.GREEN, 12f));
 			block.getWorld().spawnParticle(Particle.WATER_SPLASH, particleLocation, 10, 0.2, 0, 0.2);
 		}
 	}
@@ -211,60 +231,29 @@ public class BCauldron {
 		}
 	}
 
-	public void createParticlePackets() {
-		try {
-
-		} catch (Exception ignored) {}
-	}
-
-	double test = 0;
-
 	public void cookEffect() {
-		long time1 = System.nanoTime();
 		if (BUtil.isChunkLoaded(block) && LegacyUtil.isCauldronHeatsource(block.getRelative(BlockFace.DOWN))) {
-			time1 = System.nanoTime() - time1;
-			long time2 = System.nanoTime();
-			//block.getWorld().spawnParticle(particle, pLoc1, 2, 0.2, 1, 0.2, 0);
-			//block.getWorld().spigot().playEffect(pLoc1, effect, 0, 0, 0.2F, 0, 0.2F, 0, 8, 15);
-			time2 = System.nanoTime() - time2;
-			long time3 = System.nanoTime();
-			//block.getWorld().spawnParticle(Particle.CAMPFIRE_COSY_SMOKE, pLoc1, 0, 0.01, 1, 0.01, 0.05);
-			//block.getWorld().spawnParticle(Particle.WATER_SPLASH, getRandomized(), 1, 0.1, 0, 0.1, 0.005);
 			if (particleRandom.nextFloat() > 0.75) {
-				block.getWorld().spawnParticle(Particle.CLOUD, getRandomized(), 0, 0, 1, 0, 0.07);
-				//block.getWorld().spawnParticle(Particle.REDSTONE, pLoc2, 3, 0.3, 0, 0.3, 10, new Particle.DustOptions(Color.BLUE, 1));
-				//block.getWorld().spawnParticle(Particle.SPELL_INSTANT, getRandomized(), 0, 0, 1, 0, 0.005);
+				// Pixely cloud at 0.4 random in x and z
+				// 0 count enables direction, send to y = 1 with speed 0.07
+				block.getWorld().spawnParticle(Particle.CLOUD, getRandParticleLoc(), 0, 0, 1, 0, 0.07);
 			}
 			if (particleRandom.nextFloat() > 0.2) {
+				// A Water Splash with 0.2 offset in x and z
 				block.getWorld().spawnParticle(Particle.WATER_SPLASH, particleLocation, 1, 0.2, 0, 0.2);
 			}
-			block.getWorld().spawnParticle(Particle.SPELL_MOB, getRandomized(), 0, 180.0/255.0, 40.0/255.0, 1.0/255.0, 1025.0);
-			//block.getWorld().playEffect(pLoc1, Effect.);
-			//block.getWorld().spigot().playEffect(pLoc2, Effect.SPELL, 0, 0, 0.2F, 0.2F, 0.2F, 0, 2, 25);
-			time3 = System.nanoTime() - time3;
-			//P.p.log("Time: 1: " + time1 + " 2: " + time2 + " 3: " + time3);
-			//block.getWorld().spigot().playEffect(block.getLocation().add(0.5, 1, 0.5), Effect.COLOURED_DUST, 0, 1, 0.3F, 0.5F, 0.3F, 0, 5, 15);
-			//block.getWorld().spigot().playEffect(block.getLocation().add(0.5, 0.5, 0.5), Effect.PARTICLE_SMOKE, 0, 0, 0.3F, 0.5F, 0.3F, 0, 8, 20);
-			//test+=1;
-			//P.p.log(test + "");
-			//test = 512.0;
-
+			// Colorable spirally spell, 0 count enables color instead of the offset variables
+			// Configurable RGB color. 1025 seems to be the best for color brightness and upwards motion
+			block.getWorld().spawnParticle(Particle.SPELL_MOB, getRandParticleLoc(), 0, 180.0/255.0, 40.0/255.0, 1.0/255.0, 1025.0);
 		}
 	}
 
-	public Location getRandomized() {
-		return new Location(particleLocation.getWorld(), particleLocation.getX() + (particleRandom.nextDouble() * 0.8) - 0.4, particleLocation.getY(), particleLocation.getZ() + (particleRandom.nextDouble() * 0.8) - 0.4);
+	private Location getRandParticleLoc() {
+		return new Location(particleLocation.getWorld(),
+			particleLocation.getX() + (particleRandom.nextDouble() * 0.8) - 0.4,
+			particleLocation.getY(),
+			particleLocation.getZ() + (particleRandom.nextDouble() * 0.8) - 0.4);
 	}
-	// Item Crack
-	// Block Dust
-	// FAlling dust
-	// CAmpfire
-	// Explosion normal
-
-	// Water Splash
-	// Spell Mob
-	// Spell Witch
-	// CLoud
 
 	public static void cookEffects() {
 		if (!BConfig.enableCauldronParticles) return;
@@ -313,20 +302,6 @@ public class BCauldron {
 			particleCauldron++;
 		}
 	}
-
-	/*public static void cookEffects() {
-		int size = bcauldrons.size();
-		if (size <= 0) {
-			return;
-		}
-
-		int numCauldrons = Math.max(size / 40, 1);
-		Random r = new Random();
-		while (numCauldrons > 0) {
-			bcauldrons.get(r.nextInt(size)).cookEffect();
-			numCauldrons--;
-		}
-	}*/
 
 	public static void clickCauldron(PlayerInteractEvent event) {
 		Material materialInHand = event.getMaterial();
@@ -447,12 +422,11 @@ public class BCauldron {
 		}
 	}
 
-	// reset to normal cauldron
+	/**
+	 * reset to normal cauldron
+ 	 */
 	public static boolean remove(Block block) {
-		if (LegacyUtil.getFillLevel(block) != EMPTY) {
-			return bcauldrons.remove(block) != null;
-		}
-		return false;
+		return bcauldrons.remove(block) != null;
 	}
 
 	// unloads cauldrons that are in a unloading world

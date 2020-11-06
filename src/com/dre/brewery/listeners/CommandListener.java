@@ -7,9 +7,7 @@ import com.dre.brewery.recipe.BRecipe;
 import com.dre.brewery.recipe.Ingredient;
 import com.dre.brewery.recipe.RecipeItem;
 import com.dre.brewery.utility.BUtil;
-import org.bukkit.Effect;
 import org.bukkit.Material;
-import org.bukkit.Particle;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -17,7 +15,6 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -166,33 +163,12 @@ public class CommandListener implements CommandExecutor {
 		return true;
 	}
 
-	private Runnable r;
-	private int pos = 0;
-
 	public void cmdHelp(CommandSender sender, String[] args) {
 
 		int page = 1;
 		if (args.length > 1) {
-			BCauldron.particle = Particle.valueOf(args[1]);
-			if (BCauldron.particle != null) {
-				p.msg(sender, "Effekt: " + BCauldron.particle.name());
-			} else {
-				BCauldron.particle = Particle.REDSTONE;
-			}
 			page = p.parseInt(args[1]);
 		}
-		r = new Runnable() {
-			@Override
-			public void run() {
-				pos++;
-				if (pos >= Particle.values().length) {
-					pos = 0;
-				}
-				BCauldron.particle = Particle.values()[pos];
-				sender.sendMessage("Particle: " + BCauldron.particle.name());
-			}
-		};
-		P.p.getServer().getScheduler().runTaskTimer(P.p, r, 100, 100);
 
 		ArrayList<String> commands = getCommands(sender);
 

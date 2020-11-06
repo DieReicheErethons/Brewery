@@ -49,6 +49,9 @@ drainItems:
 # Time (in days) that drunkeness-data stays in memory after a player goes offline, to apply hangover etc. [7]
 hangoverDays: 7
 
+# Show Particles over Cauldrons when they have ingredients and a heat source. [true]
+enableCauldronParticles: true
+
 # If crafting and using of the Brew Sealing Table is enabled (2 Bottles over 4 Planks) [true, true]
 craftSealingTable: true
 enableSealingTable: true

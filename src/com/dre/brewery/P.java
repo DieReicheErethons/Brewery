@@ -18,6 +18,7 @@ import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -33,6 +34,7 @@ public class P extends JavaPlugin {
 	public static boolean debug;
 	public static boolean useUUID;
 	public static boolean useNBT;
+	public boolean hasSpigot;
 	public static boolean use1_9;
 	public static boolean use1_11;
 	public static boolean use1_13;
@@ -66,6 +68,13 @@ public class P extends JavaPlugin {
 		use1_11 = !v.matches("(^|.*[^.\\d])1\\.10([^\\d].*|$)") && !v.matches("(^|.*[^.\\d])1\\.[0-9]([^\\d].*|$)");
 		use1_13 = !v.matches("(^|.*[^.\\d])1\\.1[0-2]([^\\d].*|$)") && !v.matches("(^|.*[^.\\d])1\\.[0-9]([^\\d].*|$)");
 		use1_14 = !v.matches("(^|.*[^.\\d])1\\.1[0-3]([^\\d].*|$)") && !v.matches("(^|.*[^.\\d])1\\.[0-9]([^\\d].*|$)");
+
+		try {
+			Class c = World.Spigot.class;
+			hasSpigot = true;
+		} catch (LinkageError e) {
+			hasSpigot = false;
+		}
 
 		//MC 1.13 uses a different NBT API than the newer versions..
 		// We decide here which to use, the new or the old or none at all
@@ -128,6 +137,10 @@ public class P extends JavaPlugin {
 		// Heartbeat
 		p.getServer().getScheduler().runTaskTimer(p, new BreweryRunnable(), 650, 1200);
 		p.getServer().getScheduler().runTaskTimer(p, new DrunkRunnable(), 120, 120);
+
+		if (use1_9) {
+			p.getServer().getScheduler().runTaskTimer(p, new CauldronParticles(), 1, 1);
+		}
 
 		if (BConfig.updateCheck) {
 			try {
@@ -471,6 +484,13 @@ public class P extends JavaPlugin {
 				" | t5: " + (t6 - t5) / 1000000.0 + "ms" );
 		}
 
+	}
+
+	public class CauldronParticles implements Runnable {
+		@Override
+		public void run() {
+			BCauldron.cookEffects();
+		}
 	}
 
 }

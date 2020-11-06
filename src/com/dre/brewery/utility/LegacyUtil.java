@@ -111,7 +111,7 @@ public class LegacyUtil {
 		return type.name().endsWith("SIGN") || (!P.use1_13 && type == SIGN_POST);
 	}
 
-	public static boolean isFireForCauldron(Block block) {
+	public static boolean isCauldronHeatsource(Block block) {
 		Material type = block.getType();
 		return type != null && (type == Material.FIRE || type == SOUL_FIRE || type == MAGMA_BLOCK || litCampfire(block) || isLava(type));
 	}

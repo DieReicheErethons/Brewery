@@ -7,7 +7,9 @@ import com.dre.brewery.recipe.RecipeItem;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.LegacyUtil;
 import org.bukkit.Effect;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
@@ -19,24 +21,28 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public class BCauldron {
 	public static final byte EMPTY = 0, SOME = 1, FULL = 2;
+	public static final int PARTICLEPAUSE = 15;
+	public static Random particleRandom = new Random();
+	private static int particleCauldron;
+	private static int particleDelay;
 	private static Set<UUID> plInteracted = new HashSet<>(); // Interact Event helper
 	public static Map<Block, BCauldron> bcauldrons = new HashMap<>(); // All active cauldrons. Mapped to their block for fast retrieve
+
+	public static Particle particle = Particle.CLOUD;
 
 	private BIngredients ingredients = new BIngredients();
 	private final Block block;
 	private int state = 0;
 	private boolean changed = false;
+	private Location particleLocation;
 
 	public BCauldron(Block block) {
 		this.block = block;
+		particleLocation = block.getLocation().add(0.5, 0.8, 0.5);
 	}
 
 	// loading from file
@@ -44,11 +50,12 @@ public class BCauldron {
 		this.block = block;
 		this.state = state;
 		this.ingredients = ingredients;
+		particleLocation = block.getLocation().add(0.5, 0.8, 0.5);
 	}
 
 	public void onUpdate() {
 		// Check if fire still alive
-		if (!BUtil.isChunkLoaded(block) || LegacyUtil.isFireForCauldron(block.getRelative(BlockFace.DOWN))) {
+		if (!BUtil.isChunkLoaded(block) || LegacyUtil.isCauldronHeatsource(block.getRelative(BlockFace.DOWN))) {
 			// add a minute to cooking time
 			state++;
 			if (changed) {
@@ -70,6 +77,12 @@ public class BCauldron {
 		block.getWorld().playEffect(block.getLocation(), Effect.EXTINGUISH, 0);
 		if (state > 0) {
 			state--;
+		}
+		if (BConfig.enableCauldronParticles) {
+			//block.getWorld().spawnParticle(Particle.SPELL_INSTANT, getRandomized(),0, -0.5 + particleRandom.nextFloat(), 1, -0.5 + particleRandom.nextFloat());
+			block.getWorld().spawnParticle(Particle.SPELL_INSTANT, particleLocation,3, 0.2, 0, 0.2);
+			//block.getWorld().spawnParticle(Particle.REDSTONE, pLoc1, 15, 0.5, 0.4, 0.5, new Particle.DustOptions(Color.GREEN, 12f));
+			block.getWorld().spawnParticle(Particle.WATER_SPLASH, particleLocation, 10, 0.2, 0, 0.2);
 		}
 	}
 
@@ -198,6 +211,123 @@ public class BCauldron {
 		}
 	}
 
+	public void createParticlePackets() {
+		try {
+
+		} catch (Exception ignored) {}
+	}
+
+	double test = 0;
+
+	public void cookEffect() {
+		long time1 = System.nanoTime();
+		if (BUtil.isChunkLoaded(block) && LegacyUtil.isCauldronHeatsource(block.getRelative(BlockFace.DOWN))) {
+			time1 = System.nanoTime() - time1;
+			long time2 = System.nanoTime();
+			//block.getWorld().spawnParticle(particle, pLoc1, 2, 0.2, 1, 0.2, 0);
+			//block.getWorld().spigot().playEffect(pLoc1, effect, 0, 0, 0.2F, 0, 0.2F, 0, 8, 15);
+			time2 = System.nanoTime() - time2;
+			long time3 = System.nanoTime();
+			//block.getWorld().spawnParticle(Particle.CAMPFIRE_COSY_SMOKE, pLoc1, 0, 0.01, 1, 0.01, 0.05);
+			//block.getWorld().spawnParticle(Particle.WATER_SPLASH, getRandomized(), 1, 0.1, 0, 0.1, 0.005);
+			if (particleRandom.nextFloat() > 0.75) {
+				block.getWorld().spawnParticle(Particle.CLOUD, getRandomized(), 0, 0, 1, 0, 0.07);
+				//block.getWorld().spawnParticle(Particle.REDSTONE, pLoc2, 3, 0.3, 0, 0.3, 10, new Particle.DustOptions(Color.BLUE, 1));
+				//block.getWorld().spawnParticle(Particle.SPELL_INSTANT, getRandomized(), 0, 0, 1, 0, 0.005);
+			}
+			if (particleRandom.nextFloat() > 0.2) {
+				block.getWorld().spawnParticle(Particle.WATER_SPLASH, particleLocation, 1, 0.2, 0, 0.2);
+			}
+			block.getWorld().spawnParticle(Particle.SPELL_MOB, getRandomized(), 0, 180.0/255.0, 40.0/255.0, 1.0/255.0, 1025.0);
+			//block.getWorld().playEffect(pLoc1, Effect.);
+			//block.getWorld().spigot().playEffect(pLoc2, Effect.SPELL, 0, 0, 0.2F, 0.2F, 0.2F, 0, 2, 25);
+			time3 = System.nanoTime() - time3;
+			//P.p.log("Time: 1: " + time1 + " 2: " + time2 + " 3: " + time3);
+			//block.getWorld().spigot().playEffect(block.getLocation().add(0.5, 1, 0.5), Effect.COLOURED_DUST, 0, 1, 0.3F, 0.5F, 0.3F, 0, 5, 15);
+			//block.getWorld().spigot().playEffect(block.getLocation().add(0.5, 0.5, 0.5), Effect.PARTICLE_SMOKE, 0, 0, 0.3F, 0.5F, 0.3F, 0, 8, 20);
+			//test+=1;
+			//P.p.log(test + "");
+			//test = 512.0;
+
+		}
+	}
+
+	public Location getRandomized() {
+		return new Location(particleLocation.getWorld(), particleLocation.getX() + (particleRandom.nextDouble() * 0.8) - 0.4, particleLocation.getY(), particleLocation.getZ() + (particleRandom.nextDouble() * 0.8) - 0.4);
+	}
+	// Item Crack
+	// Block Dust
+	// FAlling dust
+	// CAmpfire
+	// Explosion normal
+
+	// Water Splash
+	// Spell Mob
+	// Spell Witch
+	// CLoud
+
+	public static void cookEffects() {
+		if (!BConfig.enableCauldronParticles) return;
+		int size = bcauldrons.size();
+		if (size <= 0) {
+			return;
+		}
+
+		// The Particle Delay is reduced every time, independent on how many cauldrons are processed
+		// If it did not reach zero as we process all cauldrons, skip some tasks
+		particleDelay--;
+		if (particleCauldron >= size) {
+			if (particleDelay <= 0) {
+				particleCauldron = 0;
+				particleDelay = PARTICLEPAUSE;
+			}
+			return;
+		}
+
+		// Decide how many cauldrons to process this time
+		int cauldronsToProcess;
+		if (size < PARTICLEPAUSE) {
+			cauldronsToProcess = 1;
+		} else {
+			cauldronsToProcess = (int) Math.ceil((float) size / (float) PARTICLEPAUSE);
+		}
+
+		Iterator<BCauldron> cauldronsIter = bcauldrons.values().iterator();
+		int currentPos = 0;
+		for (; currentPos < particleCauldron; currentPos++) {
+			cauldronsIter.next();
+		}
+
+		while (cauldronsToProcess > 0) {
+			if (particleCauldron >= size) {
+				// We reached the end of the Cauldron list
+				if (particleDelay <= 0) {
+					// Processing all cauldrons took as long as the delay, start over right away
+					particleCauldron = 0;
+					particleDelay = PARTICLEPAUSE;
+				}
+				return;
+			}
+			cauldronsIter.next().cookEffect();
+			cauldronsToProcess--;
+			particleCauldron++;
+		}
+	}
+
+	/*public static void cookEffects() {
+		int size = bcauldrons.size();
+		if (size <= 0) {
+			return;
+		}
+
+		int numCauldrons = Math.max(size / 40, 1);
+		Random r = new Random();
+		while (numCauldrons > 0) {
+			bcauldrons.get(r.nextInt(size)).cookEffect();
+			numCauldrons--;
+		}
+	}*/
+
 	public static void clickCauldron(PlayerInteractEvent event) {
 		Material materialInHand = event.getMaterial();
 		ItemStack item = event.getItem();
@@ -248,7 +378,7 @@ public class BCauldron {
 
 		// Check if fire alive below cauldron when adding ingredients
 		Block down = clickedBlock.getRelative(BlockFace.DOWN);
-		if (LegacyUtil.isFireForCauldron(down)) {
+		if (LegacyUtil.isCauldronHeatsource(down)) {
 
 			event.setCancelled(true);
 			boolean handSwap = false;

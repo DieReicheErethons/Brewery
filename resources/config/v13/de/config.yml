@@ -49,6 +49,9 @@ drainItems:
 # Zeit (in Tagen) die Trunkenheitsdaten nach offlinegehen eines Spielers im Speicher verbleiben, um z.B. Kater-Effekte anzuwenden. [7]
 hangoverDays: 7
 
+# Partikel steigen von Kesseln auf wenn sie Zutaten und eine Feuerquelle haben [true]
+enableCauldronParticles: true
+
 # Ob das craften und das benutzen des Trank-Versiegelungs-Tisches aktiviert ist (2 Flaschen über 4 Holz) [true, true]
 craftSealingTable: true
 enableSealingTable: true

@@ -149,6 +149,11 @@ customItems:
  # color: Color of the potion from a cauldron. Defaults to CYAN
  #   Usable Colors: DARK_RED, RED, BRIGHT_RED, ORANGE, YELLOW, PINK, PURPLE, BLUE, CYAN, WATER, TEAL, OLIVE, GREEN, LIME, BLACK, GREY, BRIGHT_GREY, WHITE
  #   Or RGB colors (hex: for example '99FF33') (with '') (search for "HTML color" on the internet)
+ # cookParticles:
+ #   Color of the Particles above the cauldron at different cooking-times
+ #   Color and minute during which each color should appear, i.e. one color at 8 minutes fading to another at 18 minutes.
+ #   As List, each Color as name or RGB, see above. Written as 'Color/Minute'
+ #   It will fade to the last color in the end, if there is only one color in the list, it will fade to grey
  # lore: List of additional text on the base potion. (Formatting codes possible: such as &6)
  # customModelData: Custom Model Data Tag. This is a number that can be used to add custom textures to the item.
 
@@ -160,6 +165,10 @@ cauldron:
       - Bedrock/2
       - Diamond
     color: BLACK
+    cookParticles:
+      - 'RED/5'
+      - 'WHITE/10'
+      - '800000/25' # maroon
     lore:
       - An example for a Base Potion
       - This is how it comes out of a Cauldron
@@ -169,15 +178,23 @@ cauldron:
   wheat:
     name: Frumento fermentato
     ingredients: Wheat
+    cookParticles:
+      - '2d8686/8' # Dark Aqua
 
   sugarcane:
     name: Miscela zuccherata
     ingredients: Sugar_Cane
     color: 'f1ffad' # yellowish green
+    cookParticles:
+      - 'f1ffad/4'
+      - '858547/10' # dark olive
 
   sugar:
     name: Sugarwater
     ingredients: Sugar
+    cookParticles:
+      - 'WHITE/4'
+      - 'BRIGHT_GREY/25'
 
   apple:
     name: Sidro di mele
@@ -187,6 +204,10 @@ cauldron:
     name: Grape must
     ingredients: Sweet_Berries
     color: RED
+    cookParticles:
+      - 'ff6666/2' # bright red
+      - 'RED/7'
+      - 'ac6553/13' # brown-red
 
   potato:
     name: Purè di patate
@@ -196,36 +217,54 @@ cauldron:
     name: Erbe bollite
     ingredients: Grass
     color: '99ff66' # bright green
+    cookParticles:
+      - 'GREEN/2'
+      - '99ff99/20' # faded green
 
   rmushroom:
     name: Miscela ai funghi
     ingredients: Red_Mushroom
     color: 'ff5c33' # amber red
+    cookParticles:
+      - 'fab09e/15' # faded red
 
   bmushroom:
     name: Mushroom brew
     ingredients: Brown_Mushroom
     color: 'c68c53' # brighter brown
+    cookParticles:
+      - 'c68c53/15'
 
   cocoa:
     name: Miscela colorata
     ingredients: Cocoa_Beans
     color: '804600' # mocca
+    cookParticles:
+      - 'a26011/1'
+      - '5c370a/3'
+      - '4d4133/8' # Gray-brown
 
   milk:
     name: Acqua lattea
     ingredients: Milk_Bucket
     color: BRIGHT_GREY
+    cookParticles:
+      - 'fbfbd0/1' # yellow-white
+      - 'WHITE/6'
 
   bl_flow:
     name: Blueish brew
     ingredients: blue-flowers
     color: '0099ff' # sky blue
+    cookParticles:
+      - '0099ff'
 
   cactus:
     name: Agave brew
     ingredients: cactus
     color: '00b300' # cactus green
+    cookParticles:
+      - '00b300/16'
 
   poi_potato:
     name: Poisonous Broth
@@ -244,11 +283,17 @@ cauldron:
     name: Boiled herbs
     ingredients: vine
     color: '99ff66' # bright green
+    cookParticles:
+      - 'GREEN/2'
+      - '99ff99/20' # faded green
 
   rot_flesh:
     name: Foul pest
     ingredients: Rotten_Flesh
     color: '263300' # brown green
+    cookParticles:
+      - '263300/8'
+      - 'BLACK/20'
 
   melon:
     name: Melon juice
@@ -275,6 +320,10 @@ cauldron:
     name: Chocolately sap
     ingredients: Cookie
     color: '804600' # mocca
+    cookParticles:
+      - 'a26011/1'
+      - '5c370a/3'
+      - '4d4133/8' # Gray-brown
 
   fer_spid_eye:
     name: Fermented Eye
@@ -292,11 +341,16 @@ cauldron:
     name: Glistering brew
     ingredients: Gold_Nugget
     color: 'ffd11a' # gold
+    cookParticles:
+      - 'ffd11a'
 
   glowstone_dust:
     name: Glowing brew
     ingredients: Glowstone_Dust
     color: 'ffff33' # bright yellow
+    cookParticles:
+      - 'ffff99/3'
+      - 'd9d926/15' # faded yellow
 
   # -- Multiple Ingredients: --
   applemead_base:
@@ -305,6 +359,8 @@ cauldron:
       - Sugar_Cane/3
       - Apple
     color: 'e1ff4d' # greenish yellow
+    cookParticles:
+      - 'e1ff4d/4'
 
   poi_grass:
     name: Boiled acidy herbs
@@ -312,6 +368,9 @@ cauldron:
       - Grass
       - Poisonous_Potato
     color: '99ff66' # bright green
+    cookParticles:
+      - 'GREEN/2'
+      - '99ff99/20' # faded green
 
   juniper:
     name: Juniper brew
@@ -319,6 +378,8 @@ cauldron:
       - blue-flowers
       - wheat
     color: '00ccff' # aqua
+    cookParticles:
+      - '00ccff/8'
 
   gin_base:
     name: Fruity juniper brew
@@ -327,6 +388,8 @@ cauldron:
       - wheat
       - apple
     color: '66e0ff' # lighter aqua
+    cookParticles:
+      - '00ccff/5'
 
   eggnog_base:
     name: Smooth egg mixture
@@ -335,6 +398,8 @@ cauldron:
       - sugar
       - milk_bucket
     color: 'ffecb3' # yellow-orange
+    cookParticles:
+      - 'ffecb3/2'
 
 
 

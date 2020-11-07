@@ -141,6 +141,11 @@ customItems:
  # color: Farbe des Trankes der aus dem Kessel kommt
  #   Benutzbare Farben: DARK_RED, RED, BRIGHT_RED, ORANGE, PINK, BLUE, CYAN, WATER, GREEN, BLACK, GREY, BRIGHT_GREY
  #   Oder RGB Farben (Hex: also zB '99FF33') (Ohne #) (mit '') (Einfach nach "HTML color" im Internet suchen)
+ # cookParticles:
+ #   Farbe der Partikel über dem Kessel während verschiedener Kochzeiten
+ #   Farbe und Minute während die Farbe erscheinen soll. Z.B. eine Farbe bei 8 Minuten, übergehend zu einer anderen bei 18 minuten
+ #   Als Liste, jede Farbe als Name oder RGB wie oben. Geschrieben 'Farbe/Minute'
+ #   Zum Ende geht es in die letzte Farbe über, gibt es nur eine Farbe in der Liste, wird es von dieser langsam zu grau.
  # lore: Auflistung von zusätzlichem Text auf dem Trank. (Farbcodes möglich: z.b. &6)
  # customModelData: Custom Model Data Modelldaten. Mit dieser Zahl kann die Tranktextur mit einem Resourcepack geändert werden
 
@@ -152,6 +157,10 @@ cauldron:
       - BEDROCK/2
       - DIAMOND
     color: BLACK
+    cookParticles:
+      - 'RED/5'
+      - 'WHITE/10'
+      - '800000/25' # maroon
     lore:
       - Ein Beispiel für einen Basistrank
       - So kommt er aus dem Kessel
@@ -161,11 +170,16 @@ cauldron:
   wheat:
     name: Getreideferment
     ingredients: WHEAT
+    cookParticles:
+      - '2d8686/8' # Dark Aqua
 
   sugarcane:
     name: Zuckersud
     ingredients: SUGAR_CANE
     color: 'f1ffad' # gelbliches grün
+    cookParticles:
+      - 'f1ffad/4'
+      - '858547/10' # dark olive
 
   apple:
     name: Apfelmost
@@ -179,21 +193,33 @@ cauldron:
     name: Kräuterbrühe
     ingredients: LONG_GRASS
     color: '99ff66' # helles grün
+    cookParticles:
+      - 'GREEN/2'
+      - '99ff99/20' # faded green
 
   rmushroom:
     name: Pilzsud
     ingredients: RED_MUSHROOM
     color: 'ff5c33' # bernsteinrot
+    cookParticles:
+      - 'fab09e/15' # faded red
 
   cocoa:
     name: Kakaobrühe
     ingredients: INK_SACK
     color: '804600' # mokka
+    cookParticles:
+      - 'a26011/1'
+      - '5c370a/3'
+      - '4d4133/8' # Gray-brown
 
   milk:
     name: Milchiges Wasser
     ingredients: MILK_BUCKET
     color: BRIGHT_GREY
+    cookParticles:
+      - 'fbfbd0/1' # yellow-white
+      - 'WHITE/6'
 
   # -- Mehrere Zutaten: --
   apfelmet_basis:
@@ -202,6 +228,8 @@ cauldron:
       - SUGAR_CANE/3
       - APPLE
     color: 'e1ff4d' # grünliches gelb
+    cookParticles:
+      - 'e1ff4d/4'
 
 
 # -- Rezepte für Getränke --

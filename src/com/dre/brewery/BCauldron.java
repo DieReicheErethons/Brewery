@@ -257,7 +257,7 @@ public class BCauldron {
 				((double) color.getBlue()) / 255.0,
 				1025.0);
 
-			if (particleRandom.nextFloat() > 0.4) {
+			if (P.use1_13 && particleRandom.nextFloat() > 0.4) {
 				// Two hovering pixely dust clouds, a bit offset with DustOptions to give some color and size
 				block.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 2, 0.15, 0.2, 0.15, new Particle.DustOptions(color, 1.5f));
 			}

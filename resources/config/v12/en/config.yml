@@ -142,6 +142,11 @@ customItems:
  # color: Color of the potion from a cauldron.
  #   Usable Colors: DARK_RED, RED, BRIGHT_RED, ORANGE, PINK, BLUE, CYAN, WATER, GREEN, BLACK, GREY, BRIGHT_GREY
  #   Or RGB colors (hex: for example '99FF33') (with '') (search for "HTML color" on the internet)
+ # cookParticles:
+ #   Color of the Particles above the cauldron at different cooking-times
+ #   Color and minute during which each color should appear, i.e. one color at 8 minutes fading to another at 18 minutes.
+ #   As List, each Color as name or RGB, see above. Written as 'Color/Minute'
+ #   It will fade to the last color in the end, if there is only one color in the list, it will fade to grey
  # lore: List of additional text on the base potion. (Formatting codes possible: such as &6)
  # customModelData: Custom Model Data Tag. This is a number that can be used to add custom textures to the item.
 
@@ -152,6 +157,10 @@ cauldron:
       - BEDROCK/2
       - DIAMOND
     color: BLACK
+    cookParticles:
+      - 'RED/5'
+      - 'WHITE/10'
+      - '800000/25' # maroon
     lore:
       - An example for a Base Potion
       - This is how it comes out of a Cauldron
@@ -161,11 +170,16 @@ cauldron:
   wheat:
     name: Fermented wheat
     ingredients: WHEAT
+    cookParticles:
+      - '2d8686/8' # Dark Aqua
 
   sugarcane:
     name: Sugar brew
     ingredients: SUGAR_CANE
     color: 'f1ffad' # yellowish green
+    cookParticles:
+      - 'f1ffad/4'
+      - '858547/10' # dark olive
 
   apple:
     name: Apple cider
@@ -179,21 +193,33 @@ cauldron:
     name: Boiled herbs
     ingredients: LONG_GRASS
     color: '99ff66' # bright green
+    cookParticles:
+      - 'GREEN/2'
+      - '99ff99/20' # faded green
 
   rmushroom:
     name: Mushroom brew
     ingredients: RED_MUSHROOM
     color: 'ff5c33' # amber red
+    cookParticles:
+      - 'fab09e/15' # faded red
 
   cocoa:
     name: Chocolately brew
     ingredients: INK_SACK
     color: '804600' # mocca
+    cookParticles:
+      - 'a26011/1'
+      - '5c370a/3'
+      - '4d4133/8' # Gray-brown
 
   milk:
     name: Milky water
     ingredients: MILK_BUCKET
     color: BRIGHT_GREY
+    cookParticles:
+      - 'fbfbd0/1' # yellow-white
+      - 'WHITE/6'
 
   # -- Multiple Ingredients: --
   apfelmet_base:
@@ -202,6 +228,8 @@ cauldron:
       - SUGAR_CANE/3
       - APPLE
     color: 'e1ff4d' # greenish yellow
+    cookParticles:
+      - 'e1ff4d/4'
 
 
 

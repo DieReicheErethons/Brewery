@@ -6,6 +6,8 @@ import com.dre.brewery.recipe.BCauldronRecipe;
 import com.dre.brewery.recipe.RecipeItem;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.LegacyUtil;
+import com.dre.brewery.utility.Tuple;
+import org.bukkit.Color;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -19,6 +21,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -32,17 +35,17 @@ public class BCauldron {
 	private static Set<UUID> plInteracted = new HashSet<>(); // Interact Event helper
 	public static Map<Block, BCauldron> bcauldrons = new HashMap<>(); // All active cauldrons. Mapped to their block for fast retrieve
 
-	public static Particle particle = Particle.CLOUD;
-
 	private BIngredients ingredients = new BIngredients();
 	private final Block block;
 	private int state = 0;
 	private boolean changed = false;
+	private Optional<BCauldronRecipe> particleRecipe; // null if we haven't checked, empty if there is none
+	private Color particleColor;
 	private Location particleLocation;
 
 	public BCauldron(Block block) {
 		this.block = block;
-		particleLocation = block.getLocation().add(0.5, 0.8, 0.5);
+		particleLocation = block.getLocation().add(0.5, 0.9, 0.5);
 	}
 
 	// loading from file
@@ -50,7 +53,7 @@ public class BCauldron {
 		this.block = block;
 		this.state = state;
 		this.ingredients = ingredients;
-		particleLocation = block.getLocation().add(0.5, 0.8, 0.5);
+		particleLocation = block.getLocation().add(0.5, 0.9, 0.5);
 	}
 
 	/**
@@ -84,6 +87,7 @@ public class BCauldron {
 			ingredients = ingredients.copy();
 			changed = false;
 		}
+		particleColor = null;
 	}
 
 	// add an ingredient to the cauldron
@@ -94,6 +98,8 @@ public class BCauldron {
 			changed = false;
 		}
 
+		particleRecipe = null;
+		particleColor = null;
 		ingredients.add(ingredient, rItem);
 		block.getWorld().playEffect(block.getLocation(), Effect.EXTINGUISH, 0);
 		if (state > 0) {
@@ -233,18 +239,28 @@ public class BCauldron {
 
 	public void cookEffect() {
 		if (BUtil.isChunkLoaded(block) && LegacyUtil.isCauldronHeatsource(block.getRelative(BlockFace.DOWN))) {
-			if (particleRandom.nextFloat() > 0.75) {
-				// Pixely cloud at 0.4 random in x and z
-				// 0 count enables direction, send to y = 1 with speed 0.07
-				block.getWorld().spawnParticle(Particle.CLOUD, getRandParticleLoc(), 0, 0, 1, 0, 0.07);
+			if (particleRandom.nextFloat() > 0.85) {
+				// Dark pixely smoke cloud at 0.4 random in x and z
+				// 0 count enables direction, send to y = 1 with speed 0.09
+				block.getWorld().spawnParticle(Particle.SMOKE_LARGE, getRandParticleLoc(), 0, 0, 1, 0, 0.09);
 			}
 			if (particleRandom.nextFloat() > 0.2) {
 				// A Water Splash with 0.2 offset in x and z
 				block.getWorld().spawnParticle(Particle.WATER_SPLASH, particleLocation, 1, 0.2, 0, 0.2);
 			}
+			Color color = getParticleColor();
 			// Colorable spirally spell, 0 count enables color instead of the offset variables
 			// Configurable RGB color. 1025 seems to be the best for color brightness and upwards motion
-			block.getWorld().spawnParticle(Particle.SPELL_MOB, getRandParticleLoc(), 0, 180.0/255.0, 40.0/255.0, 1.0/255.0, 1025.0);
+			block.getWorld().spawnParticle(Particle.SPELL_MOB, getRandParticleLoc(), 0,
+				((double) color.getRed()) / 255.0,
+				((double) color.getGreen()) / 255.0,
+				((double) color.getBlue()) / 255.0,
+				1025.0);
+
+			if (particleRandom.nextFloat() > 0.4) {
+				// Two hovering pixely dust clouds, a bit offset with DustOptions to give some color and size
+				block.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 2, 0.15, 0.2, 0.15, new Particle.DustOptions(color, 1.5f));
+			}
 		}
 	}
 
@@ -255,7 +271,82 @@ public class BCauldron {
 			particleLocation.getZ() + (particleRandom.nextDouble() * 0.8) - 0.4);
 	}
 
-	public static void cookEffects() {
+	/**
+	 * Get or calculate the particle color from the current best Cauldron Recipe
+	 * Also calculates the best Cauldron Recipe if not yet done
+	 *
+	 * @return the Particle Color, after potentially calculating it
+	 */
+	@NotNull
+	public Color getParticleColor() {
+		if (state < 1) {
+			return Color.fromRGB(153, 221, 255); // Bright Blue
+		}
+		if (particleColor != null) {
+			return particleColor;
+		}
+		if (particleRecipe == null) {
+			// Check for Cauldron Recipe
+			particleRecipe = Optional.ofNullable(ingredients.getCauldronRecipe());
+		}
+
+		List<Tuple<Integer, Color>> colorList = null;
+		if (particleRecipe.isPresent()) {
+			colorList = particleRecipe.get().getParticleColor();
+		}
+
+		if (colorList == null || colorList.isEmpty()) {
+			// No color List configured, or no recipe found
+			colorList = new ArrayList<>(1);
+			colorList.add(new Tuple<>(10, Color.fromRGB(77, 166, 255))); // Dark Aqua kind of Blue
+		}
+		int index = 0;
+		while (index < colorList.size() - 1 && colorList.get(index).a() < state) {
+			// Find the first index where the colorList Minute is higher than the state
+			index++;
+		}
+
+		int minute = colorList.get(index).a();
+		if (minute > state) {
+			// going towards the minute
+			int prevPos;
+			Color prevColor;
+			if (index > 0) {
+				// has previous colours
+				prevPos = colorList.get(index - 1).a();
+				prevColor = colorList.get(index - 1).b();
+			} else {
+				prevPos = 0;
+				prevColor = Color.fromRGB(153, 221, 255); // Bright Blue
+			}
+
+			particleColor = BUtil.weightedMixColor(prevColor, prevPos, state, colorList.get(index).b(), minute);
+		} else if (minute == state) {
+			// reached the minute
+			particleColor = colorList.get(index).b();
+		} else {
+			// passed the last minute configured
+			if (index > 0) {
+				// We have more than one color, just use the last one
+				particleColor = colorList.get(index).b();
+			} else {
+				// Only have one color, go towards a Gray
+				Color nextColor = Color.fromRGB(138, 153, 168); // Dark Teal, Gray
+				int nextPos = (int) (minute * 2.6f);
+
+				if (nextPos <= state) {
+					// We are past the next color (Gray) as well, keep using it
+					particleColor = nextColor;
+				} else {
+					particleColor = BUtil.weightedMixColor(colorList.get(index).b(), minute, state, nextColor, nextPos);
+				}
+			}
+		}
+		//P.p.log("RGB: " + particleColor.getRed() + "|" + particleColor.getGreen() + "|" + particleColor.getBlue());
+		return particleColor;
+	}
+
+	public static void processNextCookEffects() {
 		if (!BConfig.enableCauldronParticles) return;
 		int size = bcauldrons.size();
 		if (size <= 0) {
@@ -419,6 +510,21 @@ public class BCauldron {
 			}
 		} else {
 			event.getPlayer().setItemInHand(new ItemStack(mat));
+		}
+	}
+
+	/**
+	 * Recalculate the Cauldron Particle Recipe
+	 */
+	public static void reload() {
+		for (BCauldron cauldron : BCauldron.bcauldrons.values()) {
+			cauldron.particleRecipe = null;
+			cauldron.particleColor = null;
+			if (BConfig.enableCauldronParticles) {
+				if (BUtil.isChunkLoaded(cauldron.block) && LegacyUtil.isCauldronHeatsource(cauldron.block.getRelative(BlockFace.DOWN))) {
+					cauldron.getParticleColor();
+				}
+			}
 		}
 	}
 

@@ -198,6 +198,9 @@ public class P extends JavaPlugin {
 			return;
 		}
 
+		// Reload Cauldron Particle Recipes
+		BCauldron.reload();
+
 		// Reload Recipes
 		boolean successful = true;
 		for (Brew brew : Brew.legacyPotions.values()) {
@@ -485,7 +488,7 @@ public class P extends JavaPlugin {
 	public class CauldronParticles implements Runnable {
 		@Override
 		public void run() {
-			BCauldron.cookEffects();
+			BCauldron.processNextCookEffects();
 		}
 	}
 

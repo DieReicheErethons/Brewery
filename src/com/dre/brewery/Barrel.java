@@ -405,12 +405,13 @@ public class Barrel implements InventoryHolder {
 				}
 			}
 			if (event.willDropItems()) {
+				byte wood = body.getWood();
 				for (ItemStack item : items) {
 					if (item != null) {
 						Brew brew = Brew.get(item);
 						if (brew != null) {
 							// Brew before throwing
-							brew.age(item, time, body.getWood());
+							brew.age(item, time, wood);
 							PotionMeta meta = (PotionMeta) item.getItemMeta();
 							if (BrewLore.hasColorLore(meta)) {
 								BrewLore lore = new BrewLore(brew, meta);

@@ -1,5 +1,6 @@
 package com.dre.brewery.recipe;
 
+import com.dre.brewery.P;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -164,8 +165,8 @@ public abstract class PluginItem extends RecipeItem implements Ingredient {
 	 * Registers the chosen SaveID and the loading Method for loading from Brew or BCauldron.
 	 * <p>Needs to be called at Server start.
  	 */
-	public static void registerItemLoader() {
-		Ingredient.registerForItemLoader("PI", PluginItem::loadFrom);
+	public static void registerItemLoader(P p) {
+		p.registerForItemLoader("PI", PluginItem::loadFrom);
 	}
 
 

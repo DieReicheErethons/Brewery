@@ -75,11 +75,6 @@ public class BData {
 				}
 			}
 
-			// Register Item Loaders
-			CustomItem.registerItemLoader();
-			SimpleItem.registerItemLoader();
-			PluginItem.registerItemLoader();
-
 			// loading Ingredients into ingMap
 			// Only for Legacy Brews
 			Map<String, BIngredients> ingMap = new HashMap<>();

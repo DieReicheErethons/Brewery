@@ -4,9 +4,6 @@ import org.bukkit.inventory.ItemStack;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Function;
 
 /**
  * Item used in a BIngredients, inside BCauldron or Brew,
@@ -16,30 +13,6 @@ import java.util.function.Function;
  * <p>Each implementing class needs to register a static function as Item Loader
  */
 public interface Ingredient {
-
-	Map<String, Function<ItemLoader, Ingredient>> LOADERS = new HashMap<>();
-
-	/**
-	 * Register a Static function as function that takes an ItemLoader, containing a DataInputStream.
-	 * <p>Using the Stream it constructs a corresponding Ingredient for the chosen SaveID
-	 *
-	 * @param saveID The SaveID should be a small identifier like "AB"
-	 * @param loadFct The Static Function that loads the Item, i.e.
-	 *                public static AItem loadFrom(ItemLoader loader)
-	 */
-	static void registerForItemLoader(String saveID, Function<ItemLoader, Ingredient> loadFct) {
-		LOADERS.put(saveID, loadFct);
-	}
-
-	/**
-	 * Unregister the ItemLoader
-	 *
-	 * @param saveID the chosen SaveID
-	 */
-	static void unRegisterItemLoader(String saveID) {
-		LOADERS.remove(saveID);
-	}
-
 
 	/**
 	 * Saves this Ingredient to the DataOutputStream.

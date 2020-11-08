@@ -9,8 +9,7 @@ import com.dre.brewery.integration.ChestShopListener;
 import com.dre.brewery.integration.IntegrationListener;
 import com.dre.brewery.integration.barrel.LogBlockBarrel;
 import com.dre.brewery.listeners.*;
-import com.dre.brewery.recipe.BCauldronRecipe;
-import com.dre.brewery.recipe.BRecipe;
+import com.dre.brewery.recipe.*;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.LegacyUtil;
 import org.apache.commons.lang.math.NumberUtils;
@@ -28,6 +27,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.function.Function;
 
 public class P extends JavaPlugin {
 	public static P p;
@@ -46,6 +46,9 @@ public class P extends JavaPlugin {
 	public InventoryListener inventoryListener;
 	public WorldListener worldListener;
 	public IntegrationListener integrationListener;
+
+	// Registrations
+	public Map<String, Function<ItemLoader, Ingredient>> ingredientLoaders = new HashMap<>();
 
 	// Language
 	public String language;
@@ -95,6 +98,13 @@ public class P extends JavaPlugin {
 			getServer().getPluginManager().disablePlugin(this);
 			return;
 		}
+
+		// Register Item Loaders
+		CustomItem.registerItemLoader(this);
+		SimpleItem.registerItemLoader(this);
+		PluginItem.registerItemLoader(this);
+
+		// Read data files
 		BData.readData();
 
 		// Setup Metrics
@@ -238,6 +248,28 @@ public class P extends JavaPlugin {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	/**
+	 * For loading ingredients from ItemMeta.
+	 * <p>Register a Static function that takes an ItemLoader, containing a DataInputStream.
+	 * <p>Using the Stream it constructs a corresponding Ingredient for the chosen SaveID
+	 *
+	 * @param saveID The SaveID should be a small identifier like "AB"
+	 * @param loadFct The Static Function that loads the Item, i.e.
+	 *                public static AItem loadFrom(ItemLoader loader)
+	 */
+	public void registerForItemLoader(String saveID, Function<ItemLoader, Ingredient> loadFct) {
+		ingredientLoaders.put(saveID, loadFct);
+	}
+
+	/**
+	 * Unregister the ItemLoader
+	 *
+	 * @param saveID the chosen SaveID
+	 */
+	public void unRegisterItemLoader(String saveID) {
+		ingredientLoaders.remove(saveID);
 	}
 
 	public static P getInstance() {

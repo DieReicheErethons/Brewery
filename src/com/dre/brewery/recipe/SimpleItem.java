@@ -144,8 +144,8 @@ public class SimpleItem extends RecipeItem implements Ingredient {
 	}
 
 	// Needs to be called at Server start
-	public static void registerItemLoader() {
-		Ingredient.registerForItemLoader("SI", SimpleItem::loadFrom);
+	public static void registerItemLoader(P p) {
+		p.registerForItemLoader("SI", SimpleItem::loadFrom);
 	}
 
 }

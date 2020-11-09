@@ -45,10 +45,13 @@ public class WorldListener implements Listener {
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onWorldUnload(WorldUnloadEvent event) {
-		DataSave.save(true);
 		String worldName = event.getWorld().getName();
-		Barrel.onUnload(worldName);
-		BCauldron.onUnload(worldName);
+		if (Barrel.hasDataInWorld(worldName) || BCauldron.hasDataInWorld(worldName)) {
+			P.p.log("Saving due to data in unloading world");
+			DataSave.save(true);
+			Barrel.onUnload(worldName);
+			BCauldron.onUnload(worldName);
+		}
 		Wakeup.onUnload(worldName);
 	}
 

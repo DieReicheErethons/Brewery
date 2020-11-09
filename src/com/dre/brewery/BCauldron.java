@@ -535,6 +535,13 @@ public class BCauldron {
 		return bcauldrons.remove(block) != null;
 	}
 
+	/**
+	 * Are any Cauldrons in that World
+	 */
+	public static boolean hasDataInWorld(String name) {
+		return bcauldrons.keySet().stream().anyMatch(block -> block.getWorld().getName().equals(name));
+	}
+
 	// unloads cauldrons that are in a unloading world
 	// as they were written to file just before, this is safe to do
 	public static void onUnload(String name) {

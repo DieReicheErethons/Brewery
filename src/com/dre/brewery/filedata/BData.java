@@ -453,7 +453,7 @@ public class BData {
 		// Increment the Data Mutex if it is not -1
 		while (BData.dataMutex.updateAndGet(i -> i >= 0 ? i + 1 : i) <= 0) {
 			wait++;
-			if (wait > 60) {
+			if (!BConfig.loadDataAsync || wait > 60) {
 				P.p.errorLog("Could not load World Data, Mutex: " + BData.dataMutex.get());
 				return false;
 			}

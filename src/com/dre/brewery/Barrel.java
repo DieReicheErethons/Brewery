@@ -473,6 +473,13 @@ public class Barrel implements InventoryHolder {
 	}
 
 	/**
+	 * Are any Barrels in that World
+	 */
+	public static boolean hasDataInWorld(String name) {
+		return barrels.stream().anyMatch(barrel -> barrel.spigot.getWorld().getName().equals(name));
+	}
+
+	/**
 	 * unloads barrels that are in a unloading world
 	 */
 	public static void onUnload(String name) {

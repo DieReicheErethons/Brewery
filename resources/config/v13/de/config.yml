@@ -38,6 +38,9 @@ pukeItem: Soul_Sand
 # Wurde die item Despawnzeit in der spigot.yml verändert, verändert sich auch die pukeDespawnzeit in Abhängigkeit.
 pukeDespawntime: 60
 
+# Ob seine Betrunkenheit dem Spieler kurz angezeigt werden soll wenn er etwas trinkt oder ein drainItem isst. [true]
+showStatusOnDrink: true
+
 # Konsumierbares Item/Stärke. Senkt den Alkoholpegel um <Stärke> wenn konsumiert.
 drainItems:
   - Bread/4
@@ -45,6 +48,9 @@ drainItems:
 
 # Zeit (in Tagen) die Trunkenheitsdaten nach offlinegehen eines Spielers im Speicher verbleiben, um z.B. Kater-Effekte anzuwenden. [7]
 hangoverDays: 7
+
+# Partikel steigen von Kesseln auf wenn sie Zutaten und eine Feuerquelle haben [true]
+enableCauldronParticles: true
 
 # Ob das craften und das benutzen des Trank-Versiegelungs-Tisches aktiviert ist (2 Flaschen über 4 Holz) [true, true]
 craftSealingTable: true
@@ -142,6 +148,11 @@ customItems:
  # color: Farbe des Trankes der aus dem Kessel kommt. (Standard ist CYAN)
  #   Benutzbare Farben: DARK_RED, RED, BRIGHT_RED, ORANGE, YELLOW, PINK, PURPLE, BLUE, CYAN, WATER, TEAL, OLIVE, GREEN, LIME, BLACK, GREY, BRIGHT_GREY, WHITE
  #   Oder RGB Farben (Hex: also zB '99FF33') (Ohne #) (mit '') (Einfach nach "HTML color" im Internet suchen)
+ # cookParticles:
+ #   Farbe der Partikel über dem Kessel während verschiedener Kochzeiten
+ #   Farbe und Minute während die Farbe erscheinen soll. Z.B. eine Farbe bei 8 Minuten, übergehend zu einer anderen bei 18 minuten
+ #   Als Liste, jede Farbe als Name oder RGB wie oben. Geschrieben 'Farbe/Minute'
+ #   Zum Ende geht es in die letzte Farbe über, gibt es nur eine Farbe in der Liste, wird es von dieser langsam zu grau.
  # lore: Auflistung von zusätzlichem Text auf dem Trank. (Farbcodes möglich: z.b. &6)
  # customModelData: Custom Model Data Modelldaten. Mit dieser Zahl kann die Tranktextur mit einem Resourcepack geändert werden
 
@@ -153,6 +164,10 @@ cauldron:
       - Bedrock/2
       - Diamond
     color: BLACK
+    cookParticles:
+      - 'RED/5'
+      - 'WHITE/10'
+      - '800000/25' # kastanienbraun
     lore:
       - Ein Beispiel für einen Basistrank
       - So kommt er aus dem Kessel
@@ -162,15 +177,23 @@ cauldron:
   wheat:
     name: Getreideferment
     ingredients: Wheat
+    cookParticles:
+      - '2d8686/8' # dunkel aqua
 
   sugarcane:
     name: Zuckersud
     ingredients: Sugar_Cane
     color: 'f1ffad' # gelbliches grün
+    cookParticles:
+      - 'f1ffad/4'
+      - '858547/10' # dunkel olive
 
   sugar:
     name: Zuckermelasse
     ingredients: Sugar
+    cookParticles:
+      - 'WHITE/4'
+      - 'BRIGHT_GREY/25'
 
   apple:
     name: Apfelmost
@@ -180,6 +203,10 @@ cauldron:
     name: Traubenmost
     ingredients: Sweet_Berries
     color: RED
+    cookParticles:
+      - 'ff6666/2' # hellrot
+      - 'RED/7'
+      - 'ac6553/13' # braun-rot
 
   potato:
     name: Kartoffelmaische
@@ -189,36 +216,54 @@ cauldron:
     name: Kräuterbrühe
     ingredients: Grass
     color: '99ff66' # helles grün
+    cookParticles:
+      - 'GREEN/2'
+      - '99ff99/20' # blasses grün
 
   rmushroom:
     name: Pilzsud
     ingredients: Red_Mushroom
     color: 'ff5c33' # bernsteinrot
+    cookParticles:
+      - 'fab09e/15' # blasses rot
 
   bmushroom:
     name: Pilzsud
     ingredients: Brown_Mushroom
     color: 'c68c53' # helleres Braun
+    cookParticles:
+      - 'c68c53/15'
 
   cocoa:
     name: Kakaobrühe
     ingredients: Cocoa_Beans
     color: '804600' # mokka
+    cookParticles:
+      - 'a26011/1'
+      - '5c370a/3'
+      - '4d4133/8' # grau-braun
 
   milk:
     name: Milchiges Wasser
     ingredients: Milk_Bucket
     color: BRIGHT_GREY
+    cookParticles:
+      - 'fbfbd0/1' # gelb-weiß
+      - 'WHITE/6'
 
   bl_flow:
     name: Bläulicher Sud
     ingredients: blaue-blumen
     color: '0099ff' # Himmelblau
+    cookParticles:
+      - '0099ff'
 
   cactus:
     name: Agavensud
     ingredients: cactus
-    color: '00b300' # cactus green
+    color: '00b300' # kakturs grün
+    cookParticles:
+      - '00b300/16'
 
   poi_potato:
     name: Giftige Maische
@@ -237,11 +282,17 @@ cauldron:
     name: Kräuterbrühe
     ingredients: vine
     color: '99ff66' # Hellgrün
+    cookParticles:
+      - 'GREEN/2'
+      - '99ff99/20' # blasses grün
 
   rot_flesh:
     name: Stinkende Seuche
     ingredients: Rotten_Flesh
     color: '263300' # Braun-Grün
+    cookParticles:
+      - '263300/8'
+      - 'BLACK/20'
 
   melon:
     name: Melonengulasch
@@ -268,6 +319,10 @@ cauldron:
     name: Schokoladige Suppe
     ingredients: Cookie
     color: '804600' # mokka
+    cookParticles:
+      - 'a26011/1'
+      - '5c370a/3'
+      - '4d4133/8' # grau-braun
 
   fer_spid_eye:
     name: Augenferment mit Spinnenhaaren
@@ -285,11 +340,16 @@ cauldron:
     name: Glitzernder Sud
     ingredients: Gold_Nugget
     color: 'ffd11a' # gold
+    cookParticles:
+      - 'ffd11a'
 
   glowstone_dust:
     name: Leuchtender Sud
     ingredients: Glowstone_Dust
     color: 'ffff33' # Hellgelb
+    cookParticles:
+      - 'ffff99/3'
+      - 'd9d926/15' # blasses gelb
 
   # -- Mehrere Zutaten: --
   apfelmet_basis:
@@ -298,6 +358,8 @@ cauldron:
       - Sugar_Cane/3
       - Apple
     color: 'e1ff4d' # grünliches gelb
+    cookParticles:
+      - 'e1ff4d/4'
 
   poi_grass:
     name: Saurer Kräutersud
@@ -305,6 +367,9 @@ cauldron:
       - Grass
       - Poisonous_Potato
     color: '99ff66' # Hellgrün
+    cookParticles:
+      - 'GREEN/2'
+      - '99ff99/20' # blasses grün
 
   juniper:
     name: Wacholdergebräu
@@ -312,6 +377,8 @@ cauldron:
       - blaue-blumen
       - wheat
     color: '00ccff' # Aqua
+    cookParticles:
+      - '00ccff/8'
 
   gin_base:
     name: Fruchtiges Wacholdergebräu
@@ -320,6 +387,8 @@ cauldron:
       - wheat
       - apple
     color: '66e0ff' # Hell Aqua
+    cookParticles:
+      - '00ccff/5'
 
   eggnog_base:
     name: Cremige Eimasse
@@ -327,7 +396,9 @@ cauldron:
       - egg
       - sugar
       - milk_bucket
-    color: 'ffecb3' # Geld-Orange
+    color: 'ffecb3' # Gelb-Orange
+    cookParticles:
+      - 'ffecb3/2'
 
 
 
@@ -344,7 +415,7 @@ cauldron:
 # cookingtime: Zeit in Echtminuten die die Zutaten kochen müssen
 # distillruns: Wie oft destilliert werden muss für vollen Alkoholgehalt (0=ohne Destillieren)
 # distilltime: Wie lange (in sekunden) ein Destillations-Durchlauf braucht (0=Standard Zeit von 40 sek) MC Standard wäre 20 sek
-# wood: Holz des Fasses 0=alle Holzsorten 1=Birke 2=Eiche 3=Jungel 4=Fichte 5=Akazie 6=Schwarzeiche
+# wood: Holz des Fasses 0=alle Holzsorten 1=Birke 2=Eiche 3=Jungel 4=Fichte 5=Akazie 6=Schwarzeiche 7=Karmesin 8=Wirr
 #   Das Minecraft Fass besteht aus Eiche
 # age: Zeit in Minecraft-Tagen, die das Getränk im Fass reifen muss 0= kein reifen
 # color: Farbe des Getränks nach destillieren/reifen.
@@ -786,7 +857,13 @@ recipes:
 useWorldGuard: true
 useLWC: true
 useGriefPrevention: true
+useTowny: true
 useGMInventories: true
+
+# Beim Fass öffnen eine virtuelle Kiste nutzen um Rechte bei alle anderen Plugins abzufragen
+# Könnte Anti-Cheat plugins verwirren aber sonst ok zu aktivieren
+useVirtualChestPerms: false
+
 
 # Änderungen an Fassinventaren mit LogBlock aufzeichen [true]
 useLogBlock: true

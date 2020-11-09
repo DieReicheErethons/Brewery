@@ -1,5 +1,6 @@
 package com.dre.brewery.recipe;
 
+import com.dre.brewery.P;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -285,7 +286,7 @@ public class CustomItem extends RecipeItem implements Ingredient {
 	}
 
 	// Needs to be called at Server start
-	public static void registerItemLoader() {
-		Ingredient.registerForItemLoader("CI", CustomItem::loadFrom);
+	public static void registerItemLoader(P p) {
+		p.registerForItemLoader("CI", CustomItem::loadFrom);
 	}
 }

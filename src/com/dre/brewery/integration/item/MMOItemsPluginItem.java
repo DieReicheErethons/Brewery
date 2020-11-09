@@ -3,7 +3,6 @@ package com.dre.brewery.integration.item;
 import com.dre.brewery.P;
 import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.recipe.PluginItem;
-import net.mmogroup.mmolib.MMOLib;
 import net.mmogroup.mmolib.api.item.NBTItem;
 import org.bukkit.inventory.ItemStack;
 
@@ -21,7 +20,7 @@ public class MMOItemsPluginItem extends PluginItem {
 		if (!BConfig.hasMMOItems) return false;
 
 		try {
-			NBTItem nbtItem = MMOLib.plugin.getNMS().getNBTItem(item);
+			NBTItem nbtItem = NBTItem.get(item);
 			return nbtItem.hasType() && nbtItem.getString("MMOITEMS_ITEM_ID").equalsIgnoreCase(getItemId());
 		} catch (Throwable e) {
 			e.printStackTrace();

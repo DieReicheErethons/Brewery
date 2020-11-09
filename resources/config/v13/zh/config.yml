@@ -40,6 +40,9 @@ pukeItem: Soul_Sand
 # 如果spigot.yml中的物品消失时间被变更, 此处也会变更.
 pukeDespawntime: 60
 
+# Display his drunkeness to the player when he drinks a brew or eats a drainItem [true]
+showStatusOnDrink: true
+
 # 解酒物/解酒强度. 降低玩家一定程度的醉酒程度, 解救强度为百分数.(下列)
 drainItems:
 - Bread/4
@@ -47,6 +50,9 @@ drainItems:
 
 # 最大玩家下线记忆时长(单位为天). 饮酒的记忆保持时间, 便于计算宿醉.[7]
 hangoverDays: 7
+
+# Show Particles over Cauldrons when they have ingredients and a heat source. [true]
+enableCauldronParticles: true
 
 # If crafting and using of the Brew Sealing Table is enabled (2 Bottles over 4 Planks) [true, true]
 craftSealingTable: true
@@ -145,6 +151,11 @@ customItems:
  # color: Color of the potion from a cauldron. Defaults to CYAN
  #   Usable Colors: DARK_RED, RED, BRIGHT_RED, ORANGE, YELLOW, PINK, PURPLE, BLUE, CYAN, WATER, TEAL, OLIVE, GREEN, LIME, BLACK, GREY, BRIGHT_GREY, WHITE
  #   Or RGB colors (hex: for example '99FF33') (with '') (search for "HTML color" on the internet)
+ # cookParticles:
+ #   Color of the Particles above the cauldron at different cooking-times
+ #   Color and minute during which each color should appear, i.e. one color at 8 minutes fading to another at 18 minutes.
+ #   As List, each Color as name or RGB, see above. Written as 'Color/Minute'
+ #   It will fade to the last color in the end, if there is only one color in the list, it will fade to grey
  # lore: List of additional text on the base potion. (Formatting codes possible: such as &6)
  # customModelData: Custom Model Data Tag. This is a number that can be used to add custom textures to the item.
 
@@ -156,6 +167,10 @@ cauldron:
       - Bedrock/2
       - Diamond
     color: BLACK
+    cookParticles:
+      - 'RED/5'
+      - 'WHITE/10'
+      - '800000/25' # maroon
     lore:
       - An example for a Base Potion
       - This is how it comes out of a Cauldron
@@ -165,15 +180,23 @@ cauldron:
   wheat:
     name: 发酵麦汁
     ingredients: Wheat
+    cookParticles:
+      - '2d8686/8' # Dark Aqua
 
   sugarcane:
     name: 糖浆
     ingredients: Sugar_Cane
     color: 'f1ffad' # yellowish green
+    cookParticles:
+      - 'f1ffad/4'
+      - '858547/10' # dark olive
 
   sugar:
     name: Sugarwater
     ingredients: Sugar
+    cookParticles:
+      - 'WHITE/4'
+      - 'BRIGHT_GREY/25'
 
   apple:
     name: 苹果汁
@@ -183,6 +206,10 @@ cauldron:
     name: Grape must
     ingredients: Sweet_Berries
     color: RED
+    cookParticles:
+      - 'ff6666/2' # bright red
+      - 'RED/7'
+      - 'ac6553/13' # brown-red
 
   potato:
     name: 土豆泥
@@ -192,36 +219,54 @@ cauldron:
     name: 蒸煮过的药草
     ingredients: Grass
     color: '99ff66' # bright green
+    cookParticles:
+      - 'GREEN/2'
+      - '99ff99/20' # faded green
 
   rmushroom:
     name: 蘑菇酿
     ingredients: Red_Mushroom
     color: 'ff5c33' # amber red
+    cookParticles:
+      - 'fab09e/15' # faded red
 
   bmushroom:
     name: Mushroom brew
     ingredients: Brown_Mushroom
     color: 'c68c53' # brighter brown
+    cookParticles:
+      - 'c68c53/15'
 
   cocoa:
     name: 上了色的水
     ingredients: Cocoa_Beans
     color: '804600' # mocca
+    cookParticles:
+      - 'a26011/1'
+      - '5c370a/3'
+      - '4d4133/8' # Gray-brown
 
   milk:
     name: 乳浊液体
     ingredients: Milk_Bucket
     color: BRIGHT_GREY
+    cookParticles:
+      - 'fbfbd0/1' # yellow-white
+      - 'WHITE/6'
 
   bl_flow:
     name: Blueish brew
     ingredients: blue-flowers
     color: '0099ff' # sky blue
+    cookParticles:
+      - '0099ff'
 
   cactus:
     name: Agave brew
     ingredients: cactus
     color: '00b300' # cactus green
+    cookParticles:
+      - '00b300/16'
 
   poi_potato:
     name: Poisonous Broth
@@ -240,11 +285,17 @@ cauldron:
     name: Boiled herbs
     ingredients: vine
     color: '99ff66' # bright green
+    cookParticles:
+      - 'GREEN/2'
+      - '99ff99/20' # faded green
 
   rot_flesh:
     name: Foul pest
     ingredients: Rotten_Flesh
     color: '263300' # brown green
+    cookParticles:
+      - '263300/8'
+      - 'BLACK/20'
 
   melon:
     name: Melon juice
@@ -271,6 +322,10 @@ cauldron:
     name: Chocolately sap
     ingredients: Cookie
     color: '804600' # mocca
+    cookParticles:
+      - 'a26011/1'
+      - '5c370a/3'
+      - '4d4133/8' # Gray-brown
 
   fer_spid_eye:
     name: Fermented Eye
@@ -288,11 +343,16 @@ cauldron:
     name: Glistering brew
     ingredients: Gold_Nugget
     color: 'ffd11a' # gold
+    cookParticles:
+      - 'ffd11a'
 
   glowstone_dust:
     name: Glowing brew
     ingredients: Glowstone_Dust
     color: 'ffff33' # bright yellow
+    cookParticles:
+      - 'ffff99/3'
+      - 'd9d926/15' # faded yellow
 
   # -- Multiple Ingredients: --
   applemead_base:
@@ -301,6 +361,8 @@ cauldron:
       - Sugar_Cane/3
       - Apple
     color: 'e1ff4d' # greenish yellow
+    cookParticles:
+      - 'e1ff4d/4'
 
   poi_grass:
     name: Boiled acidy herbs
@@ -308,6 +370,9 @@ cauldron:
       - Grass
       - Poisonous_Potato
     color: '99ff66' # bright green
+    cookParticles:
+      - 'GREEN/2'
+      - '99ff99/20' # faded green
 
   juniper:
     name: Juniper brew
@@ -315,6 +380,8 @@ cauldron:
       - blue-flowers
       - wheat
     color: '00ccff' # aqua
+    cookParticles:
+      - '00ccff/8'
 
   gin_base:
     name: Fruity juniper brew
@@ -323,6 +390,8 @@ cauldron:
       - wheat
       - apple
     color: '66e0ff' # lighter aqua
+    cookParticles:
+      - '00ccff/5'
 
   eggnog_base:
     name: Smooth egg mixture
@@ -331,6 +400,8 @@ cauldron:
       - sugar
       - milk_bucket
     color: 'ffecb3' # yellow-orange
+    cookParticles:
+      - 'ffecb3/2'
 
 
 
@@ -346,7 +417,7 @@ cauldron:
 # cookingtime: 原料需要在炼药锅内烹制发酵的时间, 单位为现实分钟.
 # distillruns: 饮品需要在酿造台上蒸馏的次数(0=无需蒸馏).
 # distilltime: 每次蒸馏所需要耗费的时间(0=默认值, 即40秒), MC默认则为20秒/
-# wood: 木桶所需要的木质 0=任意 1=桦木 2=橡木 3=丛林木 4=云杉木 5=金合欢木 6=深色橡木
+# wood: 木桶所需要的木质 0=任意 1=桦木 2=橡木 3=丛林木 4=云杉木 5=金合欢木 6=深色橡木 7=Crimson 8=Warped
 #   MC的木桶默认为橡木桶.
 # age: 饮品需要在木桶中熟成所需要的时间(MC天). 0=无需熟成.
 # color: 饮品制成后的颜色.
@@ -784,7 +855,12 @@ recipes:
 useWorldGuard: true
 useLWC: true
 useGriefPrevention: true
+useTowny: true
 useGMInventories: true
+
+# Use a virtual chest when opening a Barrel to check with all other protection plugins
+# This could confuse Anti-Cheat plugins, but is otherwise good to use
+useVirtualChestPerms: false
 
 # 对LogBlock启用方块数据录入[true]
 useLogBlock: true

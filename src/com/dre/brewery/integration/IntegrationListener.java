@@ -9,16 +9,18 @@ import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.integration.barrel.GriefPreventionBarrel;
 import com.dre.brewery.integration.barrel.LWCBarrel;
 import com.dre.brewery.integration.barrel.LogBlockBarrel;
+import com.dre.brewery.integration.barrel.TownyBarrel;
 import com.dre.brewery.integration.item.MMOItemsPluginItem;
 import com.dre.brewery.recipe.BCauldronRecipe;
 import com.dre.brewery.recipe.RecipeItem;
 import com.dre.brewery.utility.LegacyUtil;
-import net.mmogroup.mmolib.MMOLib;
 import net.mmogroup.mmolib.api.item.NBTItem;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -107,6 +109,7 @@ public class IntegrationListener implements Listener {
 					} else {
 						P.p.msg(player, "&cError opening Barrel, please report to an Admin!");
 					}
+					return;
 				}
 			}
 		}
@@ -125,6 +128,7 @@ public class IntegrationListener implements Listener {
 							if (!LWCBarrel.checkAccess(player, sign, plugin)) {
 								P.p.msg(event.getPlayer(), P.p.languageReader.get("Error_NoBarrelAccess"));
 								event.setCancelled(true);
+								return;
 							}
 						} catch (Throwable e) {
 							event.setCancelled(true);
@@ -138,9 +142,73 @@ public class IntegrationListener implements Listener {
 							} else {
 								P.p.msg(player, "&cError opening Barrel, please report to an Admin!");
 							}
+							return;
 						}
 					}
 				}
+			}
+		}
+
+		if (BConfig.useTowny) {
+			if (P.p.getServer().getPluginManager().isPluginEnabled("Towny")) {
+				try {
+					if (!TownyBarrel.checkAccess(event)) {
+						P.p.msg(event.getPlayer(), P.p.languageReader.get("Error_NoBarrelAccess"));
+						event.setCancelled(true);
+						return;
+					}
+				} catch (Throwable e) {
+					event.setCancelled(true);
+					P.p.errorLog("Failed to Check Towny for Barrel Open Permissions!");
+					P.p.errorLog("Brewery was tested with Towny v0.96.3.0");
+					P.p.errorLog("Disable the Towny support in the config and do /brew reload");
+					e.printStackTrace();
+					Player player = event.getPlayer();
+					if (player.hasPermission("brewery.admin") || player.hasPermission("brewery.mod")) {
+						P.p.msg(player, "&cTowny check Error, Brewery was tested with up to v0.96.3.0 of Towny");
+						P.p.msg(player, "&cSet &7useTowny: false &cin the config and /brew reload");
+					} else {
+						P.p.msg(player, "&cError opening Barrel, please report to an Admin!");
+					}
+					return;
+				}
+			}
+		}
+
+		if (BConfig.virtualChestPerms) {
+			Player player = event.getPlayer();
+			BlockState originalBlockState = event.getClickedBlock().getState();
+
+			event.getClickedBlock().setType(Material.CHEST, false);
+			PlayerInteractEvent simulatedEvent = new PlayerInteractEvent(
+				player,
+				Action.RIGHT_CLICK_BLOCK,
+				player.getInventory().getItemInMainHand(),
+				event.getClickedBlock(),
+				event.getClickedBlockFace(),
+				EquipmentSlot.HAND);
+
+			try {
+				P.p.getServer().getPluginManager().callEvent(simulatedEvent);
+			} catch (Throwable e) {
+				P.p.errorLog("Failed to simulate a Chest for Barrel Open Permissions!");
+				P.p.errorLog("Disable useVirtualChestPerms in the config and do /brew reload");
+				e.printStackTrace();
+				if (player.hasPermission("brewery.admin") || player.hasPermission("brewery.mod")) {
+					P.p.msg(player, "&cVirtual Chest Error");
+					P.p.msg(player, "&cSet &7useVirtualChestPerms: false &cin the config and /brew reload");
+				} else {
+					P.p.msg(player, "&cError opening Barrel, please report to an Admin!");
+				}
+			} finally {
+				event.getClickedBlock().setType(Material.AIR, false);
+				originalBlockState.update(true);
+			}
+
+			if (simulatedEvent.useInteractedBlock() == Event.Result.DENY) {
+				event.setCancelled(true);
+				P.p.msg(event.getPlayer(), P.p.languageReader.get("Error_NoBarrelAccess"));
+				//return;
 			}
 		}
 	}
@@ -228,7 +296,7 @@ public class IntegrationListener implements Listener {
 		try {
 			if (event.getAction() == Action.RIGHT_CLICK_BLOCK && event.hasItem() && event.getHand() == EquipmentSlot.HAND) {
 				if (event.getClickedBlock() != null && event.getClickedBlock().getType() == Material.CAULDRON) {
-					NBTItem item = MMOLib.plugin.getNMS().getNBTItem(event.getItem());
+					NBTItem item = NBTItem.get(event.getItem());
 					if (item.hasType()) {
 						for (RecipeItem rItem : BCauldronRecipe.acceptedCustom) {
 							if (rItem instanceof MMOItemsPluginItem) {

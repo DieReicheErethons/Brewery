@@ -50,6 +50,25 @@ public class LegacyUtil {
 		}
 		PLANKS = planks;
 
+		Set<Material> woodStairs = EnumSet.noneOf(Material.class);
+		Material[] gotStairs = {
+			get("OAK_STAIRS", "WOOD_STAIRS"),
+			get("SPRUCE_STAIRS", "SPRUCE_WOOD_STAIRS"),
+			get("BIRCH_STAIRS", "BIRCH_WOOD_STAIRS"),
+			get("JUNGLE_STAIRS", "JUNGLE_WOOD_STAIRS"),
+			get("ACACIA_STAIRS"),
+			get("DARK_OAK_STAIRS"),
+			get("CRIMSON_STAIRS"),
+			get("WARPED_STAIRS"),
+		};
+		for (Material stair : gotStairs) {
+			if (stair != null) {
+				woodStairs.add(stair);
+			}
+		}
+		WOOD_STAIRS = woodStairs;
+
+
 		Set<Material> fences = EnumSet.noneOf(Material.class);
 		for (Material m : Material.values()) {
 			if (m.name().endsWith("FENCE")) {
@@ -61,14 +80,11 @@ public class LegacyUtil {
 
 	public static final Material MAGMA_BLOCK = get("MAGMA_BLOCK", "MAGMA");
 	public static final Material CAMPFIRE = get("CAMPFIRE");
+	public static final Material SOUL_CAMPFIRE = get("SOUL_CAMPFIRE");
+	public static final Material SOUL_FIRE = get("SOUL_FIRE");
 	public static final Material CLOCK = get("CLOCK", "WATCH");
-	public static final Material OAK_STAIRS = get("OAK_STAIRS", "WOOD_STAIRS");
-	public static final Material SPRUCE_STAIRS = get("SPRUCE_STAIRS", "SPRUCE_WOOD_STAIRS");
-	public static final Material BIRCH_STAIRS = get("BIRCH_STAIRS", "BIRCH_WOOD_STAIRS");
-	public static final Material JUNGLE_STAIRS = get("JUNGLE_STAIRS", "JUNGLE_WOOD_STAIRS");
-	public static final Material ACACIA_STAIRS = get("ACACIA_STAIRS");
-	public static final Material DARK_OAK_STAIRS = get("DARK_OAK_STAIRS");
 	public static final Set<Material> PLANKS;
+	public static final Set<Material> WOOD_STAIRS;
 	public static final Set<Material> FENCES;
 
 	// Materials removed in 1.13
@@ -97,8 +113,7 @@ public class LegacyUtil {
 	}
 
 	public static boolean isWoodStairs(Material type) {
-		return type == OAK_STAIRS || type == SPRUCE_STAIRS || type == BIRCH_STAIRS || type == JUNGLE_STAIRS
-				|| (type == ACACIA_STAIRS && ACACIA_STAIRS != null) || (type == DARK_OAK_STAIRS && DARK_OAK_STAIRS != null);
+		return WOOD_STAIRS.contains(type);
 	}
 
 	public static boolean isFence(Material type) {
@@ -109,9 +124,9 @@ public class LegacyUtil {
 		return type.name().endsWith("SIGN") || (!P.use1_13 && type == SIGN_POST);
 	}
 
-	public static boolean isFireForCauldron(Block block) {
+	public static boolean isCauldronHeatsource(Block block) {
 		Material type = block.getType();
-		return type != null && (type == Material.FIRE || type == MAGMA_BLOCK || litCampfire(block) || isLava(type));
+		return type != null && (type == Material.FIRE || type == SOUL_FIRE || type == MAGMA_BLOCK || litCampfire(block) || isLava(type));
 	}
 
 	// LAVA and STATIONARY_LAVA are merged as of 1.13
@@ -120,7 +135,7 @@ public class LegacyUtil {
 	}
 
 	public static boolean litCampfire(Block block) {
-		if (block.getType() == CAMPFIRE) {
+		if (block.getType() == CAMPFIRE || block.getType() == SOUL_CAMPFIRE) {
 			BlockData data = block.getBlockData();
 			if (data instanceof org.bukkit.block.data.Lightable) {
 				return ((org.bukkit.block.data.Lightable) data).isLit();
@@ -135,6 +150,7 @@ public class LegacyUtil {
 		if (type == Material.LINGERING_POTION || type == Material.SPLASH_POTION) return true;
 		if (!P.use1_13) return false;
 		if (type == Material.EXPERIENCE_BOTTLE) return true;
+		if (type.name().equals("DRAGON_BREATH")) return true;
 		return type.name().equals("HONEY_BOTTLE");
 	}
 
@@ -150,22 +166,25 @@ public class LegacyUtil {
 	}
 
 	public static byte getWoodType(Block wood) throws NoSuchFieldError, NoClassDefFoundError {
-		TreeSpecies woodType;
 
 		if (P.use1_13 || isWoodStairs(wood.getType())) {
 			String material = wood.getType().name();
 			if (material.startsWith("OAK")) {
-				woodType = TreeSpecies.GENERIC;
+				return 2;
 			} else if (material.startsWith("SPRUCE")) {
-				woodType = TreeSpecies.REDWOOD;
+				return 4;
 			} else if (material.startsWith("BIRCH")) {
-				woodType = TreeSpecies.BIRCH;
+				return 1;
 			} else if (material.startsWith("JUNGLE")) {
-				woodType = TreeSpecies.JUNGLE;
+				return 3;
 			} else if (material.startsWith("ACACIA")) {
-				woodType = TreeSpecies.ACACIA;
+				return 5;
 			} else if (material.startsWith("DARK_OAK")) {
-				woodType = TreeSpecies.DARK_OAK;
+				return 6;
+			} else if (material.startsWith("CRIMSON")) {
+				return 7;
+			} else if (material.startsWith("WARPED")) {
+				return 8;
 			} else {
 				return 0;
 			}
@@ -173,6 +192,7 @@ public class LegacyUtil {
 		} else {
 			@SuppressWarnings("deprecation")
 			MaterialData data = wood.getState().getData();
+			TreeSpecies woodType;
 			if (data instanceof Tree) {
 				woodType = ((Tree) data).getSpecies();
 			} else if (data instanceof Wood) {
@@ -180,23 +200,23 @@ public class LegacyUtil {
 			} else {
 				return 0;
 			}
-		}
 
-		switch (woodType) {
-			case GENERIC:
-				return 2;
-			case REDWOOD:
-				return 4;
-			case BIRCH:
-				return 1;
-			case JUNGLE:
-				return 3;
-			case ACACIA:
-				return 5;
-			case DARK_OAK:
-				return 6;
-			default:
-				return 0;
+			switch (woodType) {
+				case GENERIC:
+					return 2;
+				case REDWOOD:
+					return 4;
+				case BIRCH:
+					return 1;
+				case JUNGLE:
+					return 3;
+				case ACACIA:
+					return 5;
+				case DARK_OAK:
+					return 6;
+				default:
+					return 0;
+			}
 		}
 	}
 

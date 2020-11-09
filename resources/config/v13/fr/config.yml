@@ -39,6 +39,9 @@ pukeItem: Soul_Sand
 # If the item despawn time was changed in the spigot.yml, the pukeDespawntime changes as well.
 pukeDespawntime: 60
 
+# Display his drunkeness to the player when he drinks a brew or eats a drainItem [true]
+showStatusOnDrink: true
+
 # Consommables Objet/Force. Réduit le montant d'alcool par <Force> lors de la consommation. (list)
 drainItems:
   - Bread/4
@@ -46,6 +49,9 @@ drainItems:
 
 # Temps (en jours) pour que les données d'ivresse restent sauvergardées lorsque le joueur est déconnecté, pour appliquer les effets. [7]
 hangoverDays: 7
+
+# Show Particles over Cauldrons when they have ingredients and a heat source. [true]
+enableCauldronParticles: true
 
 # If crafting and using of the Brew Sealing Table is enabled (2 Bottles over 4 Planks) [true, true]
 craftSealingTable: true
@@ -145,6 +151,11 @@ customItems:
  #   Couleurs disponibles : DARK_RED, RED, BRIGHT_RED, ORANGE, YELLOW, PINK, PURPLE, BLUE, CYAN, WATER, TEAL, OLIVE, GREEN, LIME, BLACK, GREY, BRIGHT_GREY, WHITE
  #     (Dans l'ordre : Rouge foncé, Rouge, Rouge clair, Orange, Jaune, Rose, Pourpre, Bleu, Cyan, Eau, Sarcelle, Olive, Vert, Vert lime, Noir, Gris, Gris clair, Blanc)
  #   Ou couleurs RGB (hex: par exemple '99FF33') (avec '') (recherche de "HTML color" sur internet)
+ # cookParticles:
+ #   Color of the Particles above the cauldron at different cooking-times
+ #   Color and minute during which each color should appear, i.e. one color at 8 minutes fading to another at 18 minutes.
+ #   As List, each Color as name or RGB, see above. Written as 'Color/Minute'
+ #   It will fade to the last color in the end, if there is only one color in the list, it will fade to grey
  # lore: Liste de texte supplémentaire sur la potion de base. (Formatting codes possible: such as &6)
  # customModelData: Custom Model Data Tag. This is a number that can be used to add custom textures to the item.
 
@@ -156,6 +167,10 @@ cauldron:
       - Bedrock/2
       - Diamond
     color: BLACK
+    cookParticles:
+      - 'RED/5'
+      - 'WHITE/10'
+      - '800000/25' # maroon
     lore:
       - Un exemple pour une potion de base
       - Voici comment il sort d'un chaudron
@@ -165,15 +180,23 @@ cauldron:
   wheat:
     name: Blé fermenté
     ingredients: Wheat
+    cookParticles:
+      - '2d8686/8' # Dark Aqua
 
   sugarcane:
     name: Sucre fermenté
     ingredients: Sugar_Cane
     color: 'f1ffad' # yellowish green
+    cookParticles:
+      - 'f1ffad/4'
+      - '858547/10' # dark olive
 
   sugar:
     name: Eau sucrée
     ingredients: Sugar
+    cookParticles:
+      - 'WHITE/4'
+      - 'BRIGHT_GREY/25'
 
   apple:
     name: Pommes fermentées
@@ -183,6 +206,10 @@ cauldron:
     name: Raisins fermentés
     ingredients: Sweet_Berries
     color: RED
+    cookParticles:
+      - 'ff6666/2' # bright red
+      - 'RED/7'
+      - 'ac6553/13' # brown-red
 
   potato:
     name: Purée de Pommes de Terre
@@ -192,107 +219,140 @@ cauldron:
     name: Herbes bouillies
     ingredients: Grass
     color: '99ff66' # bright green
+    cookParticles:
+      - 'GREEN/2'
+      - '99ff99/20' # faded green
 
   rmushroom:
     name: Champignons fermentés
     ingredients: Red_Mushroom
     color: 'ff5c33' # amber red
+    cookParticles:
+      - 'fab09e/15' # faded red
 
   bmushroom:
     name: Champignons fermentés
     ingredients: Brown_Mushroom
     color: 'c68c53' # brighter brown
+    cookParticles:
+      - 'c68c53/15'
 
   cocoa:
     name: Infusion au chocolat
     ingredients: Cocoa_Beans
     color: '804600' # mocca
+    cookParticles:
+      - 'a26011/1'
+      - '5c370a/3'
+      - '4d4133/8' # Gray-brown
 
   milk:
     name: Eau laiteuse
     ingredients: Milk_Bucket
     color: BRIGHT_GREY
+    cookParticles:
+      - 'fbfbd0/1' # yellow-white
+      - 'WHITE/6'
 
   bl_flow:
     name: Infusion bleue
     ingredients: blue-flowers
     color: '0099ff' # sky blue
+    cookParticles:
+      - '0099ff'
 
-    cactus:
-      name: Agave fermenté
-      ingredients: cactus
-      color: '00b300' # cactus green
+  cactus:
+    name: Agave fermenté
+    ingredients: cactus
+    color: '00b300' # cactus green
+    cookParticles:
+      - '00b300/16'
 
-    poi_potato:
-      name: Bouillon toxique
-      ingredients: Poisonous_Potato
+  poi_potato:
+    name: Bouillon toxique
+    ingredients: Poisonous_Potato
 
-    egg:
-      name: Mélange collant
-      ingredients: Egg
+  egg:
+    name: Mélange collant
+    ingredients: Egg
 
 
-    oak_sapling:
-      name: Stringy hebry broth
-      ingredients: Oak_Sapling
+  oak_sapling:
+    name: Stringy hebry broth
+    ingredients: Oak_Sapling
 
-      vine:
-        name: Boiled herbs
-        ingredients: vine
-        color: '99ff66' # bright green
+  vine:
+    name: Boiled herbs
+    ingredients: vine
+    color: '99ff66' # bright green
+    cookParticles:
+      - 'GREEN/2'
+      - '99ff99/20' # faded green
 
-      rot_flesh:
-        name: Foul pest
-        ingredients: Rotten_Flesh
-        color: '263300' # brown green
+  rot_flesh:
+    name: Foul pest
+    ingredients: Rotten_Flesh
+    color: '263300' # brown green
+    cookParticles:
+      - '263300/8'
+      - 'BLACK/20'
 
-      melon:
-        name: Melon juice
-        ingredients: melon_slice
+  melon:
+    name: Melon juice
+    ingredients: melon_slice
 
-      wheat_seeds:
-        name: Bitter brew
-        ingredients: Wheat_Seeds
+  wheat_seeds:
+    name: Bitter brew
+    ingredients: Wheat_Seeds
 
-      melon_seeds:
-        name: Bitter brew
-        ingredients: Melon_Seeds
+  melon_seeds:
+    name: Bitter brew
+    ingredients: Melon_Seeds
 
-      pumpkin_seeds:
-        name: Bitter brew
-        ingredients: Pumpkin_Seeds
+  pumpkin_seeds:
+    name: Bitter brew
+    ingredients: Pumpkin_Seeds
 
-      bone_meal:
-        name: Bony Brew
-        ingredients: bone_meal
-        color: BRIGHT_GREY
+  bone_meal:
+    name: Bony Brew
+    ingredients: bone_meal
+    color: BRIGHT_GREY
 
-      cookie:
-        name: Chocolately sap
-        ingredients: Cookie
-        color: '804600' # mocca
+  cookie:
+    name: Chocolately sap
+    ingredients: Cookie
+    color: '804600' # mocca
+    cookParticles:
+      - 'a26011/1'
+      - '5c370a/3'
+      - '4d4133/8' # Gray-brown
 
-      fer_spid_eye:
-        name: Fermented Eye
-        ingredients: Fermented_Spider_Eye
+  fer_spid_eye:
+    name: Fermented Eye
+    ingredients: Fermented_Spider_Eye
 
-      ghast_tear:
-        name: Sad brew
-        ingredients: ghast_tear
+  ghast_tear:
+    name: Sad brew
+    ingredients: ghast_tear
 
-      snowball:
-        name: Icewater
-        ingredients: Snowball
+  snowball:
+    name: Icewater
+    ingredients: Snowball
 
-      Gold_Nugget:
-        name: Glistering brew
-        ingredients: Gold_Nugget
-        color: 'ffd11a' # gold
+  Gold_Nugget:
+    name: Glistering brew
+    ingredients: Gold_Nugget
+    color: 'ffd11a' # gold
+    cookParticles:
+      - 'ffd11a'
 
-      glowstone_dust:
-        name: Glowing brew
-        ingredients: Glowstone_Dust
-        color: 'ffff33' # bright yellow
+  glowstone_dust:
+    name: Glowing brew
+    ingredients: Glowstone_Dust
+    color: 'ffff33' # bright yellow
+    cookParticles:
+      - 'ffff99/3'
+      - 'd9d926/15' # faded yellow
 
 
   # -- Ingrédients multiples: --
@@ -302,6 +362,8 @@ cauldron:
       - Sugar_Cane/3
       - Apple
     color: 'e1ff4d' # greenish yellow
+    cookParticles:
+      - 'e1ff4d/4'
 
   poi_grass:
     name: Herbes acides bouillies
@@ -309,29 +371,38 @@ cauldron:
       - Grass
       - Poisonous_Potato
     color: '99ff66' # bright green
+    cookParticles:
+      - 'GREEN/2'
+      - '99ff99/20' # faded green
 
-    juniper:
-      name: Infusion de genièvre
-      ingredients:
-        - blue-flowers
-        - wheat
-      color: '00ccff' # aqua
+  juniper:
+    name: Infusion de genièvre
+    ingredients:
+      - blue-flowers
+      - wheat
+    color: '00ccff' # aqua
+    cookParticles:
+      - '00ccff/8'
 
-    gin_base:
-      name: Brassée de genièvre fruité
-      ingredients:
-        - blue-flowers
-        - wheat
-        - apple
-      color: '66e0ff' # lighter aqua
+  gin_base:
+    name: Brassée de genièvre fruité
+    ingredients:
+      - blue-flowers
+      - wheat
+      - apple
+    color: '66e0ff' # lighter aqua
+    cookParticles:
+      - '00ccff/5'
 
-    eggnog_base:
-      name: Mélange d'œufs lisse
-      ingredients:
-        - egg
-        - sugar
-        - milk_bucket
-      color: 'ffecb3' # yellow-orange
+  eggnog_base:
+    name: Mélange d'œufs lisse
+    ingredients:
+      - egg
+      - sugar
+      - milk_bucket
+    color: 'ffecb3' # yellow-orange
+    cookParticles:
+      - 'ffecb3/2'
 
 
 # -- Recette pour les boissons --
@@ -347,7 +418,7 @@ cauldron:
 # cookingtime: Temps en minutes réelles durant lesquelles les ingrédients devront bouillir
 # distillruns: Combien de fois le breuvage devra être distillé pour un alcool de qualité (0=Ne pas distiller)
 # distilltime: Combien de temps (en secondes) dure une distillation (0=Temps par défaut de 40 secondes) MC Par défaut serait de 20 secondes
-# wood: Type de bois du baril 0=aucun 1=Bouleau 2=Chêne 3=Jungle 4=Pin 5=Acacia 6=Chêne Noir
+# wood: Type de bois du baril 0=aucun 1=Bouleau 2=Chêne 3=Jungle 4=Pin 5=Acacia 6=Chêne Noir 7=Crimson 8=Warped
 #   Le tonneau Minecraft est en chêne.
 # age: Temps en jours de Minecraft, la potion devra être âgée dans un baril. 0=Pas besoin d'âge
 # color: Couleur de la potion après distillation/avoir laissé vieillir.
@@ -786,7 +857,12 @@ recipes:
 useWorldGuard: true
 useLWC: true
 useGriefPrevention: true
+useTowny: true
 useGMInventories: true
+
+# Use a virtual chest when opening a Barrel to check with all other protection plugins
+# This could confuse Anti-Cheat plugins, but is otherwise good to use
+useVirtualChestPerms: false
 
 # Activer l'historique du contenu des tonneaux avec LogBlock [true]
 useLogBlock: true

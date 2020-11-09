@@ -520,10 +520,10 @@ public class BrewLore {
 		STARS("§s"),
 		INGR("§v"),
 		COOK("§w"),
-		DISTILL("§x"),
+		DISTILL("§p"),
 		AGE("§y"),
 		WOOD("§z"),
-		ALC("§k");
+		ALC("§q");
 
 		public final String id;
 

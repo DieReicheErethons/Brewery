@@ -49,6 +49,7 @@ public class BConfig {
 	public static boolean useLWC; //LWC
 	public static boolean useLB; //LogBlock
 	public static boolean useGP; //GriefPrevention
+	public static boolean useTowny; //Towny
 	public static boolean hasVault; // Vault
 	public static boolean useCitadel; // CivCraft/DevotedMC Citadel
 	public static boolean useGMInventories; // GamemodeInventories
@@ -59,13 +60,16 @@ public class BConfig {
 	// Barrel
 	public static boolean openEverywhere;
 	public static boolean loadDataAsync;
+	public static boolean virtualChestPerms;
 
 	// Cauldron
 	public static boolean useOffhandForCauldron;
+	public static boolean enableCauldronParticles;
 
 	//BPlayer
 	public static Map<Material, Integer> drainItems = new HashMap<>();// DrainItem Material and Strength
 	public static Material pukeItem;
+	public static boolean showStatusOnDrink;
 	public static int pukeDespawntime;
 	public static int hangoverTime;
 	public static boolean overdrinkKick;
@@ -212,10 +216,12 @@ public class BConfig {
 			}
 		}
 		useLWC = config.getBoolean("useLWC", true) && plMan.isPluginEnabled("LWC");
+		useTowny = config.getBoolean("useTowny", true) && plMan.isPluginEnabled("Towny");
 		useGP = config.getBoolean("useGriefPrevention", true) && plMan.isPluginEnabled("GriefPrevention");
 		useLB = config.getBoolean("useLogBlock", false) && plMan.isPluginEnabled("LogBlock");
 		useGMInventories = config.getBoolean("useGMInventories", false);
 		useCitadel = config.getBoolean("useCitadel", false) && plMan.isPluginEnabled("Citadel");
+		virtualChestPerms = config.getBoolean("useVirtualChestPerms", false);
 		// The item util has been removed in Vault 1.7+
 		hasVault = plMan.isPluginEnabled("Vault")
 			&& Integer.parseInt(plMan.getPlugin("Vault").getDescription().getVersion().split("\\.")[1]) <= 6;
@@ -231,6 +237,7 @@ public class BConfig {
 		enableLoginDisallow = config.getBoolean("enableLoginDisallow", false);
 		enablePuke = config.getBoolean("enablePuke", false);
 		pukeDespawntime = config.getInt("pukeDespawntime", 60) * 20;
+		showStatusOnDrink = config.getBoolean("showStatusOnDrink", false);
 		homeType = config.getString("homeType", null);
 		craftSealingTable = config.getBoolean("craftSealingTable", false);
 		enableSealingTable = config.getBoolean("enableSealingTable", false);
@@ -240,6 +247,7 @@ public class BConfig {
 		alwaysShowAlc = config.getBoolean("alwaysShowAlc", false);
 		enableEncode = config.getBoolean("enableEncode", false);
 		openEverywhere = config.getBoolean("openLargeBarrelEverywhere", false);
+		enableCauldronParticles = P.use1_9 && config.getBoolean("enableCauldronParticles", false);
 		useOffhandForCauldron = config.getBoolean("useOffhandForCauldron", false);
 		loadDataAsync = config.getBoolean("loadDataAsync", true);
 

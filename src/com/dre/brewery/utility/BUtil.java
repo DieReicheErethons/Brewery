@@ -6,6 +6,7 @@ import com.dre.brewery.P;
 import com.dre.brewery.api.events.barrel.BarrelDestroyEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -46,6 +47,35 @@ public class BUtil {
 			msg = ChatColor.translateAlternateColorCodes('&', msg);
 		}
 		return msg;
+	}
+
+	/**
+	 * Creates a weighted mix between the two given colours
+	 * <p>where the weight is calculated from the distance of the currentPos to the prev and next
+	 *
+	 * @param prevColor Previous Color
+	 * @param prevPos Position of the Previous Color
+	 * @param currentPos Current Position
+	 * @param nextColor Next Color
+	 * @param nextPos Position of the Next Color
+	 * @return
+	 */
+	public static Color weightedMixColor(Color prevColor, int prevPos, int currentPos, Color nextColor, int nextPos) {
+		float diffPrev = currentPos - prevPos;
+		float diffNext = nextPos - currentPos;
+		float total = diffNext + diffPrev;
+		float percentNext = diffPrev / total;
+		float percentPrev = diffNext / total;
+
+			/*5 #8# 15
+			8-5 = 3 -> 3/10
+			15-8 = 7 -> 7/10*/
+
+		return Color.fromRGB(
+			Math.min(255, (int) ((nextColor.getRed() * percentNext) + (prevColor.getRed() * percentPrev))),
+			Math.min(255, (int) ((nextColor.getGreen() * percentNext) + (prevColor.getGreen() * percentPrev))),
+			Math.min(255, (int) ((nextColor.getBlue() * percentNext) + (prevColor.getBlue() * percentPrev)))
+		);
 	}
 
 	/**

@@ -38,6 +38,9 @@ pukeItem: SOUL_SAND
 # Se il tempo di scomparsa viene cambiato in spigot.yml anche pukeDespawntime cambia.
 pukeDespawntime: 60
 
+# Display his drunkeness to the player when he drinks a brew or eats a drainItem [true]
+showStatusOnDrink: true
+
 # Oggetto consumabile/forza. Questi oggetti se consumati calano il livello di alcool (della "forza" che avevi impsotato) (list)
 drainItems:
 - BREAD/4
@@ -45,6 +48,9 @@ drainItems:
 
 # Tempo in giorni che la sbronza resta in memoria dopo che il giocatore va offline, cioè il tempo per cui i postumi della sbornia durano. [7]
 hangoverDays: 7
+
+# Show Particles over Cauldrons when they have ingredients and a heat source. [true]
+enableCauldronParticles: true
 
 # If crafting and using of the Brew Sealing Table is enabled (2 Bottles over 4 Planks) [true, true]
 craftSealingTable: true
@@ -136,6 +142,11 @@ customItems:
  # color: Color of the potion from a cauldron.
  #   Usable Colors: DARK_RED, RED, BRIGHT_RED, ORANGE, PINK, BLUE, CYAN, WATER, GREEN, BLACK, GREY, BRIGHT_GREY
  #   Or RGB colors (hex: for example '99FF33') (with '') (search for "HTML color" on the internet)
+ # cookParticles:
+ #   Color of the Particles above the cauldron at different cooking-times
+ #   Color and minute during which each color should appear, i.e. one color at 8 minutes fading to another at 18 minutes.
+ #   As List, each Color as name or RGB, see above. Written as 'Color/Minute'
+ #   It will fade to the last color in the end, if there is only one color in the list, it will fade to grey
  # lore: List of additional text on the base potion. (Formatting codes possible: such as &6)
  # customModelData: Custom Model Data Tag. This is a number that can be used to add custom textures to the item.
 
@@ -146,6 +157,10 @@ cauldron:
       - BEDROCK/2
       - DIAMOND
     color: BLACK
+    cookParticles:
+      - 'RED/5'
+      - 'WHITE/10'
+      - '800000/25' # maroon
     lore:
       - An example for a Base Potion
       - This is how it comes out of a Cauldron
@@ -155,11 +170,16 @@ cauldron:
   wheat:
     name: Frumento fermentato
     ingredients: WHEAT
+    cookParticles:
+      - '2d8686/8' # Dark Aqua
 
   sugarcane:
     name: Miscela zuccherata
     ingredients: SUGAR_CANE
     color: 'f1ffad' # yellowish green
+    cookParticles:
+      - 'f1ffad/4'
+      - '858547/10' # dark olive
 
   apple:
     name: Sidro di mele
@@ -173,21 +193,33 @@ cauldron:
     name: Erbe bollite
     ingredients: LONG_GRASS
     color: '99ff66' # bright green
+    cookParticles:
+      - 'GREEN/2'
+      - '99ff99/20' # faded green
 
   rmushroom:
     name: Miscela ai funghi
     ingredients: RED_MUSHROOM
     color: 'ff5c33' # amber red
+    cookParticles:
+      - 'fab09e/15' # faded red
 
   cocoa:
     name: Miscela colorata
     ingredients: INK_SACK
     color: '804600' # mocca
+    cookParticles:
+      - 'a26011/1'
+      - '5c370a/3'
+      - '4d4133/8' # Gray-brown
 
   milk:
     name: Acqua lattea
     ingredients: MILK_BUCKET
     color: BRIGHT_GREY
+    cookParticles:
+      - 'fbfbd0/1' # yellow-white
+      - 'WHITE/6'
 
   # -- Multiple Ingredients: --
   apfelmet_base:
@@ -196,6 +228,8 @@ cauldron:
       - SUGAR_CANE/3
       - APPLE
     color: 'e1ff4d' # greenish yellow
+    cookParticles:
+      - 'e1ff4d/4'
 
 # -- Ricette per pozioni --
 
@@ -210,7 +244,7 @@ cauldron:
 # cookingtime: Tempo in minuti richiesto dagli ingredienti per bollire
 # distillruns: Quanto spesso deve essere distillato per ottenere la versione perfetta con il volume alcolico impostato (0=non serve distillare).
 # distilltime: How long (in seconds) one distill-run takes (0=Default time of 40 sec) MC Default would be 20 sec
-# wood: Legno del barile 0=qualiasi 1=Betulla 2=Quercia 3=Mogano 4=Abete 5=Acacia 6=Quercia nera
+# wood: Legno del barile 0=qualiasi 1=Betulla 2=Quercia 3=Mogano 4=Abete 5=Acacia 6=Quercia nera 7=Crimson 8=Warped
 #   The Minecraft barrel is made of oak
 # age: Tempo in giorni di Minecraft per cui la pozione deve essere invecchiata in un barile (0=nessun invecchiamento).
 # color: Colore della pozione dopo essere stata distillata/invecchiata
@@ -415,8 +449,13 @@ recipes:
 useWorldGuard: true
 useLWC: true
 useGriefPrevention: true
+useTowny: true
 useGMInventories: true
 useCitadel: true
+
+# Use a virtual chest when opening a Barrel to check with all other protection plugins
+# This could confuse Anti-Cheat plugins, but is otherwise good to use
+useVirtualChestPerms: false
 
 # Abilita il logging degli inventari dei barili [true]
 useLogBlock: true

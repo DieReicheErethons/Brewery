@@ -9,11 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -28,8 +24,8 @@ public class BCauldronRecipe {
 
 	private String name;
 	private List<RecipeItem> ingredients;
-	//private List<String> particles
 	private PotionColor color;
+	private List<Tuple<Integer, Color>> particleColor = new ArrayList<>();
 	private List<String> lore;
 	private int cmData; // Custom Model Data
 	private boolean saveInData; // If this recipe should be saved in data and loaded again when the server restarts. Applicable to non-config recipes
@@ -78,6 +74,33 @@ public class BCauldronRecipe {
 			//return null;
 		}
 
+		for (String entry : cfg.getStringList(id + ".cookParticles")) {
+			String[] split = entry.split("/");
+			int minute;
+			if (split.length == 1) {
+				minute = 10;
+			} else if (split.length == 2) {
+				minute = P.p.parseInt(split[1]);
+			} else {
+				P.p.errorLog("cookParticle: '" + entry + "' in: " + recipe.name);
+				return null;
+			}
+			if (minute < 1) {
+				P.p.errorLog("cookParticle: '" + entry + "' in: " + recipe.name);
+				return null;
+			}
+			PotionColor partCol = PotionColor.fromString(split[0]);
+			if (partCol == PotionColor.WATER && !split[0].equals("WATER")) {
+				P.p.errorLog("Color of cookParticle: '" + entry + "' in: " + recipe.name);
+				return null;
+			}
+			recipe.particleColor.add(new Tuple<>(minute, partCol.getColor()));
+		}
+		if (!recipe.particleColor.isEmpty()) {
+			// Sort by minute
+			recipe.particleColor.sort(Comparator.comparing(Tuple::first));
+		}
+
 
 		List<Tuple<Integer,String>> lore = BRecipe.loadLore(cfg, id + ".lore");
 		if (lore != null && !lore.isEmpty()) {
@@ -105,6 +128,11 @@ public class BCauldronRecipe {
 	@NotNull
 	public PotionColor getColor() {
 		return color;
+	}
+
+	@NotNull
+	public List<Tuple<Integer, Color>> getParticleColor() {
+		return particleColor;
 	}
 
 	@Nullable
@@ -337,6 +365,11 @@ public class BCauldronRecipe {
 			return this;
 		}
 
+		public Builder addParticleColor(int atMinute, Color color) {
+			recipe.particleColor.add(new Tuple<>(atMinute, color));
+			return this;
+		}
+
 		public Builder addLore(String line) {
 			if (recipe.lore == null) {
 				recipe.lore = new ArrayList<>();
@@ -357,6 +390,10 @@ public class BCauldronRecipe {
 			}
 			if (recipe.ingredients == null || recipe.ingredients.isEmpty()) {
 				throw new IllegalArgumentException("CauldronRecipe has no ingredients");
+			}
+			if (!recipe.particleColor.isEmpty()) {
+				// Sort particleColor by minute
+				recipe.particleColor.sort(Comparator.comparing(Tuple::first));
 			}
 			return recipe;
 		}

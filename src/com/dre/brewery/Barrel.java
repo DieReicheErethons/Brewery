@@ -124,7 +124,7 @@ public class Barrel implements InventoryHolder {
 		}
 
 		// Call event
-		BarrelAccessEvent accessEvent = new BarrelAccessEvent(this, player, event.getClickedBlock());
+		BarrelAccessEvent accessEvent = new BarrelAccessEvent(this, player, event.getClickedBlock(), event.getBlockFace());
 		// Listened to by WGBarrel7, WGBarrelNew, WGBarrelOld, GriefPreventionBarrel (IntegrationListener)
 		P.p.getServer().getPluginManager().callEvent(accessEvent);
 		if (accessEvent.isCancelled()) {
@@ -405,12 +405,13 @@ public class Barrel implements InventoryHolder {
 				}
 			}
 			if (event.willDropItems()) {
+				byte wood = body.getWood();
 				for (ItemStack item : items) {
 					if (item != null) {
 						Brew brew = Brew.get(item);
 						if (brew != null) {
 							// Brew before throwing
-							brew.age(item, time, body.getWood());
+							brew.age(item, time, wood);
 							PotionMeta meta = (PotionMeta) item.getItemMeta();
 							if (BrewLore.hasColorLore(meta)) {
 								BrewLore lore = new BrewLore(brew, meta);

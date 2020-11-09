@@ -331,6 +331,9 @@ public class CommandListener implements CommandExecutor {
 			bPlayer.remove();
 		} else {
 			bPlayer.setData(drunkeness, quality);
+			if (BConfig.showStatusOnDrink) {
+				bPlayer.showDrunkeness(player);
+			}
 		}
 
 		if (drunkeness > 100) {
@@ -348,7 +351,8 @@ public class CommandListener implements CommandExecutor {
 
 	public void cmdInfo(CommandSender sender, String playerName) {
 
-		if (playerName == null) {
+		boolean selfInfo = playerName == null;
+		if (selfInfo) {
 			if (sender instanceof Player) {
 				Player player = (Player) sender;
 				playerName = player.getName();
@@ -368,7 +372,11 @@ public class CommandListener implements CommandExecutor {
 		if (bPlayer == null) {
 			p.msg(sender, p.languageReader.get("CMD_Info_NotDrunk", playerName));
 		} else {
-			p.msg(sender, p.languageReader.get("CMD_Info_Drunk", playerName, "" + bPlayer.getDrunkeness(), "" + bPlayer.getQuality()));
+			if (selfInfo) {
+				bPlayer.showDrunkeness(player);
+			} else {
+				p.msg(sender, p.languageReader.get("CMD_Info_Drunk", playerName, "" + bPlayer.getDrunkeness(), "" + bPlayer.getQuality()));
+			}
 		}
 
 	}

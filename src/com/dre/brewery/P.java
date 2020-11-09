@@ -9,8 +9,7 @@ import com.dre.brewery.integration.ChestShopListener;
 import com.dre.brewery.integration.IntegrationListener;
 import com.dre.brewery.integration.barrel.LogBlockBarrel;
 import com.dre.brewery.listeners.*;
-import com.dre.brewery.recipe.BCauldronRecipe;
-import com.dre.brewery.recipe.BRecipe;
+import com.dre.brewery.recipe.*;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.LegacyUtil;
 import org.apache.commons.lang.math.NumberUtils;
@@ -26,7 +25,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.function.Function;
 
 public class P extends JavaPlugin {
 	public static P p;
@@ -45,6 +46,9 @@ public class P extends JavaPlugin {
 	public InventoryListener inventoryListener;
 	public WorldListener worldListener;
 	public IntegrationListener integrationListener;
+
+	// Registrations
+	public Map<String, Function<ItemLoader, Ingredient>> ingredientLoaders = new HashMap<>();
 
 	// Language
 	public String language;
@@ -94,6 +98,13 @@ public class P extends JavaPlugin {
 			getServer().getPluginManager().disablePlugin(this);
 			return;
 		}
+
+		// Register Item Loaders
+		CustomItem.registerItemLoader(this);
+		SimpleItem.registerItemLoader(this);
+		PluginItem.registerItemLoader(this);
+
+		// Read data files
 		BData.readData();
 
 		// Setup Metrics
@@ -128,6 +139,10 @@ public class P extends JavaPlugin {
 		// Heartbeat
 		p.getServer().getScheduler().runTaskTimer(p, new BreweryRunnable(), 650, 1200);
 		p.getServer().getScheduler().runTaskTimer(p, new DrunkRunnable(), 120, 120);
+
+		if (use1_9) {
+			p.getServer().getScheduler().runTaskTimer(p, new CauldronParticles(), 1, 1);
+		}
 
 		if (BConfig.updateCheck) {
 			try {
@@ -193,6 +208,9 @@ public class P extends JavaPlugin {
 			return;
 		}
 
+		// Reload Cauldron Particle Recipes
+		BCauldron.reload();
+
 		// Reload Recipes
 		boolean successful = true;
 		for (Brew brew : Brew.legacyPotions.values()) {
@@ -230,6 +248,28 @@ public class P extends JavaPlugin {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	/**
+	 * For loading ingredients from ItemMeta.
+	 * <p>Register a Static function that takes an ItemLoader, containing a DataInputStream.
+	 * <p>Using the Stream it constructs a corresponding Ingredient for the chosen SaveID
+	 *
+	 * @param saveID The SaveID should be a small identifier like "AB"
+	 * @param loadFct The Static Function that loads the Item, i.e.
+	 *                public static AItem loadFrom(ItemLoader loader)
+	 */
+	public void registerForItemLoader(String saveID, Function<ItemLoader, Ingredient> loadFct) {
+		ingredientLoaders.put(saveID, loadFct);
+	}
+
+	/**
+	 * Unregister the ItemLoader
+	 *
+	 * @param saveID the chosen SaveID
+	 */
+	public void unRegisterItemLoader(String saveID) {
+		ingredientLoaders.remove(saveID);
 	}
 
 	public static P getInstance() {
@@ -449,8 +489,12 @@ public class P extends JavaPlugin {
 		public void run() {
 			long t1 = System.nanoTime();
 			BConfig.reloader = null;
-			for (BCauldron cauldron : BCauldron.bcauldrons.values()) {
-				cauldron.onUpdate();// runs every min to update cooking time
+			Iterator<BCauldron> iter = BCauldron.bcauldrons.values().iterator();
+			while (iter.hasNext()) {
+				// runs every min to update cooking time
+				if (!iter.next().onUpdate()) {
+					iter.remove();
+				}
 			}
 			long t2 = System.nanoTime();
 			Barrel.onUpdate();// runs every min to check and update ageing time
@@ -471,6 +515,13 @@ public class P extends JavaPlugin {
 				" | t5: " + (t6 - t5) / 1000000.0 + "ms" );
 		}
 
+	}
+
+	public class CauldronParticles implements Runnable {
+		@Override
+		public void run() {
+			BCauldron.processNextCookEffects();
+		}
 	}
 
 }

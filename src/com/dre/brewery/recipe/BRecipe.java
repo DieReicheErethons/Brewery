@@ -5,6 +5,7 @@ import com.dre.brewery.Brew;
 import com.dre.brewery.P;
 import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.utility.BUtil;
+import com.dre.brewery.utility.StringParser;
 import com.dre.brewery.utility.Tuple;
 import org.apache.commons.lang.NotImplementedException;
 import org.bukkit.Color;
@@ -49,8 +50,8 @@ public class BRecipe {
 
 	// drinking
 	private List<BEffect> effects = new ArrayList<>(); // Special Effects when drinking
-	private List<String> playercmds; // Commands executed as the player when drinking
-	private List<String> servercmds; // Commands executed as the server when drinking
+	private @Nullable List<Tuple<Integer, String>> playercmds; // Commands executed as the player when drinking
+	private @Nullable List<Tuple<Integer, String>> servercmds; // Commands executed as the server when drinking
 	private String drinkMsg; // Message when drinking
 	private String drinkTitle; // Title to show when drinking
 
@@ -127,27 +128,10 @@ public class BRecipe {
 			return null;
 		}
 
-		recipe.lore = loadLore(configSectionRecipes, recipeId + ".lore");
+		recipe.lore = loadQualityStringList(configSectionRecipes, recipeId + ".lore", StringParser.loreParser);
 
-		recipe.servercmds = BUtil.loadCfgStringList(configSectionRecipes, recipeId + ".servercommands");
-		recipe.playercmds = BUtil.loadCfgStringList(configSectionRecipes, recipeId + ".playercommands");
-
-		if (recipe.servercmds != null && !recipe.servercmds.isEmpty()) {
-			for (ListIterator<String> iter = recipe.servercmds.listIterator(); iter.hasNext(); ) {
-				String cmd = iter.next();
-				if (cmd.startsWith("/")) {
-					iter.set(cmd.substring(1));
-				}
-			}
-		}
-		if (recipe.playercmds != null && !recipe.playercmds.isEmpty()) {
-			for (ListIterator<String> iter = recipe.playercmds.listIterator(); iter.hasNext(); ) {
-				String cmd = iter.next();
-				if (cmd.startsWith("/")) {
-					iter.set(cmd.substring(1));
-				}
-			}
-		}
+		recipe.servercmds = loadQualityStringList(configSectionRecipes, recipeId + ".servercommands", StringParser.cmdParser);
+		recipe.playercmds = loadQualityStringList(configSectionRecipes, recipeId + ".playercommands", StringParser.cmdParser);
 
 		recipe.drinkMsg = P.p.color(BUtil.loadCfgString(configSectionRecipes, recipeId + ".drinkmessage"));
 		recipe.drinkTitle = P.p.color(BUtil.loadCfgString(configSectionRecipes, recipeId + ".drinktitle"));
@@ -307,33 +291,27 @@ public class BRecipe {
 		return ingredients;
 	}
 
+	/**
+	 * Load a list of strings from a ConfigurationSection and parse it accordingly using a parser.
+	 */
 	@Nullable
-	public static List<Tuple<Integer, String>> loadLore(ConfigurationSection cfg, String path) {
+	public static List<Tuple<Integer, String>> loadQualityStringList(ConfigurationSection cfg, String path, StringParser p) {
 		List<String> load = BUtil.loadCfgStringList(cfg, path);
 		if (load != null) {
-			List<Tuple<Integer, String>> lore = new ArrayList<>(load.size());
-			for (String line : load) {
-				line = P.p.color(line);
-				int plus = 0;
-				if (line.startsWith("+++")) {
-					plus = 3;
-					line = line.substring(3);
-				} else if (line.startsWith("++")) {
-					plus = 2;
-					line = line.substring(2);
-				} else if (line.startsWith("+")) {
-					plus = 1;
-					line = line.substring(1);
-				}
-				if (line.startsWith(" ")) {
-					line = line.substring(1);
-				}
-				if (!line.startsWith("§")) {
-					line = "§9" + line;
-				}
-				lore.add(new Tuple<>(plus, line));
+			List<Tuple<Integer, String>> list = new ArrayList<>(load.size());
+			// create fallback parser, so passing null will convert the String to a Touple without furter processing.
+			if (p == null){
+				p = new StringParser() {
+					@Override
+					public Object parse(String line) {
+						return new Tuple<Integer, String>(0, line);
+					}
+				};
 			}
-			return lore;
+			for (String line : load) {
+				list.add((Tuple<Integer, String>) p.parse(line));
+			}
+			return list;
 		}
 		return null;
 	}
@@ -450,12 +428,12 @@ public class BRecipe {
 
 	public void applyDrinkFeatures(Player player, int quality) {
 		if (playercmds != null && !playercmds.isEmpty()) {
-			for (String cmd : playercmds) {
+			for (String cmd : getPlayercmdsForQuality(quality)) {
 				player.performCommand(BUtil.applyPlaceholders(cmd, player.getName(), quality));
 			}
 		}
 		if (servercmds != null && !servercmds.isEmpty()) {
-			for (String cmd : servercmds) {
+			for (String cmd : getServercmdsForQuality(quality)) {
 				P.p.getServer().dispatchCommand(P.p.getServer().getConsoleSender(), BUtil.applyPlaceholders(cmd, player.getName(), quality));
 			}
 		}
@@ -628,7 +606,25 @@ public class BRecipe {
 
 	@Nullable
 	public List<String> getLoreForQuality(int quality) {
-		if (lore == null) return null;
+		return getStringForQuality(quality, lore);
+	}
+
+	@Nullable
+	public List<String> getPlayercmdsForQuality(int quality) {
+		return getStringForQuality(quality, playercmds);
+	}
+
+	@Nullable
+	public List<String> getServercmdsForQuality(int quality) {
+		return getStringForQuality(quality, servercmds);
+	}
+
+	/**
+	 * Get a quality filtered list of supported attributes
+	 */
+	@Nullable
+	public List<String> getStringForQuality(int quality, List<Tuple<Integer, String>> source) {
+		if (source == null) return null;
 		int plus;
 		if (quality <= 3) {
 			plus = 1;
@@ -637,8 +633,8 @@ public class BRecipe {
 		} else {
 			plus = 3;
 		}
-		List<String> list = new ArrayList<>(lore.size());
-		for (Tuple<Integer, String> line : lore) {
+		List<String> list = new ArrayList<>(source.size());
+		for (Tuple<Integer, String> line : source) {
 			if (line.first() == 0 || line.first() == plus) {
 				list.add(line.second());
 			}
@@ -653,11 +649,13 @@ public class BRecipe {
 		return cmData;
 	}
 
-	public List<String> getPlayercmds() {
+	@Nullable
+	public List<Tuple<Integer, String>> getPlayercmds() {
 		return playercmds;
 	}
 
-	public List<String> getServercmds() {
+	@Nullable
+	public List<Tuple<Integer, String>> getServercmds() {
 		return servercmds;
 	}
 
@@ -880,10 +878,16 @@ public class BRecipe {
 		 * Add Commands that are executed by the player on drinking
 		 */
 		public Builder addPlayerCmds(String... cmds) {
-			if (recipe.playercmds == null) {
-				recipe.playercmds = new ArrayList<>(cmds.length);
+			ArrayList<Tuple<Integer,String>> playercmds = new ArrayList<Tuple<Integer, String>>(cmds.length);
+
+			for (String cmd : cmds) {
+				playercmds.add((Tuple<Integer, String>) StringParser.cmdParser.parse(cmd));
 			}
-			Collections.addAll(recipe.playercmds, cmds);
+			if (recipe.playercmds == null) {
+				recipe.playercmds = playercmds;
+			} else {
+				recipe.playercmds.addAll(playercmds);
+			}
 			return this;
 		}
 
@@ -891,10 +895,16 @@ public class BRecipe {
 		 * Add Commands that are executed by the server on drinking
 		 */
 		public Builder addServerCmds(String... cmds) {
-			if (recipe.servercmds == null) {
-				recipe.servercmds = new ArrayList<>(cmds.length);
+			ArrayList<Tuple<Integer,String>> servercmds = new ArrayList<Tuple<Integer, String>>(cmds.length);
+
+			for (String cmd : cmds) {
+				servercmds.add((Tuple<Integer, String>) StringParser.cmdParser.parse(cmd));
 			}
-			Collections.addAll(recipe.servercmds, cmds);
+			if (recipe.servercmds == null) {
+				recipe.servercmds = servercmds;
+			} else {
+				recipe.servercmds.addAll(servercmds);
+			}
 			return this;
 		}
 

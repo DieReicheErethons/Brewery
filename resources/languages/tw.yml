@@ -55,6 +55,7 @@ Etc_SealingTable: Brew Sealing Table
 # Help
 Help_Copy: '&6/brew copy [數量]&9 複製手中的藥水'
 Help_Create: '&6/brew create <配方> [數量] [玩家] &9創建具有可選酒的品質釀造（1-10）'
+Help_Give: '&6/brew give <Recipe> [Quality] [Player] &9Alias for /brew create'
 Help_Delete: '&6/brew delete &9刪除你手中的藥水'
 Help_Help: '&6/brew help [頁數] &9顯示幫助的頁面'
 Help_Info: '&6/brew info&9 顯示您當前的醉酒和酒的品質'

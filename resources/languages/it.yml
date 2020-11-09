@@ -55,6 +55,7 @@ Etc_SealingTable: Brew Sealing Table
 # Aiuto
 Help_Copy: '&6/brew copy [Quantità]&9 Copia la pozione che tieni in mano'
 Help_Create: '&6/brew create <icetta> [Qualità] [Giocatore] &9Crea una miscela con una qualità data (1-10)'
+Help_Give: '&6/brew give <Recipe> [Quality] [Player] &9Alias for /brew create'
 Help_Delete: '&6/brew delete &9Elimina la pozione nella tua mano'
 Help_Help: '&6/brew help <Pagina> &9Mostra una specifica pagina dell''aiuto'
 Help_Info: '&6/brew info&9 Mostra il tuo livello di sbronza attuale e la qualità'

@@ -55,6 +55,7 @@ Etc_SealingTable: 'Стол закупорки бражки.'
 # Help
 Help_Copy: '&6/brew copy [Quantity]&9 Копирует зелье в твоей руке'
 Help_Create: '&6/brew create <Recipe> [Quality] [Player] &9Создаёт бражку с определённым качеством (1-10)'
+Help_Give: '&6/brew give <Recipe> [Quality] [Player] &9Alias for /brew create'
 Help_Delete: '&6/brew delete &9Удаляет зелье в твоей руке'
 Help_Help: '&6/brew help [Page] &9Показывает определённую страницу помощи'
 Help_Info: '&6/brew info&9 Показывает твоё текущее опьянение и качество'

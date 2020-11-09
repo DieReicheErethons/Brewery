@@ -56,6 +56,7 @@ Etc_SealingTable: Mesa de sellado
 # Help
 Help_Copy: '&6/brew copy [Cantidad]&9 Copia la poción en tu mano'
 Help_Create: '&6/brew create <Receta> [Cantidad] [Jugador] &9Crea una cerveza con calidad opcional (1-10)'
+Help_Give: '&6/brew give <Recipe> [Quality] [Player] &9Alias for /brew create'
 Help_Delete: '&6/brew delete &9Elimina la poción en tu mano'
 Help_Help: '&6/brew help [Página] &9Muestra una página de ayuda específica.'
 Help_Info: '&6/brew info&9 Muestra tu embriaguez y calidad actuales'

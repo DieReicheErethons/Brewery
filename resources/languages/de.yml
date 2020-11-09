@@ -71,6 +71,7 @@ Help_WakeupList: '&6/brew Wakeup List <Seite> [Welt]&9 Listet die Aufwachpunkte 
 Help_WakeupRemove: '&6/brew Wakeup Remove <id> &9Entfernt einen Aufwachpunkt'
 Help_Static: '&6/brew Static &9Trank unveränderlich machen -> Kein weiteres reifen oder destillieren möglich'
 Help_Create: '&6/brew Create <Rezept> [Qualität] [Spieler] &9Erstellt einen Trank mit optionaler Qualität (1-10)'
+Help_Give: '&6/brew give <Rezept> [Qualität] [Spieler] &9Alias für /brew create'
 
 # Permission
 Perms_NoBarrelCreate: '&cDu hast keine Rechte Fässer zu erstellen!'

@@ -55,6 +55,7 @@ Etc_SealingTable: Brew Sealing Table
 # Help
 Help_Copy: '&6/brew copy [数量] &9复制当前手中的饮品.'
 Help_Create: '&6/brew create <饮品名称(若有颜色符号须附上)> [饮品质量] [授予玩家] &9获得一杯饮品, 质量可为1到10, 越高越好.'
+Help_Give: '&6/brew give <Recipe> [Quality] [Player] &9Alias for /brew create'
 Help_Delete: '&6/brew delete &9删除手中的饮品.'
 Help_Help: '&6/brew help [页数] &9显示某一页的帮助.'
 Help_Info: '&6/brew info &9显示你目前的醉酒程度与质量, 醉酒质量将会影响宿醉程度.'

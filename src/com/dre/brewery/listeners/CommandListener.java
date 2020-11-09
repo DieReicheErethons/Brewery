@@ -60,7 +60,7 @@ public class CommandListener implements CommandExecutor {
 				p.msg(sender, p.languageReader.get("Error_NoPermissions"));
 			}
 
-		} else if (cmd.equalsIgnoreCase("create")) {
+		} else if (cmd.equalsIgnoreCase("create") || cmd.equalsIgnoreCase("give")) {
 
 			if (sender.hasPermission("brewery.cmd.create")) {
 				cmdCreate(sender, args);
@@ -207,6 +207,7 @@ public class CommandListener implements CommandExecutor {
 
 		if (sender.hasPermission("brewery.cmd.create")) {
 			cmds.add(p.languageReader.get("Help_Create"));
+			cmds.add(p.languageReader.get("Help_Give"));
 		}
 
 		if (sender.hasPermission("brewery.cmd.reload")) {

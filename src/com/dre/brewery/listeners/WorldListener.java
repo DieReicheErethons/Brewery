@@ -47,7 +47,6 @@ public class WorldListener implements Listener {
 	public void onWorldUnload(WorldUnloadEvent event) {
 		String worldName = event.getWorld().getName();
 		if (Barrel.hasDataInWorld(worldName) || BCauldron.hasDataInWorld(worldName)) {
-			P.p.log("Saving due to data in unloading world");
 			DataSave.save(true);
 			Barrel.onUnload(worldName);
 			BCauldron.onUnload(worldName);

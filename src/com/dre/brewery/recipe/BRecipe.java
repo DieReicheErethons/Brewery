@@ -19,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.ListIterator;
+import java.util.stream.Collectors;
 
 /**
  * A Recipe used to Brew a Brewery Potion.
@@ -128,10 +128,10 @@ public class BRecipe {
 			return null;
 		}
 
-		recipe.lore = loadQualityStringList(configSectionRecipes, recipeId + ".lore", StringParser.loreParser);
+		recipe.lore = loadQualityStringList(configSectionRecipes, recipeId + ".lore", StringParser.ParseType.LORE);
 
-		recipe.servercmds = loadQualityStringList(configSectionRecipes, recipeId + ".servercommands", StringParser.cmdParser);
-		recipe.playercmds = loadQualityStringList(configSectionRecipes, recipeId + ".playercommands", StringParser.cmdParser);
+		recipe.servercmds = loadQualityStringList(configSectionRecipes, recipeId + ".servercommands", StringParser.ParseType.CMD);
+		recipe.playercmds = loadQualityStringList(configSectionRecipes, recipeId + ".playercommands", StringParser.ParseType.CMD);
 
 		recipe.drinkMsg = P.p.color(BUtil.loadCfgString(configSectionRecipes, recipeId + ".drinkmessage"));
 		recipe.drinkTitle = P.p.color(BUtil.loadCfgString(configSectionRecipes, recipeId + ".drinktitle"));
@@ -292,26 +292,13 @@ public class BRecipe {
 	}
 
 	/**
-	 * Load a list of strings from a ConfigurationSection and parse it accordingly using a parser.
+	 * Load a list of strings from a ConfigurationSection and parse the quality
 	 */
 	@Nullable
-	public static List<Tuple<Integer, String>> loadQualityStringList(ConfigurationSection cfg, String path, StringParser p) {
+	public static List<Tuple<Integer, String>> loadQualityStringList(ConfigurationSection cfg, String path, StringParser.ParseType parseType) {
 		List<String> load = BUtil.loadCfgStringList(cfg, path);
 		if (load != null) {
-			List<Tuple<Integer, String>> list = new ArrayList<>(load.size());
-			// create fallback parser, so passing null will convert the String to a Touple without furter processing.
-			if (p == null){
-				p = new StringParser() {
-					@Override
-					public Object parse(String line) {
-						return new Tuple<Integer, String>(0, line);
-					}
-				};
-			}
-			for (String line : load) {
-				list.add((Tuple<Integer, String>) p.parse(line));
-			}
-			return list;
+			return load.stream().map(line -> StringParser.parseQuality(line, parseType)).collect(Collectors.toList());
 		}
 		return null;
 	}
@@ -606,24 +593,24 @@ public class BRecipe {
 
 	@Nullable
 	public List<String> getLoreForQuality(int quality) {
-		return getStringForQuality(quality, lore);
+		return getStringsForQuality(quality, lore);
 	}
 
 	@Nullable
 	public List<String> getPlayercmdsForQuality(int quality) {
-		return getStringForQuality(quality, playercmds);
+		return getStringsForQuality(quality, playercmds);
 	}
 
 	@Nullable
 	public List<String> getServercmdsForQuality(int quality) {
-		return getStringForQuality(quality, servercmds);
+		return getStringsForQuality(quality, servercmds);
 	}
 
 	/**
 	 * Get a quality filtered list of supported attributes
 	 */
 	@Nullable
-	public List<String> getStringForQuality(int quality, List<Tuple<Integer, String>> source) {
+	public List<String> getStringsForQuality(int quality, List<Tuple<Integer, String>> source) {
 		if (source == null) return null;
 		int plus;
 		if (quality <= 3) {
@@ -881,7 +868,7 @@ public class BRecipe {
 			ArrayList<Tuple<Integer,String>> playercmds = new ArrayList<Tuple<Integer, String>>(cmds.length);
 
 			for (String cmd : cmds) {
-				playercmds.add((Tuple<Integer, String>) StringParser.cmdParser.parse(cmd));
+				playercmds.add(StringParser.parseQuality(cmd, StringParser.ParseType.CMD));
 			}
 			if (recipe.playercmds == null) {
 				recipe.playercmds = playercmds;
@@ -898,7 +885,7 @@ public class BRecipe {
 			ArrayList<Tuple<Integer,String>> servercmds = new ArrayList<Tuple<Integer, String>>(cmds.length);
 
 			for (String cmd : cmds) {
-				servercmds.add((Tuple<Integer, String>) StringParser.cmdParser.parse(cmd));
+				servercmds.add(StringParser.parseQuality(cmd, StringParser.ParseType.CMD));
 			}
 			if (recipe.servercmds == null) {
 				recipe.servercmds = servercmds;

@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.dre</groupId>
-	<artifactId>Brewery</artifactId>
+	<artifactId>Brewery-Towny</artifactId>
 	<version>2.1.2</version>
 	<name>Brewery</name>
 	<description>A plugin to make brews and drinks through mixing, fermentation and aging</description>

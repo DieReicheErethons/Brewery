@@ -211,13 +211,10 @@ public class BPlayer {
 	 */
 	public void showDrunkeness(Player player) {
 		try {
-			final int cacheHangover = sendDrunkenessMessage(player, 0);
-			// It this returns -1, then the Action Bar is not supported. Do not repeat the message as it was sent into chat
-			if (cacheHangover >= 0) {
-				// We need to cache the hangover, as this value is removed from them player on login.
-				// When we display the message again, use the cached hangover value
-				P.p.getServer().getScheduler().scheduleSyncDelayedTask(P.p, () -> sendDrunkenessMessage(player, cacheHangover), 40);
-				P.p.getServer().getScheduler().scheduleSyncDelayedTask(P.p, () -> sendDrunkenessMessage(player, cacheHangover), 80);
+			// It this returns false, then the Action Bar is not supported. Do not repeat the message as it was sent into chat
+			if (sendDrunkenessMessage(player)) {
+				P.p.getServer().getScheduler().scheduleSyncDelayedTask(P.p, () -> sendDrunkenessMessage(player), 40);
+				P.p.getServer().getScheduler().scheduleSyncDelayedTask(P.p, () -> sendDrunkenessMessage(player), 80);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -228,20 +225,16 @@ public class BPlayer {
 	 * Send one Message to the player, showing his drunkeness or hangover
 	 *
 	 * @param player The Player to send the message to
-	 * @param cacheHangover if > 0 Show him a cached hangover strength
-	 * @return -1 if the message should not be repeated. if not 0, it is the hangover we should cache
+	 * @return false if the message should not be repeated.
 	 */
-	public int sendDrunkenessMessage(Player player, int cacheHangover) {
+	public boolean sendDrunkenessMessage(Player player) {
 		StringBuilder b = new StringBuilder(100);
 
 		int strength = drunkeness;
 		boolean hangover = false;
-		int hangoverStrength = cacheHangover > 0 ? cacheHangover : offlineDrunk;
-		if (hangoverStrength > 0) {
-			strength = hangoverStrength;
+		if (offlineDrunk > 0) {
+			strength = offlineDrunk;
 			hangover = true;
-		} else {
-			hangoverStrength = 0;
 		}
 
 		b.append(P.p.languageReader.get(hangover ? "Player_Hangover" : "Player_Drunkeness"));
@@ -303,13 +296,17 @@ public class BPlayer {
 			}
 		}
 		b.append("§7]");
-		String text = b.toString();
+		final String text = b.toString();
+		if (hangover) {
+			P.p.getServer().getScheduler().scheduleSyncDelayedTask(P.p, () -> player.sendTitle("", text, 30, 100, 90), 160);
+			return false;
+		}
 		try {
 			player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(text));
-			return hangoverStrength;
+			return true;
 		} catch (UnsupportedOperationException | NoSuchMethodError e) {
 			player.sendMessage(text);
-			return -1;
+			return false;
 		}
 	}
 

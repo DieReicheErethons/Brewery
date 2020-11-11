@@ -39,6 +39,9 @@ pukeItem: SOUL_SAND
 # If the item despawn time was changed in the spigot.yml, the pukeDespawntime changes as well.
 pukeDespawntime: 60
 
+# How much the Player stumbles depending on the amount of alcohol he drank. Can be set to 0 and higher than 100 [100]
+stumblePercent: 100
+
 # Display his drunkeness to the player when he drinks a brew or eats a drainItem [true]
 showStatusOnDrink: true
 
@@ -47,9 +50,6 @@ drainItems:
 - BREAD/4
 - MILK_BUCKET/2
 
-# Temps (en jours) pour que les données d'ivresse restent sauvergardées lorsque le joueur est déconnecté, pour appliquer les effets. [7]
-hangoverDays: 7
-
 # Show Particles over Cauldrons when they have ingredients and a heat source. [true]
 enableCauldronParticles: true
 
@@ -57,18 +57,11 @@ enableCauldronParticles: true
 craftSealingTable: true
 enableSealingTable: true
 
-# Colorer les informations d'objets (lore) au dépend de la qualité dans un tonneau et/ou dans un stand de brassage (l'alambic) [true, true]
-colorInBarrels: true
-colorInBrewer: true
-
 # Toujours montrer les 1-5 étoiles sur les objets en fonction de leur qualité. S'ils sont faux, ils n'apparaîtront que lors de l'infusion. [true]
 alwaysShowQuality: true
 
 # Toujours indiquer la teneur en alcool sur les objets. S'il est false, il n'apparaîtra que dans le stand de brassage. [false]
 alwaysShowAlc: false
-
-# Si le grand tonneau peut être ouvert en cliquant sur n'importe quel bloc, non seulement le robinet ou le panneau. Toujours "true" pour les petits tonneaux. [true]
-openLargeBarrelEverywhere: true
 
 # Combien de boissons de brasserie peuvent être mises dans les barils -Minecraft- [6]
 ageInMCBarrels: true
@@ -492,6 +485,16 @@ useOffhandForCauldron: false
 
 # If Barrel and Cauldron data can be loaded Async/in the Background [true]
 loadDataAsync: true
+
+# Temps (en jours) pour que les données d'ivresse restent sauvergardées lorsque le joueur est déconnecté, pour appliquer les effets. [7]
+hangoverDays: 7
+
+# Colorer les informations d'objets (lore) au dépend de la qualité dans un tonneau et/ou dans un stand de brassage (l'alambic) [true, true]
+colorInBarrels: true
+colorInBrewer: true
+
+# Si le grand tonneau peut être ouvert en cliquant sur n'importe quel bloc, non seulement le robinet ou le panneau. Toujours "true" pour les petits tonneaux. [true]
+openLargeBarrelEverywhere: true
 
 
 # -- Paramètres de la distorsion du Chat --

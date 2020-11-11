@@ -71,6 +71,7 @@ public class BConfig {
 	public static Material pukeItem;
 	public static boolean showStatusOnDrink;
 	public static int pukeDespawntime;
+	public static float stumbleModifier;
 	public static int hangoverTime;
 	public static boolean overdrinkKick;
 	public static boolean enableHome;
@@ -237,6 +238,7 @@ public class BConfig {
 		enableLoginDisallow = config.getBoolean("enableLoginDisallow", false);
 		enablePuke = config.getBoolean("enablePuke", false);
 		pukeDespawntime = config.getInt("pukeDespawntime", 60) * 20;
+		stumbleModifier = ((float) config.getInt("stumblePercent", 100)) / 100f;
 		showStatusOnDrink = config.getBoolean("showStatusOnDrink", false);
 		homeType = config.getString("homeType", null);
 		craftSealingTable = config.getBoolean("craftSealingTable", false);

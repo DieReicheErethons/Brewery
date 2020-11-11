@@ -38,6 +38,9 @@ pukeItem: SOUL_SAND
 # Wurde die item Despawnzeit in der spigot.yml verändert, verändert sich auch die pukeDespawnzeit in Abhängigkeit.
 pukeDespawntime: 60
 
+# Wie stark in Prozent der Spieler taumelt, je nach dem wie viel Alkohol er getrunken hat. Kann auf 0 und höher als 100 gesetzt werden
+stumblePercent: 100
+
 # Ob seine Betrunkenheit dem Spieler kurz angezeigt werden soll wenn er etwas trinkt oder ein drainItem isst. [true]
 showStatusOnDrink: true
 
@@ -46,9 +49,6 @@ drainItems:
 - BREAD/4
 - MILK_BUCKET/2
 
-# Zeit (in Tagen) die Trunkenheitsdaten nach offlinegehen eines Spielers im Speicher verbleiben, um z.B. Kater-Effekte anzuwenden. [7]
-hangoverDays: 7
-
 # Partikel steigen von Kesseln auf wenn sie Zutaten und eine Feuerquelle haben [true]
 enableCauldronParticles: true
 
@@ -56,18 +56,11 @@ enableCauldronParticles: true
 craftSealingTable: true
 enableSealingTable: true
 
-# Färben der Iteminformationen je nach Qualität während sie sich 1. im Fass und/oder 2. im Braustand befinden [true, true]
-colorInBarrels: true
-colorInBrewer: true
-
 # Ob in den Iteminformationen immer 1-5 Sterne für die Qualität angezeigt werden sollen, oder nur beim brauen [true]
 alwaysShowQuality: true
 
 # Ob in den Iteminformationen immer der Alkoholgehalt angezeigt weden soll, oder nur im Braustand [false]
 alwaysShowAlc: false
-
-# Ob große Fässer an jedem Block geöffnet werden können, nicht nur an Zapfhahn und Schild. Bei kleinen Fässern geht dies immer. [true]
-openLargeBarrelEverywhere: true
 
 # Ob das reifen in -Minecraft- Fässern aktiviert ist und wie viele Brewery Getränke in die diese getan werden können [6]
 ageInMCBarrels: true
@@ -496,6 +489,16 @@ useOffhandForCauldron: false
 
 # Of Fass- und Kesseldaten Async/im Hintergrund geladen werden können [true]
 loadDataAsync: true
+
+# Zeit (in Tagen) die Trunkenheitsdaten nach offlinegehen eines Spielers im Speicher verbleiben, um z.B. Kater-Effekte anzuwenden. [7]
+hangoverDays: 7
+
+# Färben der Iteminformationen je nach Qualität während sie sich 1. im Fass und/oder 2. im Braustand befinden [true, true]
+colorInBarrels: true
+colorInBrewer: true
+
+# Ob große Fässer an jedem Block geöffnet werden können, nicht nur an Zapfhahn und Schild. Bei kleinen Fässern geht dies immer. [true]
+openLargeBarrelEverywhere: true
 
 
 # -- Chat Veränderungs Einstellungen --

@@ -38,6 +38,9 @@ pukeItem: Soul_Sand
 # If the item despawn time was changed in the spigot.yml, the pukeDespawntime changes as well.
 pukeDespawntime: 60
 
+# How much the Player stumbles depending on the amount of alcohol he drank. Can be set to 0 and higher than 100 [100]
+stumblePercent: 100
+
 # Display his drunkeness to the player when he drinks a brew or eats a drainItem [true]
 showStatusOnDrink: true
 
@@ -46,9 +49,6 @@ drainItems:
   - Bread/4
   - Milk_Bucket/2
 
-# Time (in days) that drunkeness-data stays in memory after a player goes offline, to apply hangover etc. [7]
-hangoverDays: 7
-
 # Show Particles over Cauldrons when they have ingredients and a heat source. [true]
 enableCauldronParticles: true
 
@@ -56,18 +56,11 @@ enableCauldronParticles: true
 craftSealingTable: true
 enableSealingTable: true
 
-# Color the Item information (lore) depending on quality while it is 1. in a barrel and/or 2. in a brewing stand [true, true]
-colorInBarrels: true
-colorInBrewer: true
-
 # Always show the 1-5 stars on the item depending on the quality. If false, they will only appear when brewing [true]
 alwaysShowQuality: true
 
 # Always show the alcohol content on the item. If false, it will only show in the brewing stand [false]
 alwaysShowAlc: false
-
-# If a Large Barrel can be opened by clicking on any of its blocks, not just Spigot or Sign. This is always true for Small Barrels. [true]
-openLargeBarrelEverywhere: true
 
 # If aging in -Minecraft- Barrels in enabled [true] and how many Brewery drinks can be put into them [6]
 ageInMCBarrels: true
@@ -885,6 +878,16 @@ useOffhandForCauldron: false
 
 # If Barrel and Cauldron data can be loaded Async/in the Background [true]
 loadDataAsync: true
+
+# Time (in days) that drunkeness-data stays in memory after a player goes offline, to apply hangover etc. [7]
+hangoverDays: 7
+
+# Color the Item information (lore) depending on quality while it is 1. in a barrel and/or 2. in a brewing stand [true, true]
+colorInBarrels: true
+colorInBrewer: true
+
+# If a Large Barrel can be opened by clicking on any of its blocks, not just Spigot or Sign. This is always true for Small Barrels. [true]
+openLargeBarrelEverywhere: true
 
 
 # -- Chat Distortion Settings --

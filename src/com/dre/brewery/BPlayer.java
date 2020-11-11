@@ -374,7 +374,7 @@ public class BPlayer {
 	// player is drunk
 	public void move(PlayerMoveEvent event) {
 		// has player more alc than 10
-		if (drunkeness >= 10) {
+		if (drunkeness >= 10 && BConfig.stumbleModifier > 0.001f) {
 			if (drunkeness <= 100) {
 				if (time > 1) {
 					time--;
@@ -398,6 +398,7 @@ public class BPlayer {
 									push.setX(Math.random() - 0.5);
 									push.setZ(Math.random() - 0.5);
 								}
+								push.multiply(BConfig.stumbleModifier);
 								PlayerPushEvent pushEvent = new PlayerPushEvent(player, push, this);
 								P.p.getServer().getPluginManager().callEvent(pushEvent);
 								push = pushEvent.getPush();

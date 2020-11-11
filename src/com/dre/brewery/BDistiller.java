@@ -185,7 +185,7 @@ public class BDistiller {
 				stand.setBrewingTime((int) ((float) brewTime / ((float) runTime / (float) DISTILLTIME)) + 1);
 
 				if (brewTime <= 1) { // Done!
-					checkContents(stand.getInventory(), contents);
+					contents = getDistillContents(stand.getInventory());
 					stand.setBrewingTime(0);
 					stand.update();
 					if (!runDistill(stand.getInventory(), contents)) {

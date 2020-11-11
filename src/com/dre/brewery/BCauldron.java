@@ -38,7 +38,7 @@ public class BCauldron {
 	private BIngredients ingredients = new BIngredients();
 	private final Block block;
 	private int state = 0;
-	private boolean changed = false;
+	private boolean changed = false; // Not really needed anymore
 	private Optional<BCauldronRecipe> particleRecipe; // null if we haven't checked, empty if there is none
 	private Color particleColor;
 	private Location particleLocation;

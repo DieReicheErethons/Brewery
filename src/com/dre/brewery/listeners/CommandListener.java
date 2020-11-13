@@ -492,7 +492,7 @@ public class CommandListener implements CommandExecutor {
 				BRecipe nonDistill = ingredients.getBestRecipe(brew.getWood(), brew.getAgeTime(), false);
 				P.p.log("&lWould prefer Recipe: " + (nonDistill == null ? "none" : nonDistill.getRecipeName()) + " and Distill-Recipe: " + (distill == null ? "none" : distill.getRecipeName()));
 			} else {
-				BRecipe recipe = BRecipe.get(recipeName);
+				BRecipe recipe = BRecipe.getMatching(recipeName);
 				if (recipe == null) {
 					P.p.msg(player, "Could not find Recipe " + recipeName);
 					return;
@@ -665,19 +665,14 @@ public class CommandListener implements CommandExecutor {
 		} else {
 			name = args[1];
 		}
+		name = name.replaceAll("\"", "");
 
 		if (player.getInventory().firstEmpty() == -1) {
 			p.msg(sender, p.languageReader.get("CMD_Copy_Error", "1"));
 			return;
 		}
 
-		BRecipe recipe = null;
-		for (BRecipe r : BRecipe.getAllRecipes()) {
-			if (r.hasName(name)) {
-				recipe = r;
-				break;
-			}
-		}
+		BRecipe recipe = BRecipe.getMatching(name);
 		if (recipe != null) {
 			ItemStack item = recipe.create(quality);
 			if (item != null) {

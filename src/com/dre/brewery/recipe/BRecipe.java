@@ -32,6 +32,7 @@ public class BRecipe {
 	// info
 	private String[] name;
 	private boolean saveInData; // If this recipe should be saved in data and loaded again when the server restarts. Applicable to non-config recipes
+	private String optionalID; // ID that might be given by the config
 
 	// brewing
 	private List<RecipeItem> ingredients = new ArrayList<>(); // Items and amounts
@@ -85,6 +86,7 @@ public class BRecipe {
 	@Nullable
 	public static BRecipe fromConfig(ConfigurationSection configSectionRecipes, String recipeId) {
 		BRecipe recipe = new BRecipe();
+		recipe.optionalID = recipeId;
 		String nameList = configSectionRecipes.getString(recipeId + ".name");
 		if (nameList != null) {
 			String[] name = nameList.split("/");
@@ -542,6 +544,11 @@ public class BRecipe {
 		return false;
 	}
 
+	@Nullable
+	public String getOptionalID() {
+		return optionalID;
+	}
+
 	public List<RecipeItem> getIngredients() {
 		return ingredients;
 	}
@@ -749,6 +756,34 @@ public class BRecipe {
 		return recipes;
 	}
 
+	/**
+	 * Get the BRecipe that has the given name as one of its quality names.
+	 */
+	@Nullable
+	public static BRecipe getMatching(String name) {
+		BRecipe mainNameRecipe = get(name);
+		if (mainNameRecipe != null) {
+			return mainNameRecipe;
+		}
+		for (BRecipe recipe : recipes) {
+			if (recipe.getName(1).equalsIgnoreCase(name)) {
+				return recipe;
+			} else if (recipe.getName(10).equalsIgnoreCase(name)) {
+				return recipe;
+			}
+		}
+		for (BRecipe recipe : recipes) {
+			if (recipe.getOptionalID().equalsIgnoreCase(name)) {
+				return recipe;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Get the BRecipe that has that name as its name
+	 */
+	@Nullable
 	public static BRecipe get(String name) {
 		for (BRecipe recipe : recipes) {
 			if (recipe.getRecipeName().equalsIgnoreCase(name)) {
@@ -865,7 +900,7 @@ public class BRecipe {
 		 * Add Commands that are executed by the player on drinking
 		 */
 		public Builder addPlayerCmds(String... cmds) {
-			ArrayList<Tuple<Integer,String>> playercmds = new ArrayList<Tuple<Integer, String>>(cmds.length);
+			ArrayList<Tuple<Integer,String>> playercmds = new ArrayList<>(cmds.length);
 
 			for (String cmd : cmds) {
 				playercmds.add(StringParser.parseQuality(cmd, StringParser.ParseType.CMD));
@@ -882,7 +917,7 @@ public class BRecipe {
 		 * Add Commands that are executed by the server on drinking
 		 */
 		public Builder addServerCmds(String... cmds) {
-			ArrayList<Tuple<Integer,String>> servercmds = new ArrayList<Tuple<Integer, String>>(cmds.length);
+			ArrayList<Tuple<Integer,String>> servercmds = new ArrayList<>(cmds.length);
 
 			for (String cmd : cmds) {
 				servercmds.add(StringParser.parseQuality(cmd, StringParser.ParseType.CMD));
@@ -908,6 +943,14 @@ public class BRecipe {
 		 */
 		public Builder drinkTitle(String title) {
 			recipe.drinkTitle = title;
+			return this;
+		}
+
+		/**
+		 * Set the Optional ID of this recipe
+		 */
+		public Builder setID(String id) {
+			recipe.optionalID = id;
 			return this;
 		}
 

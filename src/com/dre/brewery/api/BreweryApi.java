@@ -254,6 +254,16 @@ public class BreweryApi {
 	}
 
 	/**
+	 * Get a BRecipe by _one of_ its names.
+	 * <p>May be any of the quality names, or the optional config id.
+	 * <p>Returns null if recipe with that name does not exist
+	 */
+	@Nullable
+	public static BRecipe getRecipeMatch(String name) {
+		return BRecipe.getMatching(name);
+	}
+
+	/**
 	 * Add a New Recipe.
 	 * <p>Brews can be made out of this Recipe.
 	 * <p>The recipe can be changed or removed later.

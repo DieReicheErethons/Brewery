@@ -524,18 +524,23 @@ public class BPlayer {
 	// #### Puking ####
 
 	// Chance that players puke on big drunkeness
-	// runs every 6 sec, average chance is 10%, so should puke about every 60 sec
-	// good quality can decrease the chance by up to 10%
+	// runs every 6 sec, average chance is 15%, so should puke about every 40 sec
+	// good quality can decrease the chance by up to 15%
 	public void drunkPuke(Player player) {
-		if (drunkeness >= 80) {
-			if (drunkeness >= 90) {
-				if (Math.random() < 0.15f - (getQuality() / 100f)) {
-					addPuke(player, 20 + (int) (Math.random() * 40));
-				}
-			} else {
-				if (Math.random() < 0.08f - (getQuality() / 100f)) {
-					addPuke(player, 10 + (int) (Math.random() * 30));
-				}
+		if (drunkeness >= 90) {
+			// chance between 20% and 10%
+			if (Math.random() < 0.20f - (getQuality() / 100f)) {
+				addPuke(player, 20 + (int) (Math.random() * 40));
+			}
+		} else if (drunkeness >= 80) {
+			// chance between 15% and 0%
+			if (Math.random() < 0.15f - (getQuality() / 66f)) {
+				addPuke(player, 10 + (int) (Math.random() * 30));
+			}
+		} else if (drunkeness >= 70) {
+			// chance between 10% at 1 quality and 0% at 6 quality
+			if (Math.random() < 0.10f - (getQuality() / 60f)) {
+				addPuke(player, 10 + (int) (Math.random() * 20));
 			}
 		}
 	}
@@ -551,6 +556,7 @@ public class BPlayer {
 		if (event.isCancelled() || event.getCount() < 1) {
 			return;
 		}
+		BUtil.reapplyPotionEffect(player, PotionEffectType.HUNGER.createEffect(80, 4), true);
 
 		if (pTasks.isEmpty()) {
 			taskId = P.p.getServer().getScheduler().scheduleSyncRepeatingTask(P.p, BPlayer::pukeTask, 1L, 1L);

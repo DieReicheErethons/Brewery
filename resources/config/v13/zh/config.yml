@@ -423,6 +423,7 @@ cauldron:
 #   Specific lore for quality possible, using + bad, ++ normal, +++ good, added to the front of the line.
 # servercommands: List of Commands executed by the -Server- when drinking the brew (Can use %player_name%  %quality%)
 # playercommands: List of Commands executed by the -Player- when drinking the brew (Can use %player_name%  %quality%)
+#   Specific Commands for quality possible, using + bad, ++ normal, +++ good, added to the front of the line.
 # drinkmessage: Chat-message to the Player when drinking the Brew
 # drinktitle: Title on Screen to the Player when drinking the Brew
 # customModelData: Custom Model Data Tag. This is a number that can be used to add custom textures to the item.
@@ -461,7 +462,8 @@ recipes:
       - ++ Smells alright
       - +++ Smells really good
     servercommands:
-      - weather clear
+      - +++ weather clear
+      - + weather rain
     playercommands:
       - homes
     drinkmessage: Tastes good

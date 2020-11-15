@@ -420,6 +420,7 @@ cauldron:
 #   Lore nur für bestimmte Qualität möglich mit + Schlecht, ++ Mittel, +++ Gut, vorne anhängen.
 # servercommands: Liste von Befehlen ausgeführt vom -Server- wenn der Trank getrunken wird (%player_name%  %quality% benutzbar)
 # playercommands: Liste von Befehlen ausgeführt vom -Spieler- wenn der Trank getrunken wird (%player_name%  %quality% benutzbar)
+#   Befehle nur für bestimmte Qualität möglich mit + Schlecht, ++ Mittel, +++ Gut, vorne anhängen.
 # drinkmessage: Nachricht im Chat beim trinken des Trankes
 # drinktitle: Nachricht als Titel auf dem Bildschirm an den Spieler beim trinken des Trankes
 # customModelData: Custom Model Data Modelldaten. Mit dieser Zahl kann die Tranktextur mit einem Resourcepack geändert werden
@@ -457,7 +458,8 @@ recipes:
       - ++ Riecht ganz ok
       - +++ Riecht richtig gut
     servercommands:
-      - weather clear
+      - +++ weather clear
+      - + weather rain
     playercommands:
       - homes
     drinkmessage: Schmeckt toll
@@ -853,7 +855,7 @@ useGriefPrevention: true
 useTowny: true
 useGMInventories: true
 
-# Beim Fass öffnen eine virtuelle Kiste nutzen um Rechte bei alle anderen Plugins abzufragen
+# Beim Fass öffnen eine virtuelle Kiste nutzen um Rechte bei allen anderen Plugins abzufragen
 # Könnte Anti-Cheat plugins verwirren aber sonst ok zu aktivieren
 useVirtualChestPerms: false
 

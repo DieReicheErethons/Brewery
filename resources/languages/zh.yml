@@ -45,6 +45,7 @@ Error_Recipeload: '&c加载饮品配方时出现问题, 请查看控制台以获
 Error_ShowHelp: 使用&6/brew help&f以查看帮助
 Error_UnknownCommand: 未知命令.
 Error_YmlRead: '无法读取config.yml, 请保证该文件符合正确的yml格式!(例如更正错误的空格等试试看…)'
+Error_NoPlayer: 'Player not found: &v1'
 
 # Etc
 Etc_Barrel: 木桶
@@ -72,6 +73,7 @@ Help_WakeupCheck: '&6/brew wakeup check &9传送至每一个苏醒处进行一�
 Help_WakeupCheckSpecific: '&6/brew wakeup check <id> &9传送至指定苏醒处.'
 Help_WakeupList: '&6/brew wakeup list <页数> [世界] &9列出该世界所有的苏醒处.'
 Help_WakeupRemove: '&6/brew wakeup remove <页数> &9移除指定id的苏醒处.'
+Help_Puke: '&6/brew puke [Player] [Amount] &9Makes you or [Player] puke'
 
 # Perms
 Perms_NoBarrelCreate: '&c你没有权限创造木桶!'

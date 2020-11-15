@@ -45,6 +45,7 @@ Error_Recipeload: '&c並非所有配方都可以有用：服務器日誌中的�
 Error_ShowHelp: 使用 &6/brew help &f顯示幫助
 Error_UnknownCommand: 未知的指令
 Error_YmlRead: 'Could not read file config.yml, please make sure the file is in valid yml format (correct spaces, using '' '' etc.)'
+Error_NoPlayer: 'Player not found: &v1'
 
 # Etc
 Etc_Barrel: 釀造桶
@@ -72,6 +73,7 @@ Help_WakeupCheck: '&6/brew wakeup check &9傳送到所有喚醒點'
 Help_WakeupCheckSpecific: '&6/brew wakeup check <id> &9使用<id>傳送到喚醒點'
 Help_WakeupList: '&6/brew wakeup list <頁數> [World]&9 列出<world>的所有喚醒點'
 Help_WakeupRemove: '&6/brew wakeup remove <id> &9使用<id>刪除喚醒點'
+Help_Puke: '&6/brew puke [Player] [Amount] &9Makes you or [Player] puke'
 
 # Perms
 Perms_NoBarrelCreate: '&c您沒有權限創建釀造桶!'

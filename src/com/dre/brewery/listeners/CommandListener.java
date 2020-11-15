@@ -136,6 +136,10 @@ public class CommandListener implements CommandExecutor {
 
 			showStats(sender);
 
+		} else if (cmd.equalsIgnoreCase("puke") || cmd.equalsIgnoreCase("vomit") || cmd.equalsIgnoreCase("barf")) {
+
+			cmdPuke(sender, args);
+
 		} else {
 
 			if (p.getServer().getPlayerExact(cmd) != null || BPlayer.hasPlayerbyName(cmd)) {
@@ -213,6 +217,10 @@ public class CommandListener implements CommandExecutor {
 		if (sender.hasPermission("brewery.cmd.reload")) {
 			cmds.add(p.languageReader.get("Help_Configname"));
 			cmds.add(p.languageReader.get("Help_Reload"));
+		}
+
+		if (sender.hasPermission("brewery.cmd.puke") || sender.hasPermission("brewery.cmd.pukeOther")) {
+			cmds.add(p.languageReader.get("Help_Puke"));
 		}
 
 		if (sender.hasPermission("brewery.cmd.wakeup")) {
@@ -683,6 +691,44 @@ public class CommandListener implements CommandExecutor {
 			p.msg(sender, p.languageReader.get("Error_NoBrewName", name));
 		}
 
+	}
+
+	public void cmdPuke(CommandSender sender, String[] args) {
+		if (!sender.hasPermission("brewery.cmd.puke")) {
+			p.msg(sender, p.languageReader.get("Error_NoPermissions"));
+			return;
+		}
+
+		Player player = null;
+		if (args.length > 1) {
+			player = p.getServer().getPlayer(args[1]);
+			if (player == null) {
+				p.msg(sender, p.languageReader.get("Error_NoPlayer", args[1]));
+				return;
+			}
+		}
+
+		if (!(sender instanceof Player) && player == null) {
+			p.msg(sender, p.languageReader.get("Error_PlayerCommand"));
+			return;
+		}
+		if (player == null) {
+			player = ((Player) sender);
+		} else {
+			if (!sender.hasPermission("brewery.cmd.pukeOther") && !player.equals(sender)) {
+				p.msg(sender, p.languageReader.get("Error_NoPermissions"));
+				return;
+			}
+		}
+		int count = 0;
+		if (args.length > 2) {
+			count = P.p.parseInt(args[2]);
+		}
+		if (count <= 0) {
+			count = 20 + (int) (Math.random() * 40);
+		}
+		BPlayer.addPuke(player, count);
+		return;
 	}
 
 }

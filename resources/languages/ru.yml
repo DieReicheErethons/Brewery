@@ -45,6 +45,7 @@ Error_Recipeload: '&cNot all recipes could be restored: More information in the 
 Error_ShowHelp: Использование &6/brew help &fдля отображения помощи
 Error_UnknownCommand: Неизвестная команда
 Error_YmlRead: 'не могу прочитать config.yml, пожалуйста, проверь, что там всё верно. (Корректируй пробелы, используя '' '' и др.)'
+Error_NoPlayer: 'Player not found: &v1'
 
 # Etc
 Etc_Barrel: 'Бочка'
@@ -72,6 +73,7 @@ Help_WakeupCheck: '&6/brew wakeup check &9Телепортируется на в
 Help_WakeupCheckSpecific: '&6/brew wakeup check <id> &9Телепортация в точку пробуждения с айди <id>'
 Help_WakeupList: '&6/brew wakeup list <Page> [World]&9 Список всех точек пробуждения в <world>'
 Help_WakeupRemove: '&6/brew wakeup remove <id> &9Удаление всех точек пробуждения с айди <id>'
+Help_Puke: '&6/brew puke [Player] [Amount] &9Makes you or [Player] puke'
 
 # Perms
 Perms_NoBarrelCreate: '&cУ тебя нет прав на создание бочек!'

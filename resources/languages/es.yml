@@ -46,6 +46,7 @@ Error_Recipeload: '&cNo se pudieron restaurar todas las recetas: ¡Más informac
 Error_ShowHelp: Usa &6/brew help &fpara mostrar la ayuda
 Error_UnknownCommand: Comando desconocido
 Error_YmlRead: 'No se pudo leer el archivo config.yml, asegúrese de que el archivo esté en formato yml válido (espacios correctos, etc.)'
+Error_NoPlayer: 'Player not found: &v1'
 
 # Etc
 Etc_Barrel: Barril
@@ -73,6 +74,7 @@ Help_WakeupCheck: '&6/brew wakeup check &9Teletransporta a todos los puntos de a
 Help_WakeupCheckSpecific: '&6/brew wakeup check <id> &9Teletransporta al punto de activación con <id>'
 Help_WakeupList: '&6/brew wakeup list <Página> [Mundo]&9 Enumera todos los puntos de activación del <Mundo>'
 Help_WakeupRemove: '&6/brew wakeup remove <id> &9Elimina el punto de activación con <id>'
+Help_Puke: '&6/brew puke [Player] [Amount] &9Makes you or [Player] puke'
 
 # Perms
 Perms_NoBarrelCreate: '&c¡No tienes permisos para crear barriles!'

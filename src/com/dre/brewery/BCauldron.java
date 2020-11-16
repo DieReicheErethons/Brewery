@@ -26,8 +26,6 @@ public class BCauldron {
 	public static final byte EMPTY = 0, SOME = 1, FULL = 2;
 	public static final int PARTICLEPAUSE = 15;
 	public static Random particleRandom = new Random();
-	private static int particleCauldron;
-	private static int particleDelay;
 	private static Set<UUID> plInteracted = new HashSet<>(); // Interact Event helper
 	public static Map<Block, BCauldron> bcauldrons = new HashMap<>(); // All active cauldrons. Mapped to their block for fast retrieve
 
@@ -351,31 +349,6 @@ public class BCauldron {
 		return particleColor;
 	}
 
-	/*public static void processCookEffects() {
-		if (!BConfig.enableCauldronParticles) return;
-		int size = bcauldrons.size();
-		if (size <= 0) {
-			return;
-		}
-		final int skipSize = PARTICLEPAUSE - 1 + (BConfig.minimalParticles ? 20 : 0);
-
-		int skip = particleRandom.nextInt(skipSize);
-		if (skip >= size) {
-			return;
-		}
-
-		Iterator<BCauldron> cauldronsIter = bcauldrons.values().iterator();
-		while (cauldronsIter.hasNext()) {
-			BCauldron cauldron = cauldronsIter.next();
-			if (skip == 0) {
-				cauldron.cookEffect();
-				skip = skipSize;
-			} else {
-				skip--;
-			}
-		}
-	}*/
-
 	public static void processCookEffects() {
 		if (!BConfig.enableCauldronParticles) return;
 		if (bcauldrons.isEmpty()) {
@@ -387,55 +360,6 @@ public class BCauldron {
 			if (particleRandom.nextFloat() < chance) {
 				cauldron.cookEffect();
 			}
-		}
-	}
-
-	public static void old_processNextCookEffects() {
-		if (!BConfig.enableCauldronParticles) return;
-		int size = bcauldrons.size();
-		if (size <= 0) {
-			return;
-		}
-		int useParticlePause = PARTICLEPAUSE;
-
-		// The Particle Delay is reduced every time, independent on how many cauldrons are processed
-		// If it did not reach zero as we process all cauldrons, skip some tasks
-		particleDelay--;
-		if (particleCauldron >= size) {
-			if (particleDelay <= 0) {
-				particleCauldron = 0;
-				particleDelay = useParticlePause;
-			}
-			return;
-		}
-
-		// Decide how many cauldrons to process this time
-		int cauldronsToProcess;
-		if (size < useParticlePause) {
-			cauldronsToProcess = 1;
-		} else {
-			cauldronsToProcess = (int) Math.ceil((float) size / (float) useParticlePause);
-		}
-
-		Iterator<BCauldron> cauldronsIter = bcauldrons.values().iterator();
-		int currentPos = 0;
-		for (; currentPos < particleCauldron; currentPos++) {
-			cauldronsIter.next();
-		}
-
-		while (cauldronsToProcess > 0) {
-			if (particleCauldron >= size) {
-				// We reached the end of the Cauldron list
-				if (particleDelay <= 0) {
-					// Processing all cauldrons took as long as the delay, start over right away
-					particleCauldron = 0;
-					particleDelay = useParticlePause;
-				}
-				return;
-			}
-			cauldronsIter.next().cookEffect();
-			cauldronsToProcess--;
-			particleCauldron++;
 		}
 	}
 

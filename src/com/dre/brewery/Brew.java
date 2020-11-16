@@ -779,7 +779,7 @@ public class Brew implements Cloneable {
 	 * @param recipe Recipe is required if the brew doesn't have a currentRecipe
 	 * @return The created Item, null if the Event is cancelled
 	 */
-	public ItemStack createItem(BRecipe recipe) {
+	public ItemStack createItem(@Nullable BRecipe recipe) {
 		return createItem(recipe, true);
 	}
 
@@ -791,7 +791,7 @@ public class Brew implements Cloneable {
 	 * @return The created Item, null if the Event is cancelled
 	 */
 	@Contract("_, false -> !null")
-	public ItemStack createItem(BRecipe recipe, boolean event) {
+	public ItemStack createItem(@Nullable BRecipe recipe, boolean event) {
 		if (recipe == null) {
 			recipe = getCurrentRecipe();
 		}

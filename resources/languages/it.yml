@@ -30,6 +30,8 @@ CMD_Configname: '&aName for the Config is: &f&v1'
 CMD_Configname_Error: '&cCould not find item in your hand'
 CMD_Static: '&aLa pozione è ora statica e non cambierà né nei barili né negli alambicchi.'
 CMD_UnLabel: '&aEtichetta rimossa!'
+CMD_Drink: '&aYou drank one &v1'
+CMD_DrinkOther: '&a&v1 drinks one &v2'
 
 # Errori
 Error_ConfigUpdate: 'Versione della configurazione di Brewery sconosciuta: v&v1, la configurazione non è stato aggiornata!'
@@ -74,6 +76,7 @@ Help_WakeupCheckSpecific: '&6/brew wakeup check <ID> &9Ti teletrasporta al punto
 Help_WakeupList: '&6/brew wakeup list <Pagina> <Mondo>&9 Elenca tutti i punti di risveglio di <Mondo>'
 Help_WakeupRemove: '&6/brew wakeup remove <ID> &9Rimuove il punto di risveglio con id <id>'
 Help_Puke: '&6/brew puke [Player] [Amount] &9Makes you or [Player] puke'
+Help_Drink: '&6/brew drink <Recipe> [Quality] [Player] &9Simulates [Player] drinking a Brew'
 
 # Permessi
 Perms_NoBarrelCreate: '&cNon hai il permesso di costruire barili!'

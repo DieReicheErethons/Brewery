@@ -7,6 +7,7 @@ import com.dre.brewery.recipe.BRecipe;
 import com.dre.brewery.recipe.Ingredient;
 import com.dre.brewery.recipe.RecipeItem;
 import com.dre.brewery.utility.BUtil;
+import com.dre.brewery.utility.Tuple;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -16,6 +17,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -140,6 +142,10 @@ public class CommandListener implements CommandExecutor {
 
 			cmdPuke(sender, args);
 
+		} else if (cmd.equalsIgnoreCase("drink")) {
+
+			cmdDrink(sender, args);
+
 		} else {
 
 			if (p.getServer().getPlayerExact(cmd) != null || BPlayer.hasPlayerbyName(cmd)) {
@@ -212,6 +218,10 @@ public class CommandListener implements CommandExecutor {
 		if (sender.hasPermission("brewery.cmd.create")) {
 			cmds.add(p.languageReader.get("Help_Create"));
 			cmds.add(p.languageReader.get("Help_Give"));
+		}
+
+		if (sender.hasPermission("brewery.cmd.drink") || sender.hasPermission("brewery.cmd.drinkOther")) {
+			cmds.add(p.languageReader.get("Help_Drink"));
 		}
 
 		if (sender.hasPermission("brewery.cmd.reload")) {
@@ -615,11 +625,33 @@ public class CommandListener implements CommandExecutor {
 	}
 
 	public void cmdCreate(CommandSender sender, String[] args) {
-
 		if (args.length < 2) {
 			p.msg(sender, p.languageReader.get("Etc_Usage"));
 			p.msg(sender, p.languageReader.get("Help_Create"));
 			return;
+		}
+
+		Tuple<Brew, Player> brewForPlayer = getFromCommand(sender, args);
+
+		if (brewForPlayer != null) {
+			if (brewForPlayer.b().getInventory().firstEmpty() == -1) {
+				p.msg(sender, p.languageReader.get("CMD_Copy_Error", "1"));
+				return;
+			}
+
+			ItemStack item = brewForPlayer.a().createItem(null);
+			if (item != null) {
+				brewForPlayer.b().getInventory().addItem(item);
+				p.msg(sender, p.languageReader.get("CMD_Created"));
+			}
+		}
+
+	}
+
+	@Nullable
+	public Tuple<Brew, Player> getFromCommand(CommandSender sender, String[] args) {
+		if (args.length < 2) {
+			return null;
 		}
 
 		int quality = 10;
@@ -647,7 +679,7 @@ public class CommandListener implements CommandExecutor {
 
 		if (!(sender instanceof Player) && player == null) {
 			p.msg(sender, p.languageReader.get("Error_PlayerCommand"));
-			return;
+			return null;
 		}
 
 		if (player == null) {
@@ -675,22 +707,13 @@ public class CommandListener implements CommandExecutor {
 		}
 		name = name.replaceAll("\"", "");
 
-		if (player.getInventory().firstEmpty() == -1) {
-			p.msg(sender, p.languageReader.get("CMD_Copy_Error", "1"));
-			return;
-		}
-
 		BRecipe recipe = BRecipe.getMatching(name);
 		if (recipe != null) {
-			ItemStack item = recipe.create(quality);
-			if (item != null) {
-				player.getInventory().addItem(item);
-				p.msg(sender, p.languageReader.get("CMD_Created"));
-			}
+			return new Tuple<>(recipe.createBrew(quality), player);
 		} else {
 			p.msg(sender, p.languageReader.get("Error_NoBrewName", name));
 		}
-
+		return null;
 	}
 
 	public void cmdPuke(CommandSender sender, String[] args) {
@@ -728,7 +751,37 @@ public class CommandListener implements CommandExecutor {
 			count = 20 + (int) (Math.random() * 40);
 		}
 		BPlayer.addPuke(player, count);
-		return;
+	}
+
+	public void cmdDrink(CommandSender sender, String[] args) {
+		if (!sender.hasPermission("brewery.cmd.drink") || !sender.hasPermission("brewery.cmd.drink")) {
+			p.msg(sender, p.languageReader.get("Error_NoPermissions"));
+			return;
+		}
+
+		if (args.length < 2) {
+			p.msg(sender, p.languageReader.get("Etc_Usage"));
+			p.msg(sender, p.languageReader.get("Help_Drink"));
+			return;
+		}
+
+		Tuple<Brew, Player> brewForPlayer = getFromCommand(sender, args);
+		if (brewForPlayer != null) {
+			Player player = brewForPlayer.b();
+			if ((!sender.equals(player) && !sender.hasPermission("brewery.cmd.drinkOther")) ||
+				(sender.equals(player) && !sender.hasPermission("brewery.cmd.drink"))) {
+				p.msg(sender, p.languageReader.get("Error_NoPermissions"));
+			} else {
+				Brew brew = brewForPlayer.a();
+				String brewName = brew.getCurrentRecipe().getName(brew.getQuality());
+				BPlayer.drink(brew, null, player);
+
+				p.msg(player, p.languageReader.get("CMD_Drink", brewName));
+				if (!sender.equals(player)) {
+					p.msg(sender, p.languageReader.get("CMD_DrinkOther", player.getDisplayName(), brewName));
+				}
+			}
+		}
 	}
 
 }

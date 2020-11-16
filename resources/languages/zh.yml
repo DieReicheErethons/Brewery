@@ -30,6 +30,8 @@ CMD_Configname: '配置文件中&aName的名字是: &f&v1'
 CMD_Configname_Error: '&c无法找到物品名称'
 CMD_Static: '&a饮品已被静滞, 现在其无法被蒸馏或进行木桶熟成.'
 CMD_UnLabel: '&a标签已被去除!'
+CMD_Drink: '&aYou drank one &v1'
+CMD_DrinkOther: '&a&v1 drinks one &v2'
 
 # Error
 Error_ConfigUpdate: '未知的配置版本:v&v1, 插件配置未更新!'
@@ -74,6 +76,7 @@ Help_WakeupCheckSpecific: '&6/brew wakeup check <id> &9传送至指定苏醒处.
 Help_WakeupList: '&6/brew wakeup list <页数> [世界] &9列出该世界所有的苏醒处.'
 Help_WakeupRemove: '&6/brew wakeup remove <页数> &9移除指定id的苏醒处.'
 Help_Puke: '&6/brew puke [Player] [Amount] &9Makes you or [Player] puke'
+Help_Drink: '&6/brew drink <Recipe> [Quality] [Player] &9Simulates [Player] drinking a Brew'
 
 # Perms
 Perms_NoBarrelCreate: '&c你没有权限创造木桶!'

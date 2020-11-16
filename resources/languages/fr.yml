@@ -30,6 +30,8 @@ CMD_Configname: '&aName for the Config is: &f&v1'
 CMD_Configname_Error: '&cN´a pas pu trouver d´objet dans votre main'
 CMD_Static: '&aLa boisson est maintenant statique et ne changera pas dans les barils ou les stands d´alchimie.'
 CMD_UnLabel: '&aLabel supprimé!'
+CMD_Drink: '&aYou drank one &v1'
+CMD_DrinkOther: '&a&v1 drinks one &v2'
 
 # Erreurs
 Error_ConfigUpdate: 'La version de la configuration de Brewery est inconnue: v&v1, la config n´a pas été mise à jour !'
@@ -74,6 +76,7 @@ Help_WakeupCheckSpecific: '&6/brew wakeup check <id> &9Téléportation vers le p
 Help_WakeupList: '&6/brew wakeup list <Page> [World]&9 Affiche une liste de tous les points de réveil de [world]'
 Help_WakeupRemove: '&6/brew wakeup remove <id> &9Enlève le point de réveil avec l´ID <id>'
 Help_Puke: '&6/brew puke [Player] [Amount] &9Makes you or [Player] puke'
+Help_Drink: '&6/brew drink <Recipe> [Quality] [Player] &9Simulates [Player] drinking a Brew'
 
 # Permissions
 Perms_NoBarrelCreate: '&cVous n´avez pas la permission de créer des barils !'

@@ -30,6 +30,8 @@ CMD_Configname: '&aName for the Config is: &f&v1'
 CMD_Configname_Error: '&cНет предмета в руке.'
 CMD_Static: '&aБражка заморожена и не будет портиться в бочках.'
 CMD_UnLabel: '&aLabel removed!'
+CMD_Drink: '&aYou drank one &v1'
+CMD_DrinkOther: '&a&v1 drinks one &v2'
 
 # Error
 Error_ConfigUpdate: 'Неизвестная версия конфига Brewery: v&v1, конфиг не обновлён!'
@@ -74,6 +76,7 @@ Help_WakeupCheckSpecific: '&6/brew wakeup check <id> &9Телепортация 
 Help_WakeupList: '&6/brew wakeup list <Page> [World]&9 Список всех точек пробуждения в <world>'
 Help_WakeupRemove: '&6/brew wakeup remove <id> &9Удаление всех точек пробуждения с айди <id>'
 Help_Puke: '&6/brew puke [Player] [Amount] &9Makes you or [Player] puke'
+Help_Drink: '&6/brew drink <Recipe> [Quality] [Player] &9Simulates [Player] drinking a Brew'
 
 # Perms
 Perms_NoBarrelCreate: '&cУ тебя нет прав на создание бочек!'

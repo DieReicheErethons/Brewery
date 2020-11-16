@@ -30,6 +30,8 @@ CMD_Configname: '&aName for the Config is: &f&v1'
 CMD_Configname_Error: '&cCould not find item in your hand'
 CMD_Static: '&a藥水現在是靜止的,不會在桶或釀造台上變化.'
 CMD_UnLabel: '&a標籤已刪除！'
+CMD_Drink: '&aYou drank one &v1'
+CMD_DrinkOther: '&a&v1 drinks one &v2'
 
 # Error
 Error_ConfigUpdate: '未知 釀酒 設定檔版本: v&v1,設定檔沒有更新!'
@@ -74,6 +76,7 @@ Help_WakeupCheckSpecific: '&6/brew wakeup check <id> &9使用<id>傳送到喚醒
 Help_WakeupList: '&6/brew wakeup list <頁數> [World]&9 列出<world>的所有喚醒點'
 Help_WakeupRemove: '&6/brew wakeup remove <id> &9使用<id>刪除喚醒點'
 Help_Puke: '&6/brew puke [Player] [Amount] &9Makes you or [Player] puke'
+Help_Drink: '&6/brew drink <Recipe> [Quality] [Player] &9Simulates [Player] drinking a Brew'
 
 # Perms
 Perms_NoBarrelCreate: '&c您沒有權限創建釀造桶!'

@@ -161,12 +161,14 @@ public class BPlayer {
 			bPlayer = addPlayer(player);
 		}
 		BrewDrinkEvent drinkEvent = new BrewDrinkEvent(brew, meta, player, bPlayer);
-		P.p.getServer().getPluginManager().callEvent(drinkEvent);
-		if (drinkEvent.isCancelled()) {
-			if (bPlayer.drunkeness <= 0) {
-				bPlayer.remove();
+		if (meta != null) {
+			P.p.getServer().getPluginManager().callEvent(drinkEvent);
+			if (drinkEvent.isCancelled()) {
+				if (bPlayer.drunkeness <= 0) {
+					bPlayer.remove();
+				}
+				return false;
 			}
-			return false;
 		}
 
 		if (brew.hasRecipe()) {

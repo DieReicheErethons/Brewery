@@ -23,6 +23,9 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -517,10 +520,25 @@ public class P extends JavaPlugin {
 
 	}
 
+	private int ticks = 0;
+	private double times = 0;
+
 	public class CauldronParticles implements Runnable {
 		@Override
 		public void run() {
-			BCauldron.processNextCookEffects();
+			if (BConfig.minimalParticles && BCauldron.particleRandom.nextFloat() > 0.5f) {
+				return;
+			}
+			long t1 = System.nanoTime();
+			BCauldron.processCookEffects();
+			long t2 = System.nanoTime();
+			times += (t2 - t1) / 1000.0;
+			ticks++;
+			if (ticks == BCauldron.PARTICLEPAUSE) {
+				ticks = 0;
+				P.p.log("Particles: ~ " + BigDecimal.valueOf(times / BCauldron.PARTICLEPAUSE).round(new MathContext(5, RoundingMode.HALF_UP)) + "µs");
+				times = 0;
+			}
 		}
 	}
 

@@ -50,6 +50,7 @@ drainItems:
 - MILK_BUCKET/2
 
 # Show Particles over Cauldrons when they have ingredients and a heat source. [true]
+# The changing color of the particles can help with timing some recipes
 enableCauldronParticles: true
 
 # If crafting and using of the Brew Sealing Table is enabled (2 Bottles over 4 Planks) [true, true]
@@ -502,6 +503,9 @@ colorInBrewer: true
 
 # If a Large Barrel can be opened by clicking on any of its blocks, not just Spigot or Sign. This is always true for Small Barrels. [true]
 openLargeBarrelEverywhere: true
+
+# If Cauldron Particles should be reduced to the bare minimum
+minimalParticles: false
 
 
 # -- Chat Distortion Settings --

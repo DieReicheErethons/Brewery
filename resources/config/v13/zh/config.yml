@@ -48,10 +48,11 @@ showStatusOnDrink: true
 
 # 解酒物/解酒强度. 降低玩家一定程度的醉酒程度, 解救强度为百分数.(下列)
 drainItems:
-- Bread/4
-- Milk_Bucket/2
+  - Bread/4
+  - Milk_Bucket/2
 
 # Show Particles over Cauldrons when they have ingredients and a heat source. [true]
+# The changing color of the particles can help with timing some recipes
 enableCauldronParticles: true
 
 # If crafting and using of the Brew Sealing Table is enabled (2 Bottles over 4 Planks) [true, true]
@@ -894,6 +895,9 @@ colorInBrewer: true
 
 # 大型熟成木桶可以通过右击桶身任意一个位置来打开, 而不需要专门右击其龙头. 这一操作对小型酒桶总为真.[true]
 openLargeBarrelEverywhere: false
+
+# If Cauldron Particles should be reduced to the bare minimum
+minimalParticles: false
 
 
 # -- 口糊设置 --

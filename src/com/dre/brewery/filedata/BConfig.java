@@ -65,6 +65,7 @@ public class BConfig {
 	// Cauldron
 	public static boolean useOffhandForCauldron;
 	public static boolean enableCauldronParticles;
+	public static boolean minimalParticles;
 
 	//BPlayer
 	public static Map<Material, Integer> drainItems = new HashMap<>();// DrainItem Material and Strength
@@ -250,6 +251,7 @@ public class BConfig {
 		enableEncode = config.getBoolean("enableEncode", false);
 		openEverywhere = config.getBoolean("openLargeBarrelEverywhere", false);
 		enableCauldronParticles = P.use1_9 && config.getBoolean("enableCauldronParticles", false);
+		minimalParticles = config.getBoolean("minimalParticles", false);
 		useOffhandForCauldron = config.getBoolean("useOffhandForCauldron", false);
 		loadDataAsync = config.getBoolean("loadDataAsync", true);
 

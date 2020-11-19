@@ -23,7 +23,7 @@ public class ShopKeepersListener implements Listener {
 	Set<HumanEntity> openedEditors = new HashSet<>();
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-	public void onShopCreated(PlayerOpenUIEvent event) {
+	public void onShopkeeperOpen(PlayerOpenUIEvent event) {
 		try {
 			if (event.getUIType() == DefaultUITypes.EDITOR() || event.getUIType() == DefaultUITypes.TRADING()) {
 				openedEditors.add(event.getPlayer());

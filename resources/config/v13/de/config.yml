@@ -850,6 +850,7 @@ recipes:
 # -- Plugin Kompatiblität --
 
 # Andere Plugins (wenn installiert) nach Rechten zum öffnen von Fässern checken [true]
+# Plugins 'Landlord' und 'Protection Stones' nutzen WorldGuard. 'ClaimChunk' wird nativ unterstützt.
 useWorldGuard: true
 useLWC: true
 useGriefPrevention: true
@@ -858,6 +859,7 @@ useGMInventories: true
 
 # Beim Fass öffnen eine virtuelle Kiste nutzen um Rechte bei allen anderen Plugins abzufragen
 # Könnte Anti-Cheat plugins verwirren aber sonst ok zu aktivieren
+# Diese Option für das Plugin 'Residence' aktivieren, und andere Plugins, die nicht alle Fälle des PlayerInteractEvent checken
 useVirtualChestPerms: false
 
 

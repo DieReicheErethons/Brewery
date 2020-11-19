@@ -442,6 +442,7 @@ recipes:
 # -- Compatibilità con altri plugin --
 
 # Abilita il controllo della presenza di altri plugin per i permessi relativi ai barili[true]
+# Plugins 'Landlord' and 'Protection Stones' use the WorldGuard Flag. 'ClaimChunk' is natively supported.
 useWorldGuard: true
 useLWC: true
 useGriefPrevention: true
@@ -451,6 +452,7 @@ useCitadel: true
 
 # Use a virtual chest when opening a Barrel to check with all other protection plugins
 # This could confuse Anti-Cheat plugins, but is otherwise good to use
+# use this for 'Residence' Plugin and any others that don't check all cases in the PlayerInteractEvent
 useVirtualChestPerms: false
 
 # Abilita il logging degli inventari dei barili [true]

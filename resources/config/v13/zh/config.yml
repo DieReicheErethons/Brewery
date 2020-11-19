@@ -848,6 +848,7 @@ recipes:
 # -- 插件兼容性 --
 
 # 检查插件以进行权限配置[true]
+# Plugins 'Landlord' and 'Protection Stones' use the WorldGuard Flag. 'ClaimChunk' is natively supported.
 useWorldGuard: true
 useLWC: true
 useGriefPrevention: true
@@ -856,6 +857,7 @@ useGMInventories: true
 
 # Use a virtual chest when opening a Barrel to check with all other protection plugins
 # This could confuse Anti-Cheat plugins, but is otherwise good to use
+# use this for 'Residence' Plugin and any others that don't check all cases in the PlayerInteractEvent
 useVirtualChestPerms: false
 
 # 对LogBlock启用方块数据录入[true]

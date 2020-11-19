@@ -56,6 +56,7 @@ public class BConfig {
 	public static Boolean hasSlimefun = null; // Slimefun ; Null if not checked
 	public static Boolean hasMMOItems = null; // MMOItems ; Null if not checked
 	public static boolean hasChestShop;
+	public static boolean hasShopKeepers;
 
 	// Barrel
 	public static boolean openEverywhere;
@@ -228,6 +229,7 @@ public class BConfig {
 		hasVault = plMan.isPluginEnabled("Vault")
 			&& Integer.parseInt(plMan.getPlugin("Vault").getDescription().getVersion().split("\\.")[1]) <= 6;
 		hasChestShop = plMan.isPluginEnabled("ChestShop");
+		hasShopKeepers = plMan.isPluginEnabled("Shopkeepers");
 
 		// various Settings
 		DataSave.autosave = config.getInt("autosave", 3);

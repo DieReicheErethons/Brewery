@@ -111,6 +111,10 @@
 			<id>MMOPlugins</id>
 			<url>https://mvn.lumine.io/repository/maven-releases/</url>
 		</repository>
+		<repository>
+			<id>Lichtspiele</id>
+			<url>https://nexus.lichtspiele.org/repository/releases/</url>
+		</repository>
 	</repositories>
 
 	<dependencies>
@@ -199,7 +203,7 @@
 		<dependency>
 			<groupId>de.diddiz</groupId>
 			<artifactId>logblock</artifactId>
-			<version>1.15.2</version>
+			<version>1.16.1.1</version>
 			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
@@ -237,6 +241,12 @@
 			<groupId>com.github.TownyAdvanced</groupId>
 			<artifactId>Towny</artifactId>
 			<version>0.96.3.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.nisovin.shopkeepers</groupId>
+			<artifactId>ShopkeepersAPI</artifactId>
+			<version>2.12.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

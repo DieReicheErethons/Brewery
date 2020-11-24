@@ -9,21 +9,25 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import static com.dre.brewery.utility.PermissionUtil.BPermission.DRINK;
-import static com.dre.brewery.utility.PermissionUtil.BPermission.WAKEUP;
+import static com.dre.brewery.utility.PermissionUtil.BPermission.*;
 
 public class TabListener implements TabCompleter {
-
-	private static final String[] COMPLETIONS = {"unLabel", "help"};
-	private static final String[] EXT_COMPLETIONS = {"info", "create", "reload", "drink", "itemName", "seal", "static", "puke", "wakeup"};
+	private static final Map<String, PermissionUtil.BPermission> COMMAND_COMPLETIONS = new HashMap<>(10);
+	static {
+		COMMAND_COMPLETIONS.put("help", null);
+		COMMAND_COMPLETIONS.put("unLabel", UNLABEL);
+		COMMAND_COMPLETIONS.put("create", CREATE);
+		COMMAND_COMPLETIONS.put("reload", RELOAD);
+		COMMAND_COMPLETIONS.put("drink", DRINK);
+		COMMAND_COMPLETIONS.put("itemName", RELOAD);
+		COMMAND_COMPLETIONS.put("seal", SEAL);
+		COMMAND_COMPLETIONS.put("static", STATIC);
+		COMMAND_COMPLETIONS.put("puke", PUKE);
+		COMMAND_COMPLETIONS.put("wakeup", WAKEUP);
+	}
 
 	private static final String[] QUALITY = {"1", "10"};
 
@@ -38,20 +42,17 @@ public class TabListener implements TabCompleter {
 		}
 		if (args.length == 1) {
 
-			List<String> commands;
-			if (PermissionUtil.noExtendedPermissions(sender)) {
-				commands = filterWithInput(COMPLETIONS, args[0]);
-			} else {
-				Stream<String> filteredCompletionsStream = Arrays.stream(COMPLETIONS)
-					.filter(s -> s.startsWith(args[0]));
-				Stream<String> filteredExtendedCompletionsStream = Arrays.stream(EXT_COMPLETIONS)
-					.filter(s -> s.startsWith(args[0]));
+			List<String> commands = COMMAND_COMPLETIONS.entrySet().stream()
+				.filter(entry -> entry.getKey().startsWith(args[0]) && (entry.getValue() == null || entry.getValue().checkCached(sender)))
+				.map(Map.Entry::getKey)
+				.collect(Collectors.toList());
 
-				commands = Stream.concat(filteredCompletionsStream, filteredExtendedCompletionsStream)
-					.collect(Collectors.toList());
-			}
 			if (commands.isEmpty()) {
-				return null; // Player List
+				if (PLAYER.checkCached(sender)) {
+					return null; // Player List
+				} else {
+					return new ArrayList<>(0);
+				}
 			} else {
 				return commands;
 			}

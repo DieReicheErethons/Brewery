@@ -4,6 +4,7 @@ import com.dre.brewery.*;
 import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.filedata.UpdateChecker;
 import com.dre.brewery.utility.LegacyUtil;
+import com.dre.brewery.utility.PermissionUtil;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -256,6 +257,7 @@ public class PlayerListener implements Listener {
 		if (bplayer != null) {
 			bplayer.disconnecting();
 		}
+		PermissionUtil.logout(event.getPlayer());
 	}
 
 	@EventHandler
@@ -264,5 +266,6 @@ public class PlayerListener implements Listener {
 		if (bplayer != null) {
 			bplayer.disconnecting();
 		}
+		PermissionUtil.logout(event.getPlayer());
 	}
 }

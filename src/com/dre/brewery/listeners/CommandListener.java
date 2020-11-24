@@ -7,6 +7,7 @@ import com.dre.brewery.recipe.BRecipe;
 import com.dre.brewery.recipe.Ingredient;
 import com.dre.brewery.recipe.RecipeItem;
 import com.dre.brewery.utility.BUtil;
+import com.dre.brewery.utility.PermissionUtil;
 import com.dre.brewery.utility.Tuple;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -21,6 +22,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Locale;
+
+import static com.dre.brewery.utility.PermissionUtil.BPermission.*;
 
 public class CommandListener implements CommandExecutor {
 
@@ -194,46 +197,51 @@ public class CommandListener implements CommandExecutor {
 
 		ArrayList<String> cmds = new ArrayList<>();
 		cmds.add(p.languageReader.get("Help_Help"));
+		PermissionUtil.evaluateExtendedPermissions(sender);
 
-		if (sender.hasPermission("brewery.cmd.player")) {
+		if (PLAYER.checkCached(sender)) {
 			cmds.add (p.languageReader.get("Help_Player"));
 		}
 
-		if (sender.hasPermission("brewery.cmd.info")) {
+		if (INFO.checkCached(sender)) {
 			cmds.add (p.languageReader.get("Help_Info"));
 		}
 
-		if (P.use1_13 && sender.hasPermission("brewery.cmd.seal")) {
+		if (P.use1_13 && SEAL.checkCached(sender)) {
 			cmds.add (p.languageReader.get("Help_Seal"));
 		}
 
-		if (sender.hasPermission("brewery.cmd.unlabel")) {
+		if (UNLABEL.checkCached(sender)) {
 			cmds.add (p.languageReader.get("Help_UnLabel"));
 		}
 
-		if (sender.hasPermission("brewery.cmd.infoOther")) {
+		if (PermissionUtil.noExtendedPermissions(sender)) {
+			return cmds;
+		}
+
+		if (INFO_OTHER.checkCached(sender)) {
 			cmds.add (p.languageReader.get("Help_InfoOther"));
 		}
 
-		if (sender.hasPermission("brewery.cmd.create")) {
+		if (CREATE.checkCached(sender)) {
 			cmds.add(p.languageReader.get("Help_Create"));
 			cmds.add(p.languageReader.get("Help_Give"));
 		}
 
-		if (sender.hasPermission("brewery.cmd.drink") || sender.hasPermission("brewery.cmd.drinkOther")) {
+		if (DRINK.checkCached(sender) || DRINK_OTHER.checkCached(sender)) {
 			cmds.add(p.languageReader.get("Help_Drink"));
 		}
 
-		if (sender.hasPermission("brewery.cmd.reload")) {
+		if (RELOAD.checkCached(sender)) {
 			cmds.add(p.languageReader.get("Help_Configname"));
 			cmds.add(p.languageReader.get("Help_Reload"));
 		}
 
-		if (sender.hasPermission("brewery.cmd.puke") || sender.hasPermission("brewery.cmd.pukeOther")) {
+		if (PUKE.checkCached(sender) || PUKE_OTHER.checkCached(sender)) {
 			cmds.add(p.languageReader.get("Help_Puke"));
 		}
 
-		if (sender.hasPermission("brewery.cmd.wakeup")) {
+		if (WAKEUP.checkCached(sender)) {
 			cmds.add(p.languageReader.get("Help_Wakeup"));
 			cmds.add(p.languageReader.get("Help_WakeupList"));
 			cmds.add(p.languageReader.get("Help_WakeupCheck"));
@@ -242,15 +250,15 @@ public class CommandListener implements CommandExecutor {
 			cmds.add(p.languageReader.get("Help_WakeupRemove"));
 		}
 
-		if (sender.hasPermission("brewery.cmd.static")) {
+		if (STATIC.checkCached(sender)) {
 			cmds.add(p.languageReader.get("Help_Static"));
 		}
 
-		if (sender.hasPermission("brewery.cmd.copy")) {
+		if (COPY.checkCached(sender)) {
 			cmds.add (p.languageReader.get("Help_Copy"));
 		}
 
-		if (sender.hasPermission("brewery.cmd.delete")) {
+		if (DELETE.checkCached(sender)) {
 			cmds.add (p.languageReader.get("Help_Delete"));
 		}
 

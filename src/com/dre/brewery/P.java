@@ -215,6 +215,9 @@ public class P extends JavaPlugin {
 		// Reload Cauldron Particle Recipes
 		BCauldron.reload();
 
+		// Clear Recipe completions
+		TabListener.reload();
+
 		// Reload Recipes
 		boolean successful = true;
 		for (Brew brew : Brew.legacyPotions.values()) {

@@ -89,13 +89,14 @@
 			<url>http://maven.sk89q.com/repo/</url>
 		</repository>
 		<repository>
-			<!-- GriefPrevention, SlimeFun, Towny -->
+			<!-- GriefPrevention, SlimeFun, Towny, Brewery -->
 			<id>jitpack.io</id>
 			<url>https://jitpack.io</url>
 		</repository>
 		<repository>
-			<id>brewery-repo</id>
-			<url>https://zebradrive.de/maven/</url>
+			<!-- LWC Extended -->
+			<id>ender-repo</id>
+			<url>https://ci.ender.zone/plugin/repository/everything/</url>
 		</repository>
 		<repository>
 			<id>chestshop-repo</id>
@@ -190,9 +191,9 @@
 			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>com.griefcraft</groupId>
-			<artifactId>entitylwc</artifactId>
-			<version>2.1</version>
+			<groupId>com.griefcraft.lwc</groupId>
+			<artifactId>LWCX</artifactId>
+			<version>2.2.6</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -263,11 +264,4 @@
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
-
-	<distributionManagement>
-		<repository>
-			<id>file-repo</id>
-			<url>file:///var/tmp/MavenRepo</url>
-		</repository>
-	</distributionManagement>
 </project>

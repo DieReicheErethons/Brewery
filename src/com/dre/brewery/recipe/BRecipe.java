@@ -19,6 +19,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -416,13 +417,15 @@ public class BRecipe {
 	}
 
 	public void applyDrinkFeatures(Player player, int quality) {
-		if (playercmds != null && !playercmds.isEmpty()) {
-			for (String cmd : getPlayercmdsForQuality(quality)) {
+		List<String> playerCmdsForQuality = getPlayercmdsForQuality(quality);
+		if (playerCmdsForQuality != null) {
+			for (String cmd : playerCmdsForQuality) {
 				player.performCommand(BUtil.applyPlaceholders(cmd, player.getName(), quality));
 			}
 		}
-		if (servercmds != null && !servercmds.isEmpty()) {
-			for (String cmd : getServercmdsForQuality(quality)) {
+		List<String> serverCmdsForQuality = getServercmdsForQuality(quality);
+		if (serverCmdsForQuality != null) {
+			for (String cmd : serverCmdsForQuality) {
 				P.p.getServer().dispatchCommand(P.p.getServer().getConsoleSender(), BUtil.applyPlaceholders(cmd, player.getName(), quality));
 			}
 		}
@@ -544,9 +547,8 @@ public class BRecipe {
 		return false;
 	}
 
-	@Nullable
-	public String getOptionalID() {
-		return optionalID;
+	public Optional<String> getOptionalID() {
+		return Optional.ofNullable(optionalID);
 	}
 
 	public List<RecipeItem> getIngredients() {
@@ -773,7 +775,7 @@ public class BRecipe {
 			}
 		}
 		for (BRecipe recipe : recipes) {
-			if (recipe.getOptionalID().equalsIgnoreCase(name)) {
+			if (recipe.getOptionalID().isPresent() && recipe.getOptionalID().get().equalsIgnoreCase(name)) {
 				return recipe;
 			}
 		}

@@ -79,7 +79,7 @@ public class Tuple<A, B> {
 		}
 
 		Tuple<?, ?> tuple = (Tuple<?, ?>) object;
-		return tuple.a == a && tuple.b == b;
+		return tuple.a.equals(a) && tuple.b.equals(b);
 	}
 
 	@Override
@@ -87,4 +87,10 @@ public class Tuple<A, B> {
 		return a.hashCode() ^ b.hashCode();
 	}
 
+	@Override
+	public String toString() {
+		return "Tuple{" +
+			'{' + a + '}' +
+			'{' + b + "}}";
+	}
 }

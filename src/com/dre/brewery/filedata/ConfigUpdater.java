@@ -2,6 +2,7 @@ package com.dre.brewery.filedata;
 
 import com.dre.brewery.P;
 import com.dre.brewery.utility.LegacyUtil;
+import com.dre.brewery.utility.Tuple;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -10,6 +11,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class ConfigUpdater {
@@ -1800,6 +1802,110 @@ public class ConfigUpdater {
 			"# If Barrel and Cauldron data can be loaded Async/in the Background [true]",
 			"loadDataAsync: true");
 
+	}
+
+	private void update30CauldronParticles() {
+		int start = config.indexOf("cauldron:");
+		int end = config.indexOf("recipes:");
+		if (start < 0 || end < 0 || start >= end) {
+			return;
+		}
+		String c = "    cookParticles:";
+
+		List<Tuple<String[], String[]>> additions = new ArrayList<>();
+		additions.add(new Tuple<>(
+			new String[]{"  ex:"},
+			new String[]{c, "      - 'RED/5'", "      - 'WHITE/10'", "      - '800000/25' # maroon"}));
+		additions.add(new Tuple<>(
+			new String[]{"  wheat:"},
+			new String[]{c, "      - '2d8686/8' # Dark Aqua"}));
+		additions.add(new Tuple<>(
+			new String[]{"  sugarcane:"},
+			new String[]{c, "      - 'f1ffad/4'","      - '858547/10' # dark olive"}));
+		additions.add(new Tuple<>(
+			new String[]{"  sugar:"},
+			new String[]{c, "      - 'WHITE/4'", "      - 'BRIGHT_GREY/25'"}));
+		additions.add(new Tuple<>(
+			new String[]{"  berries:"},
+			new String[]{c, "      - 'ff6666/2' # bright red", "      - 'RED/7'", "      - 'ac6553/13' # brown-red"}));
+		additions.add(new Tuple<>(
+			new String[]{"  grass:"},
+			new String[]{c, "      - 'GREEN/2'", "      - '99ff99/20' # faded green"}));
+		additions.add(new Tuple<>(
+			new String[]{"  rmushroom:"},
+			new String[]{c, "      - 'fab09e/15' # faded red"}));
+		additions.add(new Tuple<>(
+			new String[]{"  bmushroom:"},
+			new String[]{c, "      - 'c68c53/15'"}));
+		additions.add(new Tuple<>(
+			new String[]{"  cocoa:"},
+			new String[]{c, "      - 'a26011/1'", "      - '5c370a/3'", "      - '4d4133/8' # Gray-brown"}));
+		additions.add(new Tuple<>(
+			new String[]{"  milk:"},
+			new String[]{c, "      - 'fbfbd0/1' # yellow-white", "      - 'WHITE/6'"}));
+		additions.add(new Tuple<>(
+			new String[]{"  bl_flow:"},
+			new String[]{c, "      - '0099ff'"}));
+		additions.add(new Tuple<>(
+			new String[]{"  cactus:"},
+			new String[]{c, "      - '00b300/16'"}));
+		additions.add(new Tuple<>(
+			new String[]{"  vine:"},
+			new String[]{c, "      - 'GREEN/2'", "      - '99ff99/20' # faded green"}));
+		additions.add(new Tuple<>(
+			new String[]{"  rot_flesh:"},
+			new String[]{c, "      - '263300/8'", "      - 'BLACK/20'"}));
+		additions.add(new Tuple<>(
+			new String[]{"  cookie:"},
+			new String[]{c, "      - 'a26011/1'", "      - '5c370a/3'", "      - '4d4133/8' # Gray-brown"}));
+		additions.add(new Tuple<>(
+			new String[]{"  Gold_Nugget:"},
+			new String[]{c, "      - 'ffd11a'"}));
+		additions.add(new Tuple<>(
+			new String[]{"  glowstone_dust:"},
+			new String[]{c, "      - 'ffff99/3'", "      - 'd9d926/15' # faded yellow"}));
+		additions.add(new Tuple<>(
+			new String[]{"  applemead_base:"},
+			new String[]{c, "      - 'e1ff4d/4'"}));
+		additions.add(new Tuple<>(
+			new String[]{"  poi_grass:"},
+			new String[]{c, "      - 'GREEN/2'", "      - '99ff99/20' # faded green"}));
+		additions.add(new Tuple<>(
+			new String[]{"  juniper:"},
+			new String[]{c, "      - '00ccff/8'"}));
+		additions.add(new Tuple<>(
+			new String[]{"  gin_base:"},
+			new String[]{c, "      - 'c68c53/15'"}));
+		additions.add(new Tuple<>(
+			new String[]{"  eggnog_base:"},
+			new String[]{c, "      - 'ffecb3/2'"}));
+
+
+		for (Tuple<String[], String[]> addition : additions) {
+			end = config.indexOf("recipes:");
+			int index = indexOfStart(addition.a()[0]);
+			if (index == -1 && addition.a().length > 1) {
+				index = indexOfStart(addition.a()[1]);
+			}
+			if (index == -1 && addition.a().length > 2) {
+				index = indexOfStart(addition.a()[2]);
+			}
+			if (index >= start && index <= end) {
+				if (config.get(++index).startsWith("    name:")) {
+					if (config.get(++index).startsWith("    ingredients:")) {
+						// If this is the ingredients line, check if the next line is color or empty
+						// We can safely go after color, or before empty
+						// If neither, go before this line, as ingredients could be multi line
+						if (config.get(index + 1).startsWith("    color:")) {
+							index += 2;
+						} else if (config.get(index + 1).equals("")) {
+							index += 1;
+						}
+					}
+					addLines(index, addition.b());
+				}
+			}
+		}
 	}
 
 

@@ -1,6 +1,5 @@
 package com.dre.brewery.utility;
 
-import com.dre.brewery.P;
 import org.bukkit.command.CommandSender;
 
 import java.util.HashMap;
@@ -44,7 +43,6 @@ public class PermissionUtil {
 			evaluateExtendedPermissions(sender);
 			extendedPerms = extendedPermsCache.get(sender);
 		}
-		P.p.log("extended Perms for " + sender.getName() + ": " + extendedPerms);
 
 		return extendedPerms == null || !extendedPerms;
 	}

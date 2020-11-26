@@ -87,7 +87,7 @@ autosave: 3
 debug: false
 
 # Versione del config
-version: '2.1.1'
+version: '3.0'
 
 
 
@@ -894,7 +894,7 @@ colorInBrewer: true
 # Se un barile grande può essere aperto  cliccandoci sopra, non solo sul cartello e sulla staccionata. Questo è sempre true per i barili piccoli. [true]
 openLargeBarrelEverywhere: true
 
-# If Cauldron Particles should be reduced to the bare minimum
+# If Cauldron Particles should be reduced to the bare minimum [false]
 minimalParticles: false
 
 

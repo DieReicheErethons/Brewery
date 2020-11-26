@@ -87,7 +87,7 @@ autosave: 3
 debug: false
 
 # Config Version
-version: '2.1.1'
+version: '3.0'
 
 
 
@@ -894,7 +894,7 @@ colorInBrewer: true
 # If a Large Barrel can be opened by clicking on any of its blocks, not just Spigot or Sign. This is always true for Small Barrels. [true]
 openLargeBarrelEverywhere: true
 
-# If Cauldron Particles should be reduced to the bare minimum
+# If Cauldron Particles should be reduced to the bare minimum [false]
 minimalParticles: false
 
 

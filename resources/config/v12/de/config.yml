@@ -86,7 +86,7 @@ autosave: 3
 debug: false
 
 # Config Version
-version: '2.1.1'
+version: '3.0'
 oldMat: true
 
 
@@ -505,7 +505,7 @@ colorInBrewer: true
 # Ob große Fässer an jedem Block geöffnet werden können, nicht nur an Zapfhahn und Schild. Bei kleinen Fässern geht dies immer. [true]
 openLargeBarrelEverywhere: true
 
-# Ob nur ein Minimum an Kessel-Partikeln dargestellt werden sollen
+# Ob nur ein Minimum an Kessel-Partikeln dargestellt werden sollen [false]
 minimalParticles: false
 
 

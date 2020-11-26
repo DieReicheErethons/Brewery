@@ -88,7 +88,7 @@ autosave: 3
 debug: false
 
 # Version de configuration
-version: '2.1.1'
+version: '3.0'
 oldMat: true
 
 
@@ -501,7 +501,7 @@ colorInBrewer: true
 # Si le grand tonneau peut être ouvert en cliquant sur n'importe quel bloc, non seulement le robinet ou le panneau. Toujours "true" pour les petits tonneaux. [true]
 openLargeBarrelEverywhere: true
 
-# If Cauldron Particles should be reduced to the bare minimum
+# If Cauldron Particles should be reduced to the bare minimum [false]
 minimalParticles: false
 
 

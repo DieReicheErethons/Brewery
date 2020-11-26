@@ -89,7 +89,7 @@ autosave: 3
 debug: false
 
 # 配置文件版本
-version: '2.1.1'
+version: '3.0'
 
 
 
@@ -898,7 +898,7 @@ colorInBrewer: true
 # 大型熟成木桶可以通过右击桶身任意一个位置来打开, 而不需要专门右击其龙头. 这一操作对小型酒桶总为真.[true]
 openLargeBarrelEverywhere: false
 
-# If Cauldron Particles should be reduced to the bare minimum
+# If Cauldron Particles should be reduced to the bare minimum [false]
 minimalParticles: false
 
 

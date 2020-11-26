@@ -8,6 +8,7 @@ import com.dre.brewery.filedata.UpdateChecker;
 import com.dre.brewery.integration.ChestShopListener;
 import com.dre.brewery.integration.IntegrationListener;
 import com.dre.brewery.integration.ShopKeepersListener;
+import com.dre.brewery.integration.barrel.BlocklockerBarrel;
 import com.dre.brewery.integration.barrel.LogBlockBarrel;
 import com.dre.brewery.listeners.*;
 import com.dre.brewery.recipe.*;
@@ -507,6 +508,7 @@ public class P extends JavaPlugin {
 			Barrel.onUpdate();// runs every min to check and update ageing time
 			long t3 = System.nanoTime();
 			if (use1_14) MCBarrel.onUpdate();
+			if (BConfig.useBlocklocker) BlocklockerBarrel.clearBarrelSign();
 			long t4 = System.nanoTime();
 			BPlayer.onUpdate();// updates players drunkeness
 

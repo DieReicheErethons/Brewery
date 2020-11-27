@@ -460,6 +460,7 @@ useWorldGuard: true
 useLWC: true
 useGriefPrevention: true
 useTowny: true
+useBlockLocker: true
 useGMInventories: true
 useCitadel: true
 

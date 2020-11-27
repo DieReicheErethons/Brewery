@@ -849,6 +849,7 @@ useWorldGuard: true
 useLWC: true
 useGriefPrevention: true
 useTowny: true
+useBlockLocker: true
 useGMInventories: true
 
 # Use a virtual chest when opening a Barrel to check with all other protection plugins

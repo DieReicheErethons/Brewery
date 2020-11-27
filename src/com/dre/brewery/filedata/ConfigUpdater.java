@@ -1946,7 +1946,8 @@ public class ConfigUpdater {
 		addLinesAt(new String[]{"# Andere Plugins (wenn installiert) nach Rechten zum öffnen von Fässern checken"}, 1, false,
 			"# Plugins 'Landlord' und 'Protection Stones' nutzen WorldGuard. 'ClaimChunk' wird nativ unterstützt.");
 		addLinesAt(new String[]{"useGriefPrevention:", "useLWC:", "useWorldGuard:"}, 1,
-			"useTowny: true");
+			"useTowny: true",
+				"useBlockLocker: true");
 		addLinesAt(new String[]{"useGMInventories:", "# Plugins 'Landlord' und 'Prote", "# -- Plugin Kompatiblität --"}, 1,
 			"",
 				"# Beim Fass öffnen eine virtuelle Kiste nutzen um Rechte bei allen anderen Plugins abzufragen",
@@ -1988,7 +1989,8 @@ public class ConfigUpdater {
 		addLinesAt(new String[]{"# Enable checking of other Plugins (if installed) for"}, 1, false,
 			"# Plugins 'Landlord' and 'Protection Stones' use the WorldGuard Flag. 'ClaimChunk' is natively supported.");
 		addLinesAt(new String[]{"useGriefPrevention:", "useLWC:", "useWorldGuard:"}, 1,
-			"useTowny: true");
+			"useTowny: true",
+				"useBlockLocker: true");
 		addLinesAt(new String[]{"useGMInventories:", "# Plugins 'Landlord' and 'Protectio", "# -- Plugin Compatibility --"}, 1,
 			"",
 				"# Use a virtual chest when opening a Barrel to check with all other protection plugins",

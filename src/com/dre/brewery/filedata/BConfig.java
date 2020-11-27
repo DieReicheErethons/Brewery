@@ -381,9 +381,11 @@ public class BConfig {
 		if (useBlocklocker) {
 			try {
 				Class.forName("nl.rutgerkok.blocklocker.BlockLockerAPIv2");
+				Class.forName("nl.rutgerkok.blocklocker.ProtectableBlocksSettings");
 				BlocklockerBarrel.registerBarrelAsProtectable();
 			} catch (ClassNotFoundException e) {
 				useBlocklocker = false;
+				P.p.log("Unsupported Version of 'BlockLocker', locking Brewery Barrels disabled");
 			}
 		}
 

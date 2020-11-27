@@ -507,14 +507,22 @@ public class BCauldron {
 	/**
 	 * Are any Cauldrons in that World
 	 */
-	public static boolean hasDataInWorld(String name) {
-		return bcauldrons.keySet().stream().anyMatch(block -> block.getWorld().getName().equals(name));
+	public static boolean hasDataInWorld(World world) {
+		return bcauldrons.keySet().stream().anyMatch(block -> block.getWorld().equals(world));
 	}
 
 	// unloads cauldrons that are in a unloading world
 	// as they were written to file just before, this is safe to do
-	public static void onUnload(String name) {
-		bcauldrons.keySet().removeIf(block -> block.getWorld().getName().equals(name));
+	public static void onUnload(World world) {
+		bcauldrons.keySet().removeIf(block -> block.getWorld().equals(world));
+	}
+
+	/**
+	 * Unload all Cauldrons that have are in a unloaded World
+	 */
+	public static void unloadWorlds() {
+		List<World> worlds = P.p.getServer().getWorlds();
+		bcauldrons.keySet().removeIf(block -> !worlds.contains(block.getWorld()));
 	}
 
 	public static void save(ConfigurationSection config, ConfigurationSection oldData) {

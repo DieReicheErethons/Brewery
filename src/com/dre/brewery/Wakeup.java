@@ -2,6 +2,7 @@ package com.dre.brewery;
 
 import com.dre.brewery.utility.BUtil;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -266,8 +267,13 @@ public class Wakeup {
 		}
 	}
 
-	public static void onUnload(String worldName) {
-		wakeups.removeIf(wakeup -> wakeup.loc.getWorld().getName().equals(worldName));
+	public static void onUnload(World world) {
+		wakeups.removeIf(wakeup -> wakeup.loc.getWorld().equals(world));
+	}
+
+	public static void unloadWorlds() {
+		List<World> worlds = P.p.getServer().getWorlds();
+		wakeups.removeIf(wakeup -> !worlds.contains(wakeup.loc.getWorld()));
 	}
 
 }

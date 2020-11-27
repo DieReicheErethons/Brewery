@@ -11,6 +11,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class DataSave extends BukkitRunnable {
 
@@ -19,18 +20,22 @@ public class DataSave extends BukkitRunnable {
 	public static int autosave = 3;
 	final public static String dataVersion = "1.2";
 	public static DataSave running;
+	public static List<World> unloadingWorlds = new CopyOnWriteArrayList<>();
 
 	public ReadOldData read;
-	private long time;
+	private final long time;
+	private final List<World> loadedWorlds;
 	public boolean collected = false;
 
 	// Not Thread-Safe! Needs to be run in main thread but uses async Read/Write
 	public DataSave(ReadOldData read) {
 		this.read = read;
 		time = System.currentTimeMillis();
+		loadedWorlds = P.p.getServer().getWorlds();
 	}
 
 
+	// Running in Main Thread
 	@Override
 	public void run() {
 		try {
@@ -107,6 +112,20 @@ public class DataSave extends BukkitRunnable {
 
 			collected = true;
 
+			if (!unloadingWorlds.isEmpty()) {
+				try {
+					for (World world : unloadingWorlds) {
+						// In the very most cases, it is just one world, so just looping like this is fine
+						Barrel.onUnload(world);
+						BCauldron.onUnload(world);
+						Wakeup.onUnload(world);
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				unloadingWorlds.clear();
+			}
+
 			P.p.debugLog("saving: " + ((System.nanoTime() - saveTime) / 1000000.0) + "ms");
 
 			if (P.p.isEnabled()) {
@@ -118,6 +137,22 @@ public class DataSave extends BukkitRunnable {
 		} catch (Exception e) {
 			e.printStackTrace();
 			BData.dataMutex.set(0);
+		}
+	}
+
+	public void saveWorldNames(FileConfiguration root, ConfigurationSection old) {
+		if (old != null) {
+			root.set("Worlds", old);
+		}
+		for (World world : loadedWorlds) {
+			String worldName = world.getName();
+			if (worldName.startsWith("DXL_")) {
+				worldName = BUtil.getDxlName(worldName);
+				root.set("Worlds." + worldName, 0);
+			} else {
+				worldName = world.getUID().toString();
+				root.set("Worlds." + worldName, world.getName());
+			}
 		}
 	}
 
@@ -162,22 +197,6 @@ public class DataSave extends BukkitRunnable {
 			save(false);// save all data
 		} else {
 			lastSave++;
-		}
-	}
-
-	public static void saveWorldNames(FileConfiguration root, ConfigurationSection old) {
-		if (old != null) {
-			root.set("Worlds", old);
-		}
-		for (World world : P.p.getServer().getWorlds()) {
-			String worldName = world.getName();
-			if (worldName.startsWith("DXL_")) {
-				worldName = BUtil.getDxlName(worldName);
-				root.set("Worlds." + worldName, 0);
-			} else {
-				worldName = world.getUID().toString();
-				root.set("Worlds." + worldName, world.getName());
-			}
 		}
 	}
 }

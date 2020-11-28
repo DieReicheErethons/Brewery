@@ -4,7 +4,7 @@
 
 	<groupId>com.dre</groupId>
 	<artifactId>Brewery</artifactId>
-	<version>2.1.2</version>
+	<version>3.0</version>
 	<name>Brewery</name>
 
 	<properties>

@@ -1,6 +1,6 @@
-### Brewery is a Minecraft-Plugin for an alternate brewing process, including alcoholic Potions.  
+### Brewery is a Minecraft-Plugin for an alternate brewing process, including alcoholic Potions.
 
-[![Build Status](https://travis-ci.org/DieReicheErethons/Brewery.png?branch=master)](https://travis-ci.org/DieReicheErethons/Brewery)  
+[![Build Status](https://travis-ci.org/DieReicheErethons/Brewery.png?branch=master)](https://travis-ci.org/DieReicheErethons/Brewery)
 
 ***
 
@@ -20,7 +20,7 @@ Also see  [Wiki](https://github.com/DieReicheErethons/Brewery/wiki) | [Releases]
 <dependency>
    <groupId>com.github.DieReicheErethons</groupId>
    <artifactId>Brewery</artifactId>
-   <version>2.1.3</version>
+   <version>3.0</version>
    <scope>provided</scope>
 </dependency>
 ```

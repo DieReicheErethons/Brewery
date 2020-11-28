@@ -32,7 +32,7 @@ public class BreweryApi {
 	 * <p>Higher numbers mean newer API, but it doesn't necessarily mean that something has changed, may be additions only
 	 */
 	public static int getApiVersion() {
-		return 2;
+		return 3;
 	}
 
 	/**
@@ -152,6 +152,7 @@ public class BreweryApi {
 	 *
 	 * @param recipeName The Name of the Recipe to create this Brew from
 	 * @return The Brew that was created. Can use brew.createItem() to get an ItemStack
+	 * @since v3.0 (Api 3)
 	 */
 	@Nullable
 	public static Brew createBrew(String recipeName, int quality) {
@@ -178,6 +179,7 @@ public class BreweryApi {
 	 * @param recipeName The Name of the Recipe to create this Item from
 	 * @param quality The Quality of the Brew Item
 	 * @return The Brew- ItemStack with Brew information stored on it
+	 * @since v3.0 (Api 3)
 	 */
 	@Nullable
 	public static ItemStack createBrewItem(String recipeName, int quality) {
@@ -194,6 +196,7 @@ public class BreweryApi {
 	 * @param recipe The Recipe to create this Item from
 	 * @param quality The Quality of the Brew Item
 	 * @return The Brew- ItemStack with Brew information stored on it
+	 * @since v3.0 (Api 3)
 	 */
 	public static ItemStack createBrewItem(BRecipe recipe, int quality) {
 		return recipe.create(quality);
@@ -204,6 +207,7 @@ public class BreweryApi {
 	 *
 	 * @param item The ItemStack to get the Recipe Name of
 	 * @return The middle-quality name of the current Recipe. Null if it is not a brew, or it currently has no Recipe
+	 * @since v3.0 (Api 3)
 	 */
 	@Nullable
 	public static String getRecipeName(ItemStack item) {
@@ -219,6 +223,7 @@ public class BreweryApi {
 	 *
 	 * @param brew The Brew to get the Recipe Name of
 	 * @return The middle-quality name of the current Brew Recipe. Null if it currently has no Recipe
+	 * @since v3.0 (Api 3)
 	 */
 	@Nullable
 	public static String getRecipeName(Brew brew) {
@@ -328,6 +333,8 @@ public class BreweryApi {
 	 * Get a BRecipe by _one of_ its names.
 	 * <p>May be any of the quality names, or the optional config id.
 	 * <p>Returns null if recipe with that name does not exist
+	 *
+	 * @since v3.0 (Api 3)
 	 */
 	@Nullable
 	public static BRecipe getRecipeMatch(String name) {

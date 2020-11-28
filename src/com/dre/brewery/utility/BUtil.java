@@ -58,7 +58,7 @@ public class BUtil {
 	 * @param currentPos Current Position
 	 * @param nextColor Next Color
 	 * @param nextPos Position of the Next Color
-	 * @return
+	 * @return Mixed Color
 	 */
 	public static Color weightedMixColor(Color prevColor, int prevPos, int currentPos, Color nextColor, int nextPos) {
 		float diffPrev = currentPos - prevPos;

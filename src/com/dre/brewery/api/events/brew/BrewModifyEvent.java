@@ -102,7 +102,7 @@ public class BrewModifyEvent extends BrewEvent implements Cancellable {
 		STATIC,
 
 		/**
-		 * Sealing the Brew (unlabel & static & stripped) With Command or Machine
+		 * Sealing the Brew (unlabel &amp; static &amp; stripped) With Command or Machine
 		 */
 		SEAL,
 

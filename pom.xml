@@ -42,6 +42,7 @@
 					<encoding>UTF-8</encoding>
 				</configuration>
 			</plugin>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
@@ -67,6 +68,29 @@
 						</configuration>
 					</execution>
 				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>3.2.0</version>
+				<executions>
+					<execution>
+						<phase>install</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+
+				<configuration>
+					<doctitle>Brewery - Javadocs</doctitle>
+					<windowtitle>Brewery - Javadocs</windowtitle>
+					<additionalOptions>-Xdoclint:none</additionalOptions>
+					<quiet>true</quiet>
+					<detectOfflineLinks>false</detectOfflineLinks>
+					<noqualifier>org.bukkit.*</noqualifier>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

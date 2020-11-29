@@ -276,9 +276,10 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.github.rutgerkok</groupId>
-			<artifactId>BlockLocker</artifactId>
-			<version>eb78e99e72</version>
+			<groupId>nl.rutgerkok</groupId>
+			<artifactId>blocklocker</artifactId>
+			<version>1.9</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.bstats</groupId>

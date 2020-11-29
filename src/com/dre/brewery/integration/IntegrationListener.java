@@ -187,12 +187,12 @@ public class IntegrationListener implements Listener {
 				} catch (Throwable e) {
 					event.setCancelled(true);
 					P.p.errorLog("Failed to Check BlockLocker for Barrel Open Permissions!");
-					P.p.errorLog("Brewery was tested with BlockLocker v1.8.2");
+					P.p.errorLog("Brewery was tested with BlockLocker v1.9");
 					P.p.errorLog("Disable the BlockLocker support in the config and do /brew reload");
 					e.printStackTrace();
 					Player player = event.getPlayer();
 					if (player.hasPermission("brewery.admin") || player.hasPermission("brewery.mod")) {
-						P.p.msg(player, "&cBlockLocker check Error, Brewery was tested with v1.8.2 of BlockLocker");
+						P.p.msg(player, "&cBlockLocker check Error, Brewery was tested with v1.9 of BlockLocker");
 						P.p.msg(player, "&cSet &7useBlockLocker: false &cin the config and /brew reload");
 					} else {
 						P.p.msg(player, "&cError opening Barrel, please report to an Admin!");

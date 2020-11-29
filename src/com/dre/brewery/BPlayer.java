@@ -180,21 +180,25 @@ public class BPlayer {
 		int quality = drinkEvent.getQuality();
 		List<PotionEffect> effects = getBrewEffects(brew.getEffects(), quality);
 
-		if (brewAlc < 1) {
+		if (brewAlc == 0) {
 			//no alcohol so we dont need to add a BPlayer
 			applyEffects(effects, player, PlayerEffectEvent.EffectType.DRINK);
 			if (bPlayer.drunkeness <= 0) {
 				bPlayer.remove();
 			}
-			return true;
 		}
 
-		bPlayer.drunkeness += brewAlc;
-		if (quality > 0) {
-			bPlayer.quality += quality * brewAlc;
+		if (brewAlc > 0) {
+			bPlayer.drunkeness += brewAlc;
+			if (quality > 0) {
+				bPlayer.quality += quality * brewAlc;
+			} else {
+				bPlayer.quality += brewAlc;
+			}
 		} else {
-			bPlayer.quality += brewAlc;
+			bPlayer.drainAndRemove(player, -brewAlc);
 		}
+
 		applyEffects(effects, player, PlayerEffectEvent.EffectType.DRINK);
 		applyEffects(getQualityEffects(quality, brewAlc), player, PlayerEffectEvent.EffectType.QUALITY);
 
@@ -202,6 +206,7 @@ public class BPlayer {
 			bPlayer.drinkCap(player);
 		}
 		bPlayer.syncToSQL(false);
+		
 		if (BConfig.showStatusOnDrink) {
 			bPlayer.showDrunkeness(player);
 		}
@@ -336,7 +341,11 @@ public class BPlayer {
 	// Eat something to drain the drunkeness
 	public void drainByItem(Player player, Material mat) {
 		int strength = BConfig.drainItems.get(mat);
-		if (drain(player, strength)) {
+		drainAndRemove(player, strength);
+	}
+
+	public void drainAndRemove(Player player, int amount) {
+		if (drain(player, amount)) {
 			remove(player);
 		}
 	}

@@ -338,10 +338,6 @@ public class BRecipe {
 			P.p.errorLog("Invalid difficulty '" + difficulty + "' in Recipe: " + getRecipeName());
 			return false;
 		}
-		if (alcohol < 0) {
-			P.p.errorLog("Invalid alcohol '" + alcohol + "' in Recipe: " + getRecipeName());
-			return false;
-		}
 		return true;
 	}
 

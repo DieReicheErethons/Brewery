@@ -180,28 +180,20 @@ public class BPlayer {
 		int quality = drinkEvent.getQuality();
 		List<PotionEffect> effects = getBrewEffects(brew.getEffects(), quality);
 
-		if (brewAlc == 0) {
-			//no alcohol so we dont need to add a BPlayer
-			applyEffects(effects, player, PlayerEffectEvent.EffectType.DRINK);
-			if (bPlayer.drunkeness <= 0) {
-				bPlayer.remove();
-			}
-		}
-
-		if (brewAlc > 0) {
+		applyEffects(effects, player, PlayerEffectEvent.EffectType.DRINK);
+		if (brewAlc < 0) {
+			bPlayer.drainAndRemove(player, -brewAlc);
+		} else if (brewAlc > 0) {
 			bPlayer.drunkeness += brewAlc;
 			if (quality > 0) {
 				bPlayer.quality += quality * brewAlc;
 			} else {
 				bPlayer.quality += brewAlc;
 			}
-		} else {
-			bPlayer.drainAndRemove(player, -brewAlc);
+			
+			applyEffects(getQualityEffects(quality, brewAlc), player, PlayerEffectEvent.EffectType.QUALITY);
 		}
-
-		applyEffects(effects, player, PlayerEffectEvent.EffectType.DRINK);
-		applyEffects(getQualityEffects(quality, brewAlc), player, PlayerEffectEvent.EffectType.QUALITY);
-
+		
 		if (bPlayer.drunkeness > 100) {
 			bPlayer.drinkCap(player);
 		}
@@ -209,6 +201,10 @@ public class BPlayer {
 		
 		if (BConfig.showStatusOnDrink) {
 			bPlayer.showDrunkeness(player);
+		}
+
+		if (bPlayer.drunkeness <= 0) {
+			bPlayer.remove();
 		}
 		return true;
 	}

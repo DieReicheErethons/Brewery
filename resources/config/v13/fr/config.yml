@@ -746,6 +746,7 @@ recipes:
     cookingtime: 2
     color: BLACK
     difficulty: 3
+    alcohol: -6
     lore: + &8Probably a week old
     effects:
       - REGENERATION/1/2-5
@@ -822,6 +823,7 @@ recipes:
   #   cookingtime: 1
   #   color: BLACK
   #   difficulty: 4
+  #   alcohol: -8
   #   effects:
   #     - REGENERATION/30
   #     - SPEED/10

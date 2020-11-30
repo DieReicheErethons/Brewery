@@ -182,7 +182,7 @@ public class BPlayer {
 
 		applyEffects(effects, player, PlayerEffectEvent.EffectType.DRINK);
 		if (brewAlc < 0) {
-			bPlayer.drainAndRemove(player, -brewAlc);
+			bPlayer.drain(player, -brewAlc);
 		} else if (brewAlc > 0) {
 			bPlayer.drunkeness += brewAlc;
 			if (quality > 0) {
@@ -337,11 +337,7 @@ public class BPlayer {
 	// Eat something to drain the drunkeness
 	public void drainByItem(Player player, Material mat) {
 		int strength = BConfig.drainItems.get(mat);
-		drainAndRemove(player, strength);
-	}
-
-	public void drainAndRemove(Player player, int amount) {
-		if (drain(player, amount)) {
+		if (drain(player, strength)) {
 			remove(player);
 		}
 	}

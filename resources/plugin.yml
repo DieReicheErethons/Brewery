@@ -21,8 +21,6 @@ permissions:
       brewery.cauldron.time: true
       brewery.cauldron.insert: true
       brewery.cauldron.fill: true
-      brewery.tolerance.sensitivity100: true
-      brewery.tolerance.recovery2: true
 # Mod
   brewery.mod:
     description: Allow to maintain Wakeup Points and to login even if overdrunken

@@ -8,7 +8,7 @@ import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.lore.BrewLore;
 import com.dre.brewery.recipe.BEffect;
 import com.dre.brewery.utility.BUtil;
-import com.dre.brewery.utility.PermissionUtil;
+import com.dre.brewery.utility.PermissionNumberRange;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.apache.commons.lang.mutable.MutableInt;
@@ -177,7 +177,7 @@ public class BPlayer {
 		}
 		P.p.metricsForDrink(brew);
 
-		int alcImmunity = PermissionUtil.getHighestPerm(player, "brewery.tolerance.sensitivity", 200, 100);
+		int alcImmunity = PermissionNumberRange.getPermNum("brewery.tolerance.sensitivity", player);
 		int brewAlc = (int)Math.round(drinkEvent.getAddedAlcohol() * ((float)alcImmunity / 100.0));
 		int quality = drinkEvent.getQuality();
 		List<PotionEffect> effects = getBrewEffects(brew.getEffects(), quality);
@@ -810,7 +810,7 @@ public class BPlayer {
 				BPlayer bplayer = entry.getValue();
 				Player player = BUtil.getPlayerfromString(uuid);
 				
-				int soberPerMin = PermissionUtil.getHighestPerm(player, "brewery.tolerance.recovery", 100, 2);
+				int soberPerMin = PermissionNumberRange.getPermNum("brewery.tolerance.recovery", player);
 				if (bplayer.drunkeness == soberPerMin) {
 					// Prevent 0 drunkeness
 					soberPerMin++;

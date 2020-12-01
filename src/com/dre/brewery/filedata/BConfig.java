@@ -19,6 +19,7 @@ import com.dre.brewery.recipe.BRecipe;
 import com.dre.brewery.recipe.PluginItem;
 import com.dre.brewery.recipe.RecipeItem;
 import com.dre.brewery.utility.BUtil;
+import com.dre.brewery.utility.PermissionNumberRange;
 import com.dre.brewery.utility.SQLSync;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -215,6 +216,20 @@ public class BConfig {
 		hasChestShop = plMan.isPluginEnabled("ChestShop");
 		hasShopKeepers = plMan.isPluginEnabled("Shopkeepers");
 
+		// Permission numbers
+		String permNumPrefix = "brewery.tolerance.";
+		PermissionNumberRange.register(permNumPrefix, "sensitivity", 200, 0, -1, 100);
+		PermissionNumberRange.register(permNumPrefix, "recovery", 100, 0, -1, 2);
+		ConfigurationSection configSection = config.getConfigurationSection("toleranceRanges");
+		if (configSection != null) {
+			for (String pnNode : configSection.getKeys(false)) {
+				boolean validUpdate = PermissionNumberRange.updateFromConfig(configSection, permNumPrefix, pnNode);
+				if (!validUpdate) {
+					p.errorLog("Trying to update non-existant permission number: '" + permNumPrefix + pnNode + "'!");
+				}
+			}
+		}
+
 		// various Settings
 		DataSave.autosave = config.getInt("autosave", 3);
 		P.debug = config.getBoolean("debug", false);
@@ -259,7 +274,7 @@ public class BConfig {
 		PluginItem.registerForConfig("exoticgarden", SlimefunPluginItem::new);
 
 		// Loading custom items
-		ConfigurationSection configSection = config.getConfigurationSection("customItems");
+		configSection = config.getConfigurationSection("customItems");
 		if (configSection != null) {
 			for (String custId : configSection.getKeys(false)) {
 				RecipeItem custom = RecipeItem.fromConfigCustom(configSection, custId);

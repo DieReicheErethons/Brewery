@@ -89,6 +89,55 @@ debug: false
 # Config Version
 version: '3.0'
 
+# The number of steps when searching for a tolerance value in permissions might impact server performance
+# For increased flexibility in addition to potential performance tweaks, you can define how Brewery searches for those values here
+# You can remove this section or leave it blank for default behavior
+# Some example configurations are provided
+toleranceRanges:
+  # Search from 100 to 0, incrementing by -1 (i.e. use the highest recovery permission the user has)
+  # if no value is found (i.e. the user doesn't have any brewery.tolerance.recovery permissions), default to 2
+  recovery:
+    from: 100
+    to: 0
+    incr: -1
+    def: 2
+
+  # Search from 200 to 0, incrementing by -1 (i.e. use the highest sensitivity permission the user has)
+  # if no value is found (i.e. the user doesn't have any brewery.tolerance.sensitivity permissions), default to 100
+  sensitivity:
+    from: 200
+    to: 0
+    incr: -1
+    def: 100
+
+#  # You can completely ignore permissions (eliminating any potential performance issues) by setting 'incr: 0'
+#  # In this example, everyone regardless of permissions has a recovery of 33
+#  recovery:
+#    incr: 0
+#    def: 33
+#
+#  # Another way to completely ignore permissions is by setting 'to' and 'from' to the same value (it can be any value)
+#  # In this example, everyone regardless of permissions has a sensitivity of 115
+#  sensitivity:
+#    from: 5
+#    to: 5
+#    def: 115
+#
+#  # Use the lowest recovery permission for a user (normally uses the highest)
+#  # The sign of incr is automatically changed to match, and therefore doesn't need to be specified
+#  recovery:
+#    from: 0
+#    to: 100
+#
+#  # Allow sensitivity from 0 to 500 (i.e. alcohol multiplier of x0 to x5) but only allow increments of 25
+#  # If a player doesn't have a permission value that's a multiple of 25, it'll be completely ignored
+#  # e.g. if a player's only perm is brewery.tolerance.sensitivity20, they will receive the default sensitivity of 80
+#  # note: using 'incr: 25' would result in identical behavior; Brewery will automatically change the sign of incr to match the 'from' and 'to' values.
+#  sensitivity:
+#    from: 500
+#    to: 0
+#    incr: -25
+#    def: 80
 
 
 # -- Define custom items --

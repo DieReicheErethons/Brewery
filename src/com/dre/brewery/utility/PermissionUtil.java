@@ -1,6 +1,7 @@
 package com.dre.brewery.utility;
 
 import org.bukkit.command.CommandSender;
+import org.bukkit.permissions.Permissible;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -119,5 +120,31 @@ public class PermissionUtil {
 			}
 			return null;
 		}
+	}
+
+	/**
+	 * Finds the largest value given by a permission node that ends in an integer
+	 * @param p the Permissible (player/sender/etc) to check the permission of
+	 * @param permPrefix the node without an integer (eg for brewery.tolerance.recovery75, permPrefix is brewery.tolerance.recovery)
+	 * @param highestVal the highest possible value to check for
+	 * @param defaultVal the value to use if no nodes are found
+	 * @param lowestVal the lowest possible value to check for
+	 * @return the highest-value integer of the nodes consisting of permPrefix + int
+	 */
+	public static int getHighestPerm(Permissible p, String permPrefix, int lowestVal, int highestVal, int defaultVal) {
+		for (int i = highestVal; i >= lowestVal; i--) {
+			if (p.hasPermission(permPrefix + i)) {
+				return i;
+			}
+		}
+		return defaultVal;
+	}
+
+	/**
+	 * the same as {@link PermissionUtil#getHighestPerm} but assumes a lowestVal of 0
+	 * @see PermissionUtil#getHighestPerm
+	 */
+	public static int getHighestPerm(Permissible p, String permPrefix, int highestVal, int defaultVal) {
+		return getHighestPerm(p, permPrefix, highestVal, 0, defaultVal);
 	}
 }

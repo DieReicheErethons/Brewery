@@ -8,6 +8,7 @@ import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.lore.BrewLore;
 import com.dre.brewery.recipe.BEffect;
 import com.dre.brewery.utility.BUtil;
+import com.dre.brewery.utility.PermissionUtil;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.apache.commons.lang.mutable.MutableInt;
@@ -176,7 +177,8 @@ public class BPlayer {
 		}
 		P.p.metricsForDrink(brew);
 
-		int brewAlc = drinkEvent.getAddedAlcohol();
+		int alcImmunity = PermissionUtil.getHighestPerm(player, "brewery.tolerance.sensitivity", 200, 100);
+		int brewAlc = (int)Math.round(drinkEvent.getAddedAlcohol() * ((float)alcImmunity / 100.0));
 		int quality = drinkEvent.getQuality();
 		List<PotionEffect> effects = getBrewEffects(brew.getEffects(), quality);
 
@@ -800,17 +802,20 @@ public class BPlayer {
 	// decreasing drunkeness over time
 	public static void onUpdate() {
 		if (!players.isEmpty()) {
-			int soberPerMin = 2;
 			Iterator<Map.Entry<String, BPlayer>> iter = players.entrySet().iterator();
 			while (iter.hasNext()) {
 				Map.Entry<String, BPlayer> entry = iter.next();
+				
 				String uuid = entry.getKey();
 				BPlayer bplayer = entry.getValue();
+				Player player = BUtil.getPlayerfromString(uuid);
+				
+				int soberPerMin = PermissionUtil.getHighestPerm(player, "brewery.tolerance.recovery", 100, 2);
 				if (bplayer.drunkeness == soberPerMin) {
 					// Prevent 0 drunkeness
 					soberPerMin++;
 				}
-				if (bplayer.drain(BUtil.getPlayerfromString(uuid), soberPerMin)) {
+				if (bplayer.drain(player, soberPerMin)) {
 					iter.remove();
 					if (BConfig.sqlDrunkSync && BConfig.sqlSync != null) {
 						BConfig.sqlSync.removePlayer(UUID.fromString(uuid));

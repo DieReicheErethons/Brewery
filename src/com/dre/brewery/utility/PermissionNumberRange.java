@@ -66,12 +66,12 @@ public class PermissionNumberRange {
         enforceValidIncrement();
     }
 
+    /**
+     * Changes the sign of searchIncr to match the direction of searching from searchFrom to searchTo
+     */
     private void enforceValidIncrement() {
-        if (searchFrom > searchTo && searchIncr > 0) {
-            searchIncr = -1;
-        }
-        if (searchFrom < searchTo && searchIncr < 0) {
-            searchIncr = 1;
+        if ((searchFrom > searchTo && searchIncr > 0) || (searchFrom < searchTo && searchIncr < 0)) {
+            searchIncr *= -1;
         }
     }
     
@@ -82,7 +82,7 @@ public class PermissionNumberRange {
         if (searchTo == searchFrom || searchIncr == 0) {
             return defaultVal;
         }
-        
+
         int i = searchFrom;
         while (searchIncr > 0 ? i <= searchTo : i >= searchTo) {
 			if (p.hasPermission(permNode + i)) {

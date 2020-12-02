@@ -23,6 +23,10 @@ public class NamedRanges {
             }
             prevKey = k;
         }
+		
+		if (atValue > prevKey) {
+			return rangeNames.getOrDefault(prevKey, null);
+		}
         return null;
 	}
 	

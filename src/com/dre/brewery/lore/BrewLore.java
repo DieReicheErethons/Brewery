@@ -179,13 +179,18 @@ public class BrewLore {
 			prefix = "§7";
 		}
 		if (!brew.isUnlabeled()) {
-			if (age >= 1 && age < 2) {
-				prefix = prefix + P.p.languageReader.get("Brew_OneYear") + " ";
-			} else if (age < 201) {
-				prefix = prefix + (int) Math.floor(age) + " " + P.p.languageReader.get("Brew_Years") + " ";
+			int flooredAge = (int)Math.floor(age);
+			String obfuscate = BConfig.namedRanges.get("age").getName(flooredAge);
+			if (obfuscate == null || obfuscate.isEmpty()) {
+				if (flooredAge == 1) {
+					prefix += P.p.languageReader.get("Brew_OneYear");
+				} else {
+					prefix += flooredAge + " " + P.p.languageReader.get("Brew_Years");
+				}
 			} else {
-				prefix = prefix + P.p.languageReader.get("Brew_HundredsOfYears") + " ";
+				prefix += obfuscate;
 			}
+			prefix += " ";
 		}
 		addOrReplaceLore(Type.AGE, prefix, P.p.languageReader.get("Brew_BarrelRiped"));
 	}

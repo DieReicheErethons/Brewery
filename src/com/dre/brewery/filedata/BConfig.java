@@ -19,6 +19,7 @@ import com.dre.brewery.recipe.BRecipe;
 import com.dre.brewery.recipe.PluginItem;
 import com.dre.brewery.recipe.RecipeItem;
 import com.dre.brewery.utility.BUtil;
+import com.dre.brewery.utility.NamedRanges;
 import com.dre.brewery.utility.SQLSync;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -89,6 +90,7 @@ public class BConfig {
 	public static boolean enableEncode;
 	public static boolean alwaysShowQuality; // Always show quality stars
 	public static boolean alwaysShowAlc; // Always show alc%
+	public static Map<String, NamedRanges> namedRanges = new HashMap<>();
 
 	//Features
 	public static boolean craftSealingTable; // Allow Crafting of Sealing Table
@@ -301,6 +303,10 @@ public class BConfig {
 			}
 			BCauldronRecipe.numConfigRecipes = configRecipes.size();
 		}
+
+		// Load age obfuscation ranges
+		configSection = config.getConfigurationSection("ageObfuscation");
+		namedRanges.put("age", NamedRanges.fromConfigSection(configSection));
 
 		// Recalculating Cauldron-Accepted Items for non-config recipes
 		for (BRecipe recipe : BRecipe.getAddedRecipes()) {

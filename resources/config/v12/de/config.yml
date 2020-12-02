@@ -225,6 +225,13 @@ cauldron:
     cookParticles:
       - 'e1ff4d/4'
 
+# -- Age Obfuscation --
+
+ageObfuscation:
+  0: ''
+  100: 'Jahrhundert'
+  200: 'Hunderte Jahre'
+
 
 # -- Rezepte für Getränke --
 

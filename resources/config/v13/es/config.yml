@@ -395,6 +395,12 @@ cauldron:
     cookParticles:
       - 'ffecb3/2'
 
+# -- Age Obfuscation --
+
+ageObfuscation:
+  0: ''
+  100: 'Siglo'
+  200: 'Cientos de años'
 
 
 # -- Recipes for Potions --

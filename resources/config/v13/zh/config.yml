@@ -398,6 +398,13 @@ cauldron:
       - 'ffecb3/2'
 
 
+# -- Age Obfuscation --
+
+ageObfuscation:
+  0: ''
+  100: '世纪'
+  200: '百年陈酿'
+
 
 # -- 饮品配方列表 --
 

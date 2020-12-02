@@ -225,6 +225,14 @@ cauldron:
     cookParticles:
       - 'e1ff4d/4'
 
+# -- Age Obfuscation --
+
+ageObfuscation:
+  0: ''
+  100: 'Siècle'
+  200: 'Centaines d´années'
+
+
 # -- Ricette per pozioni --
 
 # name: Tre nomi diversi per diverse qualità (cattivo/normale/buono). I codici come &6 possono essere usati.

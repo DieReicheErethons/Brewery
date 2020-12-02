@@ -225,6 +225,14 @@ cauldron:
     cookParticles:
       - 'e1ff4d/4'
 
+# -- Age Obfuscation --
+
+# Define ranges for age that become obfuscated instead of explicitly saying the exact age
+# Blank obfuscation reveals the exact age
+ageObfuscation:
+  0: ''
+  100: 'Century'
+  200: 'Hundreds of Years'
 
 
 # -- Recipes for Potions --

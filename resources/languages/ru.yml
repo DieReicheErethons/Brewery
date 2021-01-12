@@ -30,6 +30,8 @@ CMD_Configname: '&aName for the Config is: &f&v1'
 CMD_Configname_Error: '&cНет предмета в руке.'
 CMD_Static: '&aБражка заморожена и не будет портиться в бочках.'
 CMD_UnLabel: '&aLabel removed!'
+CMD_Drink: '&aYou drank one &v1'
+CMD_DrinkOther: '&a&v1 drinks one &v2'
 
 # Error
 Error_ConfigUpdate: 'Неизвестная версия конфига Brewery: v&v1, конфиг не обновлён!'
@@ -45,6 +47,7 @@ Error_Recipeload: '&cNot all recipes could be restored: More information in the 
 Error_ShowHelp: Использование &6/brew help &fдля отображения помощи
 Error_UnknownCommand: Неизвестная команда
 Error_YmlRead: 'не могу прочитать config.yml, пожалуйста, проверь, что там всё верно. (Корректируй пробелы, используя '' '' и др.)'
+Error_NoPlayer: 'Player not found: &v1'
 
 # Etc
 Etc_Barrel: 'Бочка'
@@ -55,6 +58,7 @@ Etc_SealingTable: 'Стол закупорки бражки.'
 # Help
 Help_Copy: '&6/brew copy [Quantity]&9 Копирует зелье в твоей руке'
 Help_Create: '&6/brew create <Recipe> [Quality] [Player] &9Создаёт бражку с определённым качеством (1-10)'
+Help_Give: '&6/brew give <Recipe> [Quality] [Player] &9Alias for /brew create'
 Help_Delete: '&6/brew delete &9Удаляет зелье в твоей руке'
 Help_Help: '&6/brew help [Page] &9Показывает определённую страницу помощи'
 Help_Info: '&6/brew info&9 Показывает твоё текущее опьянение и качество'
@@ -71,6 +75,8 @@ Help_WakeupCheck: '&6/brew wakeup check &9Телепортируется на в
 Help_WakeupCheckSpecific: '&6/brew wakeup check <id> &9Телепортация в точку пробуждения с айди <id>'
 Help_WakeupList: '&6/brew wakeup list <Page> [World]&9 Список всех точек пробуждения в <world>'
 Help_WakeupRemove: '&6/brew wakeup remove <id> &9Удаление всех точек пробуждения с айди <id>'
+Help_Puke: '&6/brew puke [Player] [Amount] &9Makes you or [Player] puke'
+Help_Drink: '&6/brew drink <Recipe> [Quality] [Player] &9Simulates [Player] drinking a Brew'
 
 # Perms
 Perms_NoBarrelCreate: '&cУ тебя нет прав на создание бочек!'

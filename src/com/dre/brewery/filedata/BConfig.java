@@ -6,6 +6,7 @@ import com.dre.brewery.DistortChat;
 import com.dre.brewery.MCBarrel;
 import com.dre.brewery.P;
 import com.dre.brewery.api.events.ConfigLoadEvent;
+import com.dre.brewery.integration.barrel.BlocklockerBarrel;
 import com.dre.brewery.integration.barrel.WGBarrel;
 import com.dre.brewery.integration.barrel.WGBarrel5;
 import com.dre.brewery.integration.barrel.WGBarrel6;
@@ -39,7 +40,7 @@ import java.util.Map;
 
 public class BConfig {
 
-	public static final String configVersion = "2.1.1";
+	public static final String configVersion = "3.0";
 	public static boolean updateCheck;
 	public static CommandSender reloader;
 
@@ -50,12 +51,14 @@ public class BConfig {
 	public static boolean useLB; //LogBlock
 	public static boolean useGP; //GriefPrevention
 	public static boolean useTowny; //Towny
+	public static boolean useBlocklocker; //LockBlocker
 	public static boolean hasVault; // Vault
 	public static boolean useCitadel; // CivCraft/DevotedMC Citadel
 	public static boolean useGMInventories; // GamemodeInventories
 	public static Boolean hasSlimefun = null; // Slimefun ; Null if not checked
 	public static Boolean hasMMOItems = null; // MMOItems ; Null if not checked
 	public static boolean hasChestShop;
+	public static boolean hasShopKeepers;
 
 	// Barrel
 	public static boolean openEverywhere;
@@ -65,12 +68,14 @@ public class BConfig {
 	// Cauldron
 	public static boolean useOffhandForCauldron;
 	public static boolean enableCauldronParticles;
+	public static boolean minimalParticles;
 
 	//BPlayer
 	public static Map<Material, Integer> drainItems = new HashMap<>();// DrainItem Material and Strength
 	public static Material pukeItem;
 	public static boolean showStatusOnDrink;
 	public static int pukeDespawntime;
+	public static float stumbleModifier;
 	public static int hangoverTime;
 	public static boolean overdrinkKick;
 	public static boolean enableHome;
@@ -196,36 +201,19 @@ public class BConfig {
 
 		// Third-Party
 		useWG = config.getBoolean("useWorldGuard", true) && plMan.isPluginEnabled("WorldGuard");
-
-		if (useWG) {
-			Plugin plugin = Bukkit.getPluginManager().getPlugin("WorldEdit");
-			if (plugin != null) {
-				String wgv = plugin.getDescription().getVersion();
-				if (wgv.startsWith("6.")) {
-					wg = new WGBarrel6();
-				} else if (wgv.startsWith("5.")) {
-					wg = new WGBarrel5();
-				} else {
-					wg = new WGBarrel7();
-				}
-			}
-			if (wg == null) {
-				P.p.errorLog("Failed loading WorldGuard Integration! Opening Barrels will NOT work!");
-				P.p.errorLog("Brewery was tested with version 5.8, 6.1 and 7.0 of WorldGuard!");
-				P.p.errorLog("Disable the WorldGuard support in the config and do /brew reload");
-			}
-		}
 		useLWC = config.getBoolean("useLWC", true) && plMan.isPluginEnabled("LWC");
 		useTowny = config.getBoolean("useTowny", true) && plMan.isPluginEnabled("Towny");
 		useGP = config.getBoolean("useGriefPrevention", true) && plMan.isPluginEnabled("GriefPrevention");
 		useLB = config.getBoolean("useLogBlock", false) && plMan.isPluginEnabled("LogBlock");
 		useGMInventories = config.getBoolean("useGMInventories", false);
 		useCitadel = config.getBoolean("useCitadel", false) && plMan.isPluginEnabled("Citadel");
+		useBlocklocker = config.getBoolean("useBlockLocker", false) && plMan.isPluginEnabled("BlockLocker");
 		virtualChestPerms = config.getBoolean("useVirtualChestPerms", false);
 		// The item util has been removed in Vault 1.7+
 		hasVault = plMan.isPluginEnabled("Vault")
 			&& Integer.parseInt(plMan.getPlugin("Vault").getDescription().getVersion().split("\\.")[1]) <= 6;
 		hasChestShop = plMan.isPluginEnabled("ChestShop");
+		hasShopKeepers = plMan.isPluginEnabled("Shopkeepers");
 
 		// various Settings
 		DataSave.autosave = config.getInt("autosave", 3);
@@ -237,6 +225,7 @@ public class BConfig {
 		enableLoginDisallow = config.getBoolean("enableLoginDisallow", false);
 		enablePuke = config.getBoolean("enablePuke", false);
 		pukeDespawntime = config.getInt("pukeDespawntime", 60) * 20;
+		stumbleModifier = ((float) config.getInt("stumblePercent", 100)) / 100f;
 		showStatusOnDrink = config.getBoolean("showStatusOnDrink", false);
 		homeType = config.getString("homeType", null);
 		craftSealingTable = config.getBoolean("craftSealingTable", false);
@@ -248,6 +237,7 @@ public class BConfig {
 		enableEncode = config.getBoolean("enableEncode", false);
 		openEverywhere = config.getBoolean("openLargeBarrelEverywhere", false);
 		enableCauldronParticles = P.use1_9 && config.getBoolean("enableCauldronParticles", false);
+		minimalParticles = config.getBoolean("minimalParticles", false);
 		useOffhandForCauldron = config.getBoolean("useOffhandForCauldron", false);
 		loadDataAsync = config.getBoolean("loadDataAsync", true);
 
@@ -367,6 +357,35 @@ public class BConfig {
 				BSealer.registerRecipe();
 			} else if (!craftSealingTable && BSealer.recipeRegistered) {
 				BSealer.unregisterRecipe();
+			}
+		}
+
+		if (useWG) {
+			Plugin plugin = Bukkit.getPluginManager().getPlugin("WorldEdit");
+			if (plugin != null) {
+				String wgv = plugin.getDescription().getVersion();
+				if (wgv.startsWith("6.")) {
+					wg = new WGBarrel6();
+				} else if (wgv.startsWith("5.")) {
+					wg = new WGBarrel5();
+				} else {
+					wg = new WGBarrel7();
+				}
+			}
+			if (wg == null) {
+				P.p.errorLog("Failed loading WorldGuard Integration! Opening Barrels will NOT work!");
+				P.p.errorLog("Brewery was tested with version 5.8, 6.1 and 7.0 of WorldGuard!");
+				P.p.errorLog("Disable the WorldGuard support in the config and do /brew reload");
+			}
+		}
+		if (useBlocklocker) {
+			try {
+				Class.forName("nl.rutgerkok.blocklocker.BlockLockerAPIv2");
+				Class.forName("nl.rutgerkok.blocklocker.ProtectableBlocksSettings");
+				BlocklockerBarrel.registerBarrelAsProtectable();
+			} catch (ClassNotFoundException e) {
+				useBlocklocker = false;
+				P.p.log("Unsupported Version of 'BlockLocker', locking Brewery Barrels disabled");
 			}
 		}
 

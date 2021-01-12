@@ -30,6 +30,8 @@ CMD_Configname_Error: '&cDu hast kein Item in der Hand'
 CMD_UnLabel: '&aDas Label wurde entfernt'
 CMD_Static: '&aTrank ist nun unveränderlich und kann nicht weiter gereift oder destilliert werden.'
 CMD_NonStatic: '&eTrank ist wieder veränderlich und kann normal gereift oder destilliert werden'
+CMD_Drink: '&aDu trinkst &v1'
+CMD_DrinkOther: '&a&v1 trinkt &v2'
 
 # Error
 Error_ConfigUpdate: 'Unbekannte Brewery Config Version: v&v1, Config wurde nicht geupdated!'
@@ -45,6 +47,7 @@ Error_Recipeload: '&cEs konnten nicht alle Rezepte wiederhergesellt werden: Sieh
 Error_ShowHelp: 'Benutze &6/brew help &fum die Hilfe anzuzeigen'
 Error_UnknownCommand: Unbekannter Befehl
 Error_YmlRead: 'config.yml konnte nicht gelesen werden, ist die Datei im korrekten yml-Format (korrekte Leerzeichen, Strings mit '' '' usw.)?'
+Error_NoPlayer: 'Spieler &v1 nicht gefunden'
 
 # Etc
 Etc_Page: Seite
@@ -71,6 +74,9 @@ Help_WakeupList: '&6/brew Wakeup List <Seite> [Welt]&9 Listet die Aufwachpunkte 
 Help_WakeupRemove: '&6/brew Wakeup Remove <id> &9Entfernt einen Aufwachpunkt'
 Help_Static: '&6/brew Static &9Trank unveränderlich machen -> Kein weiteres reifen oder destillieren möglich'
 Help_Create: '&6/brew Create <Rezept> [Qualität] [Spieler] &9Erstellt einen Trank mit optionaler Qualität (1-10)'
+Help_Give: '&6/brew give <Rezept> [Qualität] [Spieler] &9Alias für /brew create'
+Help_Puke: '&6/brew puke [Spieler] [Menge] &9Bringt [Spieler] zum erbrechen'
+Help_Drink: '&6/brew drink <Rezept> [Qualität] [Spieler] &9Simuliert das Trinken eines Trankes bei [Spieler]'
 
 # Permission
 Perms_NoBarrelCreate: '&cDu hast keine Rechte Fässer zu erstellen!'

@@ -3,12 +3,12 @@ version: ${project.version}
 main: com.dre.brewery.P
 description: ${project.description}
 depend: [Towny]
-softdepend: [LWC, LogBlock, WorldGuard, GriefPrevention, Vault, ChestShop]
+softdepend: [LWC, LogBlock, WorldGuard, GriefPrevention, Vault, ChestShop, Shopkeepers, BlockLocker]
 authors: [Milan Albrecht, Frank Baumann, ProgrammerDan, Daniel Saukel]
 api-version: 1.13
 commands:
   brewery:
-    description: Command for Administration
+    description: Mostly admin commands to create/modify Brews and drunkeness
     aliases: [brew]
 permissions:
 # -- Groups --
@@ -40,8 +40,12 @@ permissions:
       brewery.cmd.info: true
       brewery.cmd.infoOther: true
       brewery.cmd.seal: true
+      brewery.cmd.puke: true
+      brewery.cmd.pukeOther: true
       brewery.cmd.player: true
       brewery.cmd.create: true
+      brewery.cmd.drink: true
+      brewery.cmd.drinkOther: true
       brewery.cmd.copy: true
       brewery.cmd.delete: true
       brewery.cmd.static: true
@@ -65,16 +69,26 @@ permissions:
     description: Information about the drunkeness of another Player
   brewery.cmd.seal:
     description: Open the Brew Sealer by command
+  brewery.cmd.puke:
+    description: Make yourself puke
+  brewery.cmd.pukeOther:
+    description: Make other Players puke
   brewery.cmd.player:
     description: Set Player-values
   brewery.cmd.wakeup:
     description: Set, Check and Remove Wakeup Points
+  brewery.cmd.create:
+    description: Create Brews
+  brewery.cmd.drink:
+    description: Simulate drinking Brews
+  brewery.cmd.drinkOther:
+    description: Simulate other players drinking Brews
   brewery.cmd.copy:
-    description: Copy Potions
+    description: Copy Brews
   brewery.cmd.delete:
-    description: Delete Potions
+    description: Delete Brews
   brewery.cmd.static:
-    description: Make Potions Static
+    description: Make Brews Static
   brewery.cmd.reload:
     description: Reload config
 

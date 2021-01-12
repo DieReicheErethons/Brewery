@@ -19,7 +19,7 @@ import java.util.Iterator;
 
 /**
  * The Sealing Inventory that is being checked for Brews and seals them after a second.
- * <p>Class doesn't load in mc <= 1.12 (Can't find RecipeChoice, BlockData and NamespacedKey)
+ * <p>Class doesn't load in mc 1.12 and lower (Can't find RecipeChoice, BlockData and NamespacedKey)
  */
 public class BSealer implements InventoryHolder {
 	public static final NamespacedKey TAG_KEY = new NamespacedKey(P.p, "SealingTable");

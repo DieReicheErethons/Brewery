@@ -38,6 +38,9 @@ pukeItem: Soul_Sand
 # Wurde die item Despawnzeit in der spigot.yml verändert, verändert sich auch die pukeDespawnzeit in Abhängigkeit.
 pukeDespawntime: 60
 
+# Wie stark in Prozent der Spieler taumelt, je nach dem wie viel Alkohol er getrunken hat. Kann auf 0 und höher als 100 gesetzt werden
+stumblePercent: 100
+
 # Ob seine Betrunkenheit dem Spieler kurz angezeigt werden soll wenn er etwas trinkt oder ein drainItem isst. [true]
 showStatusOnDrink: true
 
@@ -46,28 +49,19 @@ drainItems:
   - Bread/4
   - Milk_Bucket/2
 
-# Zeit (in Tagen) die Trunkenheitsdaten nach offlinegehen eines Spielers im Speicher verbleiben, um z.B. Kater-Effekte anzuwenden. [7]
-hangoverDays: 7
-
 # Partikel steigen von Kesseln auf wenn sie Zutaten und eine Feuerquelle haben [true]
+# Die sich ändernde Farbe der Partikel kann beim Fermentieren mancher Rezepte helfen
 enableCauldronParticles: true
 
 # Ob das craften und das benutzen des Trank-Versiegelungs-Tisches aktiviert ist (2 Flaschen über 4 Holz) [true, true]
 craftSealingTable: true
 enableSealingTable: true
 
-# Färben der Iteminformationen je nach Qualität während sie sich 1. im Fass und/oder 2. im Braustand befinden [true, true]
-colorInBarrels: true
-colorInBrewer: true
-
 # Ob in den Iteminformationen immer 1-5 Sterne für die Qualität angezeigt werden sollen, oder nur beim brauen [true]
 alwaysShowQuality: true
 
 # Ob in den Iteminformationen immer der Alkoholgehalt angezeigt weden soll, oder nur im Braustand [false]
 alwaysShowAlc: false
-
-# Ob große Fässer an jedem Block geöffnet werden können, nicht nur an Zapfhahn und Schild. Bei kleinen Fässern geht dies immer. [true]
-openLargeBarrelEverywhere: true
 
 # Ob das reifen in -Minecraft- Fässern aktiviert ist und wie viele Brewery Getränke in die diese getan werden können [6]
 ageInMCBarrels: true
@@ -92,7 +86,7 @@ autosave: 3
 debug: false
 
 # Config Version
-version: '2.1.1'
+version: '3.0'
 
 
 
@@ -261,7 +255,7 @@ cauldron:
   cactus:
     name: Agavensud
     ingredients: cactus
-    color: '00b300' # kakturs grün
+    color: '00b300' # kaktus grün
     cookParticles:
       - '00b300/16'
 
@@ -427,6 +421,7 @@ cauldron:
 #   Lore nur für bestimmte Qualität möglich mit + Schlecht, ++ Mittel, +++ Gut, vorne anhängen.
 # servercommands: Liste von Befehlen ausgeführt vom -Server- wenn der Trank getrunken wird (%player_name%  %quality% benutzbar)
 # playercommands: Liste von Befehlen ausgeführt vom -Spieler- wenn der Trank getrunken wird (%player_name%  %quality% benutzbar)
+#   Befehle nur für bestimmte Qualität möglich mit + Schlecht, ++ Mittel, +++ Gut, vorne anhängen.
 # drinkmessage: Nachricht im Chat beim trinken des Trankes
 # drinktitle: Nachricht als Titel auf dem Bildschirm an den Spieler beim trinken des Trankes
 # customModelData: Custom Model Data Modelldaten. Mit dieser Zahl kann die Tranktextur mit einem Resourcepack geändert werden
@@ -464,7 +459,8 @@ recipes:
       - ++ Riecht ganz ok
       - +++ Riecht richtig gut
     servercommands:
-      - weather clear
+      - +++ weather clear
+      - + weather rain
     playercommands:
       - homes
     drinkmessage: Schmeckt toll
@@ -854,14 +850,17 @@ recipes:
 # -- Plugin Kompatiblität --
 
 # Andere Plugins (wenn installiert) nach Rechten zum öffnen von Fässern checken [true]
+# Plugins 'Landlord' und 'Protection Stones' nutzen WorldGuard. 'ClaimChunk' wird nativ unterstützt.
 useWorldGuard: true
 useLWC: true
 useGriefPrevention: true
 useTowny: true
+useBlockLocker: true
 useGMInventories: true
 
-# Beim Fass öffnen eine virtuelle Kiste nutzen um Rechte bei alle anderen Plugins abzufragen
+# Beim Fass öffnen eine virtuelle Kiste nutzen um Rechte bei allen anderen Plugins abzufragen
 # Könnte Anti-Cheat plugins verwirren aber sonst ok zu aktivieren
+# Diese Option für das Plugin 'Residence' aktivieren, und andere Plugins, die nicht alle Fälle des PlayerInteractEvent checken
 useVirtualChestPerms: false
 
 
@@ -893,6 +892,19 @@ useOffhandForCauldron: false
 
 # Of Fass- und Kesseldaten Async/im Hintergrund geladen werden können [true]
 loadDataAsync: true
+
+# Zeit (in Tagen) die Trunkenheitsdaten nach offlinegehen eines Spielers im Speicher verbleiben, um z.B. Kater-Effekte anzuwenden. [7]
+hangoverDays: 7
+
+# Färben der Iteminformationen je nach Qualität während sie sich 1. im Fass und/oder 2. im Braustand befinden [true, true]
+colorInBarrels: true
+colorInBrewer: true
+
+# Ob große Fässer an jedem Block geöffnet werden können, nicht nur an Zapfhahn und Schild. Bei kleinen Fässern geht dies immer. [true]
+openLargeBarrelEverywhere: true
+
+# Ob nur ein Minimum an Kessel-Partikeln dargestellt werden sollen [false]
+minimalParticles: false
 
 
 # -- Chat Veränderungs Einstellungen --

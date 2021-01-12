@@ -41,6 +41,8 @@ public class BarrelAccessEvent extends BarrelEvent implements Cancellable {
 
 	/**
 	 * Get the clicked Block Face when clicking on the Barrel Block
+	 *
+	 * @since v3.0 (Api 3)
 	 */
 	public BlockFace getClickedBlockFace() {
 		return clickedBlockFace;

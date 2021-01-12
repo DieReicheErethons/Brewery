@@ -30,6 +30,8 @@ CMD_Configname: '配置文件中&aName的名字是: &f&v1'
 CMD_Configname_Error: '&c无法找到物品名称'
 CMD_Static: '&a饮品已被静滞, 现在其无法被蒸馏或进行木桶熟成.'
 CMD_UnLabel: '&a标签已被去除!'
+CMD_Drink: '&aYou drank one &v1'
+CMD_DrinkOther: '&a&v1 drinks one &v2'
 
 # Error
 Error_ConfigUpdate: '未知的配置版本:v&v1, 插件配置未更新!'
@@ -45,6 +47,7 @@ Error_Recipeload: '&c加载饮品配方时出现问题, 请查看控制台以获
 Error_ShowHelp: 使用&6/brew help&f以查看帮助
 Error_UnknownCommand: 未知命令.
 Error_YmlRead: '无法读取config.yml, 请保证该文件符合正确的yml格式!(例如更正错误的空格等试试看…)'
+Error_NoPlayer: 'Player not found: &v1'
 
 # Etc
 Etc_Barrel: 木桶
@@ -55,6 +58,7 @@ Etc_SealingTable: Brew Sealing Table
 # Help
 Help_Copy: '&6/brew copy [数量] &9复制当前手中的饮品.'
 Help_Create: '&6/brew create <饮品名称(若有颜色符号须附上)> [饮品质量] [授予玩家] &9获得一杯饮品, 质量可为1到10, 越高越好.'
+Help_Give: '&6/brew give <Recipe> [Quality] [Player] &9Alias for /brew create'
 Help_Delete: '&6/brew delete &9删除手中的饮品.'
 Help_Help: '&6/brew help [页数] &9显示某一页的帮助.'
 Help_Info: '&6/brew info &9显示你目前的醉酒程度与质量, 醉酒质量将会影响宿醉程度.'
@@ -71,6 +75,8 @@ Help_WakeupCheck: '&6/brew wakeup check &9传送至每一个苏醒处进行一�
 Help_WakeupCheckSpecific: '&6/brew wakeup check <id> &9传送至指定苏醒处.'
 Help_WakeupList: '&6/brew wakeup list <页数> [世界] &9列出该世界所有的苏醒处.'
 Help_WakeupRemove: '&6/brew wakeup remove <页数> &9移除指定id的苏醒处.'
+Help_Puke: '&6/brew puke [Player] [Amount] &9Makes you or [Player] puke'
+Help_Drink: '&6/brew drink <Recipe> [Quality] [Player] &9Simulates [Player] drinking a Brew'
 
 # Perms
 Perms_NoBarrelCreate: '&c你没有权限创造木桶!'
@@ -102,6 +108,6 @@ Player_WakeNoCheck: '&c目前没有执行苏醒处检查.'
 Player_WakeNoPoints: '&c目前没有设定任何一个苏醒处!'
 Player_WakeNotExist: '&cid为: &6&v1 &c的苏醒处并不存在!'
 Player_WakeTeleport: '前往id为: &6&v1 &f坐标为: &6&v2 &v3, &v4, &v5 &r的苏醒处.'
-Player_ShopSealBrew: '&eBrews should be sealed before selling them'
+Player_ShopSealBrew: '&eIt''s recommended to trade/sell &6sealed &eBrews'
 Player_Drunkeness: '醉酒'
 Player_Hangover: '你的宿醉'

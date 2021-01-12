@@ -30,6 +30,8 @@ CMD_Configname: '&aName for the Config is: &f&v1'
 CMD_Configname_Error: '&cN´a pas pu trouver d´objet dans votre main'
 CMD_Static: '&aLa boisson est maintenant statique et ne changera pas dans les barils ou les stands d´alchimie.'
 CMD_UnLabel: '&aLabel supprimé!'
+CMD_Drink: '&aYou drank one &v1'
+CMD_DrinkOther: '&a&v1 drinks one &v2'
 
 # Erreurs
 Error_ConfigUpdate: 'La version de la configuration de Brewery est inconnue: v&v1, la config n´a pas été mise à jour !'
@@ -45,6 +47,7 @@ Error_Recipeload: '&cToutes les recettes n´ont pu être restaurées: Plus d´in
 Error_ShowHelp: Utilisez &6/brew help &fpour regarder l´aide
 Error_UnknownCommand: Commande inconnue
 Error_YmlRead: 'Could not read file config.yml, please make sure the file is in valid yml format (correct spaces, using '' '' etc.)'
+Error_NoPlayer: 'Player not found: &v1'
 
 # Etc
 Etc_Barrel: Baril
@@ -55,6 +58,7 @@ Etc_SealingTable: 'Table de scellage des boissons'
 # Aide
 Help_Copy: '&6/brew copy [Quantity]&9 Copie la potion qui est dans votre main'
 Help_Create: '&6/brew create <Recipe> [Quality] [Player] &9Crée une boisson avec une qualité optionelle (1-10)'
+Help_Give: '&6/brew give <Recipe> [Quality] [Player] &9Alias for /brew create'
 Help_Delete: '&6/brew delete &9Supprime la potion qui est dans votre main'
 Help_Help: '&6/brew help [Page] &9Affiche une page spécifique de l´aide'
 Help_Info: '&6/brew info&9 Affiche votre ivresse actuelle ainsi que sa qualité'
@@ -71,6 +75,8 @@ Help_WakeupCheck: '&6/brew wakeup check &9Téléportation vers tous les points d
 Help_WakeupCheckSpecific: '&6/brew wakeup check <id> &9Téléportation vers le point de réveil avec l´ID <id>'
 Help_WakeupList: '&6/brew wakeup list <Page> [World]&9 Affiche une liste de tous les points de réveil de [world]'
 Help_WakeupRemove: '&6/brew wakeup remove <id> &9Enlève le point de réveil avec l´ID <id>'
+Help_Puke: '&6/brew puke [Player] [Amount] &9Makes you or [Player] puke'
+Help_Drink: '&6/brew drink <Recipe> [Quality] [Player] &9Simulates [Player] drinking a Brew'
 
 # Permissions
 Perms_NoBarrelCreate: '&cVous n´avez pas la permission de créer des barils !'

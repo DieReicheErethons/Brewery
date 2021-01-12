@@ -40,36 +40,30 @@ pukeItem: Soul_Sand
 # 如果spigot.yml中的物品消失时间被变更, 此处也会变更.
 pukeDespawntime: 60
 
+# How much the Player stumbles depending on the amount of alcohol he drank. Can be set to 0 and higher than 100 [100]
+stumblePercent: 100
+
 # Display his drunkeness to the player when he drinks a brew or eats a drainItem [true]
 showStatusOnDrink: true
 
 # 解酒物/解酒强度. 降低玩家一定程度的醉酒程度, 解救强度为百分数.(下列)
 drainItems:
-- Bread/4
-- Milk_Bucket/2
-
-# 最大玩家下线记忆时长(单位为天). 饮酒的记忆保持时间, 便于计算宿醉.[7]
-hangoverDays: 7
+  - Bread/4
+  - Milk_Bucket/2
 
 # Show Particles over Cauldrons when they have ingredients and a heat source. [true]
+# The changing color of the particles can help with timing some recipes
 enableCauldronParticles: true
 
 # If crafting and using of the Brew Sealing Table is enabled (2 Bottles over 4 Planks) [true, true]
 craftSealingTable: true
 enableSealingTable: true
 
-# 饮品上是否显示带颜色的提示, 颜色由执行步骤的正误决定. 第一项为在熟成酒桶内显示颜色, 第二项为在酿造台内显示颜色.[true, true]
-colorInBarrels: true
-colorInBrewer: true
-
 # Always show the 1-5 stars on the item depending on the quality. If false, they will only appear when brewing [true]
 alwaysShowQuality: true
 
 # Always show the alcohol content on the item. If false, it will only show in the brewing stand [false]
 alwaysShowAlc: false
-
-# 大型熟成木桶可以通过右击桶身任意一个位置来打开, 而不需要专门右击其龙头. 这一操作对小型酒桶总为真.[true]
-openLargeBarrelEverywhere: false
 
 # MC自带的桶内可以存放多少饮品 [6]
 ageInMCBarrels: true
@@ -95,7 +89,7 @@ autosave: 3
 debug: false
 
 # 配置文件版本
-version: '2.1.1'
+version: '3.0'
 
 
 
@@ -430,6 +424,7 @@ cauldron:
 #   Specific lore for quality possible, using + bad, ++ normal, +++ good, added to the front of the line.
 # servercommands: List of Commands executed by the -Server- when drinking the brew (Can use %player_name%  %quality%)
 # playercommands: List of Commands executed by the -Player- when drinking the brew (Can use %player_name%  %quality%)
+#   Specific Commands for quality possible, using + bad, ++ normal, +++ good, added to the front of the line.
 # drinkmessage: Chat-message to the Player when drinking the Brew
 # drinktitle: Title on Screen to the Player when drinking the Brew
 # customModelData: Custom Model Data Tag. This is a number that can be used to add custom textures to the item.
@@ -468,7 +463,8 @@ recipes:
       - ++ Smells alright
       - +++ Smells really good
     servercommands:
-      - weather clear
+      - +++ weather clear
+      - + weather rain
     playercommands:
       - homes
     drinkmessage: Tastes good
@@ -852,14 +848,17 @@ recipes:
 # -- 插件兼容性 --
 
 # 检查插件以进行权限配置[true]
+# Plugins 'Landlord' and 'Protection Stones' use the WorldGuard Flag. 'ClaimChunk' is natively supported.
 useWorldGuard: true
 useLWC: true
 useGriefPrevention: true
 useTowny: true
+useBlockLocker: true
 useGMInventories: true
 
 # Use a virtual chest when opening a Barrel to check with all other protection plugins
 # This could confuse Anti-Cheat plugins, but is otherwise good to use
+# use this for 'Residence' Plugin and any others that don't check all cases in the PlayerInteractEvent
 useVirtualChestPerms: false
 
 # 对LogBlock启用方块数据录入[true]
@@ -889,6 +888,19 @@ useOffhandForCauldron: false
 
 # If Barrel and Cauldron data can be loaded Async/in the Background [true]
 loadDataAsync: true
+
+# 最大玩家下线记忆时长(单位为天). 饮酒的记忆保持时间, 便于计算宿醉.[7]
+hangoverDays: 7
+
+# 饮品上是否显示带颜色的提示, 颜色由执行步骤的正误决定. 第一项为在熟成酒桶内显示颜色, 第二项为在酿造台内显示颜色.[true, true]
+colorInBarrels: true
+colorInBrewer: true
+
+# 大型熟成木桶可以通过右击桶身任意一个位置来打开, 而不需要专门右击其龙头. 这一操作对小型酒桶总为真.[true]
+openLargeBarrelEverywhere: false
+
+# If Cauldron Particles should be reduced to the bare minimum [false]
+minimalParticles: false
 
 
 # -- 口糊设置 --

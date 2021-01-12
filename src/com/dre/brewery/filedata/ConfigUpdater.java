@@ -2,6 +2,7 @@ package com.dre.brewery.filedata;
 
 import com.dre.brewery.P;
 import com.dre.brewery.utility.LegacyUtil;
+import com.dre.brewery.utility.Tuple;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -10,6 +11,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class ConfigUpdater {
@@ -53,6 +55,10 @@ public class ConfigUpdater {
 	}
 
 	public void addLinesAt(String[] search, int offset, String... newLines) {
+		addLinesAt(search, offset, true, newLines);
+	}
+
+	public void addLinesAt(String[] search, int offset, boolean appendIfNotFound, String... newLines) {
 		int index = indexOfStart(search[0]);
 		int s = 1;
 		while (index == -1 && s < search.length) {
@@ -62,7 +68,7 @@ public class ConfigUpdater {
 
 		if (index != -1) {
 			addLines(index + offset, newLines);
-		} else {
+		} else if (appendIfNotFound) {
 			appendLines(newLines);
 		}
 	}
@@ -235,8 +241,17 @@ public class ConfigUpdater {
 			} else {
 				update21en();
 			}
-			updateVersion(BConfig.configVersion);
 			fromVersion = "2.1.1";
+		}
+		if (fromVersion.equals("2.1.1")) {
+			update30CauldronParticles();
+			if (de) {
+				update30de();
+			} else {
+				update30en();
+			}
+			updateVersion(BConfig.configVersion);
+			fromVersion = "3.0";
 		}
 
 		if (P.use1_13 && oldMat) {
@@ -1800,6 +1815,193 @@ public class ConfigUpdater {
 			"# If Barrel and Cauldron data can be loaded Async/in the Background [true]",
 			"loadDataAsync: true");
 
+	}
+
+	private void update30CauldronParticles() {
+		int start = config.indexOf("cauldron:");
+		int end = config.indexOf("recipes:");
+		if (start < 0 || end < 0 || start >= end) {
+			return;
+		}
+		String c = "    cookParticles:";
+
+		List<Tuple<String[], String[]>> additions = new ArrayList<>();
+		additions.add(new Tuple<>(
+			new String[]{"  ex:", "  bsp:"},
+			new String[]{c, "      - 'RED/5'", "      - 'WHITE/10'", "      - '800000/25' # maroon"}));
+		additions.add(new Tuple<>(
+			new String[]{"  wheat:", "  wheat:"},
+			new String[]{c, "      - '2d8686/8' # Dark Aqua"}));
+		additions.add(new Tuple<>(
+			new String[]{"  sugarcane:"},
+			new String[]{c, "      - 'f1ffad/4'","      - '858547/10' # dark olive"}));
+		additions.add(new Tuple<>(
+			new String[]{"  sugar:"},
+			new String[]{c, "      - 'WHITE/4'", "      - 'BRIGHT_GREY/25'"}));
+		additions.add(new Tuple<>(
+			new String[]{"  berries:"},
+			new String[]{c, "      - 'ff6666/2' # bright red", "      - 'RED/7'", "      - 'ac6553/13' # brown-red"}));
+		additions.add(new Tuple<>(
+			new String[]{"  grass:"},
+			new String[]{c, "      - 'GREEN/2'", "      - '99ff99/20' # faded green"}));
+		additions.add(new Tuple<>(
+			new String[]{"  rmushroom:"},
+			new String[]{c, "      - 'fab09e/15' # faded red"}));
+		additions.add(new Tuple<>(
+			new String[]{"  bmushroom:"},
+			new String[]{c, "      - 'c68c53/15'"}));
+		additions.add(new Tuple<>(
+			new String[]{"  cocoa:"},
+			new String[]{c, "      - 'a26011/1'", "      - '5c370a/3'", "      - '4d4133/8' # Gray-brown"}));
+		additions.add(new Tuple<>(
+			new String[]{"  milk:"},
+			new String[]{c, "      - 'fbfbd0/1' # yellow-white", "      - 'WHITE/6'"}));
+		additions.add(new Tuple<>(
+			new String[]{"  bl_flow:"},
+			new String[]{c, "      - '0099ff'"}));
+		additions.add(new Tuple<>(
+			new String[]{"  cactus:"},
+			new String[]{c, "      - '00b300/16'"}));
+		additions.add(new Tuple<>(
+			new String[]{"  vine:"},
+			new String[]{c, "      - 'GREEN/2'", "      - '99ff99/20' # faded green"}));
+		additions.add(new Tuple<>(
+			new String[]{"  rot_flesh:"},
+			new String[]{c, "      - '263300/8'", "      - 'BLACK/20'"}));
+		additions.add(new Tuple<>(
+			new String[]{"  cookie:"},
+			new String[]{c, "      - 'a26011/1'", "      - '5c370a/3'", "      - '4d4133/8' # Gray-brown"}));
+		additions.add(new Tuple<>(
+			new String[]{"  Gold_Nugget:"},
+			new String[]{c, "      - 'ffd11a'"}));
+		additions.add(new Tuple<>(
+			new String[]{"  glowstone_dust:"},
+			new String[]{c, "      - 'ffff99/3'", "      - 'd9d926/15' # faded yellow"}));
+		additions.add(new Tuple<>(
+			new String[]{"  applemead_base:", "  apfelmet_basis:"},
+			new String[]{c, "      - 'e1ff4d/4'"}));
+		additions.add(new Tuple<>(
+			new String[]{"  poi_grass:"},
+			new String[]{c, "      - 'GREEN/2'", "      - '99ff99/20' # faded green"}));
+		additions.add(new Tuple<>(
+			new String[]{"  juniper:"},
+			new String[]{c, "      - '00ccff/8'"}));
+		additions.add(new Tuple<>(
+			new String[]{"  gin_base:"},
+			new String[]{c, "      - 'c68c53/15'"}));
+		additions.add(new Tuple<>(
+			new String[]{"  eggnog_base:"},
+			new String[]{c, "      - 'ffecb3/2'"}));
+
+
+		for (Tuple<String[], String[]> addition : additions) {
+			end = config.indexOf("recipes:");
+			int index = indexOfStart(addition.a()[0]);
+			if (index == -1 && addition.a().length > 1) {
+				index = indexOfStart(addition.a()[1]);
+			}
+			if (index >= start && index <= end) {
+				if (config.get(++index).startsWith("    name:")) {
+					if (config.get(++index).startsWith("    ingredients:")) {
+						// If this is the ingredients line, check if the next line is color or empty
+						// We can safely go after color, or before empty
+						// If neither, go before this line, as ingredients could be multi line
+						if (config.get(index + 1).startsWith("    color:")) {
+							index += 2;
+						} else if (config.get(index + 1).equals("")) {
+							index += 1;
+						}
+					}
+					addLines(index, addition.b());
+				}
+			}
+		}
+	}
+
+	private void update30de() {
+		addLinesAt(new String[]{"pukeDespawntime:", "enableKickOnOverdrink:", "language:"}, 1,
+			"",
+				"# Wie stark in Prozent der Spieler taumelt, je nach dem wie viel Alkohol er getrunken hat. Kann auf 0 und höher als 100 gesetzt werden",
+				"stumblePercent: 100",
+				"",
+				"# Ob seine Betrunkenheit dem Spieler kurz angezeigt werden soll wenn er etwas trinkt oder ein drainItem isst. [true]",
+				"showStatusOnDrink: true");
+		addLinesAt(new String[]{"hangoverDays:", "enableSealingTable:", "showStatusOnDrink:"}, 1,
+			"",
+				"# Partikel steigen von Kesseln auf wenn sie Zutaten und eine Feuerquelle haben [true]",
+				"# Die sich ändernde Farbe der Partikel kann beim Fermentieren mancher Rezepte helfen",
+				"enableCauldronParticles: true");
+		addLinesAt(new String[]{" #   Oder RGB Farben", " #   Eine Liste von allen Materialien", " # lore: Auflistung von zusätzlichem Text"}, 1,
+			" # cookParticles:",
+				" #   Farbe der Partikel über dem Kessel während verschiedener Kochzeiten",
+				" #   Farbe und Minute während die Farbe erscheinen soll. Z.B. eine Farbe bei 8 Minuten, übergehend zu einer anderen bei 18 minuten",
+				" #   Als Liste, jede Farbe als Name oder RGB wie oben. Geschrieben 'Farbe/Minute'",
+				" #   Zum Ende geht es in die letzte Farbe über, gibt es nur eine Farbe in der Liste, wird es von dieser langsam zu grau.");
+		int index = indexOfStart("# wood: Holz des Fasses 0=alle Holzsorten 1=Birke 2=Eiche");
+		if (index > -1) {
+			setLine(index, "# wood: Holz des Fasses 0=alle Holzsorten 1=Birke 2=Eiche 3=Jungel 4=Fichte 5=Akazie 6=Schwarzeiche 7=Karmesin 8=Wirr");
+		}
+		addLinesAt(new String[]{"# playercommands: Liste von Befehlen ausgeführt vom -Spieler-", "# drinktitle: Nachricht als Titel"}, 1, false,
+			"#   Befehle nur für bestimmte Qualität möglich mit + Schlecht, ++ Mittel, +++ Gut, vorne anhängen.");
+		addLinesAt(new String[]{"# Andere Plugins (wenn installiert) nach Rechten zum öffnen von Fässern checken"}, 1, false,
+			"# Plugins 'Landlord' und 'Protection Stones' nutzen WorldGuard. 'ClaimChunk' wird nativ unterstützt.");
+		addLinesAt(new String[]{"useGriefPrevention:", "useLWC:", "useWorldGuard:"}, 1,
+			"useTowny: true",
+				"useBlockLocker: true");
+		addLinesAt(new String[]{"useGMInventories:", "# Plugins 'Landlord' und 'Prote", "# -- Plugin Kompatiblität --"}, 1,
+			"",
+				"# Beim Fass öffnen eine virtuelle Kiste nutzen um Rechte bei allen anderen Plugins abzufragen",
+				"# Könnte Anti-Cheat plugins verwirren aber sonst ok zu aktivieren",
+				"# Diese Option für das Plugin 'Residence' aktivieren, und andere Plugins, die nicht alle Fälle des PlayerInteractEvent checken",
+				"useVirtualChestPerms: false",
+				"");
+		addLinesAt(new String[]{"loadDataAsync:", "useOffhandForCauldron:", "# -- Verschiedene weitere", "useLogBlock:"}, 1,
+			"",
+			"# Ob nur ein Minimum an Kessel-Partikeln dargestellt werden sollen [false]",
+			"minimalParticles: false");
+	}
+
+	private void update30en() {
+		addLinesAt(new String[]{"pukeDespawntime:", "enableKickOnOverdrink:", "language:"}, 1,
+			"",
+				"# How much the Player stumbles depending on the amount of alcohol he drank. Can be set to 0 and higher than 100 [100]",
+				"stumblePercent: 100",
+				"",
+				"# Display his drunkeness to the player when he drinks a brew or eats a drainItem [true]",
+				"showStatusOnDrink: true");
+		addLinesAt(new String[]{"hangoverDays:", "enableSealingTable:", "showStatusOnDrink:"}, 1,
+			"",
+				"# Show Particles over Cauldrons when they have ingredients and a heat source. [true]",
+				"# The changing color of the particles can help with timing some recipes",
+				"enableCauldronParticles: true");
+		addLinesAt(new String[]{" #   Or RGB colors", " #   A list of materials can be found", " # lore: "}, 1,
+			" # cookParticles:",
+				" #   Color of the Particles above the cauldron at different cooking-times",
+				" #   Color and minute during which each color should appear, i.e. one color at 8 minutes fading to another at 18 minutes.",
+				" #   As List, each Color as name or RGB, see above. Written as 'Color/Minute'",
+				" #   It will fade to the last color in the end, if there is only one color in the list, it will fade to grey");
+		int index = indexOfStart("# wood: Wood of the barrel 0=any 1=Birch 2=Oak");
+		if (index > -1) {
+			setLine(index, "# wood: Wood of the barrel 0=any 1=Birch 2=Oak 3=Jungle 4=Spruce 5=Acacia 6=Dark Oak 7=Crimson 8=Warped");
+		}
+		addLinesAt(new String[]{"# playercommands: "}, 1, false,
+			"#   Specific Commands for quality possible, using + bad, ++ normal, +++ good, added to the front of the line.");
+		addLinesAt(new String[]{"# Enable checking of other Plugins (if installed) for"}, 1, false,
+			"# Plugins 'Landlord' and 'Protection Stones' use the WorldGuard Flag. 'ClaimChunk' is natively supported.");
+		addLinesAt(new String[]{"useGriefPrevention:", "useLWC:", "useWorldGuard:"}, 1,
+			"useTowny: true",
+				"useBlockLocker: true");
+		addLinesAt(new String[]{"useGMInventories:", "# Plugins 'Landlord' and 'Protectio", "# -- Plugin Compatibility --"}, 1,
+			"",
+				"# Use a virtual chest when opening a Barrel to check with all other protection plugins",
+				"# This could confuse Anti-Cheat plugins, but is otherwise good to use",
+				"# use this for 'Residence' Plugin and any others that don't check all cases in the PlayerInteractEvent",
+				"useVirtualChestPerms: false",
+				"");
+		addLinesAt(new String[]{"loadDataAsync:", "useOffhandForCauldron:", "# -- Various Other Settings", "useLogBlock:"}, 1,
+			"",
+				"# If Cauldron Particles should be reduced to the bare minimum [false]",
+				"minimalParticles: false");
 	}
 
 

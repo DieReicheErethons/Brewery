@@ -30,6 +30,8 @@ CMD_Configname: '&aName for the Config is: &f&v1'
 CMD_Configname_Error: '&cCould not find item in your hand'
 CMD_Static: '&aPotion is now static and will not change in barrels or brewing stands.'
 CMD_UnLabel: '&aLabel removed!'
+CMD_Drink: '&aYou drank one &v1'
+CMD_DrinkOther: '&a&v1 drinks one &v2'
 
 # Error
 Error_ConfigUpdate: 'Unknown Brewery config version: v&v1, config was not updated!'
@@ -45,6 +47,7 @@ Error_Recipeload: '&cNot all recipes could be restored: More information in the 
 Error_ShowHelp: Use &6/brew help &fto display the help
 Error_UnknownCommand: Unknown Command
 Error_YmlRead: 'Could not read file config.yml, please make sure the file is in valid yml format (correct spaces, using '' '' etc.)'
+Error_NoPlayer: 'Player not found: &v1'
 
 # Etc
 Etc_Barrel: Barrel
@@ -55,6 +58,7 @@ Etc_SealingTable: Brew Sealing Table
 # Help
 Help_Copy: '&6/brew copy [Quantity]&9 Copies the potion in your hand'
 Help_Create: '&6/brew create <Recipe> [Quality] [Player] &9Create a Brew with optional quality (1-10)'
+Help_Give: '&6/brew give <Recipe> [Quality] [Player] &9Alias for /brew create'
 Help_Delete: '&6/brew delete &9Deletes the potion in your hand'
 Help_Help: '&6/brew help [Page] &9Shows a specific help-page'
 Help_Info: '&6/brew info&9 Displays your current Drunkeness and Quality'
@@ -71,6 +75,8 @@ Help_WakeupCheck: '&6/brew wakeup check &9Teleports to all wakeup points'
 Help_WakeupCheckSpecific: '&6/brew wakeup check <id> &9Teleports to the wakeup point with <id>'
 Help_WakeupList: '&6/brew wakeup list <Page> [World]&9 Lists all wakeup points of <world>'
 Help_WakeupRemove: '&6/brew wakeup remove <id> &9Removes the wakeup point with <id>'
+Help_Puke: '&6/brew puke [Player] [Amount] &9Makes you or [Player] puke'
+Help_Drink: '&6/brew drink <Recipe> [Quality] [Player] &9Simulates [Player] drinking a Brew'
 
 # Perms
 Perms_NoBarrelCreate: '&cYou don''t have permissions to create barrels!'
@@ -102,6 +108,6 @@ Player_WakeNoCheck: '&cNo Wakeup Point Check is currently active'
 Player_WakeNoPoints: '&cThere are no Wakeup Points!'
 Player_WakeNotExist: '&cThe Wakeup Point with the id: &6&v1 &cdoesn''t exist!'
 Player_WakeTeleport: 'Teleport to Wakeup Point with the id: &6&v1&f At position: &6&v2 &v3, &v4, &v5'
-Player_ShopSealBrew: '&eBrews should be sealed before selling them'
+Player_ShopSealBrew: '&eIt''s recommended to trade/sell &6sealed &eBrews'
 Player_Drunkeness: 'Drunkeness'
 Player_Hangover: 'Your Hangover'

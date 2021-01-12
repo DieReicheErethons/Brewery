@@ -161,12 +161,14 @@ public class BPlayer {
 			bPlayer = addPlayer(player);
 		}
 		BrewDrinkEvent drinkEvent = new BrewDrinkEvent(brew, meta, player, bPlayer);
-		P.p.getServer().getPluginManager().callEvent(drinkEvent);
-		if (drinkEvent.isCancelled()) {
-			if (bPlayer.drunkeness <= 0) {
-				bPlayer.remove();
+		if (meta != null) {
+			P.p.getServer().getPluginManager().callEvent(drinkEvent);
+			if (drinkEvent.isCancelled()) {
+				if (bPlayer.drunkeness <= 0) {
+					bPlayer.remove();
+				}
+				return false;
 			}
-			return false;
 		}
 
 		if (brew.hasRecipe()) {
@@ -211,13 +213,10 @@ public class BPlayer {
 	 */
 	public void showDrunkeness(Player player) {
 		try {
-			final int cacheHangover = sendDrunkenessMessage(player, 0);
-			// It this returns -1, then the Action Bar is not supported. Do not repeat the message as it was sent into chat
-			if (cacheHangover >= 0) {
-				// We need to cache the hangover, as this value is removed from them player on login.
-				// When we display the message again, use the cached hangover value
-				P.p.getServer().getScheduler().scheduleSyncDelayedTask(P.p, () -> sendDrunkenessMessage(player, cacheHangover), 40);
-				P.p.getServer().getScheduler().scheduleSyncDelayedTask(P.p, () -> sendDrunkenessMessage(player, cacheHangover), 80);
+			// It this returns false, then the Action Bar is not supported. Do not repeat the message as it was sent into chat
+			if (sendDrunkenessMessage(player)) {
+				P.p.getServer().getScheduler().scheduleSyncDelayedTask(P.p, () -> sendDrunkenessMessage(player), 40);
+				P.p.getServer().getScheduler().scheduleSyncDelayedTask(P.p, () -> sendDrunkenessMessage(player), 80);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -228,20 +227,16 @@ public class BPlayer {
 	 * Send one Message to the player, showing his drunkeness or hangover
 	 *
 	 * @param player The Player to send the message to
-	 * @param cacheHangover if > 0 Show him a cached hangover strength
-	 * @return -1 if the message should not be repeated. if not 0, it is the hangover we should cache
+	 * @return false if the message should not be repeated.
 	 */
-	public int sendDrunkenessMessage(Player player, int cacheHangover) {
+	public boolean sendDrunkenessMessage(Player player) {
 		StringBuilder b = new StringBuilder(100);
 
 		int strength = drunkeness;
 		boolean hangover = false;
-		int hangoverStrength = cacheHangover > 0 ? cacheHangover : offlineDrunk;
-		if (hangoverStrength > 0) {
-			strength = hangoverStrength;
+		if (offlineDrunk > 0) {
+			strength = offlineDrunk;
 			hangover = true;
-		} else {
-			hangoverStrength = 0;
 		}
 
 		b.append(P.p.languageReader.get(hangover ? "Player_Hangover" : "Player_Drunkeness"));
@@ -303,13 +298,17 @@ public class BPlayer {
 			}
 		}
 		b.append("§7]");
-		String text = b.toString();
+		final String text = b.toString();
+		if (hangover) {
+			P.p.getServer().getScheduler().scheduleSyncDelayedTask(P.p, () -> player.sendTitle("", text, 30, 100, 90), 160);
+			return false;
+		}
 		try {
 			player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(text));
-			return hangoverStrength;
+			return true;
 		} catch (UnsupportedOperationException | NoSuchMethodError e) {
 			player.sendMessage(text);
-			return -1;
+			return false;
 		}
 	}
 
@@ -374,7 +373,7 @@ public class BPlayer {
 	// player is drunk
 	public void move(PlayerMoveEvent event) {
 		// has player more alc than 10
-		if (drunkeness >= 10) {
+		if (drunkeness >= 10 && BConfig.stumbleModifier > 0.001f) {
 			if (drunkeness <= 100) {
 				if (time > 1) {
 					time--;
@@ -398,6 +397,7 @@ public class BPlayer {
 									push.setX(Math.random() - 0.5);
 									push.setZ(Math.random() - 0.5);
 								}
+								push.multiply(BConfig.stumbleModifier);
 								PlayerPushEvent pushEvent = new PlayerPushEvent(player, push, this);
 								P.p.getServer().getPluginManager().callEvent(pushEvent);
 								push = pushEvent.getPush();
@@ -526,18 +526,23 @@ public class BPlayer {
 	// #### Puking ####
 
 	// Chance that players puke on big drunkeness
-	// runs every 6 sec, average chance is 10%, so should puke about every 60 sec
-	// good quality can decrease the chance by up to 10%
+	// runs every 6 sec, average chance is 15%, so should puke about every 40 sec
+	// good quality can decrease the chance by up to 15%
 	public void drunkPuke(Player player) {
-		if (drunkeness >= 80) {
-			if (drunkeness >= 90) {
-				if (Math.random() < 0.15f - (getQuality() / 100f)) {
-					addPuke(player, 20 + (int) (Math.random() * 40));
-				}
-			} else {
-				if (Math.random() < 0.08f - (getQuality() / 100f)) {
-					addPuke(player, 10 + (int) (Math.random() * 30));
-				}
+		if (drunkeness >= 90) {
+			// chance between 20% and 10%
+			if (Math.random() < 0.20f - (getQuality() / 100f)) {
+				addPuke(player, 20 + (int) (Math.random() * 40));
+			}
+		} else if (drunkeness >= 80) {
+			// chance between 15% and 0%
+			if (Math.random() < 0.15f - (getQuality() / 66f)) {
+				addPuke(player, 10 + (int) (Math.random() * 30));
+			}
+		} else if (drunkeness >= 70) {
+			// chance between 10% at 1 quality and 0% at 6 quality
+			if (Math.random() < 0.10f - (getQuality() / 60f)) {
+				addPuke(player, 10 + (int) (Math.random() * 20));
 			}
 		}
 	}
@@ -553,6 +558,7 @@ public class BPlayer {
 		if (event.isCancelled() || event.getCount() < 1) {
 			return;
 		}
+		BUtil.reapplyPotionEffect(player, PotionEffectType.HUNGER.createEffect(80, 4), true);
 
 		if (pTasks.isEmpty()) {
 			taskId = P.p.getServer().getScheduler().scheduleSyncRepeatingTask(P.p, BPlayer::pukeTask, 1L, 1L);

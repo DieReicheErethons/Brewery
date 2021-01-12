@@ -6,7 +6,9 @@ import com.dre.brewery.Barrel;
 import com.dre.brewery.DistortChat;
 import com.dre.brewery.P;
 import com.dre.brewery.api.events.barrel.BarrelDestroyEvent;
+import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.filedata.BData;
+import com.dre.brewery.integration.barrel.BlocklockerBarrel;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.TownyUtil;
 
@@ -24,7 +26,7 @@ public class BlockListener implements Listener {
 	public void onSignChange(SignChangeEvent event) {
 		String[] lines = event.getLines();
 
-		if (lines[0].equalsIgnoreCase("Barrel") || lines[0].equalsIgnoreCase(P.p.languageReader.get("Etc_Barrel"))) {
+		if (hasBarrelLine(lines)) {
 			Player player = event.getPlayer();
 			if (!player.hasPermission("brewery.createbarrel.small") && !player.hasPermission("brewery.createbarrel.big")) {
 				P.p.msg(player, P.p.languageReader.get("Perms_NoBarrelCreate"));
@@ -45,11 +47,26 @@ public class BlockListener implements Listener {
 		}
 	}
 
+	public static boolean hasBarrelLine(String[] lines) {
+		for (String line : lines) {
+			if (line.equalsIgnoreCase("Barrel") || line.equalsIgnoreCase(P.p.languageReader.get("Etc_Barrel"))) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onSignChangeLow(SignChangeEvent event) {
 		if (DistortChat.doSigns) {
 			if (BPlayer.hasPlayer(event.getPlayer())) {
 				DistortChat.signWrite(event);
+			}
+		}
+		if (BConfig.useBlocklocker) {
+			String[] lines = event.getLines();
+			if (hasBarrelLine(lines)) {
+				BlocklockerBarrel.createdBarrelSign(event.getBlock());
 			}
 		}
 	}

@@ -30,6 +30,8 @@ CMD_Configname: '&aName for the Config is: &f&v1'
 CMD_Configname_Error: '&cCould not find item in your hand'
 CMD_Static: '&a藥水現在是靜止的,不會在桶或釀造台上變化.'
 CMD_UnLabel: '&a標籤已刪除！'
+CMD_Drink: '&aYou drank one &v1'
+CMD_DrinkOther: '&a&v1 drinks one &v2'
 
 # Error
 Error_ConfigUpdate: '未知 釀酒 設定檔版本: v&v1,設定檔沒有更新!'
@@ -45,6 +47,7 @@ Error_Recipeload: '&c並非所有配方都可以有用：服務器日誌中的�
 Error_ShowHelp: 使用 &6/brew help &f顯示幫助
 Error_UnknownCommand: 未知的指令
 Error_YmlRead: 'Could not read file config.yml, please make sure the file is in valid yml format (correct spaces, using '' '' etc.)'
+Error_NoPlayer: 'Player not found: &v1'
 
 # Etc
 Etc_Barrel: 釀造桶
@@ -55,6 +58,7 @@ Etc_SealingTable: Brew Sealing Table
 # Help
 Help_Copy: '&6/brew copy [數量]&9 複製手中的藥水'
 Help_Create: '&6/brew create <配方> [數量] [玩家] &9創建具有可選酒的品質釀造（1-10）'
+Help_Give: '&6/brew give <Recipe> [Quality] [Player] &9Alias for /brew create'
 Help_Delete: '&6/brew delete &9刪除你手中的藥水'
 Help_Help: '&6/brew help [頁數] &9顯示幫助的頁面'
 Help_Info: '&6/brew info&9 顯示您當前的醉酒和酒的品質'
@@ -71,6 +75,8 @@ Help_WakeupCheck: '&6/brew wakeup check &9傳送到所有喚醒點'
 Help_WakeupCheckSpecific: '&6/brew wakeup check <id> &9使用<id>傳送到喚醒點'
 Help_WakeupList: '&6/brew wakeup list <頁數> [World]&9 列出<world>的所有喚醒點'
 Help_WakeupRemove: '&6/brew wakeup remove <id> &9使用<id>刪除喚醒點'
+Help_Puke: '&6/brew puke [Player] [Amount] &9Makes you or [Player] puke'
+Help_Drink: '&6/brew drink <Recipe> [Quality] [Player] &9Simulates [Player] drinking a Brew'
 
 # Perms
 Perms_NoBarrelCreate: '&c您沒有權限創建釀造桶!'
@@ -102,6 +108,6 @@ Player_WakeNoCheck: '&c目前沒有喚醒點是處於活動狀態'
 Player_WakeNoPoints: '&c沒有喚醒點!'
 Player_WakeNotExist: '&c這個喚醒點 id: &6&v1 &c不存在!'
 Player_WakeTeleport: '傳送到這個喚醒點 id: &6&v1&f 在位置: &6&v2 &v3, &v4, &v5'
-Player_ShopSealBrew: '&eBrews should be sealed before selling them'
+Player_ShopSealBrew: '&eIt''s recommended to trade/sell &6sealed &eBrews'
 Player_Drunkeness: '醉酒'
 Player_Hangover: '你的宿醉'

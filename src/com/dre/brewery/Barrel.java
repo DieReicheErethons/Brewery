@@ -14,6 +14,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.HumanEntity;
@@ -125,13 +126,9 @@ public class Barrel implements InventoryHolder {
 
 		// Call event
 		BarrelAccessEvent accessEvent = new BarrelAccessEvent(this, player, event.getClickedBlock(), event.getBlockFace());
-		// Listened to by WGBarrel7, WGBarrelNew, WGBarrelOld, GriefPreventionBarrel (IntegrationListener)
+		// Listened to by IntegrationListener
 		P.p.getServer().getPluginManager().callEvent(accessEvent);
-		if (accessEvent.isCancelled()) {
-			return false;
-		}
-
-		return true;
+		return !accessEvent.isCancelled();
 	}
 
 	/**
@@ -473,10 +470,25 @@ public class Barrel implements InventoryHolder {
 	}
 
 	/**
+	 * Are any Barrels in that World
+	 */
+	public static boolean hasDataInWorld(World world) {
+		return barrels.stream().anyMatch(barrel -> barrel.spigot.getWorld().equals(world));
+	}
+
+	/**
 	 * unloads barrels that are in a unloading world
 	 */
-	public static void onUnload(String name) {
-		barrels.removeIf(barrel -> barrel.spigot.getWorld().getName().equals(name));
+	public static void onUnload(World world) {
+		barrels.removeIf(barrel -> barrel.spigot.getWorld().equals(world));
+	}
+
+	/**
+	 * Unload all Barrels that have a Block in a unloaded World
+	 */
+	public static void unloadWorlds() {
+		List<World> worlds = P.p.getServer().getWorlds();
+		barrels.removeIf(barrel -> !worlds.contains(barrel.spigot.getWorld()));
 	}
 
 	/**

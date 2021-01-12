@@ -27,6 +27,8 @@
  */
 package com.dre.brewery.utility;
 
+import org.jetbrains.annotations.Contract;
+
 public class Tuple<A, B> {
 
 	/**
@@ -47,6 +49,7 @@ public class Tuple<A, B> {
 	/**
 	 * Gets the first value in the tuple
 	 */
+	@Contract(pure = true)
 	public A first() {
 		return a;
 	}
@@ -54,6 +57,7 @@ public class Tuple<A, B> {
 	/**
 	 * Gets the second value in the tuple
 	 */
+	@Contract(pure = true)
 	public B second() {
 		return b;
 	}
@@ -61,6 +65,7 @@ public class Tuple<A, B> {
 	/**
 	 * Gets the first value in the tuple, Synonym for first()
 	 */
+	@Contract(pure = true)
 	public A a() {
 		return a;
 	}
@@ -68,6 +73,7 @@ public class Tuple<A, B> {
 	/**
 	 * Gets the second value in the tuple, Synonym for second()
 	 */
+	@Contract(pure = true)
 	public B b() {
 		return b;
 	}
@@ -79,7 +85,7 @@ public class Tuple<A, B> {
 		}
 
 		Tuple<?, ?> tuple = (Tuple<?, ?>) object;
-		return tuple.a == a && tuple.b == b;
+		return tuple.a.equals(a) && tuple.b.equals(b);
 	}
 
 	@Override
@@ -87,4 +93,10 @@ public class Tuple<A, B> {
 		return a.hashCode() ^ b.hashCode();
 	}
 
+	@Override
+	public String toString() {
+		return "Tuple{" +
+			'{' + a + '}' +
+			'{' + b + "}}";
+	}
 }

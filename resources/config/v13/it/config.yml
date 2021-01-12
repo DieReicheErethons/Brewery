@@ -38,6 +38,9 @@ pukeItem: Soul_Sand
 # Se il tempo di scomparsa viene cambiato in spigot.yml anche pukeDespawntime cambia.
 pukeDespawntime: 60
 
+# How much the Player stumbles depending on the amount of alcohol he drank. Can be set to 0 and higher than 100 [100]
+stumblePercent: 100
+
 # Display his drunkeness to the player when he drinks a brew or eats a drainItem [true]
 showStatusOnDrink: true
 
@@ -46,28 +49,19 @@ drainItems:
   - Bread/4
   - Milk_Bucket/2
 
-# Tempo in giorni che la sbronza resta in memoria dopo che il giocatore va offline, cioè il tempo per cui i postumi della sbornia durano. [7]
-hangoverDays: 7
-
 # Show Particles over Cauldrons when they have ingredients and a heat source. [true]
+# The changing color of the particles can help with timing some recipes
 enableCauldronParticles: true
 
 # If crafting and using of the Brew Sealing Table is enabled (2 Bottles over 4 Planks) [true, true]
 craftSealingTable: true
 enableSealingTable: true
 
-# Colora la descrizione dell'item in base alla qualità mentre è in un barile o in un alambicco [true, true]
-colorInBarrels: true
-colorInBrewer: true
-
 # Always show the 1-5 stars on the item depending on the quality. If false, they will only appear when brewing [true]
 alwaysShowQuality: true
 
 # Always show the alcohol content on the item. If false, it will only show in the brewing stand [false]
 alwaysShowAlc: false
-
-# Se un barile grande può essere aperto  cliccandoci sopra, non solo sul cartello e sulla staccionata. Questo è sempre true per i barili piccoli. [true]
-openLargeBarrelEverywhere: true
 
 # If aging in -Minecraft- Barrels in enabled [true] and how many Brewery drinks can be put into them [6]
 ageInMCBarrels: true
@@ -93,7 +87,7 @@ autosave: 3
 debug: false
 
 # Versione del config
-version: '2.1.1'
+version: '3.0'
 
 
 
@@ -427,6 +421,7 @@ cauldron:
 #   Specific lore for quality possible, using + bad, ++ normal, +++ good, added to the front of the line.
 # servercommands: List of Commands executed by the -Server- when drinking the brew (Can use %player_name%  %quality%)
 # playercommands: List of Commands executed by the -Player- when drinking the brew (Can use %player_name%  %quality%)
+#   Specific Commands for quality possible, using + bad, ++ normal, +++ good, added to the front of the line.
 # drinkmessage: Chat-message to the Player when drinking the Brew
 # drinktitle: Title on Screen to the Player when drinking the Brew
 # customModelData: Custom Model Data Tag. This is a number that can be used to add custom textures to the item.
@@ -464,7 +459,8 @@ recipes:
       - ++ Smells alright
       - +++ Smells really good
     servercommands:
-      - weather clear
+      - +++ weather clear
+      - + weather rain
     playercommands:
       - homes
     drinkmessage: Tastes good
@@ -848,14 +844,17 @@ eggnog:
 # -- Compatibilità con altri plugin --
 
 # Abilita il controllo della presenza di altri plugin per i permessi relativi ai barili[true]
+# Plugins 'Landlord' and 'Protection Stones' use the WorldGuard Flag. 'ClaimChunk' is natively supported.
 useWorldGuard: true
 useLWC: true
 useGriefPrevention: true
 useTowny: true
+useBlockLocker: true
 useGMInventories: true
 
 # Use a virtual chest when opening a Barrel to check with all other protection plugins
 # This could confuse Anti-Cheat plugins, but is otherwise good to use
+# use this for 'Residence' Plugin and any others that don't check all cases in the PlayerInteractEvent
 useVirtualChestPerms: false
 
 # Abilita il logging degli inventari dei barili [true]
@@ -885,6 +884,19 @@ useOffhandForCauldron: false
 
 # If Barrel and Cauldron data can be loaded Async/in the Background [true]
 loadDataAsync: true
+
+# Tempo in giorni che la sbronza resta in memoria dopo che il giocatore va offline, cioè il tempo per cui i postumi della sbornia durano. [7]
+hangoverDays: 7
+
+# Colora la descrizione dell'item in base alla qualità mentre è in un barile o in un alambicco [true, true]
+colorInBarrels: true
+colorInBrewer: true
+
+# Se un barile grande può essere aperto  cliccandoci sopra, non solo sul cartello e sulla staccionata. Questo è sempre true per i barili piccoli. [true]
+openLargeBarrelEverywhere: true
+
+# If Cauldron Particles should be reduced to the bare minimum [false]
+minimalParticles: false
 
 
 # -- Imostazioni di distorsione della chat --

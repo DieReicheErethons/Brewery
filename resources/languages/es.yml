@@ -31,6 +31,8 @@ CMD_Configname: '&aEl nombre de la configuración es: &f&v1'
 CMD_Configname_Error: '&cNo se pudo encontrar el artículo en tu mano'
 CMD_Static: '&aLa poción ahora es estática y no cambiará en barriles o puestos de elaboración.'
 CMD_UnLabel: '&aEtiqueta eliminada!'
+CMD_Drink: '&aYou drank one &v1'
+CMD_DrinkOther: '&a&v1 drinks one &v2'
 
 # Error
 Error_ConfigUpdate: 'Versión de configuración de Brewery desconocida: v&v1, ¡la configuración no se actualizó!'
@@ -46,6 +48,7 @@ Error_Recipeload: '&cNo se pudieron restaurar todas las recetas: ¡Más informac
 Error_ShowHelp: Usa &6/brew help &fpara mostrar la ayuda
 Error_UnknownCommand: Comando desconocido
 Error_YmlRead: 'No se pudo leer el archivo config.yml, asegúrese de que el archivo esté en formato yml válido (espacios correctos, etc.)'
+Error_NoPlayer: 'Player not found: &v1'
 
 # Etc
 Etc_Barrel: Barril
@@ -56,6 +59,7 @@ Etc_SealingTable: Mesa de sellado
 # Help
 Help_Copy: '&6/brew copy [Cantidad]&9 Copia la poción en tu mano'
 Help_Create: '&6/brew create <Receta> [Cantidad] [Jugador] &9Crea una cerveza con calidad opcional (1-10)'
+Help_Give: '&6/brew give <Recipe> [Quality] [Player] &9Alias for /brew create'
 Help_Delete: '&6/brew delete &9Elimina la poción en tu mano'
 Help_Help: '&6/brew help [Página] &9Muestra una página de ayuda específica.'
 Help_Info: '&6/brew info&9 Muestra tu embriaguez y calidad actuales'
@@ -72,6 +76,8 @@ Help_WakeupCheck: '&6/brew wakeup check &9Teletransporta a todos los puntos de a
 Help_WakeupCheckSpecific: '&6/brew wakeup check <id> &9Teletransporta al punto de activación con <id>'
 Help_WakeupList: '&6/brew wakeup list <Página> [Mundo]&9 Enumera todos los puntos de activación del <Mundo>'
 Help_WakeupRemove: '&6/brew wakeup remove <id> &9Elimina el punto de activación con <id>'
+Help_Puke: '&6/brew puke [Player] [Amount] &9Makes you or [Player] puke'
+Help_Drink: '&6/brew drink <Recipe> [Quality] [Player] &9Simulates [Player] drinking a Brew'
 
 # Perms
 Perms_NoBarrelCreate: '&c¡No tienes permisos para crear barriles!'

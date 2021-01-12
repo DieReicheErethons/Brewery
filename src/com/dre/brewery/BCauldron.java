@@ -9,11 +9,7 @@ import com.dre.brewery.utility.LegacyUtil;
 import com.dre.brewery.utility.TownyUtil;
 
 import com.dre.brewery.utility.Tuple;
-import org.bukkit.Color;
-import org.bukkit.Effect;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Particle;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
@@ -32,15 +28,13 @@ public class BCauldron {
 	public static final byte EMPTY = 0, SOME = 1, FULL = 2;
 	public static final int PARTICLEPAUSE = 15;
 	public static Random particleRandom = new Random();
-	private static int particleCauldron;
-	private static int particleDelay;
 	private static Set<UUID> plInteracted = new HashSet<>(); // Interact Event helper
 	public static Map<Block, BCauldron> bcauldrons = new HashMap<>(); // All active cauldrons. Mapped to their block for fast retrieve
 
 	private BIngredients ingredients = new BIngredients();
 	private final Block block;
 	private int state = 0;
-	private boolean changed = false;
+	private boolean changed = false; // Not really needed anymore
 	private Optional<BCauldronRecipe> particleRecipe; // null if we haven't checked, empty if there is none
 	private Color particleColor;
 	private Location particleLocation;
@@ -107,9 +101,9 @@ public class BCauldron {
 		if (state > 0) {
 			state--;
 		}
-		if (BConfig.enableCauldronParticles) {
+		if (BConfig.enableCauldronParticles && !BConfig.minimalParticles) {
 			// Few little sparks and lots of water splashes. Offset by 0.2 in x and z
-			block.getWorld().spawnParticle(Particle.SPELL_INSTANT, particleLocation,3, 0.2, 0, 0.2);
+			block.getWorld().spawnParticle(Particle.SPELL_INSTANT, particleLocation,2, 0.2, 0, 0.2);
 			block.getWorld().spawnParticle(Particle.WATER_SPLASH, particleLocation, 10, 0.2, 0, 0.2);
 		}
 	}
@@ -218,6 +212,9 @@ public class BCauldron {
 				changed = true;
 			}
 		}
+		if (P.use1_9) {
+			block.getWorld().playSound(block.getLocation(), Sound.ITEM_BOTTLE_FILL, 1f, 1f);
+		}
 		// Bukkit Bug, inventory not updating while in event so this
 		// will delay the give
 		// but could also just use deprecated updateInventory()
@@ -245,6 +242,20 @@ public class BCauldron {
 
 	public void cookEffect() {
 		if (BUtil.isChunkLoaded(block) && LegacyUtil.isCauldronHeatsource(block.getRelative(BlockFace.DOWN))) {
+			Color color = getParticleColor();
+			// Colorable spirally spell, 0 count enables color instead of the offset variables
+			// Configurable RGB color. The last parameter seems to control the hue and motion, but i couldn't find
+			// how exactly in the client code. 1025 seems to be the best for color brightness and upwards motion
+			block.getWorld().spawnParticle(Particle.SPELL_MOB, getRandParticleLoc(), 0,
+				((double) color.getRed()) / 255.0,
+				((double) color.getGreen()) / 255.0,
+				((double) color.getBlue()) / 255.0,
+				1025.0);
+
+			if (BConfig.minimalParticles) {
+				return;
+			}
+
 			if (particleRandom.nextFloat() > 0.85) {
 				// Dark pixely smoke cloud at 0.4 random in x and z
 				// 0 count enables direction, send to y = 1 with speed 0.09
@@ -254,17 +265,9 @@ public class BCauldron {
 				// A Water Splash with 0.2 offset in x and z
 				block.getWorld().spawnParticle(Particle.WATER_SPLASH, particleLocation, 1, 0.2, 0, 0.2);
 			}
-			Color color = getParticleColor();
-			// Colorable spirally spell, 0 count enables color instead of the offset variables
-			// Configurable RGB color. 1025 seems to be the best for color brightness and upwards motion
-			block.getWorld().spawnParticle(Particle.SPELL_MOB, getRandParticleLoc(), 0,
-				((double) color.getRed()) / 255.0,
-				((double) color.getGreen()) / 255.0,
-				((double) color.getBlue()) / 255.0,
-				1025.0);
 
 			if (P.use1_13 && particleRandom.nextFloat() > 0.4) {
-				// Two hovering pixely dust clouds, a bit offset with DustOptions to give some color and size
+				// Two hovering pixely dust clouds, a bit offset and with DustOptions to give some color and size
 				block.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 2, 0.15, 0.2, 0.15, new Particle.DustOptions(color, 1.5f));
 			}
 		}
@@ -352,51 +355,17 @@ public class BCauldron {
 		return particleColor;
 	}
 
-	public static void processNextCookEffects() {
+	public static void processCookEffects() {
 		if (!BConfig.enableCauldronParticles) return;
-		int size = bcauldrons.size();
-		if (size <= 0) {
+		if (bcauldrons.isEmpty()) {
 			return;
 		}
+		final float chance = 1f / PARTICLEPAUSE;
 
-		// The Particle Delay is reduced every time, independent on how many cauldrons are processed
-		// If it did not reach zero as we process all cauldrons, skip some tasks
-		particleDelay--;
-		if (particleCauldron >= size) {
-			if (particleDelay <= 0) {
-				particleCauldron = 0;
-				particleDelay = PARTICLEPAUSE;
+		for (BCauldron cauldron : bcauldrons.values()) {
+			if (particleRandom.nextFloat() < chance) {
+				cauldron.cookEffect();
 			}
-			return;
-		}
-
-		// Decide how many cauldrons to process this time
-		int cauldronsToProcess;
-		if (size < PARTICLEPAUSE) {
-			cauldronsToProcess = 1;
-		} else {
-			cauldronsToProcess = (int) Math.ceil((float) size / (float) PARTICLEPAUSE);
-		}
-
-		Iterator<BCauldron> cauldronsIter = bcauldrons.values().iterator();
-		int currentPos = 0;
-		for (; currentPos < particleCauldron; currentPos++) {
-			cauldronsIter.next();
-		}
-
-		while (cauldronsToProcess > 0) {
-			if (particleCauldron >= size) {
-				// We reached the end of the Cauldron list
-				if (particleDelay <= 0) {
-					// Processing all cauldrons took as long as the delay, start over right away
-					particleCauldron = 0;
-					particleDelay = PARTICLEPAUSE;
-				}
-				return;
-			}
-			cauldronsIter.next().cookEffect();
-			cauldronsToProcess--;
-			particleCauldron++;
 		}
 	}
 
@@ -528,7 +497,7 @@ public class BCauldron {
 	 * Recalculate the Cauldron Particle Recipe
 	 */
 	public static void reload() {
-		for (BCauldron cauldron : BCauldron.bcauldrons.values()) {
+		for (BCauldron cauldron : bcauldrons.values()) {
 			cauldron.particleRecipe = null;
 			cauldron.particleColor = null;
 			if (BConfig.enableCauldronParticles) {
@@ -546,10 +515,25 @@ public class BCauldron {
 		return bcauldrons.remove(block) != null;
 	}
 
+	/**
+	 * Are any Cauldrons in that World
+	 */
+	public static boolean hasDataInWorld(World world) {
+		return bcauldrons.keySet().stream().anyMatch(block -> block.getWorld().equals(world));
+	}
+
 	// unloads cauldrons that are in a unloading world
 	// as they were written to file just before, this is safe to do
-	public static void onUnload(String name) {
-		bcauldrons.keySet().removeIf(block -> block.getWorld().getName().equals(name));
+	public static void onUnload(World world) {
+		bcauldrons.keySet().removeIf(block -> block.getWorld().equals(world));
+	}
+
+	/**
+	 * Unload all Cauldrons that have are in a unloaded World
+	 */
+	public static void unloadWorlds() {
+		List<World> worlds = P.p.getServer().getWorlds();
+		bcauldrons.keySet().removeIf(block -> !worlds.contains(block.getWorld()));
 	}
 
 	public static void save(ConfigurationSection config, ConfigurationSection oldData) {

@@ -6,6 +6,7 @@ import com.dre.brewery.api.events.barrel.BarrelAccessEvent;
 import com.dre.brewery.api.events.barrel.BarrelDestroyEvent;
 import com.dre.brewery.api.events.barrel.BarrelRemoveEvent;
 import com.dre.brewery.filedata.BConfig;
+import com.dre.brewery.integration.barrel.BlocklockerBarrel;
 import com.dre.brewery.integration.barrel.GriefPreventionBarrel;
 import com.dre.brewery.integration.barrel.LWCBarrel;
 import com.dre.brewery.integration.barrel.LogBlockBarrel;
@@ -175,6 +176,32 @@ public class IntegrationListener implements Listener {
 			}
 		}
 
+		if (BConfig.useBlocklocker) {
+			if (P.p.getServer().getPluginManager().isPluginEnabled("BlockLocker")) {
+				try {
+					if (!BlocklockerBarrel.checkAccess(event)) {
+						P.p.msg(event.getPlayer(), P.p.languageReader.get("Error_NoBarrelAccess"));
+						event.setCancelled(true);
+						return;
+					}
+				} catch (Throwable e) {
+					event.setCancelled(true);
+					P.p.errorLog("Failed to Check BlockLocker for Barrel Open Permissions!");
+					P.p.errorLog("Brewery was tested with BlockLocker v1.9");
+					P.p.errorLog("Disable the BlockLocker support in the config and do /brew reload");
+					e.printStackTrace();
+					Player player = event.getPlayer();
+					if (player.hasPermission("brewery.admin") || player.hasPermission("brewery.mod")) {
+						P.p.msg(player, "&cBlockLocker check Error, Brewery was tested with v1.9 of BlockLocker");
+						P.p.msg(player, "&cSet &7useBlockLocker: false &cin the config and /brew reload");
+					} else {
+						P.p.msg(player, "&cError opening Barrel, please report to an Admin!");
+					}
+					return;
+				}
+			}
+		}
+
 		if (BConfig.virtualChestPerms) {
 			Player player = event.getPlayer();
 			BlockState originalBlockState = event.getClickedBlock().getState();
@@ -218,8 +245,10 @@ public class IntegrationListener implements Listener {
 		if (!BConfig.useLWC) return;
 
 		if (event.hasPlayer()) {
+			Player player = event.getPlayerOptional();
+			assert player != null;
 			try {
-				if (LWCBarrel.denyDestroy(event.getPlayerOptional(), event.getBarrel())) {
+				if (LWCBarrel.denyDestroy(player, event.getBarrel())) {
 					event.setCancelled(true);
 				}
 			} catch (Throwable e) {
@@ -228,7 +257,6 @@ public class IntegrationListener implements Listener {
 				P.p.errorLog("Brewery was tested with version 4.5.0 of LWC!");
 				P.p.errorLog("Disable the LWC support in the config and do /brew reload");
 				e.printStackTrace();
-				Player player = event.getPlayerOptional();
 				if (player.hasPermission("brewery.admin") || player.hasPermission("brewery.mod")) {
 					P.p.msg(player, "&cLWC check Error, Brewery was tested with up to v4.5.0 of LWC");
 					P.p.msg(player, "&cSet &7useLWC: false &cin the config and /brew reload");

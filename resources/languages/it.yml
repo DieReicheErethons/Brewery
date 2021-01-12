@@ -30,6 +30,8 @@ CMD_Configname: '&aName for the Config is: &f&v1'
 CMD_Configname_Error: '&cCould not find item in your hand'
 CMD_Static: '&aLa pozione è ora statica e non cambierà né nei barili né negli alambicchi.'
 CMD_UnLabel: '&aEtichetta rimossa!'
+CMD_Drink: '&aYou drank one &v1'
+CMD_DrinkOther: '&a&v1 drinks one &v2'
 
 # Errori
 Error_ConfigUpdate: 'Versione della configurazione di Brewery sconosciuta: v&v1, la configurazione non è stato aggiornata!'
@@ -45,6 +47,7 @@ Error_Recipeload: '&cNon è stato possibile recuperare tutte le ricette: ulterio
 Error_ShowHelp: Usa &6/brew help &fper visualizzare l''aiuto
 Error_UnknownCommand: Comando sconosciuto
 Error_YmlRead: 'Could not read file config.yml, please make sure the file is in valid yml format (correct spaces, using '' '' etc.)'
+Error_NoPlayer: 'Player not found: &v1'
 
 # Varie
 Etc_Barrel: Barile
@@ -55,6 +58,7 @@ Etc_SealingTable: Brew Sealing Table
 # Aiuto
 Help_Copy: '&6/brew copy [Quantità]&9 Copia la pozione che tieni in mano'
 Help_Create: '&6/brew create <icetta> [Qualità] [Giocatore] &9Crea una miscela con una qualità data (1-10)'
+Help_Give: '&6/brew give <Recipe> [Quality] [Player] &9Alias for /brew create'
 Help_Delete: '&6/brew delete &9Elimina la pozione nella tua mano'
 Help_Help: '&6/brew help <Pagina> &9Mostra una specifica pagina dell''aiuto'
 Help_Info: '&6/brew info&9 Mostra il tuo livello di sbronza attuale e la qualità'
@@ -71,6 +75,8 @@ Help_WakeupCheck: '&6/brew wakeup check &9Ti teletrasporta nei punti di risvegli
 Help_WakeupCheckSpecific: '&6/brew wakeup check <ID> &9Ti teletrasporta al punto di risveglio con id <id>'
 Help_WakeupList: '&6/brew wakeup list <Pagina> <Mondo>&9 Elenca tutti i punti di risveglio di <Mondo>'
 Help_WakeupRemove: '&6/brew wakeup remove <ID> &9Rimuove il punto di risveglio con id <id>'
+Help_Puke: '&6/brew puke [Player] [Amount] &9Makes you or [Player] puke'
+Help_Drink: '&6/brew drink <Recipe> [Quality] [Player] &9Simulates [Player] drinking a Brew'
 
 # Permessi
 Perms_NoBarrelCreate: '&cNon hai il permesso di costruire barili!'
@@ -102,6 +108,6 @@ Player_WakeNoCheck: '&cNessun punto di risveglio attivo al momento.'
 Player_WakeNoPoints: '&cNon ci sono punti di risveglio!'
 Player_WakeNotExist: '&cIl punto di risveglio con id &6&v1 &cnon esiste!'
 Player_WakeTeleport: 'Teletrasportato al punto di risveglio di id &6&v1&f alla posizione &6&v2 &v3, &v4, &v5'
-Player_ShopSealBrew: '&eBrews should be sealed before selling them'
+Player_ShopSealBrew: '&eIt''s recommended to trade/sell &6sealed &eBrews'
 Player_Drunkeness: 'Ubriacatura'
 Player_Hangover: 'Hangover'

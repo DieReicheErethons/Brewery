@@ -5,6 +5,7 @@ import com.dre.brewery.Brew;
 import com.dre.brewery.P;
 import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.utility.BUtil;
+import com.dre.brewery.utility.StringParser;
 import com.dre.brewery.utility.Tuple;
 import org.apache.commons.lang.NotImplementedException;
 import org.bukkit.Color;
@@ -18,7 +19,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.ListIterator;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * A Recipe used to Brew a Brewery Potion.
@@ -31,6 +33,7 @@ public class BRecipe {
 	// info
 	private String[] name;
 	private boolean saveInData; // If this recipe should be saved in data and loaded again when the server restarts. Applicable to non-config recipes
+	private String optionalID; // ID that might be given by the config
 
 	// brewing
 	private List<RecipeItem> ingredients = new ArrayList<>(); // Items and amounts
@@ -49,8 +52,8 @@ public class BRecipe {
 
 	// drinking
 	private List<BEffect> effects = new ArrayList<>(); // Special Effects when drinking
-	private List<String> playercmds; // Commands executed as the player when drinking
-	private List<String> servercmds; // Commands executed as the server when drinking
+	private @Nullable List<Tuple<Integer, String>> playercmds; // Commands executed as the player when drinking
+	private @Nullable List<Tuple<Integer, String>> servercmds; // Commands executed as the server when drinking
 	private String drinkMsg; // Message when drinking
 	private String drinkTitle; // Title to show when drinking
 
@@ -84,6 +87,7 @@ public class BRecipe {
 	@Nullable
 	public static BRecipe fromConfig(ConfigurationSection configSectionRecipes, String recipeId) {
 		BRecipe recipe = new BRecipe();
+		recipe.optionalID = recipeId;
 		String nameList = configSectionRecipes.getString(recipeId + ".name");
 		if (nameList != null) {
 			String[] name = nameList.split("/");
@@ -127,27 +131,10 @@ public class BRecipe {
 			return null;
 		}
 
-		recipe.lore = loadLore(configSectionRecipes, recipeId + ".lore");
+		recipe.lore = loadQualityStringList(configSectionRecipes, recipeId + ".lore", StringParser.ParseType.LORE);
 
-		recipe.servercmds = BUtil.loadCfgStringList(configSectionRecipes, recipeId + ".servercommands");
-		recipe.playercmds = BUtil.loadCfgStringList(configSectionRecipes, recipeId + ".playercommands");
-
-		if (recipe.servercmds != null && !recipe.servercmds.isEmpty()) {
-			for (ListIterator<String> iter = recipe.servercmds.listIterator(); iter.hasNext(); ) {
-				String cmd = iter.next();
-				if (cmd.startsWith("/")) {
-					iter.set(cmd.substring(1));
-				}
-			}
-		}
-		if (recipe.playercmds != null && !recipe.playercmds.isEmpty()) {
-			for (ListIterator<String> iter = recipe.playercmds.listIterator(); iter.hasNext(); ) {
-				String cmd = iter.next();
-				if (cmd.startsWith("/")) {
-					iter.set(cmd.substring(1));
-				}
-			}
-		}
+		recipe.servercmds = loadQualityStringList(configSectionRecipes, recipeId + ".servercommands", StringParser.ParseType.CMD);
+		recipe.playercmds = loadQualityStringList(configSectionRecipes, recipeId + ".playercommands", StringParser.ParseType.CMD);
 
 		recipe.drinkMsg = P.p.color(BUtil.loadCfgString(configSectionRecipes, recipeId + ".drinkmessage"));
 		recipe.drinkTitle = P.p.color(BUtil.loadCfgString(configSectionRecipes, recipeId + ".drinktitle"));
@@ -307,33 +294,14 @@ public class BRecipe {
 		return ingredients;
 	}
 
+	/**
+	 * Load a list of strings from a ConfigurationSection and parse the quality
+	 */
 	@Nullable
-	public static List<Tuple<Integer, String>> loadLore(ConfigurationSection cfg, String path) {
+	public static List<Tuple<Integer, String>> loadQualityStringList(ConfigurationSection cfg, String path, StringParser.ParseType parseType) {
 		List<String> load = BUtil.loadCfgStringList(cfg, path);
 		if (load != null) {
-			List<Tuple<Integer, String>> lore = new ArrayList<>(load.size());
-			for (String line : load) {
-				line = P.p.color(line);
-				int plus = 0;
-				if (line.startsWith("+++")) {
-					plus = 3;
-					line = line.substring(3);
-				} else if (line.startsWith("++")) {
-					plus = 2;
-					line = line.substring(2);
-				} else if (line.startsWith("+")) {
-					plus = 1;
-					line = line.substring(1);
-				}
-				if (line.startsWith(" ")) {
-					line = line.substring(1);
-				}
-				if (!line.startsWith("§")) {
-					line = "§9" + line;
-				}
-				lore.add(new Tuple<>(plus, line));
-			}
-			return lore;
+			return load.stream().map(line -> StringParser.parseQuality(line, parseType)).collect(Collectors.toList());
 		}
 		return null;
 	}
@@ -449,13 +417,15 @@ public class BRecipe {
 	}
 
 	public void applyDrinkFeatures(Player player, int quality) {
-		if (playercmds != null && !playercmds.isEmpty()) {
-			for (String cmd : playercmds) {
+		List<String> playerCmdsForQuality = getPlayercmdsForQuality(quality);
+		if (playerCmdsForQuality != null) {
+			for (String cmd : playerCmdsForQuality) {
 				player.performCommand(BUtil.applyPlaceholders(cmd, player.getName(), quality));
 			}
 		}
-		if (servercmds != null && !servercmds.isEmpty()) {
-			for (String cmd : servercmds) {
+		List<String> serverCmdsForQuality = getServercmdsForQuality(quality);
+		if (serverCmdsForQuality != null) {
+			for (String cmd : serverCmdsForQuality) {
 				P.p.getServer().dispatchCommand(P.p.getServer().getConsoleSender(), BUtil.applyPlaceholders(cmd, player.getName(), quality));
 			}
 		}
@@ -577,6 +547,10 @@ public class BRecipe {
 		return false;
 	}
 
+	public Optional<String> getOptionalID() {
+		return Optional.ofNullable(optionalID);
+	}
+
 	public List<RecipeItem> getIngredients() {
 		return ingredients;
 	}
@@ -628,7 +602,25 @@ public class BRecipe {
 
 	@Nullable
 	public List<String> getLoreForQuality(int quality) {
-		if (lore == null) return null;
+		return getStringsForQuality(quality, lore);
+	}
+
+	@Nullable
+	public List<String> getPlayercmdsForQuality(int quality) {
+		return getStringsForQuality(quality, playercmds);
+	}
+
+	@Nullable
+	public List<String> getServercmdsForQuality(int quality) {
+		return getStringsForQuality(quality, servercmds);
+	}
+
+	/**
+	 * Get a quality filtered list of supported attributes
+	 */
+	@Nullable
+	public List<String> getStringsForQuality(int quality, List<Tuple<Integer, String>> source) {
+		if (source == null) return null;
 		int plus;
 		if (quality <= 3) {
 			plus = 1;
@@ -637,8 +629,8 @@ public class BRecipe {
 		} else {
 			plus = 3;
 		}
-		List<String> list = new ArrayList<>(lore.size());
-		for (Tuple<Integer, String> line : lore) {
+		List<String> list = new ArrayList<>(source.size());
+		for (Tuple<Integer, String> line : source) {
 			if (line.first() == 0 || line.first() == plus) {
 				list.add(line.second());
 			}
@@ -653,11 +645,13 @@ public class BRecipe {
 		return cmData;
 	}
 
-	public List<String> getPlayercmds() {
+	@Nullable
+	public List<Tuple<Integer, String>> getPlayercmds() {
 		return playercmds;
 	}
 
-	public List<String> getServercmds() {
+	@Nullable
+	public List<Tuple<Integer, String>> getServercmds() {
 		return servercmds;
 	}
 
@@ -764,6 +758,34 @@ public class BRecipe {
 		return recipes;
 	}
 
+	/**
+	 * Get the BRecipe that has the given name as one of its quality names.
+	 */
+	@Nullable
+	public static BRecipe getMatching(String name) {
+		BRecipe mainNameRecipe = get(name);
+		if (mainNameRecipe != null) {
+			return mainNameRecipe;
+		}
+		for (BRecipe recipe : recipes) {
+			if (recipe.getName(1).equalsIgnoreCase(name)) {
+				return recipe;
+			} else if (recipe.getName(10).equalsIgnoreCase(name)) {
+				return recipe;
+			}
+		}
+		for (BRecipe recipe : recipes) {
+			if (recipe.getOptionalID().isPresent() && recipe.getOptionalID().get().equalsIgnoreCase(name)) {
+				return recipe;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Get the BRecipe that has that name as its name
+	 */
+	@Nullable
 	public static BRecipe get(String name) {
 		for (BRecipe recipe : recipes) {
 			if (recipe.getRecipeName().equalsIgnoreCase(name)) {
@@ -880,10 +902,16 @@ public class BRecipe {
 		 * Add Commands that are executed by the player on drinking
 		 */
 		public Builder addPlayerCmds(String... cmds) {
-			if (recipe.playercmds == null) {
-				recipe.playercmds = new ArrayList<>(cmds.length);
+			ArrayList<Tuple<Integer,String>> playercmds = new ArrayList<>(cmds.length);
+
+			for (String cmd : cmds) {
+				playercmds.add(StringParser.parseQuality(cmd, StringParser.ParseType.CMD));
 			}
-			Collections.addAll(recipe.playercmds, cmds);
+			if (recipe.playercmds == null) {
+				recipe.playercmds = playercmds;
+			} else {
+				recipe.playercmds.addAll(playercmds);
+			}
 			return this;
 		}
 
@@ -891,10 +919,16 @@ public class BRecipe {
 		 * Add Commands that are executed by the server on drinking
 		 */
 		public Builder addServerCmds(String... cmds) {
-			if (recipe.servercmds == null) {
-				recipe.servercmds = new ArrayList<>(cmds.length);
+			ArrayList<Tuple<Integer,String>> servercmds = new ArrayList<>(cmds.length);
+
+			for (String cmd : cmds) {
+				servercmds.add(StringParser.parseQuality(cmd, StringParser.ParseType.CMD));
 			}
-			Collections.addAll(recipe.servercmds, cmds);
+			if (recipe.servercmds == null) {
+				recipe.servercmds = servercmds;
+			} else {
+				recipe.servercmds.addAll(servercmds);
+			}
 			return this;
 		}
 
@@ -911,6 +945,14 @@ public class BRecipe {
 		 */
 		public Builder drinkTitle(String title) {
 			recipe.drinkTitle = title;
+			return this;
+		}
+
+		/**
+		 * Set the Optional ID of this recipe
+		 */
+		public Builder setID(String id) {
+			recipe.optionalID = id;
 			return this;
 		}
 

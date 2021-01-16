@@ -47,7 +47,7 @@ public class PlayerListener implements Listener {
 		if (P.use1_14 && BSealer.isBSealer(clickedBlock)) {
 			event.setCancelled(true);
 			if(!TownyUtil.isInsideTown(clickedBlock.getLocation(), player)) {
-				P.p.msg(player, "§cYou can only open Sealing Tables in your own Town!");
+				P.p.msg(player, P.p.languageReader.get("Towny_ForeignSealingTable"));
 				return;
 			}
 			if (BConfig.enableSealingTable) {
@@ -94,7 +94,7 @@ public class PlayerListener implements Listener {
 			event.setCancelled(true);
 
 			if(!TownyUtil.isInsideTown(clickedBlock.getLocation(), player)) {
-				P.p.msg(player, "§cYou can only open Barrels in your own Town!");
+				P.p.msg(player, P.p.languageReader.get("Towny_ForeignBarrel"));
 				return;
 			}
 

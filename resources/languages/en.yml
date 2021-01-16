@@ -1,3 +1,5 @@
+Prefix: '&2[Brewery]'
+
 # Brew
 Brew_-times: -times
 Brew_BadPotion: Ruined Potion
@@ -111,3 +113,11 @@ Player_WakeTeleport: 'Teleport to Wakeup Point with the id: &6&v1&f At position:
 Player_ShopSealBrew: '&eIt''s recommended to trade/sell &6sealed &eBrews'
 Player_Drunkeness: 'Drunkeness'
 Player_Hangover: 'Your Hangover'
+
+Towny_BarrelOverreachingBorders: "&cBarrel goes over your Towns boarder!"
+Towny_BrewingInForeignTown: "&cYou can only brew in your own town!"
+Towny_TakeBrewFromForeignTown: "&cYou shall not steal from another Town!"
+Towny_MakeBarrelOutsideOfTown: "&cYou can't create Barrels outside of your town!"
+Towny_ForeignSealingTable: "&cYou can only open Sealing Tables in your own Town!"
+Towny_ForeignBarrel: "&cYou can only open Barrels in your own Town!"
+Towny_ForeignBrewer: "&cYou cant modify a brewer in another Town"

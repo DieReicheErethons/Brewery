@@ -86,7 +86,7 @@ public class InventoryListener implements Listener {
 
 		if(!TownyUtil.isInsideTown(event.getClickedInventory().getLocation())) return;
 		if(!TownyUtil.isInsideTown(event.getClickedInventory().getLocation(),(Player) event.getWhoClicked())) {
-			P.p.msg((Player) event.getWhoClicked(), "§cYou cant modify a brewer in another Town");
+			P.p.msg((Player) event.getWhoClicked(), P.p.languageReader.get("Towny_ClickBrewerInForeignTown"));
 			event.setCancelled(true);
 			return;
 		}
@@ -255,7 +255,7 @@ public class InventoryListener implements Listener {
 		if (event.getInventory().getType() == InventoryType.BARREL) {
 			if(!TownyUtil.isInsideTown(event.getInventory().getLocation())) return;
 			if(!TownyUtil.isInsideTown(event.getInventory().getLocation(),(Player)event.getPlayer())) {
-				P.p.msg(event.getPlayer(), "§cYou cant opem barrels in another Town");
+				P.p.msg(event.getPlayer(), P.p.languageReader.get("Towny_ForeignBarrel"));
 				event.setCancelled(true);
 				return;
 			}

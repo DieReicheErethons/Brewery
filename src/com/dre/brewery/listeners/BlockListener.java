@@ -37,7 +37,7 @@ public class BlockListener implements Listener {
 				return;
 			}
 			if(!TownyUtil.isInsideTown(event.getBlock().getLocation(), player)) {
-				P.p.msg(player, "§cYou can't create Barrels outside of your town!");
+				P.p.msg(player, P.p.languageReader.get("Towny_MakeBarrelOutsideOfTown"));
 				return;
 			}
 			if ( Barrel.create(event.getBlock(), player)) {

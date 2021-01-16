@@ -134,7 +134,7 @@ public class BCauldron {
 		// if not empty
 		if (LegacyUtil.getFillLevel(block) != EMPTY) {
 			if(!TownyUtil.isInsideTown(block.getLocation(),player)) {
-				P.p.msg(player, "§cYou can only brew in your own town!");
+				P.p.msg(player, P.p.languageReader.get("Towny_BrewingInForeignTown"));
 				return false;
 			}
 
@@ -381,7 +381,7 @@ public class BCauldron {
 		}
 		if(!TownyUtil.isInsideTown(clickedBlock.getLocation())) return;
 		if(!TownyUtil.isInsideTown(clickedBlock.getLocation(), player)){
-			P.p.msg(player, "§cYou shall not steal from another Town!");
+			P.p.msg(player, P.p.languageReader.get("Towny_TakeBrewFromForeignTown"));
 			return;
 		}
 		if (materialInHand == LegacyUtil.CLOCK) {

@@ -304,7 +304,7 @@ public class BarrelBody {
 					
 					if(!TownyUtil.isInsideTown(block.getLocation(), player)){
 						if(player != null)
-							P.p.msg(player, "§cBarrel goes over your Towns boarder!");
+							P.p.msg(player, P.p.languageReader.get("Towny_BarrelOverreachingBorders"));
 						return block;
 					}
 					
@@ -381,7 +381,7 @@ public class BarrelBody {
 
 					if(!TownyUtil.isInsideTown(block.getLocation(), player)){
 						if(player != null)
-							P.p.msg(player, "§cBarrel goes over your Towns boarder!");
+							P.p.msg(player, P.p.languageReader.get("Towny_BarrelOverreachingBorders"));
 						return block;
 					}
 

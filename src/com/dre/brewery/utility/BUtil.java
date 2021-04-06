@@ -13,6 +13,9 @@ import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.Nullable;
@@ -76,6 +79,26 @@ public class BUtil {
 			Math.min(255, (int) ((nextColor.getGreen() * percentNext) + (prevColor.getGreen() * percentPrev))),
 			Math.min(255, (int) ((nextColor.getBlue() * percentNext) + (prevColor.getBlue() * percentPrev)))
 		);
+	}
+
+	/**
+	 * Sets the Item in the Players hand, depending on which hand he used and if the hand should be swapped
+	 *
+	 * @param event Interact Event to tell which hand the player used
+	 * @param mat The Material of the new item
+	 * @param swapped If true, will set the opposite Hand instead of the one he used
+	 */
+	@SuppressWarnings("deprecation")
+	public static void setItemInHand(PlayerInteractEvent event, Material mat, boolean swapped) {
+		if (P.use1_9) {
+			if ((event.getHand() == EquipmentSlot.OFF_HAND) != swapped) {
+				event.getPlayer().getInventory().setItemInOffHand(new ItemStack(mat));
+			} else {
+				event.getPlayer().getInventory().setItemInMainHand(new ItemStack(mat));
+			}
+		} else {
+			event.getPlayer().setItemInHand(new ItemStack(mat));
+		}
 	}
 
 	/**

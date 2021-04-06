@@ -906,6 +906,9 @@ openLargeBarrelEverywhere: true
 # Ob nur ein Minimum an Kessel-Partikeln dargestellt werden sollen [false]
 minimalParticles: false
 
+# Ob das Entleeren von Brewery Tränken mit Hilfe von Trichtern möglich ist, um die Glasflasche zurück zu bekommen [true]
+brewHopperDump: true
+
 
 # -- Chat Veränderungs Einstellungen --
 

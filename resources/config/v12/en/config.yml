@@ -510,6 +510,9 @@ openLargeBarrelEverywhere: true
 # If Cauldron Particles should be reduced to the bare minimum [false]
 minimalParticles: false
 
+# Allow emptying brews into hoppers to discard brews while keeping the glass bottle [true]
+brewHopperDump: true
+
 
 # -- Chat Distortion Settings --
 

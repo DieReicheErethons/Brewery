@@ -175,7 +175,7 @@ public class BDistiller {
 			BlockState now = standBlock.getState();
 			if (now instanceof BrewingStand) {
 				BrewingStand stand = (BrewingStand) now;
-				if (brewTime == -1) { // only check at the beginning (and end) for distillables
+				if (brewTime == -1) { // check at the beginning for distillables
 					if (!prepareForDistillables(stand)) {
 						return;
 					}
@@ -185,7 +185,7 @@ public class BDistiller {
 				stand.setBrewingTime((int) ((float) brewTime / ((float) runTime / (float) DISTILLTIME)) + 1);
 
 				if (brewTime <= 1) { // Done!
-					contents = getDistillContents(stand.getInventory());
+					contents = getDistillContents(stand.getInventory()); // Get the contents again at the end just in case
 					stand.setBrewingTime(0);
 					stand.update();
 					if (!runDistill(stand.getInventory(), contents)) {

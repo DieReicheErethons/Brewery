@@ -373,9 +373,7 @@ public class Brew implements Cloneable {
 				// quality decides 10% - 100%
 				alc *= ((float) quality / 10.0f);
 			}
-			if (alc > 0) {
-				return alc;
-			}
+			return alc;
 		}
 		return 0;
 	}
@@ -516,7 +514,10 @@ public class Brew implements Cloneable {
 	}
 
 	public int getOrCalcAlc() {
-		return alc > 0 ? alc : (alc = calcAlcohol());
+		if (alc == 0) {
+			alc = calcAlcohol();
+		}
+		return alc;
 	}
 
 	public void setAlc(int alc) {

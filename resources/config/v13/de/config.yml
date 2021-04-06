@@ -740,6 +740,7 @@ recipes:
     cookingtime: 2
     color: BLACK
     difficulty: 3
+    alcohol: -6
     lore: + &8Bestimmt schon eine Woche alt
     effects:
       - REGENERATION/1/2-5
@@ -844,7 +845,7 @@ recipes:
 # Pumpkin Spice Bier,
 # Melonen Vodka
 
-# Es gibt noch viele Minecraft Items wie Ranken und items von anderen plugins die sich gut als Zutaten machen würden
+# Es gibt noch viele Minecraft Items wie Ranken, Milch und items von anderen plugins die sich gut als Zutaten machen würden
 
 
 

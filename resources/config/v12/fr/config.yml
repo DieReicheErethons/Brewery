@@ -438,6 +438,7 @@ recipes:
       cookingtime: 2
       color: BLACK
       difficulty: 3
+      alcohol: -6
       effects:
       - REGENERATION/1/2-5
       - SPEED/1/30-140

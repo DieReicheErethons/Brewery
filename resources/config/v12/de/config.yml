@@ -440,6 +440,7 @@ recipes:
       cookingtime: 2
       color: BLACK
       difficulty: 3
+      alcohol: -6
       lore: + &8Bestimmt schon eine Woche alt
       effects:
       - REGENERATION/1/2-5

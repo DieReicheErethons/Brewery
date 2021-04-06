@@ -182,6 +182,7 @@ public class BPlayer {
 
 		applyEffects(effects, player, PlayerEffectEvent.EffectType.DRINK);
 		if (brewAlc < 0) {
+			// If the Drink has negative alcohol, drain some alcohol
 			bPlayer.drain(player, -brewAlc);
 		} else if (brewAlc > 0) {
 			bPlayer.drunkeness += brewAlc;
@@ -190,21 +191,25 @@ public class BPlayer {
 			} else {
 				bPlayer.quality += brewAlc;
 			}
-			
+
 			applyEffects(getQualityEffects(quality, brewAlc), player, PlayerEffectEvent.EffectType.QUALITY);
 		}
-		
+
 		if (bPlayer.drunkeness > 100) {
 			bPlayer.drinkCap(player);
 		}
-		bPlayer.syncToSQL(false);
-		
+
 		if (BConfig.showStatusOnDrink) {
-			bPlayer.showDrunkeness(player);
+			// Only show the Player his drunkeness if he is already drunk, or this drink changed his drunkeness
+			if (brewAlc != 0 || bPlayer.drunkeness > 0) {
+				bPlayer.showDrunkeness(player);
+			}
 		}
 
 		if (bPlayer.drunkeness <= 0) {
 			bPlayer.remove();
+		} else {
+			bPlayer.syncToSQL(false);
 		}
 		return true;
 	}

@@ -8,6 +8,7 @@ import com.dre.brewery.utility.LegacyUtil;
 import com.dre.brewery.utility.PermissionUtil;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -40,6 +41,9 @@ public class PlayerListener implements Listener {
 					if (Brew.isBrew(item)) {
 						event.setCancelled(true);
 						BUtil.setItemInHand(event, Material.GLASS_BOTTLE, false);
+						if (P.use1_11) {
+							clickedBlock.getWorld().playSound(clickedBlock.getLocation(), Sound.ITEM_BOTTLE_EMPTY, 1f, 1f);
+						}
 					}
 				}
 			}

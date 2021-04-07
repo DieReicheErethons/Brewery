@@ -132,7 +132,7 @@
 			<url>https://repo.codemc.org/repository/maven-public</url>
 		</repository>
 		<repository>
-			<!-- MMOLib -->
+			<!-- MythicLib (MMOItems) -->
 			<id>MMOPlugins</id>
 			<url>https://mvn.lumine.io/repository/maven-releases/</url>
 		</repository>
@@ -252,9 +252,9 @@
 			<scope>provided</scope>
 		</dependency>-->
 		<dependency>
-			<groupId>net.Indyuce</groupId>
-			<artifactId>MMOLib</artifactId>
-			<version>1.4.0</version>
+			<groupId>io.lumine</groupId>
+			<artifactId>MythicLib</artifactId>
+			<version>1.0.18</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

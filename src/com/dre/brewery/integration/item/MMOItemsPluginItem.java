@@ -3,7 +3,7 @@ package com.dre.brewery.integration.item;
 import com.dre.brewery.P;
 import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.recipe.PluginItem;
-import net.mmogroup.mmolib.api.item.NBTItem;
+import io.lumine.mythic.lib.api.item.NBTItem;
 import org.bukkit.inventory.ItemStack;
 
 public class MMOItemsPluginItem extends PluginItem {
@@ -15,7 +15,8 @@ public class MMOItemsPluginItem extends PluginItem {
 	@Override
 	public boolean matches(ItemStack item) {
 		if (BConfig.hasMMOItems == null) {
-			BConfig.hasMMOItems = P.p.getServer().getPluginManager().isPluginEnabled("MMOItems");
+			BConfig.hasMMOItems = P.p.getServer().getPluginManager().isPluginEnabled("MMOItems")
+				&& P.p.getServer().getPluginManager().isPluginEnabled("MythicLib");
 		}
 		if (!BConfig.hasMMOItems) return false;
 

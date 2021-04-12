@@ -76,7 +76,7 @@
 				<version>3.2.0</version>
 				<executions>
 					<execution>
-						<phase>install</phase>
+						<phase>compile</phase>
 						<goals>
 							<goal>jar</goal>
 						</goals>
@@ -109,6 +109,7 @@
 			<url>http://nexus.hc.to/content/repositories/pub_releases</url>
 		</repository>
 		<repository>
+			<!-- WorldEdit, WorldGuard -->
 			<id>sk89q-repo</id>
 			<url>http://maven.sk89q.com/repo/</url>
 		</repository>
@@ -165,6 +166,12 @@
 			<artifactId>VaultAPI</artifactId>
 			<version>1.6</version>
 			<scope>provided</scope>
+			<exclusions>
+				<exclusion>
+					<artifactId>*</artifactId>
+					<groupId>*</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.sk89q</groupId>
@@ -181,7 +188,7 @@
 		<dependency>
 			<groupId>com.sk89q.worldedit</groupId>
 			<artifactId>worldedit-bukkit</artifactId>
-			<version>7.2.0-SNAPSHOT</version>
+			<version>7.2.4</version>
 			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
@@ -193,7 +200,7 @@
 		<dependency>
 			<groupId>com.sk89q.worldedit</groupId>
 			<artifactId>worldedit-core</artifactId>
-			<version>7.2.0-SNAPSHOT</version>
+			<version>7.2.3</version>
 			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
@@ -219,11 +226,17 @@
 			<artifactId>LWCX</artifactId>
 			<version>2.2.6</version>
 			<scope>provided</scope>
+			<exclusions>
+				<exclusion>
+					<artifactId>*</artifactId>
+					<groupId>*</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.github.TechFortress</groupId>
 			<artifactId>GriefPrevention</artifactId>
-			<version>16.16.0</version>
+			<version>16.17.1</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -241,7 +254,7 @@
 		<dependency>
 			<groupId>com.github.TheBusyBiscuit</groupId>
 			<artifactId>Slimefun4</artifactId>
-			<version>RC-17</version>
+			<version>RC-21</version>
 			<scope>provided</scope>
 		</dependency>
 		<!--<dependency>
@@ -278,7 +291,7 @@
 		<dependency>
 			<groupId>nl.rutgerkok</groupId>
 			<artifactId>blocklocker</artifactId>
-			<version>1.9</version>
+			<version>1.9.2</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

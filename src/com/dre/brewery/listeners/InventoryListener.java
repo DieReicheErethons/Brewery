@@ -86,7 +86,7 @@ public class InventoryListener implements Listener {
 
 		if(!TownyUtil.isInsideTown(event.getClickedInventory().getLocation())) return;
 		if(!TownyUtil.isInsideTown(event.getClickedInventory().getLocation(),(Player) event.getWhoClicked())) {
-			P.p.msg((Player) event.getWhoClicked(), P.p.languageReader.get("Towny_ClickBrewerInForeignTown"));
+			P.p.msg((Player) event.getWhoClicked(), P.p.languageReader.get("Towny_ForeignBrewer"));
 			event.setCancelled(true);
 			return;
 		}

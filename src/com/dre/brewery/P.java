@@ -452,7 +452,11 @@ public class P extends JavaPlugin {
 	// Utility
 
 	public void msg(CommandSender sender, String msg) {
-		sender.sendMessage(color(languageReader.get("Prefix") + "&f" + msg));
+		if(languageReader == null){
+			sender.sendMessage(color("&2[Brewery] &f" + msg));
+		} else {
+			sender.sendMessage(color(languageReader.get("Prefix") + " &f" + msg));
+		}
 	}
 
 	public void log(String msg) {

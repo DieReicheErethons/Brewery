@@ -89,6 +89,7 @@ public class BConfig {
 	public static boolean enableEncode;
 	public static boolean alwaysShowQuality; // Always show quality stars
 	public static boolean alwaysShowAlc; // Always show alc%
+	public static boolean brewHopperDump; // Allow Dumping of Brew liquid into Hoppers
 
 	//Features
 	public static boolean craftSealingTable; // Allow Crafting of Sealing Table
@@ -240,6 +241,7 @@ public class BConfig {
 		minimalParticles = config.getBoolean("minimalParticles", false);
 		useOffhandForCauldron = config.getBoolean("useOffhandForCauldron", false);
 		loadDataAsync = config.getBoolean("loadDataAsync", true);
+		brewHopperDump = config.getBoolean("brewHopperDump", false);
 
 		if (P.use1_14) {
 			MCBarrel.maxBrews = config.getInt("maxBrewsInMCBarrels", 6);

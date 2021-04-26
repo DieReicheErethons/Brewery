@@ -373,9 +373,7 @@ public class Brew implements Cloneable {
 				// quality decides 10% - 100%
 				alc *= ((float) quality / 10.0f);
 			}
-			if (alc > 0) {
-				return alc;
-			}
+			return alc;
 		}
 		return 0;
 	}
@@ -516,7 +514,10 @@ public class Brew implements Cloneable {
 	}
 
 	public int getOrCalcAlc() {
-		return alc > 0 ? alc : (alc = calcAlcohol());
+		if (alc == 0) {
+			alc = calcAlcohol();
+		}
+		return alc;
 	}
 
 	public void setAlc(int alc) {
@@ -1004,18 +1005,20 @@ public class Brew implements Cloneable {
 			quality = 10;
 		}
 		alc = Math.min(alc, Short.MAX_VALUE);
+		alc = Math.max(alc, Short.MIN_VALUE);
+
 		out.writeByte((byte) quality);
 		int bools = 0;
-		bools |= ((distillRuns != 0) ? 1 : 0);
-		bools |= (ageTime > 0 ? 2 : 0);
-		bools |= (wood != -1 ? 4 : 0);
+		bools |= ((distillRuns != 0) 	? 1 : 0);
+		bools |= (ageTime > 0 	? 2 : 0);
+		bools |= (wood != -1 	? 4 : 0);
 		bools |= (currentRecipe != null ? 8 : 0);
-		bools |= (unlabeled ? 16 : 0);
-		bools |= (immutable ? 32 : 0);
-		bools |= (alc > 0 ? 64 : 0);
-		bools |= (stripped ? 128 : 0);
+		bools |= (unlabeled 	? 16 : 0);
+		bools |= (immutable 	? 32 : 0);
+		bools |= (alc != 0 		? 64 : 0);
+		bools |= (stripped 		? 128 : 0);
 		out.writeByte(bools);
-		if (alc > 0) {
+		if (alc != 0) {
 			out.writeShort(alc);
 		}
 		if (distillRuns != 0) {
@@ -1142,7 +1145,7 @@ public class Brew implements Cloneable {
 			if (brew.quality != 0) {
 				idConfig.set("quality", brew.quality);
 			}
-			if (brew.alc > 0) {
+			if (brew.alc != 0) {
 				idConfig.set("alc", brew.alc);
 			}
 			if (brew.distillRuns != 0) {

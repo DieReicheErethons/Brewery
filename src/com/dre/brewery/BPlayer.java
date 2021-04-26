@@ -8,6 +8,7 @@ import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.lore.BrewLore;
 import com.dre.brewery.recipe.BEffect;
 import com.dre.brewery.utility.BUtil;
+import com.dre.brewery.utility.PermissionUtil;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.apache.commons.lang.mutable.MutableInt;
@@ -44,6 +45,7 @@ public class BPlayer {
 	private int quality = 0;// = quality of drunkeness * drunkeness
 	private int drunkeness = 0;// = amount of drunkeness
 	private int offlineDrunk = 0;// drunkeness when gone offline
+	private int alcRecovery = -1; // Drunkeness reduce per minute
 	private Vector push = new Vector(0, 0, 0);
 	private int time = 20;
 
@@ -160,6 +162,7 @@ public class BPlayer {
 		if (bPlayer == null) {
 			bPlayer = addPlayer(player);
 		}
+		// In this event the added alcohol amount is calculated, based on the sensitivity permission
 		BrewDrinkEvent drinkEvent = new BrewDrinkEvent(brew, meta, player, bPlayer);
 		if (meta != null) {
 			P.p.getServer().getPluginManager().callEvent(drinkEvent);
@@ -180,30 +183,36 @@ public class BPlayer {
 		int quality = drinkEvent.getQuality();
 		List<PotionEffect> effects = getBrewEffects(brew.getEffects(), quality);
 
-		if (brewAlc < 1) {
-			//no alcohol so we dont need to add a BPlayer
-			applyEffects(effects, player, PlayerEffectEvent.EffectType.DRINK);
-			if (bPlayer.drunkeness <= 0) {
-				bPlayer.remove();
-			}
-			return true;
-		}
-
-		bPlayer.drunkeness += brewAlc;
-		if (quality > 0) {
-			bPlayer.quality += quality * brewAlc;
-		} else {
-			bPlayer.quality += brewAlc;
-		}
 		applyEffects(effects, player, PlayerEffectEvent.EffectType.DRINK);
-		applyEffects(getQualityEffects(quality, brewAlc), player, PlayerEffectEvent.EffectType.QUALITY);
+		if (brewAlc < 0) {
+			// If the Drink has negative alcohol, drain some alcohol
+			bPlayer.drain(player, -brewAlc);
+		} else if (brewAlc > 0) {
+			bPlayer.drunkeness += brewAlc;
+			if (quality > 0) {
+				bPlayer.quality += quality * brewAlc;
+			} else {
+				bPlayer.quality += brewAlc;
+			}
+
+			applyEffects(getQualityEffects(quality, brewAlc), player, PlayerEffectEvent.EffectType.QUALITY);
+		}
 
 		if (bPlayer.drunkeness > 100) {
 			bPlayer.drinkCap(player);
 		}
-		bPlayer.syncToSQL(false);
+
 		if (BConfig.showStatusOnDrink) {
-			bPlayer.showDrunkeness(player);
+			// Only show the Player his drunkeness if he is already drunk, or this drink changed his drunkeness
+			if (brewAlc != 0 || bPlayer.drunkeness > 0) {
+				bPlayer.showDrunkeness(player);
+			}
+		}
+
+		if (bPlayer.drunkeness <= 0) {
+			bPlayer.remove();
+		} else {
+			bPlayer.syncToSQL(false);
 		}
 		return true;
 	}
@@ -342,7 +351,7 @@ public class BPlayer {
 	}
 
 	// drain the drunkeness by amount, returns true when player has to be removed
-	public boolean drain(Player player, int amount) {
+	public boolean drain(@Nullable Player player, int amount) {
 		if (drunkeness > 0) {
 			quality -= getQuality() * amount;
 		}
@@ -518,6 +527,16 @@ public class BPlayer {
 			}
 			if (home != null) {
 				player.teleport(home);
+			}
+		}
+	}
+
+	public void recalculateAlcRecovery(@Nullable Player player) {
+		setAlcRecovery(2);
+		if (player != null) {
+			int rec = PermissionUtil.getAlcRecovery(player);
+			if (rec > -1) {
+				setAlcRecovery(rec);
 			}
 		}
 	}
@@ -800,17 +819,18 @@ public class BPlayer {
 	// decreasing drunkeness over time
 	public static void onUpdate() {
 		if (!players.isEmpty()) {
-			int soberPerMin = 2;
 			Iterator<Map.Entry<String, BPlayer>> iter = players.entrySet().iterator();
 			while (iter.hasNext()) {
 				Map.Entry<String, BPlayer> entry = iter.next();
 				String uuid = entry.getKey();
 				BPlayer bplayer = entry.getValue();
-				if (bplayer.drunkeness == soberPerMin) {
-					// Prevent 0 drunkeness
-					soberPerMin++;
+				Player playerIfOnline = BUtil.getPlayerfromString(uuid);
+
+				if (bplayer.getAlcRecovery() == -1) {
+					bplayer.recalculateAlcRecovery(playerIfOnline);
 				}
-				if (bplayer.drain(BUtil.getPlayerfromString(uuid), soberPerMin)) {
+
+				if (bplayer.drain(playerIfOnline, bplayer.getAlcRecovery())) {
 					iter.remove();
 					if (BConfig.sqlDrunkSync && BConfig.sqlSync != null) {
 						BConfig.sqlSync.removePlayer(UUID.fromString(uuid));
@@ -896,4 +916,11 @@ public class BPlayer {
 		return offlineDrunk;
 	}
 
+	public int getAlcRecovery() {
+		return alcRecovery;
+	}
+
+	public void setAlcRecovery(int alcRecovery) {
+		this.alcRecovery = alcRecovery;
+	}
 }

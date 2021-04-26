@@ -2,10 +2,12 @@ package com.dre.brewery.api.events.brew;
 
 import com.dre.brewery.BPlayer;
 import com.dre.brewery.Brew;
+import com.dre.brewery.utility.PermissionUtil;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -25,8 +27,28 @@ public class BrewDrinkEvent extends BrewEvent implements Cancellable {
 		super(brew, meta);
 		this.player = player;
 		this.bPlayer = bPlayer;
-		alc = brew.getOrCalcAlc();
+		alc = calcAlcWSensitivity(brew.getOrCalcAlc());
 		quality = brew.getQuality();
+	}
+
+	/**
+	 * Calculate the Alcohol to add to the player using his sensitivity permission (if existing)
+	 *
+	 * <p>If the player has been given the brewery.sensitive.xx permission, will factor in the sensitivity to the given alcohol amount.
+	 * <p>Will return the calculated value without changing the event
+	 *
+	 * @param alc The base amount of alcohol
+	 * @return The amount of alcohol given the players alcohol-sensitivity
+	 */
+	@Contract(pure = true)
+	public int calcAlcWSensitivity(int alc) {
+		int sensitive = PermissionUtil.getDrinkSensitive(player);
+		if (sensitive == 0) {
+			alc = 0;
+		} else if (sensitive > 0) {
+			alc *= ((float) sensitive) / 100f;
+		}
+		return alc;
 	}
 
 	public Player getPlayer() {

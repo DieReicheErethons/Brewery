@@ -3,12 +3,14 @@ package com.dre.brewery.listeners;
 import com.dre.brewery.*;
 import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.filedata.UpdateChecker;
+import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.LegacyUtil;
 import com.dre.brewery.utility.TownyUtil;
 
 import com.dre.brewery.utility.PermissionUtil;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -31,11 +33,28 @@ public class PlayerListener implements Listener {
 		if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
 
 		Player player = event.getPlayer();
-		if (player.isSneaking()) return;
-
 		Material type = clickedBlock.getType();
 
-		// Interacting with a Cauldron
+		// -- Clicking an Hopper --
+		if (type == Material.HOPPER) {
+			if (BConfig.brewHopperDump && event.getPlayer().isSneaking()) {
+				if (!P.use1_9 || event.getHand() == EquipmentSlot.HAND) {
+					ItemStack item = event.getItem();
+					if (Brew.isBrew(item)) {
+						event.setCancelled(true);
+						BUtil.setItemInHand(event, Material.GLASS_BOTTLE, false);
+						if (P.use1_11) {
+							clickedBlock.getWorld().playSound(clickedBlock.getLocation(), Sound.ITEM_BOTTLE_EMPTY, 1f, 1f);
+						}
+					}
+				}
+			}
+			return;
+		}
+
+		if (player.isSneaking()) return;
+
+		// -- Interacting with a Cauldron --
 		if (type == Material.CAULDRON) {
 			// Handle the Cauldron Interact
 			// The Event might get cancelled in here
@@ -44,6 +63,7 @@ public class PlayerListener implements Listener {
 		}
 
 
+		// -- Opening a Sealing Table --
 		if (P.use1_14 && BSealer.isBSealer(clickedBlock)) {
 			event.setCancelled(true);
 			if(!TownyUtil.isInsideTown(clickedBlock.getLocation(), player)) {
@@ -58,6 +78,8 @@ public class PlayerListener implements Listener {
 			}
 			return;
 		}
+
+		// -- Opening a Minecraft Barrel --
 		if (P.use1_14 && type == Material.BARREL) {
 			if (!player.hasPermission("brewery.openbarrel.mc") && TownyUtil.isInsideTown(clickedBlock.getLocation())) {
 				event.setCancelled(true);
@@ -72,7 +94,7 @@ public class PlayerListener implements Listener {
 		}
 		
 
-		// Access a Barrel
+		// -- Access a Barrel --
 		Barrel barrel = null;
 		if (LegacyUtil.isWoodPlanks(type)) {
 			if (BConfig.openEverywhere) {

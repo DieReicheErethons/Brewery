@@ -400,7 +400,7 @@ public class BCauldron {
 							if (item.getAmount() > 1) {
 								item.setAmount(item.getAmount() - 1);
 							} else {
-								setItemInHand(event, Material.AIR, false);
+								BUtil.setItemInHand(event, Material.AIR, false);
 							}
 						}
 					}
@@ -469,27 +469,14 @@ public class BCauldron {
 					}
 				} else {
 					if (isBucket) {
-						setItemInHand(event, Material.BUCKET, handSwap);
+						BUtil.setItemInHand(event, Material.BUCKET, handSwap);
 					} else if (isBottle) {
-						setItemInHand(event, Material.GLASS_BOTTLE, handSwap);
+						BUtil.setItemInHand(event, Material.GLASS_BOTTLE, handSwap);
 					} else {
-						setItemInHand(event, Material.AIR, handSwap);
+						BUtil.setItemInHand(event, Material.AIR, handSwap);
 					}
 				}
 			}
-		}
-	}
-
-	@SuppressWarnings("deprecation")
-	public static void setItemInHand(PlayerInteractEvent event, Material mat, boolean swapped) {
-		if (P.use1_9) {
-			if ((event.getHand() == EquipmentSlot.OFF_HAND) != swapped) {
-				event.getPlayer().getInventory().setItemInOffHand(new ItemStack(mat));
-			} else {
-				event.getPlayer().getInventory().setItemInMainHand(new ItemStack(mat));
-			}
-		} else {
-			event.getPlayer().setItemInHand(new ItemStack(mat));
 		}
 	}
 

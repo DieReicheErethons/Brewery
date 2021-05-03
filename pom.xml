@@ -56,13 +56,13 @@
 						<configuration>
 							<artifactSet>
 								<includes>
-									<include>org.bstats:bstats-bukkit</include>
+									<include>org.bstats:*</include>
 								</includes>
 							</artifactSet>
 							<relocations>
 								<relocation>
-									<pattern>org.bstats.bukkit</pattern>
-									<shadedPattern>com.dre.brewery.integration</shadedPattern>
+									<pattern>org.bstats</pattern>
+									<shadedPattern>com.dre.brewery.integration.bstats</shadedPattern>
 								</relocation>
 							</relocations>
 						</configuration>
@@ -98,7 +98,7 @@
 	<repositories>
 		<repository>
 			<id>md_5-public</id>
-			<url>http://repo.md-5.net/content/groups/public/</url>
+			<url>https://repo.md-5.net/content/groups/public/</url>
 		</repository>
 		<repository>
 			<id>spigot-repo</id>
@@ -106,12 +106,12 @@
 		</repository>
 		<repository>
 			<id>vault-repo</id>
-			<url>http://nexus.hc.to/content/repositories/pub_releases</url>
+			<url>https://nexus.hc.to/content/repositories/pub_releases</url>
 		</repository>
 		<repository>
 			<!-- WorldEdit, WorldGuard -->
 			<id>sk89q-repo</id>
-			<url>http://maven.sk89q.com/repo/</url>
+			<url>https://maven.sk89q.com/repo/</url>
 		</repository>
 		<repository>
 			<!-- GriefPrevention, SlimeFun, Towny, Brewery -->
@@ -127,11 +127,11 @@
 			<id>chestshop-repo</id>
 			<url>https://repo.minebench.de/</url>
 		</repository>
-		<repository>
-			<!-- bStats -->
-			<id>CodeMC</id>
-			<url>https://repo.codemc.org/repository/maven-public</url>
-		</repository>
+        <repository>
+            <!-- BlockLocker -->
+            <id>CodeMC</id>
+            <url>https://repo.codemc.org/repository/maven-public</url>
+        </repository>
 		<repository>
 			<!-- MythicLib (MMOItems) -->
 			<id>MMOPlugins</id>
@@ -297,7 +297,7 @@
 		<dependency>
 			<groupId>org.bstats</groupId>
 			<artifactId>bstats-bukkit</artifactId>
-			<version>1.5</version>
+			<version>2.2.1</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>

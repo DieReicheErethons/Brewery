@@ -23,7 +23,7 @@ public class SlimefunPluginItem extends PluginItem {
 		try {
 			SlimefunItem sfItem = SlimefunItem.getByItem(item);
 			if (sfItem != null) {
-				return sfItem.getID().equalsIgnoreCase(getItemId());
+				return sfItem.getId().equalsIgnoreCase(getItemId());
 			}
 		} catch (Throwable e) {
 			e.printStackTrace();

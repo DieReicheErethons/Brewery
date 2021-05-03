@@ -25,7 +25,7 @@ public class SlimefunPluginItem extends PluginItem {
 			if (sfItem != null) {
 				return sfItem.getId().equalsIgnoreCase(getItemId());
 			}
-		} catch (Throwable e) {
+		} catch (Exception | LinkageError e) {
 			e.printStackTrace();
 			P.p.errorLog("Could not check Slimefun for Item ID");
 			BConfig.hasSlimefun = false;

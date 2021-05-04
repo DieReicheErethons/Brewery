@@ -10,7 +10,8 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 public class TownyUtil {
-    private TownyUtil() {}
+    private TownyUtil() {
+    }
 
     public static boolean isInsideTown(Location location) {
         try {
@@ -32,6 +33,11 @@ public class TownyUtil {
             return isInsideTown(location);
         try {
             final Resident resident = TownyAPI.getInstance().getDataSource().getResident(player.getName());
+            TownBlock townBlock = TownyAPI.getInstance().getTownBlock(location);
+            if (townBlock != null && townBlock.hasResident()
+                    && resident.equals(townBlock.getResident()))
+                return true;
+
             final Town town = TownyAPI.getInstance().getTownBlock(location).getTown();
             if (resident.getTown().equals(town)) {
                 // Execute your code here

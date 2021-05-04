@@ -4,7 +4,7 @@
 
 	<groupId>com.dre</groupId>
 	<artifactId>Brewery</artifactId>
-	<version>3.0.2.1</version>
+	<version>3.0.2.2</version>
 	<name>Brewery</name>
 	<description>A plugin to make brews and drinks through mixing, fermentation and aging</description>
 

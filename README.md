@@ -9,6 +9,10 @@ Find the Project Page on [Spigot](https://www.spigotmc.org/resources/brewery.308
 Also see  [Wiki](https://github.com/DieReicheErethons/Brewery/wiki) | [Releases](https://github.com/DieReicheErethons/Brewery/releases) | [Changelog](https://github.com/DieReicheErethons/Brewery/wiki/changelog) | [Commits](https://github.com/DieReicheErethons/Brewery/commits/master)
 
 
+### JavaDoc
+
+https://javadoc.jitpack.io/com/github/DieReicheErethons/Brewery/-3166f8c81b-1/javadoc/index.html
+
 ### Maven
 
 ```XML

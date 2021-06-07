@@ -11,6 +11,7 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -50,19 +51,12 @@ public class PlayerListener implements Listener {
 			return;
 		}
 
-		if (player.isSneaking()) return;
-
-		// -- Interacting with a Cauldron --
-		if (type == Material.CAULDRON) {
-			// Handle the Cauldron Interact
-			// The Event might get cancelled in here
-			BCauldron.clickCauldron(event);
-			return;
-		}
-
-
 		// -- Opening a Sealing Table --
 		if (P.use1_14 && BSealer.isBSealer(clickedBlock)) {
+			if (player.isSneaking()) {
+				event.setUseInteractedBlock(Event.Result.DENY);
+				return;
+			}
 			event.setCancelled(true);
 			if (BConfig.enableSealingTable) {
 				BSealer sealer = new BSealer(player);
@@ -70,6 +64,16 @@ public class PlayerListener implements Listener {
 			} else {
 				P.p.msg(player, P.p.languageReader.get("Error_SealingTableDisabled"));
 			}
+			return;
+		}
+
+		if (player.isSneaking()) return;
+
+		// -- Interacting with a Cauldron --
+		if (type == Material.CAULDRON) {
+			// Handle the Cauldron Interact
+			// The Event might get cancelled in here
+			BCauldron.clickCauldron(event);
 			return;
 		}
 

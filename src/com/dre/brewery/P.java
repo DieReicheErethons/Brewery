@@ -422,7 +422,7 @@ public class P extends JavaPlugin {
 					}
 				}
 			}));
-		} catch (Throwable e) {
+		} catch (Exception | LinkageError e) {
 			e.printStackTrace();
 		}
 	}

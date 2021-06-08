@@ -82,6 +82,7 @@ public class BConfig {
 	public static boolean enableLoginDisallow;
 	public static boolean enablePuke;
 	public static String homeType;
+	public static boolean enableWake;
 
 	//Brew
 	public static boolean colorInBarrels; // color the Lore while in Barrels
@@ -229,6 +230,7 @@ public class BConfig {
 		stumbleModifier = ((float) config.getInt("stumblePercent", 100)) / 100f;
 		showStatusOnDrink = config.getBoolean("showStatusOnDrink", false);
 		homeType = config.getString("homeType", null);
+		enableWake = config.getBoolean("enableWake", false);
 		craftSealingTable = config.getBoolean("craftSealingTable", false);
 		enableSealingTable = config.getBoolean("enableSealingTable", false);
 		colorInBarrels = config.getBoolean("colorInBarrels", false);

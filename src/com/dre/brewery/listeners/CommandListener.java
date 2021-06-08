@@ -512,7 +512,8 @@ public class CommandListener implements CommandExecutor {
 					int ingQ = ingredients.getIngredientQuality(recipe);
 					int cookQ = ingredients.getCookingQuality(recipe, false);
 					int cookDistQ = ingredients.getCookingQuality(recipe, true);
-					P.p.log(recipe.getRecipeName() + ": ingQlty: " + ingQ + ", cookQlty:" + cookQ + ", cook+DistQlty: " + cookDistQ);
+					int ageQ = ingredients.getAgeQuality(recipe, brew.getAgeTime());
+					P.p.log(recipe.getRecipeName() + ": ingQlty: " + ingQ + ", cookQlty:" + cookQ + ", cook+DistQlty: " + cookDistQ + ", ageQlty: " + ageQ);
 				}
 				BRecipe distill = ingredients.getBestRecipe(brew.getWood(), brew.getAgeTime(), true);
 				BRecipe nonDistill = ingredients.getBestRecipe(brew.getWood(), brew.getAgeTime(), false);
@@ -535,7 +536,8 @@ public class CommandListener implements CommandExecutor {
 				int ingQ = ingredients.getIngredientQuality(recipe);
 				int cookQ = ingredients.getCookingQuality(recipe, false);
 				int cookDistQ = ingredients.getCookingQuality(recipe, true);
-				P.p.log("ingQlty: " + ingQ + ", cookQlty:" + cookQ + ", cook+DistQlty: " + cookDistQ);
+				int ageQ = ingredients.getAgeQuality(recipe, brew.getAgeTime());
+				P.p.log("ingQlty: " + ingQ + ", cookQlty:" + cookQ + ", cook+DistQlty: " + cookDistQ  + ", ageQlty: " + ageQ);
 			}
 
 			P.p.msg(player, "Debug Info for item written into Log");

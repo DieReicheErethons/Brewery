@@ -493,13 +493,11 @@ public class BPlayer {
 			}
 
 		} else if (offlineDrunk - drunkeness >= 30) {
-			if (BConfig.enableWake) {
+			if (BConfig.enableWake && !player.hasPermission("brewery.bypass.teleport")) {
 				Location randomLoc = Wakeup.getRandom(player.getLocation());
 				if (randomLoc != null) {
-					if (!player.hasPermission("brewery.bypass.teleport")) {
-						player.teleport(randomLoc);
-						P.p.msg(player, P.p.languageReader.get("Player_Wake"));
-					}
+					player.teleport(randomLoc);
+					P.p.msg(player, P.p.languageReader.get("Player_Wake"));
 				}
 			}
 			offlineDrunk = 0;

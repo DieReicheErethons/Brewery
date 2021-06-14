@@ -32,7 +32,7 @@ public class Wakeup {
 			return null;
 		}
 
-		List worldWakes = wakeups.stream()
+		List<Wakeup> worldWakes = wakeups.stream()
 			.filter(w -> w.active)
 			.filter(w -> w.loc.getWorld().equals(playerLoc.getWorld()))
 			.collect(Collectors.toList());

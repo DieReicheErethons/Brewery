@@ -341,7 +341,7 @@ public class P extends JavaPlugin {
 			}));
 
 			metrics.addCustomChart(new SimplePie("wakeups", () -> {
-				if (!BConfig.enableHome) {
+				if (!BConfig.enableWake) {
 					return "disabled";
 				}
 				int wakeups = Wakeup.wakeups.size();

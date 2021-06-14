@@ -60,7 +60,7 @@ public class BCauldron {
 		if (!BUtil.isChunkLoaded(block)) {
 			increaseState();
 		} else {
-			if (block.getType() != Material.CAULDRON) {
+			if (!LegacyUtil.isWaterCauldron(block.getType())) {
 				// Catch any WorldEdit etc. removal
 				return false;
 			}
@@ -172,21 +172,35 @@ public class BCauldron {
 
 		if (P.use1_13) {
 			BlockData data = block.getBlockData();
+			if (!(data instanceof Levelled)) {
+				bcauldrons.remove(block);
+				return false;
+			}
 			Levelled cauldron = ((Levelled) data);
 			if (cauldron.getLevel() <= 0) {
 				bcauldrons.remove(block);
 				return false;
 			}
-			cauldron.setLevel(cauldron.getLevel() - 1);
-			// Update the new Level to the Block
-			// We have to use the BlockData variable "data" here instead of the casted "cauldron"
-			// otherwise < 1.13 crashes on plugin load for not finding the BlockData Class
-			block.setBlockData(data);
 
-			if (cauldron.getLevel() <= 0) {
+			if (LegacyUtil.WATER_CAULDRON != null && cauldron.getLevel() == 1) {
+				// Empty Cauldron
+				P.p.log("Empty Cauldron");
+				block.setType(Material.CAULDRON);
 				bcauldrons.remove(block);
 			} else {
-				changed = true;
+				P.p.log("Setting level to : " + (cauldron.getLevel() - 1));
+				cauldron.setLevel(cauldron.getLevel() - 1);
+
+				// Update the new Level to the Block
+				// We have to use the BlockData variable "data" here instead of the casted "cauldron"
+				// otherwise < 1.13 crashes on plugin load for not finding the BlockData Class
+				block.setBlockData(data);
+
+				if (cauldron.getLevel() <= 0) {
+					bcauldrons.remove(block);
+				} else {
+					changed = true;
+				}
 			}
 
 		} else {
@@ -399,9 +413,10 @@ public class BCauldron {
 			}
 			return;
 
-			// reset cauldron when refilling to prevent unlimited source of potions
+			// Ignore Water Buckets
 		} else if (materialInHand == Material.WATER_BUCKET) {
 			if (!P.use1_9) {
+				// reset < 1.9 cauldron when refilling to prevent unlimited source of potions
 				// We catch >=1.9 cases in the Cauldron Listener
 				if (LegacyUtil.getFillLevel(clickedBlock) == 1) {
 					// will only remove when existing

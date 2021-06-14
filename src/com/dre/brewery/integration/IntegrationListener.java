@@ -324,7 +324,7 @@ public class IntegrationListener implements Listener {
 		if (!BConfig.hasMMOItems) return;
 		try {
 			if (event.getAction() == Action.RIGHT_CLICK_BLOCK && event.hasItem() && event.getHand() == EquipmentSlot.HAND) {
-				if (event.getClickedBlock() != null && event.getClickedBlock().getType() == Material.CAULDRON) {
+				if (event.getClickedBlock() != null && LegacyUtil.isWaterCauldron(event.getClickedBlock().getType())) {
 					NBTItem item = NBTItem.get(event.getItem());
 					if (item.hasType()) {
 						for (RecipeItem rItem : BCauldronRecipe.acceptedCustom) {

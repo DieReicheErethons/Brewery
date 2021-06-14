@@ -257,8 +257,11 @@ public class BUtil {
 	 * @return True if the Block can be destroyed
 	 */
 	public static boolean blockDestroy(Block block, Player player, BarrelDestroyEvent.Reason reason) {
+		if (block == null || block.getType() == null) {
+			return true;
+		}
 		Material type = block.getType();
-		if (type == Material.CAULDRON) {
+		if (type == Material.CAULDRON || type == LegacyUtil.WATER_CAULDRON) {
 			// will only remove when existing
 			BCauldron.remove(block);
 			return true;

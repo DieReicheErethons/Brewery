@@ -27,19 +27,13 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.*;
 
 public class BPlayer {
 	private static Map<String, BPlayer> players = new HashMap<>();// Players uuid and BPlayer
 	private static Map<Player, MutableInt> pTasks = new HashMap<>();// Player and count
 	private static int taskId;
-	private static boolean modAge = true;
 	private static Random pukeRand;
-	private static Method itemHandle;
-	private static Field age;
 
 	private final String uuid;
 	private int quality = 0;// = quality of drunkeness * drunkeness
@@ -620,39 +614,23 @@ public class BPlayer {
 		Item item = player.getWorld().dropItem(loc, new ItemStack(BConfig.pukeItem));
 		item.setVelocity(direction);
 		item.setPickupDelay(32767); // Item can never be picked up when pickup delay is 32767
-		//item.setTicksLived(6000 - pukeDespawntime); // Well this does not work...
-		if (modAge) {
-			int pukeDespawntime = BConfig.pukeDespawntime;
-			if (pukeDespawntime >= 5800) {
-				return;
-			}
-			try {
-				if (itemHandle == null) {
-					itemHandle = Class.forName(P.p.getServer().getClass().getPackage().getName() + ".entity.CraftItem").getMethod("getHandle", (Class<?>[]) null);
-				}
-				Object entityItem = itemHandle.invoke(item, (Object[]) null);
-				if (age == null) {
-					age = entityItem.getClass().getDeclaredField("age");
-					age.setAccessible(true);
-				}
+		if (P.use1_14) item.setPersistent(false); // No need to save Puke items
 
-				// Setting the age determines when an item is despawned. At age 6000 it is removed.
-				if (pukeDespawntime <= 0) {
-					// Just show the item for a tick
-					age.setInt(entityItem, 5999);
-				} else if (pukeDespawntime <= 120) {
-					// it should despawn in less than 6 sec. Add up to half of that randomly
-					age.setInt(entityItem, 6000 - pukeDespawntime + pukeRand.nextInt((int) (pukeDespawntime / 2F)));
-				} else {
-					// Add up to 5 sec randomly
-					age.setInt(entityItem, 6000 - pukeDespawntime + pukeRand.nextInt(100));
-				}
-				return;
-			} catch (InvocationTargetException | ClassNotFoundException | NoSuchFieldException | IllegalAccessException | NoSuchMethodException e) {
-				e.printStackTrace();
-			}
-			modAge = false;
-			P.p.errorLog("Failed to set Despawn Time on item " + BConfig.pukeItem.name());
+		int pukeDespawntime = BConfig.pukeDespawntime;
+		if (pukeDespawntime >= 5800) {
+			return;
+		}
+
+		// Setting the age determines when an item is despawned. At age 6000 it is removed.
+		if (pukeDespawntime <= 0) {
+			// Just show the item for a few ticks
+			item.setTicksLived(5996);
+		} else if (pukeDespawntime <= 120) {
+			// it should despawn in less than 6 sec. Add up to half of that randomly
+			item.setTicksLived(6000 - pukeDespawntime + pukeRand.nextInt((int) (pukeDespawntime / 2F)));
+		} else {
+			// Add up to 5 sec randomly
+			item.setTicksLived(6000 - pukeDespawntime + pukeRand.nextInt(100));
 		}
 	}
 

@@ -118,6 +118,7 @@ public class PermissionUtil {
 	 */
 	public static int getRangedPermission(Permissible player, String subPermission) {
 		Optional<PermissionAttachmentInfo> found = player.getEffectivePermissions().stream().
+			filter(PermissionAttachmentInfo::getValue). // Only active permissions
 			filter(x -> x.getPermission().startsWith(subPermission)).
 			findFirst();
 

@@ -220,6 +220,7 @@ public class BDistiller {
 						if (P.use1_11) {
 							// The trick below doesnt work in 1.11, but we dont need it anymore
 							// This should only happen with older Brews that have been made with the old Potion Color System
+							// This causes standard potions to not brew in the brewing stand if put together with Brews, but the bubble animation will play
 							stand.setBrewingTime(Short.MAX_VALUE);
 						} else {
 							// Brewing time is sent and stored as short

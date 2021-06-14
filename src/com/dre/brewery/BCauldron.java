@@ -182,13 +182,12 @@ public class BCauldron {
 				return false;
 			}
 
+			// If the Water_Cauldron type exists and the cauldron is on last level
 			if (LegacyUtil.WATER_CAULDRON != null && cauldron.getLevel() == 1) {
 				// Empty Cauldron
-				P.p.log("Empty Cauldron");
 				block.setType(Material.CAULDRON);
 				bcauldrons.remove(block);
 			} else {
-				P.p.log("Setting level to : " + (cauldron.getLevel() - 1));
 				cauldron.setLevel(cauldron.getLevel() - 1);
 
 				// Update the new Level to the Block

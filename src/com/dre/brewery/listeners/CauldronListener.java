@@ -29,9 +29,6 @@ public class CauldronListener implements Listener {
 		BlockState newState = event.getNewState();
 		Material newType = newState.getType();
 
-		P.p.log("OldType: " + currentType + " NewType: " + newType);
-
-
 		if (currentType == Material.WATER_CAULDRON) {
 			if (newType != Material.WATER_CAULDRON) {
 				// Change from water to anything else
@@ -42,8 +39,6 @@ public class CauldronListener implements Listener {
 				// Water level change
 				Levelled oldCauldron = ((Levelled) event.getBlock().getBlockData());
 				Levelled newCauldron = ((Levelled) newState.getBlockData());
-
-				P.p.log("OldLevel: " + oldCauldron.getLevel() + " Newlevel: " + newCauldron.getLevel());
 
 				// Water Level increased somehow, might be Bucket, Bottle, Rain, etc.
 				if (newCauldron.getLevel() > oldCauldron.getLevel()) {

@@ -102,7 +102,7 @@ Player_WakeCreated: '&aIl punto di risveglio con id &6&v1 &aè stato creato con 
 Player_WakeDeleted: '&aIl punto di risveglio con id &6&v1 &aè stato rimosso con successo!'
 Player_WakeFilled: '&cIl punto di risveglio con id  &6&v1&c alla posizione &6&v2 &v3, &v4, &v5&c è stato coperto da dei blocchi!'
 Player_WakeHint1: 'Per andare al prossimo punto di risveglio dai un pugno nell''aria o ripeti il comando'
-Player_WakeHint2: 'Per rimuoverlo: &9/br wakeup cancel'
+Player_WakeHint2: 'Per rimuoverlo: &9/brew wakeup cancel'
 Player_WakeLast: '&aQuesto era l''ultimo punto di risveglio.'
 Player_WakeNoCheck: '&cNessun punto di risveglio attivo al momento.'
 Player_WakeNoPoints: '&cNon ci sono punti di risveglio!'

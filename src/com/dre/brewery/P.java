@@ -1,3 +1,27 @@
+/**
+ *
+ *     Brewery Minecraft-Plugin for an alternate Brewing Process
+ *     Copyright (C) 2021 Milan Albrecht
+ *
+ *     This file is part of Brewery.
+ *
+ *     Brewery is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     Brewery is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with Brewery.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
+
+
 package com.dre.brewery;
 
 import com.dre.brewery.filedata.BConfig;
@@ -16,6 +40,7 @@ import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.LegacyUtil;
 import org.apache.commons.lang.math.NumberUtils;
 import org.bstats.bukkit.Metrics;
+import org.bstats.charts.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -286,12 +311,12 @@ public class P extends JavaPlugin {
 
 	private void setupMetrics() {
 		try {
-			Metrics metrics = new Metrics(this);
-			metrics.addCustomChart(new Metrics.SingleLineChart("drunk_players", BPlayer::numDrunkPlayers));
-			metrics.addCustomChart(new Metrics.SingleLineChart("brews_in_existence", () -> brewsCreated));
-			metrics.addCustomChart(new Metrics.SingleLineChart("barrels_built", () -> Barrel.barrels.size()));
-			metrics.addCustomChart(new Metrics.SingleLineChart("cauldrons_boiling", () -> BCauldron.bcauldrons.size()));
-			metrics.addCustomChart(new Metrics.AdvancedPie("brew_quality", () -> {
+			Metrics metrics = new Metrics(this, 3494);
+			metrics.addCustomChart(new SingleLineChart("drunk_players", BPlayer::numDrunkPlayers));
+			metrics.addCustomChart(new SingleLineChart("brews_in_existence", () -> brewsCreated));
+			metrics.addCustomChart(new SingleLineChart("barrels_built", Barrel.barrels::size));
+			metrics.addCustomChart(new SingleLineChart("cauldrons_boiling", BCauldron.bcauldrons::size));
+			metrics.addCustomChart(new AdvancedPie("brew_quality", () -> {
 				Map<String, Integer> map = new HashMap<>(8);
 				map.put("excellent", exc);
 				map.put("good", good);
@@ -300,14 +325,14 @@ public class P extends JavaPlugin {
 				map.put("terrible", terr);
 				return map;
 			}));
-			metrics.addCustomChart(new Metrics.AdvancedPie("brews_created", () -> {
+			metrics.addCustomChart(new AdvancedPie("brews_created", () -> {
 				Map<String, Integer> map = new HashMap<>(4);
 				map.put("by command", brewsCreatedCmd);
 				map.put("brewing", brewsCreated - brewsCreatedCmd);
 				return map;
 			}));
 
-			metrics.addCustomChart(new Metrics.SimplePie("number_of_recipes", () -> {
+			metrics.addCustomChart(new SimplePie("number_of_recipes", () -> {
 				int recipes = BRecipe.getAllRecipes().size();
 				if (recipes < 7) {
 					return "Less than 7";
@@ -339,8 +364,8 @@ public class P extends JavaPlugin {
 
 			}));
 
-			metrics.addCustomChart(new Metrics.SimplePie("wakeups", () -> {
-				if (!BConfig.enableHome) {
+			metrics.addCustomChart(new SimplePie("wakeups", () -> {
+				if (!BConfig.enableWake) {
 					return "disabled";
 				}
 				int wakeups = Wakeup.wakeups.size();
@@ -356,7 +381,7 @@ public class P extends JavaPlugin {
 					return "More than 20";
 				}
 			}));
-			metrics.addCustomChart(new Metrics.SimplePie("v2_mc_version", () -> {
+			metrics.addCustomChart(new SimplePie("v2_mc_version", () -> {
 				String mcv = Bukkit.getBukkitVersion();
 				mcv = mcv.substring(0, mcv.indexOf('.', 2));
 				int index = mcv.indexOf('-');
@@ -370,7 +395,7 @@ public class P extends JavaPlugin {
 					return "undef";
 				}
 			}));
-			metrics.addCustomChart(new Metrics.DrilldownPie("plugin_mc_version", () -> {
+			metrics.addCustomChart(new DrilldownPie("plugin_mc_version", () -> {
 				Map<String, Map<String, Integer>> map = new HashMap<>(3);
 				String mcv = Bukkit.getBukkitVersion();
 				mcv = mcv.substring(0, mcv.indexOf('.', 2));
@@ -389,9 +414,9 @@ public class P extends JavaPlugin {
 				map.put(getDescription().getVersion(), innerMap);
 				return map;
 			}));
-			metrics.addCustomChart(new Metrics.SimplePie("language", () -> language));
-			metrics.addCustomChart(new Metrics.SimplePie("config_scramble", () -> BConfig.enableEncode ? "enabled" : "disabled"));
-			metrics.addCustomChart(new Metrics.SimplePie("config_lore_color", () -> {
+			metrics.addCustomChart(new SimplePie("language", () -> language));
+			metrics.addCustomChart(new SimplePie("config_scramble", () -> BConfig.enableEncode ? "enabled" : "disabled"));
+			metrics.addCustomChart(new SimplePie("config_lore_color", () -> {
 				if (BConfig.colorInBarrels) {
 					if (BConfig.colorInBrewer) {
 						return "both";
@@ -406,7 +431,7 @@ public class P extends JavaPlugin {
 					}
 				}
 			}));
-			metrics.addCustomChart(new Metrics.SimplePie("config_always_show", () -> {
+			metrics.addCustomChart(new SimplePie("config_always_show", () -> {
 				if (BConfig.alwaysShowQuality) {
 					if (BConfig.alwaysShowAlc) {
 						return "both";
@@ -421,7 +446,7 @@ public class P extends JavaPlugin {
 					}
 				}
 			}));
-		} catch (Throwable e) {
+		} catch (Exception | LinkageError e) {
 			e.printStackTrace();
 		}
 	}

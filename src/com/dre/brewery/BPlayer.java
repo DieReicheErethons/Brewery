@@ -8,6 +8,7 @@ import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.lore.BrewLore;
 import com.dre.brewery.recipe.BEffect;
 import com.dre.brewery.utility.BUtil;
+import com.dre.brewery.utility.PermissionUtil;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.apache.commons.lang.mutable.MutableInt;
@@ -27,24 +28,19 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.*;
 
 public class BPlayer {
 	private static Map<String, BPlayer> players = new HashMap<>();// Players uuid and BPlayer
 	private static Map<Player, MutableInt> pTasks = new HashMap<>();// Player and count
 	private static int taskId;
-	private static boolean modAge = true;
 	private static Random pukeRand;
-	private static Method itemHandle;
-	private static Field age;
 
 	private final String uuid;
 	private int quality = 0;// = quality of drunkeness * drunkeness
 	private int drunkeness = 0;// = amount of drunkeness
 	private int offlineDrunk = 0;// drunkeness when gone offline
+	private int alcRecovery = -1; // Drunkeness reduce per minute
 	private Vector push = new Vector(0, 0, 0);
 	private int time = 20;
 
@@ -161,6 +157,7 @@ public class BPlayer {
 		if (bPlayer == null) {
 			bPlayer = addPlayer(player);
 		}
+		// In this event the added alcohol amount is calculated, based on the sensitivity permission
 		BrewDrinkEvent drinkEvent = new BrewDrinkEvent(brew, meta, player, bPlayer);
 		if (meta != null) {
 			P.p.getServer().getPluginManager().callEvent(drinkEvent);
@@ -181,30 +178,36 @@ public class BPlayer {
 		int quality = drinkEvent.getQuality();
 		List<PotionEffect> effects = getBrewEffects(brew.getEffects(), quality);
 
-		if (brewAlc < 1) {
-			//no alcohol so we dont need to add a BPlayer
-			applyEffects(effects, player, PlayerEffectEvent.EffectType.DRINK);
-			if (bPlayer.drunkeness <= 0) {
-				bPlayer.remove();
-			}
-			return true;
-		}
-
-		bPlayer.drunkeness += brewAlc;
-		if (quality > 0) {
-			bPlayer.quality += quality * brewAlc;
-		} else {
-			bPlayer.quality += brewAlc;
-		}
 		applyEffects(effects, player, PlayerEffectEvent.EffectType.DRINK);
-		applyEffects(getQualityEffects(quality, brewAlc), player, PlayerEffectEvent.EffectType.QUALITY);
+		if (brewAlc < 0) {
+			// If the Drink has negative alcohol, drain some alcohol
+			bPlayer.drain(player, -brewAlc);
+		} else if (brewAlc > 0) {
+			bPlayer.drunkeness += brewAlc;
+			if (quality > 0) {
+				bPlayer.quality += quality * brewAlc;
+			} else {
+				bPlayer.quality += brewAlc;
+			}
+
+			applyEffects(getQualityEffects(quality, brewAlc), player, PlayerEffectEvent.EffectType.QUALITY);
+		}
 
 		if (bPlayer.drunkeness > 100) {
 			bPlayer.drinkCap(player);
 		}
-		bPlayer.syncToSQL(false);
+
 		if (BConfig.showStatusOnDrink) {
-			bPlayer.showDrunkeness(player);
+			// Only show the Player his drunkeness if he is already drunk, or this drink changed his drunkeness
+			if (brewAlc != 0 || bPlayer.drunkeness > 0) {
+				bPlayer.showDrunkeness(player);
+			}
+		}
+
+		if (bPlayer.drunkeness <= 0) {
+			bPlayer.remove();
+		} else {
+			bPlayer.syncToSQL(false);
 		}
 		return true;
 	}
@@ -343,7 +346,7 @@ public class BPlayer {
 	}
 
 	// drain the drunkeness by amount, returns true when player has to be removed
-	public boolean drain(Player player, int amount) {
+	public boolean drain(@Nullable Player player, int amount) {
 		if (drunkeness > 0) {
 			quality -= getQuality() * amount;
 		}
@@ -481,14 +484,13 @@ public class BPlayer {
 				showDrunkeness(player);
 			}
 			if (drunkeness <= 0) {
-				// wird der spieler noch gebraucht?
 				remove(player);
 			}
 
 		} else if (offlineDrunk - drunkeness >= 30) {
-			Location randomLoc = Wakeup.getRandom(player.getLocation());
-			if (randomLoc != null) {
-				if (!player.hasPermission("brewery.bypass.teleport")) {
+			if (BConfig.enableWake && !player.hasPermission("brewery.bypass.teleport")) {
+				Location randomLoc = Wakeup.getRandom(player.getLocation());
+				if (randomLoc != null) {
 					player.teleport(randomLoc);
 					P.p.msg(player, P.p.languageReader.get("Player_Wake"));
 				}
@@ -519,6 +521,16 @@ public class BPlayer {
 			}
 			if (home != null) {
 				player.teleport(home);
+			}
+		}
+	}
+
+	public void recalculateAlcRecovery(@Nullable Player player) {
+		setAlcRecovery(2);
+		if (player != null) {
+			int rec = PermissionUtil.getAlcRecovery(player);
+			if (rec > -1) {
+				setAlcRecovery(rec);
 			}
 		}
 	}
@@ -604,39 +616,23 @@ public class BPlayer {
 		item.setVelocity(direction);
 		item.setPickupDelay(32767); // Item can never be picked up when pickup delay is 32767
 		item.setMetadata("brewery_puke", new FixedMetadataValue(P.getInstance(), true));
-		//item.setTicksLived(6000 - pukeDespawntime); // Well this does not work...
-		if (modAge) {
-			int pukeDespawntime = BConfig.pukeDespawntime;
-			if (pukeDespawntime >= 5800) {
-				return;
-			}
-			try {
-				if (itemHandle == null) {
-					itemHandle = Class.forName(P.p.getServer().getClass().getPackage().getName() + ".entity.CraftItem").getMethod("getHandle", (Class<?>[]) null);
-				}
-				Object entityItem = itemHandle.invoke(item, (Object[]) null);
-				if (age == null) {
-					age = entityItem.getClass().getDeclaredField("age");
-					age.setAccessible(true);
-				}
+		if (P.use1_14) item.setPersistent(false); // No need to save Puke items
 
-				// Setting the age determines when an item is despawned. At age 6000 it is removed.
-				if (pukeDespawntime <= 0) {
-					// Just show the item for a tick
-					age.setInt(entityItem, 5999);
-				} else if (pukeDespawntime <= 120) {
-					// it should despawn in less than 6 sec. Add up to half of that randomly
-					age.setInt(entityItem, 6000 - pukeDespawntime + pukeRand.nextInt((int) (pukeDespawntime / 2F)));
-				} else {
-					// Add up to 5 sec randomly
-					age.setInt(entityItem, 6000 - pukeDespawntime + pukeRand.nextInt(100));
-				}
-				return;
-			} catch (InvocationTargetException | ClassNotFoundException | NoSuchFieldException | IllegalAccessException | NoSuchMethodException e) {
-				e.printStackTrace();
-			}
-			modAge = false;
-			P.p.errorLog("Failed to set Despawn Time on item " + BConfig.pukeItem.name());
+		int pukeDespawntime = BConfig.pukeDespawntime;
+		if (pukeDespawntime >= 5800) {
+			return;
+		}
+
+		// Setting the age determines when an item is despawned. At age 6000 it is removed.
+		if (pukeDespawntime <= 0) {
+			// Just show the item for a few ticks
+			item.setTicksLived(5996);
+		} else if (pukeDespawntime <= 120) {
+			// it should despawn in less than 6 sec. Add up to half of that randomly
+			item.setTicksLived(6000 - pukeDespawntime + pukeRand.nextInt((int) (pukeDespawntime / 2F)));
+		} else {
+			// Add up to 5 sec randomly
+			item.setTicksLived(6000 - pukeDespawntime + pukeRand.nextInt(100));
 		}
 	}
 
@@ -802,17 +798,18 @@ public class BPlayer {
 	// decreasing drunkeness over time
 	public static void onUpdate() {
 		if (!players.isEmpty()) {
-			int soberPerMin = 2;
 			Iterator<Map.Entry<String, BPlayer>> iter = players.entrySet().iterator();
 			while (iter.hasNext()) {
 				Map.Entry<String, BPlayer> entry = iter.next();
 				String uuid = entry.getKey();
 				BPlayer bplayer = entry.getValue();
-				if (bplayer.drunkeness == soberPerMin) {
-					// Prevent 0 drunkeness
-					soberPerMin++;
+				Player playerIfOnline = BUtil.getPlayerfromString(uuid);
+
+				if (bplayer.getAlcRecovery() == -1) {
+					bplayer.recalculateAlcRecovery(playerIfOnline);
 				}
-				if (bplayer.drain(BUtil.getPlayerfromString(uuid), soberPerMin)) {
+
+				if (bplayer.drain(playerIfOnline, bplayer.getAlcRecovery())) {
 					iter.remove();
 					if (BConfig.sqlDrunkSync && BConfig.sqlSync != null) {
 						BConfig.sqlSync.removePlayer(UUID.fromString(uuid));
@@ -898,4 +895,11 @@ public class BPlayer {
 		return offlineDrunk;
 	}
 
+	public int getAlcRecovery() {
+		return alcRecovery;
+	}
+
+	public void setAlcRecovery(int alcRecovery) {
+		this.alcRecovery = alcRecovery;
+	}
 }

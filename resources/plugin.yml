@@ -129,3 +129,11 @@ permissions:
     description: Will despite config-setting not be kicked on overdrink
   brewery.bypass.teleport:
     description: Will despite config-setting not be teleported on login
+
+# -- Modifiers --
+
+  brewery.sensitive.100:
+    description: How sensitive to alcohol the player is in percent
+
+  brewery.recovery.2:
+    description: How quickly the player will naturally reduce his drunkeness per minute

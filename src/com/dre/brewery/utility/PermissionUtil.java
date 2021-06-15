@@ -1,9 +1,13 @@
 package com.dre.brewery.utility;
 
+import org.apache.commons.lang.math.NumberUtils;
 import org.bukkit.command.CommandSender;
+import org.bukkit.permissions.Permissible;
+import org.bukkit.permissions.PermissionAttachmentInfo;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class PermissionUtil {
 
@@ -74,6 +78,59 @@ public class PermissionUtil {
 		}
 
 		return sender.hasPermission(bPerm.permission);
+	}
+
+	/**
+	 * Returns the Sensitivity of the Player towards Alcohol in percent.
+	 * <p>Sensitivity describes how much of the alcohol gets transferred to the players drunkeness
+	 *
+	 * <p>100 means normal alcohol sensitivity
+	 * <p>less than 100 means less alcohol gets added.
+	 * <p>more than 100 means more alcohol gets added.
+	 * <p>0 means no alcohol gets added.
+	 *
+	 * @param player The player of whom to get the sensitivity of
+	 * @return The Players alcohol sensitivity
+	 */
+	public static int getDrinkSensitive(Permissible player) {
+		return getRangedPermission(player, "brewery.sensitive.");
+	}
+
+	/**
+	 * Returns the Alcohol recovery rate of the player in drunkeness per minute.
+	 * <p>The default is 2 drunkeness per minute
+	 *
+	 *
+	 * @param player The player of whom to get the recovery rate of
+	 * @return The Players alcohol recovery rate
+	 */
+	public static int getAlcRecovery(Permissible player) {
+		return getRangedPermission(player, "brewery.recovery.");
+	}
+
+	/**
+	 * Get the number behind the given permission
+	 * <p>i.e. for brewery.sensitive.100 it returns 100
+	 *
+	 * @param player The player to get the ranged permission of
+	 * @param subPermission The permission string before the number
+	 * @return The permission number as int
+	 */
+	public static int getRangedPermission(Permissible player, String subPermission) {
+		Optional<PermissionAttachmentInfo> found = player.getEffectivePermissions().stream().
+			filter(PermissionAttachmentInfo::getValue). // Only active permissions
+			filter(x -> x.getPermission().startsWith(subPermission)).
+			findFirst();
+
+		if (found.isPresent()) {
+			String permission = found.get().getPermission();
+			int lastDot = permission.lastIndexOf('.');
+			int value = NumberUtils.toInt(permission.substring(lastDot + 1), -1);
+			if (value >= 0) {
+				return value;
+			}
+		}
+		return -1;
 	}
 
 

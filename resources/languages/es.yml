@@ -103,7 +103,7 @@ Player_WakeCreated: '&a¡Punto de activación con id: &6&v1 &afue creado con éx
 Player_WakeDeleted: '&aEl punto de activación con la id: &6&v1 &a¡ha sido eliminado con éxito!'
 Player_WakeFilled: '&cEl punto de activación con la id: &6&v1&c en la posición &6&v2 &v3, &v4, &v5&c ¡está lleno de bloques!'
 Player_WakeHint1: 'Al siguiente punto de activación: golpea el puño en el aire'
-Player_WakeHint2: 'Para cancelar: &9/br wakeup cancel'
+Player_WakeHint2: 'Para cancelar: &9/brew wakeup cancel'
 Player_WakeLast: '&aEste fue el último punto de activación'
 Player_WakeNoCheck: '&cNinguna verificación de punto de activación está activa actualmente'
 Player_WakeNoPoints: '&c¡No hay puntos de activación!'

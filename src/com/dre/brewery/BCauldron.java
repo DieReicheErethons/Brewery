@@ -60,7 +60,7 @@ public class BCauldron {
 		if (!BUtil.isChunkLoaded(block)) {
 			increaseState();
 		} else {
-			if (block.getType() != Material.CAULDRON) {
+			if (!LegacyUtil.isWaterCauldron(block.getType())) {
 				// Catch any WorldEdit etc. removal
 				return false;
 			}
@@ -172,21 +172,34 @@ public class BCauldron {
 
 		if (P.use1_13) {
 			BlockData data = block.getBlockData();
+			if (!(data instanceof Levelled)) {
+				bcauldrons.remove(block);
+				return false;
+			}
 			Levelled cauldron = ((Levelled) data);
 			if (cauldron.getLevel() <= 0) {
 				bcauldrons.remove(block);
 				return false;
 			}
-			cauldron.setLevel(cauldron.getLevel() - 1);
-			// Update the new Level to the Block
-			// We have to use the BlockData variable "data" here instead of the casted "cauldron"
-			// otherwise < 1.13 crashes on plugin load for not finding the BlockData Class
-			block.setBlockData(data);
 
-			if (cauldron.getLevel() <= 0) {
+			// If the Water_Cauldron type exists and the cauldron is on last level
+			if (LegacyUtil.WATER_CAULDRON != null && cauldron.getLevel() == 1) {
+				// Empty Cauldron
+				block.setType(Material.CAULDRON);
 				bcauldrons.remove(block);
 			} else {
-				changed = true;
+				cauldron.setLevel(cauldron.getLevel() - 1);
+
+				// Update the new Level to the Block
+				// We have to use the BlockData variable "data" here instead of the casted "cauldron"
+				// otherwise < 1.13 crashes on plugin load for not finding the BlockData Class
+				block.setBlockData(data);
+
+				if (cauldron.getLevel() <= 0) {
+					bcauldrons.remove(block);
+				} else {
+					changed = true;
+				}
 			}
 
 		} else {
@@ -389,7 +402,7 @@ public class BCauldron {
 							if (item.getAmount() > 1) {
 								item.setAmount(item.getAmount() - 1);
 							} else {
-								setItemInHand(event, Material.AIR, false);
+								BUtil.setItemInHand(event, Material.AIR, false);
 							}
 						}
 					}
@@ -399,9 +412,10 @@ public class BCauldron {
 			}
 			return;
 
-			// reset cauldron when refilling to prevent unlimited source of potions
+			// Ignore Water Buckets
 		} else if (materialInHand == Material.WATER_BUCKET) {
 			if (!P.use1_9) {
+				// reset < 1.9 cauldron when refilling to prevent unlimited source of potions
 				// We catch >=1.9 cases in the Cauldron Listener
 				if (LegacyUtil.getFillLevel(clickedBlock) == 1) {
 					// will only remove when existing
@@ -458,27 +472,14 @@ public class BCauldron {
 					}
 				} else {
 					if (isBucket) {
-						setItemInHand(event, Material.BUCKET, handSwap);
+						BUtil.setItemInHand(event, Material.BUCKET, handSwap);
 					} else if (isBottle) {
-						setItemInHand(event, Material.GLASS_BOTTLE, handSwap);
+						BUtil.setItemInHand(event, Material.GLASS_BOTTLE, handSwap);
 					} else {
-						setItemInHand(event, Material.AIR, handSwap);
+						BUtil.setItemInHand(event, Material.AIR, handSwap);
 					}
 				}
 			}
-		}
-	}
-
-	@SuppressWarnings("deprecation")
-	public static void setItemInHand(PlayerInteractEvent event, Material mat, boolean swapped) {
-		if (P.use1_9) {
-			if ((event.getHand() == EquipmentSlot.OFF_HAND) != swapped) {
-				event.getPlayer().getInventory().setItemInOffHand(new ItemStack(mat));
-			} else {
-				event.getPlayer().getInventory().setItemInMainHand(new ItemStack(mat));
-			}
-		} else {
-			event.getPlayer().setItemInHand(new ItemStack(mat));
 		}
 	}
 

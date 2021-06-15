@@ -175,7 +175,7 @@ public class BDistiller {
 			BlockState now = standBlock.getState();
 			if (now instanceof BrewingStand) {
 				BrewingStand stand = (BrewingStand) now;
-				if (brewTime == -1) { // only check at the beginning (and end) for distillables
+				if (brewTime == -1) { // check at the beginning for distillables
 					if (!prepareForDistillables(stand)) {
 						return;
 					}
@@ -185,7 +185,7 @@ public class BDistiller {
 				stand.setBrewingTime((int) ((float) brewTime / ((float) runTime / (float) DISTILLTIME)) + 1);
 
 				if (brewTime <= 1) { // Done!
-					contents = getDistillContents(stand.getInventory());
+					contents = getDistillContents(stand.getInventory()); // Get the contents again at the end just in case
 					stand.setBrewingTime(0);
 					stand.update();
 					if (!runDistill(stand.getInventory(), contents)) {
@@ -220,6 +220,7 @@ public class BDistiller {
 						if (P.use1_11) {
 							// The trick below doesnt work in 1.11, but we dont need it anymore
 							// This should only happen with older Brews that have been made with the old Potion Color System
+							// This causes standard potions to not brew in the brewing stand if put together with Brews, but the bubble animation will play
 							stand.setBrewingTime(Short.MAX_VALUE);
 						} else {
 							// Brewing time is sent and stored as short

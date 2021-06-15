@@ -326,7 +326,7 @@ public class BRecipe {
 			P.p.errorLog("Invalid distilltime '" + distillTime + "' in Recipe: " + getRecipeName());
 			return false;
 		}
-		if (wood < 0 || wood > 6) {
+		if (wood < 0 || wood > 8) {
 			P.p.errorLog("Invalid wood type '" + wood + "' in Recipe: " + getRecipeName());
 			return false;
 		}
@@ -336,10 +336,6 @@ public class BRecipe {
 		}
 		if (difficulty < 0 || difficulty > 10) {
 			P.p.errorLog("Invalid difficulty '" + difficulty + "' in Recipe: " + getRecipeName());
-			return false;
-		}
-		if (alcohol < 0) {
-			P.p.errorLog("Invalid alcohol '" + alcohol + "' in Recipe: " + getRecipeName());
 			return false;
 		}
 		return true;

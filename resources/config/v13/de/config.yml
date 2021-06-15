@@ -740,6 +740,7 @@ recipes:
     cookingtime: 2
     color: BLACK
     difficulty: 3
+    alcohol: -6
     lore: + &8Bestimmt schon eine Woche alt
     effects:
       - REGENERATION/1/2-5
@@ -821,6 +822,7 @@ recipes:
   #   cookingtime: 1
   #   color: BLACK
   #   difficulty: 4
+  #   alcohol: -8
   #   effects:
   #     - REGENERATION/30
   #     - SPEED/10
@@ -843,7 +845,7 @@ recipes:
 # Pumpkin Spice Bier,
 # Melonen Vodka
 
-# Es gibt noch viele Minecraft Items wie Ranken und items von anderen plugins die sich gut als Zutaten machen würden
+# Es gibt noch viele Minecraft Items wie Ranken, Milch und items von anderen plugins die sich gut als Zutaten machen würden
 
 
 
@@ -905,6 +907,9 @@ openLargeBarrelEverywhere: true
 
 # Ob nur ein Minimum an Kessel-Partikeln dargestellt werden sollen [false]
 minimalParticles: false
+
+# Ob das Entleeren von Brewery Tränken mit Hilfe von Trichtern möglich ist, um die Glasflasche zurück zu bekommen [true]
+brewHopperDump: true
 
 
 # -- Chat Veränderungs Einstellungen --

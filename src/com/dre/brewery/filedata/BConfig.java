@@ -40,7 +40,7 @@ import java.util.Map;
 
 public class BConfig {
 
-	public static final String configVersion = "3.0";
+	public static final String configVersion = "3.1";
 	public static boolean updateCheck;
 	public static CommandSender reloader;
 

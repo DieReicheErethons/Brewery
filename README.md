@@ -28,7 +28,7 @@
 <dependency>
    <groupId>com.github.DieReicheErethons</groupId>
    <artifactId>Brewery</artifactId>
-   <version>3.0</version>
+   <version>3.1</version>
    <scope>provided</scope>
 </dependency>
 ```

@@ -1,5 +1,5 @@
 name: Brewery
-version: 3.0
+version: 3.1
 main: com.dre.brewery.P
 softdepend: [LWC, LogBlock, WorldGuard, GriefPrevention, Vault, ChestShop, Shopkeepers, Towny, BlockLocker]
 authors: [Milan Albrecht, Frank Baumann, ProgrammerDan, Daniel Saukel]

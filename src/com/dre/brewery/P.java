@@ -364,7 +364,15 @@ public class P extends JavaPlugin {
 				}
 
 			}));
-
+			metrics.addCustomChart(new SimplePie("cauldron_particles", () -> {
+				if (!BConfig.enableCauldronParticles) {
+					return "disabled";
+				}
+				if (BConfig.minimalParticles) {
+					return "minimal";
+				}
+				return "enabled";
+			}));
 			metrics.addCustomChart(new SimplePie("wakeups", () -> {
 				if (!BConfig.enableWake) {
 					return "disabled";

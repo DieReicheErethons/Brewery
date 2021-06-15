@@ -52,6 +52,8 @@ drainItems:
 # Partikel steigen von Kesseln auf wenn sie Zutaten und eine Feuerquelle haben [true]
 # Die sich ändernde Farbe der Partikel kann beim Fermentieren mancher Rezepte helfen
 enableCauldronParticles: true
+# Ob nur ein Minimum an Kessel-Partikeln dargestellt werden sollen [false]
+minimalParticles: false
 
 # Ob das craften und das benutzen des Trank-Versiegelungs-Tisches aktiviert ist (2 Flaschen über 4 Holz) [true, true]
 craftSealingTable: true
@@ -86,7 +88,7 @@ autosave: 3
 debug: false
 
 # Config Version
-version: '3.0'
+version: '3.1'
 
 
 
@@ -904,9 +906,6 @@ colorInBrewer: true
 
 # Ob große Fässer an jedem Block geöffnet werden können, nicht nur an Zapfhahn und Schild. Bei kleinen Fässern geht dies immer. [true]
 openLargeBarrelEverywhere: true
-
-# Ob nur ein Minimum an Kessel-Partikeln dargestellt werden sollen [false]
-minimalParticles: false
 
 # Ob das Entleeren von Brewery Tränken mit Hilfe von Trichtern möglich ist, um die Glasflasche zurück zu bekommen [true]
 brewHopperDump: true

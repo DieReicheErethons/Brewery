@@ -303,7 +303,7 @@ public class BPlayer {
 		}
 		b.append("§7]");
 		final String text = b.toString();
-		if (hangover) {
+		if (hangover && P.use1_11) {
 			P.p.getServer().getScheduler().scheduleSyncDelayedTask(P.p, () -> player.sendTitle("", text, 30, 100, 90), 160);
 			return false;
 		}
@@ -615,7 +615,7 @@ public class BPlayer {
 		Item item = player.getWorld().dropItem(loc, new ItemStack(BConfig.pukeItem));
 		item.setVelocity(direction);
 		item.setPickupDelay(32767); // Item can never be picked up when pickup delay is 32767
-		item.setMetadata("brewery_puke", new FixedMetadataValue(P.getInstance(), true));
+		item.setMetadata("brewery_puke", new FixedMetadataValue(P.p, true));
 		if (P.use1_14) item.setPersistent(false); // No need to save Puke items
 
 		int pukeDespawntime = BConfig.pukeDespawntime;

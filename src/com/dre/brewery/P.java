@@ -174,7 +174,8 @@ public class P extends JavaPlugin {
 			p.getServer().getScheduler().runTaskTimer(p, new CauldronParticles(), 1, 1);
 		}
 
-		if (BConfig.updateCheck) {
+		// Disable Update Check for older mc versions
+		if (use1_14 && BConfig.updateCheck) {
 			try {
 				p.getServer().getScheduler().runTaskLaterAsynchronously(p, new UpdateChecker(), 135);
 			} catch (Exception e) {

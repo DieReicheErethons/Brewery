@@ -109,8 +109,9 @@ public class BSealer implements InventoryHolder {
 			if (smoker.getCustomName() != null) {
 				if (smoker.getCustomName().equals("§e" + P.p.languageReader.get("Etc_SealingTable"))) {
 					return true;
-				} else
+				} else {
 					return smoker.getPersistentDataContainer().has(TAG_KEY, PersistentDataType.BYTE);
+				}
 			}
 		}
 		return false;

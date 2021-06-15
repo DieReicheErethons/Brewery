@@ -22,6 +22,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
@@ -614,6 +615,7 @@ public class BPlayer {
 		Item item = player.getWorld().dropItem(loc, new ItemStack(BConfig.pukeItem));
 		item.setVelocity(direction);
 		item.setPickupDelay(32767); // Item can never be picked up when pickup delay is 32767
+		item.setMetadata("brewery_puke", new FixedMetadataValue(P.getInstance(), true));
 		if (P.use1_14) item.setPersistent(false); // No need to save Puke items
 
 		int pukeDespawntime = BConfig.pukeDespawntime;

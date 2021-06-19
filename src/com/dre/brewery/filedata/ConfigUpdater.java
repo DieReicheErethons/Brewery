@@ -1,6 +1,7 @@
 package com.dre.brewery.filedata;
 
 import com.dre.brewery.P;
+import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.LegacyUtil;
 import com.dre.brewery.utility.Tuple;
 import org.bukkit.Material;
@@ -8,6 +9,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -78,13 +80,9 @@ public class ConfigUpdater {
 			stringBuilder.append(line).append("\n");
 		}
 		String configString = stringBuilder.toString().trim();
-
 		try {
-			BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-			writer.write(configString);
-			writer.flush();
-			writer.close();
-
+			InputStream utf8ConfigInput = new ByteArrayInputStream(configString.getBytes(StandardCharsets.UTF_8));
+			BUtil.saveFile(utf8ConfigInput, file, true);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -92,7 +90,7 @@ public class ConfigUpdater {
 
 	private void getConfigString() {
 		try {
-			BufferedReader reader = new BufferedReader(new FileReader(file));
+			BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
 			String currentLine;
 			while((currentLine = reader.readLine()) != null) {
 				config.add(currentLine);

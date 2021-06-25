@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Wakeup {
 
@@ -31,15 +32,10 @@ public class Wakeup {
 			return null;
 		}
 
-		ArrayList<Wakeup> worldWakes = new ArrayList<>();
-
-		for (Wakeup wakeup : wakeups) {
-			if (wakeup.active) {
-				if (wakeup.loc.getWorld().equals(playerLoc.getWorld())) {
-					worldWakes.add(wakeup);
-				}
-			}
-		}
+		List<Wakeup> worldWakes = wakeups.stream()
+			.filter(w -> w.active)
+			.filter(w -> w.loc.getWorld().equals(playerLoc.getWorld()))
+			.collect(Collectors.toList());
 
 		if (worldWakes.isEmpty()) {
 			return null;
@@ -74,14 +70,14 @@ public class Wakeup {
 			}
 
 
-			if (w1.loc.distance(playerLoc) > w2.loc.distance(playerLoc)) {
+			if (w1.loc.distanceSquared(playerLoc) > w2.loc.distanceSquared(playerLoc)) {
 				return w2.loc;
 			}
 		}
 		return w1.loc;
 	}
 
-	public static Wakeup calcRandom(ArrayList<Wakeup> worldWakes) {
+	public static Wakeup calcRandom(List<Wakeup> worldWakes) {
 		if (worldWakes.isEmpty()) {
 			return null;
 		}

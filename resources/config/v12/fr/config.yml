@@ -53,6 +53,8 @@ drainItems:
 # Show Particles over Cauldrons when they have ingredients and a heat source. [true]
 # The changing color of the particles can help with timing some recipes
 enableCauldronParticles: true
+# If Cauldron Particles should be reduced to the bare minimum [false]
+minimalParticles: false
 
 # If crafting and using of the Brew Sealing Table is enabled (2 Bottles over 4 Planks) [true, true]
 craftSealingTable: true
@@ -88,7 +90,7 @@ autosave: 3
 debug: false
 
 # Version de configuration
-version: '3.0'
+version: '3.1'
 oldMat: true
 
 
@@ -502,9 +504,6 @@ colorInBrewer: true
 
 # Si le grand tonneau peut être ouvert en cliquant sur n'importe quel bloc, non seulement le robinet ou le panneau. Toujours "true" pour les petits tonneaux. [true]
 openLargeBarrelEverywhere: true
-
-# If Cauldron Particles should be reduced to the bare minimum [false]
-minimalParticles: false
 
 # Allow emptying brews into hoppers to discard brews while keeping the glass bottle [true]
 brewHopperDump: true

@@ -78,6 +78,7 @@ public class LegacyUtil {
 		FENCES = fences;
 	}
 
+	public static final Material WATER_CAULDRON = get("WATER_CAULDRON");
 	public static final Material MAGMA_BLOCK = get("MAGMA_BLOCK", "MAGMA");
 	public static final Material CAMPFIRE = get("CAMPFIRE");
 	public static final Material SOUL_CAMPFIRE = get("SOUL_CAMPFIRE");
@@ -221,12 +222,19 @@ public class LegacyUtil {
 	}
 
 	/**
+	 * Test if this Material Type is a Cauldron filled with water, or any cauldron in 1.16 and lower
+	 */
+	public static boolean isWaterCauldron(Material type) {
+		return WATER_CAULDRON != null ? type == WATER_CAULDRON : type == Material.CAULDRON;
+	}
+
+	/**
 	 * Get The Fill Level of a Cauldron Block, 0 = empty, 1 = something in, 2 = full
 	 *
 	 * @return 0 = empty, 1 = something in, 2 = full
 	 */
 	public static byte getFillLevel(Block block) {
-		if (block.getType() != Material.CAULDRON) {
+		if (!isWaterCauldron(block.getType())) {
 			return EMPTY;
 		}
 

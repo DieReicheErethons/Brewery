@@ -54,6 +54,8 @@ drainItems:
 # Show Particles over Cauldrons when they have ingredients and a heat source. [true]
 # The changing color of the particles can help with timing some recipes
 enableCauldronParticles: true
+# If Cauldron Particles should be reduced to the bare minimum [false]
+minimalParticles: false
 
 # If crafting and using of the Brew Sealing Table is enabled (2 Bottles over 4 Planks) [true, true]
 craftSealingTable: true
@@ -89,7 +91,7 @@ autosave: 3
 debug: false
 
 # 配置文件版本
-version: '3.0'
+version: '3.1'
 
 
 
@@ -900,9 +902,6 @@ colorInBrewer: true
 
 # 大型熟成木桶可以通过右击桶身任意一个位置来打开, 而不需要专门右击其龙头. 这一操作对小型酒桶总为真.[true]
 openLargeBarrelEverywhere: false
-
-# If Cauldron Particles should be reduced to the bare minimum [false]
-minimalParticles: false
 
 # Allow emptying brews into hoppers to discard brews while keeping the glass bottle [true]
 brewHopperDump: true

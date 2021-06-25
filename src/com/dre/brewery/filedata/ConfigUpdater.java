@@ -11,7 +11,6 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 public class ConfigUpdater {
@@ -250,8 +249,16 @@ public class ConfigUpdater {
 			} else {
 				update30en();
 			}
-			updateVersion(BConfig.configVersion);
 			fromVersion = "3.0";
+		}
+		if (fromVersion.equals("3.0")) {
+			if (de) {
+				update31de();
+			} else {
+				update31en();
+			}
+			updateVersion(BConfig.configVersion);
+			fromVersion = "3.1";
 		}
 
 		if (P.use1_13 && oldMat) {
@@ -2002,6 +2009,20 @@ public class ConfigUpdater {
 			"",
 				"# If Cauldron Particles should be reduced to the bare minimum [false]",
 				"minimalParticles: false");
+	}
+
+	private void update31en() {
+		addLinesAt(new String[]{"minimalParticles:", "loadDataAsync:", "openLargeBarrelEverywhere:", "colorInBrewer:"}, 1,
+			"",
+			"# Allow emptying brews into hoppers to discard brews while keeping the glass bottle [true]",
+			"brewHopperDump: true");
+	}
+
+	private void update31de() {
+		addLinesAt(new String[]{"minimalParticles:", "loadDataAsync:", "openLargeBarrelEverywhere:", "colorInBrewer:"}, 1,
+			"",
+			"# Ob das Entleeren von Brewery Tränken mit Hilfe von Trichtern möglich ist, um die Glasflasche zurück zu bekommen [true]",
+			"brewHopperDump: true");
 	}
 
 

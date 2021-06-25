@@ -102,7 +102,7 @@ Player_WakeCreated: '&aТочка пробуждения под номером: 
 Player_WakeDeleted: '&aТочка Пробуждения под номером: &6&v1 &aбыла удалена!'
 Player_WakeFilled: '&cТочка Пробуждения под номером: &6&v1&c в точку &6&v2 &v3, &v4, &v5&c заполнена блоками!'
 Player_WakeHint1: 'Для следующей точки пробуждения: Ударь кулаком в воздух'
-Player_WakeHint2: 'Для отмены: &9/br wakeup cancel'
+Player_WakeHint2: 'Для отмены: &9/brew wakeup cancel'
 Player_WakeLast: '&aЭто была последняя точка пробуждения'
 Player_WakeNoCheck: '&cНет активных проверок Точек Пробуждения'
 Player_WakeNoPoints: '&cЗдесь нет Точки Пробуждения!'

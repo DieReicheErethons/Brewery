@@ -1,6 +1,7 @@
 package com.dre.brewery.utility;
 
 import com.palmergames.bukkit.towny.TownyAPI;
+import com.palmergames.bukkit.towny.TownyUniverse;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.Resident;
 import com.palmergames.bukkit.towny.object.Town;
@@ -32,7 +33,7 @@ public class TownyUtil {
         if (player == null)
             return isInsideTown(location);
         try {
-            final Resident resident = TownyAPI.getInstance().getDataSource().getResident(player.getName());
+            final Resident resident = TownyUniverse.getInstance().getResident(player.getName());
             TownBlock townBlock = TownyAPI.getInstance().getTownBlock(location);
             if (townBlock != null && townBlock.hasResident()
                     && resident.equals(townBlock.getResident()))

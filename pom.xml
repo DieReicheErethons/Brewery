@@ -34,6 +34,7 @@
 
 		<plugins>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.8.0</version>
 				<configuration>
@@ -73,7 +74,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>3.2.0</version>
+				<version>3.3.1</version>
 				<executions>
 					<execution>
 						<phase>compile</phase>
@@ -135,7 +136,7 @@
 		<repository>
 			<!-- MythicLib (MMOItems) -->
 			<id>MMOPlugins</id>
-			<url>https://mvn.lumine.io/repository/maven-releases/</url>
+			<url>https://mvn.lumine.io/repository/maven-public/</url>
 		</repository>
 		<repository>
 			<!-- Shopkeepers -->
@@ -267,7 +268,7 @@
 			<!-- https://github.com/Slimefun/Slimefun4/releases -->
 			<groupId>com.github.slimefun</groupId>
 			<artifactId>Slimefun4</artifactId>
-			<version>RC-24</version>
+			<version>RC-27</version>
 			<scope>provided</scope>
 		</dependency>
 		<!--<dependency>

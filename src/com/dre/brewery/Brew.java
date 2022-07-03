@@ -827,7 +827,7 @@ public class Brew implements Cloneable {
 		}
 		save(potionMeta);
 		potion.setItemMeta(potionMeta);
-		P.p.metricsForCreate(true);
+		P.p.stats.metricsForCreate(true);
 		return potion;
 	}
 

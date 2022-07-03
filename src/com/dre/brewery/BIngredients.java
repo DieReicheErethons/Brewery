@@ -179,7 +179,7 @@ public class BIngredients {
 		}
 		brew.save(potionMeta);
 		potion.setItemMeta(potionMeta);
-		P.p.metricsForCreate(false);
+		P.p.stats.metricsForCreate(false);
 
 		return potion;
 	}

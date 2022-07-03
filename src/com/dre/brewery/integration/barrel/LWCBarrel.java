@@ -65,6 +65,7 @@ public class LWCBarrel {
 			if (listener.getListener() instanceof LWCPlayerListener) {
 				try {
 					listener.callEvent(lwcEvent);
+					//noinspection deprecation
 					if (lwcEvent.isCancelled()) {
 						return false;
 					}

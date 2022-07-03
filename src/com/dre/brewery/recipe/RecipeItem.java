@@ -166,8 +166,9 @@ public abstract class RecipeItem implements Cloneable {
 			if (P.use1_13) {
 				return new SimpleItem(item.getType());
 			} else {
-				//noinspection deprecation
-				return new SimpleItem(item.getType(), item.getDurability());
+				@SuppressWarnings("deprecation")
+				short durability = item.getDurability();
+				return new SimpleItem(item.getType(), durability);
 			}
 		}
 		return rItem;

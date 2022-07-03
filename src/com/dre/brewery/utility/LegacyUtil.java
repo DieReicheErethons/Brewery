@@ -20,7 +20,7 @@ import static com.dre.brewery.BCauldron.EMPTY;
 import static com.dre.brewery.BCauldron.FULL;
 import static com.dre.brewery.BCauldron.SOME;
 
-@SuppressWarnings("JavaReflectionMemberAccess")
+@SuppressWarnings({"JavaReflectionMemberAccess", "deprecation"})
 public class LegacyUtil {
 
 	private static Method GET_MATERIAL;

@@ -415,6 +415,7 @@ public class CommandListener implements CommandExecutor {
 		}
 
 		Player player = (Player) sender;
+		@SuppressWarnings("deprecation")
 		ItemStack hand = P.use1_9 ? player.getInventory().getItemInMainHand() : player.getItemInHand();
 		if (hand != null) {
 			p.msg(sender, p.languageReader.get("CMD_Configname", hand.getType().name().toLowerCase(Locale.ENGLISH)));
@@ -548,7 +549,7 @@ public class CommandListener implements CommandExecutor {
 		if (sender instanceof ConsoleCommandSender && !sender.isOp()) return;
 
 		P.p.msg(sender, "Drunk Players: " + BPlayer.numDrunkPlayers());
-		P.p.msg(sender, "Brews created: " + P.p.brewsCreated);
+		P.p.msg(sender, "Brews created: " + P.p.stats.brewsCreated);
 		P.p.msg(sender, "Barrels built: " + Barrel.barrels.size());
 		P.p.msg(sender, "Cauldrons boiling: " + BCauldron.bcauldrons.size());
 		P.p.msg(sender, "Number of Recipes: " + BRecipe.getAllRecipes().size());

@@ -76,13 +76,13 @@ public class DataSave extends BukkitRunnable {
 			Brew.writePrevSeeds(data);
 
 			List<Integer> brewsCreated = new ArrayList<>(7);
-			brewsCreated.add(P.p.brewsCreated);
-			brewsCreated.add(P.p.brewsCreatedCmd);
-			brewsCreated.add(P.p.exc);
-			brewsCreated.add(P.p.good);
-			brewsCreated.add(P.p.norm);
-			brewsCreated.add(P.p.bad);
-			brewsCreated.add(P.p.terr);
+			brewsCreated.add(P.p.stats.brewsCreated);
+			brewsCreated.add(P.p.stats.brewsCreatedCmd);
+			brewsCreated.add(P.p.stats.exc);
+			brewsCreated.add(P.p.stats.good);
+			brewsCreated.add(P.p.stats.norm);
+			brewsCreated.add(P.p.stats.bad);
+			brewsCreated.add(P.p.stats.terr);
 			data.set("brewsCreated", brewsCreated);
 			data.set("brewsCreatedH", brewsCreated.hashCode());
 

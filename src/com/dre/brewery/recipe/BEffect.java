@@ -103,7 +103,9 @@ public class BEffect {
 
 		duration *= 20;
 		if (!P.use1_14) {
-			duration /= type.getDurationModifier();
+			@SuppressWarnings("deprecation")
+			double modifier = type.getDurationModifier();
+			duration /= modifier;
 		}
 		return type.createEffect(duration, lvl - 1);
 	}

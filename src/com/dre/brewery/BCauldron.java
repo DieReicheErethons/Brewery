@@ -203,6 +203,7 @@ public class BCauldron {
 			}
 
 		} else {
+			@SuppressWarnings("deprecation")
 			byte data = block.getData();
 			if (data > 3) {
 				data = 3;

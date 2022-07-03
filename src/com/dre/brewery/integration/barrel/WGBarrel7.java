@@ -32,6 +32,7 @@ public class WGBarrel7 implements WGBarrel {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	public boolean checkAccess(Player player, Block spigot, Plugin plugin) {
 		WorldGuardPlugin wg = (WorldGuardPlugin) plugin;
 		WorldGuardPlatform platform = WorldGuard.getInstance().getPlatform();

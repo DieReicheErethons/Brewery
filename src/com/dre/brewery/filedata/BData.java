@@ -65,13 +65,13 @@ public class BData {
 				int hash = data.getInt("brewsCreatedH");
 				// Check the hash to prevent tampering with statistics
 				if (brewsCreated.hashCode() == hash) {
-					P.p.brewsCreated = brewsCreated.get(0);
-					P.p.brewsCreatedCmd = brewsCreated.get(1);
-					P.p.exc = brewsCreated.get(2);
-					P.p.good = brewsCreated.get(3);
-					P.p.norm = brewsCreated.get(4);
-					P.p.bad = brewsCreated.get(5);
-					P.p.terr = brewsCreated.get(6);
+					P.p.stats.brewsCreated = brewsCreated.get(0);
+					P.p.stats.brewsCreatedCmd = brewsCreated.get(1);
+					P.p.stats.exc = brewsCreated.get(2);
+					P.p.stats.good = brewsCreated.get(3);
+					P.p.stats.norm = brewsCreated.get(4);
+					P.p.stats.bad = brewsCreated.get(5);
+					P.p.stats.terr = brewsCreated.get(6);
 				}
 			}
 
@@ -120,17 +120,17 @@ public class BData {
 			}
 
 			// Store how many legacy brews were created
-			if (P.p.brewsCreated <= 0) {
-				P.p.brewsCreated = 0;
-				P.p.brewsCreatedCmd = 0;
-				P.p.exc = 0;
-				P.p.good = 0;
-				P.p.norm = 0;
-				P.p.bad = 0;
-				P.p.terr = 0;
+			if (P.p.stats.brewsCreated <= 0) {
+				P.p.stats.brewsCreated = 0;
+				P.p.stats.brewsCreatedCmd = 0;
+				P.p.stats.exc = 0;
+				P.p.stats.good = 0;
+				P.p.stats.norm = 0;
+				P.p.stats.bad = 0;
+				P.p.stats.terr = 0;
 				if (!Brew.noLegacy()) {
 					for (int i = Brew.legacyPotions.size(); i > 0; i--) {
-						P.p.metricsForCreate(false);
+						P.p.stats.metricsForCreate(false);
 					}
 				}
 			}

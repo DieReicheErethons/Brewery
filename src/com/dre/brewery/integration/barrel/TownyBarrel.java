@@ -6,18 +6,24 @@ import com.dre.brewery.api.events.barrel.BarrelAccessEvent;
 import com.palmergames.bukkit.towny.TownySettings;
 import com.palmergames.bukkit.towny.object.TownyPermission;
 import com.palmergames.bukkit.towny.utils.PlayerCacheUtil;
+import org.bukkit.Location;
 import org.bukkit.Material;
 
 public class TownyBarrel {
 	public static boolean checkAccess(BarrelAccessEvent event) {
-		if (!TownySettings.isSwitchMaterial("BREWERY") && !TownySettings.isSwitchMaterial("BARREL")) {
-			if (P.use1_14) {
+		Location barrelLoc = event.getSpigot().getLocation();
+		Material mat = P.use1_14 ? Material.BARREL : Material.CHEST;
+
+		try {
+			if (!TownySettings.isSwitchMaterial(mat, barrelLoc)) {
 				return true;
-			} else if (!TownySettings.isSwitchMaterial("CHEST")) {
+			}
+		} catch (Exception e) {
+			//noinspection deprecation
+			if (!TownySettings.isSwitchMaterial("CHEST")) {
 				return true;
 			}
 		}
-		Material mat = P.use1_14 ? Material.BARREL : Material.CHEST;
-		return PlayerCacheUtil.getCachePermission(event.getPlayer(), event.getSpigot().getLocation(), mat, TownyPermission.ActionType.SWITCH);
+		return PlayerCacheUtil.getCachePermission(event.getPlayer(), barrelLoc, mat, TownyPermission.ActionType.SWITCH);
 	}
 }

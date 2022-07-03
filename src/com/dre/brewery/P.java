@@ -39,7 +39,6 @@ import com.dre.brewery.recipe.*;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.LegacyUtil;
 import com.dre.brewery.utility.Stats;
-import org.apache.commons.lang.math.NumberUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -331,8 +330,38 @@ public class P extends JavaPlugin {
 	}
 
 	public int parseInt(String string) {
-		return NumberUtils.toInt(string, 0);
+		if (string == null) {
+			return 0;
+		}
+		try {
+			return Integer.parseInt(string);
+		} catch (NumberFormatException ignored) {
+			return 0;
+		}
 	}
+
+	public double parseDouble(String string) {
+		if (string == null) {
+			return 0;
+		}
+		try {
+			return Double.parseDouble(string);
+		} catch (NumberFormatException ignored) {
+			return 0;
+		}
+	}
+
+	public float parseFloat(String string) {
+		if (string == null) {
+			return 0;
+		}
+		try {
+			return Float.parseFloat(string);
+		} catch (NumberFormatException ignored) {
+			return 0;
+		}
+	}
+
 
 	public String color(String msg) {
 		return BUtil.color(msg);

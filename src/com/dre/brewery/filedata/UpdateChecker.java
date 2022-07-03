@@ -81,11 +81,8 @@ public class UpdateChecker implements Runnable {
 			// Read the response of the query
 			final BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 
-			JsonParser parser = new JsonParser();
-
-
 			// Parse the array of files from the query's response
-			JsonArray array = parser.parse(reader).getAsJsonArray();
+			JsonArray array = JsonParser.parseReader(reader).getAsJsonArray();
 
 			if (array.size() > 0) {
 				// Get the newest file's details

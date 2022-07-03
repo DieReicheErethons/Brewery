@@ -8,8 +8,6 @@ import com.dre.brewery.recipe.PluginItem;
 import com.dre.brewery.recipe.SimpleItem;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.BoundingBox;
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.math.NumberUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -24,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.IntStream;
 
 public class BData {
 
@@ -363,7 +362,7 @@ public class BData {
 							if (woLength > 1) {
 								System.arraycopy(wo, 0, points, st.length, woLength);
 							}
-							int[] locs = ArrayUtils.toPrimitive(Arrays.stream(points).map(s -> P.p.parseInt(s)).toArray(Integer[]::new));
+							int[] locs = Arrays.stream(points).mapToInt(s -> P.p.parseInt(s)).toArray();
 							try {
 								box = BoundingBox.fromPoints(locs);
 							} catch (Exception e) {
@@ -406,11 +405,11 @@ public class BData {
 					String[] splitted = loc.split("/");
 					if (splitted.length == 5) {
 
-						double x = NumberUtils.toDouble(splitted[0]);
-						double y = NumberUtils.toDouble(splitted[1]);
-						double z = NumberUtils.toDouble(splitted[2]);
-						float pitch = NumberUtils.toFloat(splitted[3]);
-						float yaw = NumberUtils.toFloat(splitted[4]);
+						double x = P.p.parseDouble(splitted[0]);
+						double y = P.p.parseDouble(splitted[1]);
+						double z = P.p.parseDouble(splitted[2]);
+						float pitch = P.p.parseFloat(splitted[3]);
+						float yaw = P.p.parseFloat(splitted[4]);
 						Location location = new Location(world, x, y, z, yaw, pitch);
 
 						initWakeups.add(new Wakeup(location));

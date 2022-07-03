@@ -7,7 +7,6 @@ import com.dre.brewery.recipe.BCauldronRecipe;
 import com.dre.brewery.recipe.BRecipe;
 import com.dre.brewery.Barrel;
 import com.dre.brewery.Brew;
-import org.apache.commons.lang.NotImplementedException;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -356,7 +355,7 @@ public class BreweryApi {
 	public static void addRecipe(BRecipe recipe, boolean saveForever) {
 		//recipe.setSaveInData(saveForever);
 		if (saveForever) {
-			throw new NotImplementedException("SaveForever is not implemented yet");
+			throw new UnsupportedOperationException("SaveForever is not implemented yet");
 		}
 		BRecipe.getAddedRecipes().add(recipe);
 		recipe.updateAcceptedLists();
@@ -424,7 +423,7 @@ public class BreweryApi {
 	public static void addCauldronRecipe(BCauldronRecipe recipe, boolean saveForever) {
 		//recipe.setSaveInData(saveForever);
 		if (saveForever) {
-			throw new NotImplementedException();
+			throw new UnsupportedOperationException();
 		}
 		BCauldronRecipe.getAddedRecipes().add(recipe);
 		recipe.updateAcceptedLists();

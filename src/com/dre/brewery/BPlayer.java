@@ -11,7 +11,6 @@ import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.PermissionUtil;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.apache.commons.lang.mutable.MutableInt;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -32,7 +31,7 @@ import java.util.*;
 
 public class BPlayer {
 	private static Map<String, BPlayer> players = new HashMap<>();// Players uuid and BPlayer
-	private static Map<Player, MutableInt> pTasks = new HashMap<>();// Player and count
+	private static Map<Player, Integer> pTasks = new HashMap<>();// Player and count
 	private static int taskId;
 	private static Random pukeRand;
 
@@ -576,21 +575,22 @@ public class BPlayer {
 		if (pTasks.isEmpty()) {
 			taskId = P.p.getServer().getScheduler().scheduleSyncRepeatingTask(P.p, BPlayer::pukeTask, 1L, 1L);
 		}
-		pTasks.put(player, new MutableInt(event.getCount()));
+		pTasks.put(player, event.getCount());
 	}
 
 	public static void pukeTask() {
-		for (Iterator<Map.Entry<Player, MutableInt>> iter = pTasks.entrySet().iterator(); iter.hasNext(); ) {
-			Map.Entry<Player, MutableInt> entry = iter.next();
+		for (Iterator<Map.Entry<Player, Integer>> iter = pTasks.entrySet().iterator(); iter.hasNext(); ) {
+			Map.Entry<Player, Integer> entry = iter.next();
 			Player player = entry.getKey();
-			MutableInt count = entry.getValue();
+			int count = entry.getValue();
 			if (!player.isValid() || !player.isOnline()) {
 				iter.remove();
 			}
 			puke(player);
-			count.decrement();
-			if (count.intValue() <= 0) {
+			if (count <= 1) {
 				iter.remove();
+			} else {
+				entry.setValue(count - 1);
 			}
 		}
 		if (pTasks.isEmpty()) {

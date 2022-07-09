@@ -20,8 +20,8 @@ public class BCauldronRecipe {
 	public static List<BCauldronRecipe> recipes = new ArrayList<>();
 	public static int numConfigRecipes;
 	public static List<RecipeItem> acceptedCustom = new ArrayList<>(); // All accepted custom and other items
-	public static Set<Material> acceptedSimple = EnumSet.noneOf(Material.class); // All accepted simple items
-	public static Set<Material> acceptedMaterials = EnumSet.noneOf(Material.class); // Fast cache for all accepted Materials
+	public static Set<Material> acceptedSimple = new HashSet<>(); // All accepted simple items
+	public static Set<Material> acceptedMaterials = new HashSet<>(); // Fast cache for all accepted Materials
 
 	private String name;
 	private List<RecipeItem> ingredients;

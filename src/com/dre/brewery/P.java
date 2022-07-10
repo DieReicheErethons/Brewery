@@ -32,6 +32,7 @@ import com.dre.brewery.filedata.UpdateChecker;
 import com.dre.brewery.integration.ChestShopListener;
 import com.dre.brewery.integration.IntegrationListener;
 import com.dre.brewery.integration.ShopKeepersListener;
+import com.dre.brewery.integration.SlimefunListener;
 import com.dre.brewery.integration.barrel.BlocklockerBarrel;
 import com.dre.brewery.integration.barrel.LogBlockBarrel;
 import com.dre.brewery.listeners.*;
@@ -161,6 +162,9 @@ public class P extends JavaPlugin {
 		if (BConfig.hasShopKeepers) {
 			p.getServer().getPluginManager().registerEvents(new ShopKeepersListener(), p);
 		}
+		if (BConfig.hasSlimefun && use1_14) {
+			p.getServer().getPluginManager().registerEvents(new SlimefunListener(), p);
+		}
 
 		// Heartbeat
 		p.getServer().getScheduler().runTaskTimer(p, new BreweryRunnable(), 650, 1200);
@@ -267,7 +271,6 @@ public class P extends JavaPlugin {
 		BCauldronRecipe.getConfigRecipes().clear();
 		BCauldronRecipe.numConfigRecipes = 0;
 		BConfig.customItems.clear();
-		BConfig.hasSlimefun = null;
 		BConfig.hasMMOItems = null;
 		DistortChat.commands = null;
 		BConfig.drainItems.clear();

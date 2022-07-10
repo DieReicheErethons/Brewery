@@ -15,9 +15,6 @@ public class SlimefunPluginItem extends PluginItem {
 
 	@Override
 	public boolean matches(ItemStack item) {
-		if (BConfig.hasSlimefun == null) {
-			BConfig.hasSlimefun = P.p.getServer().getPluginManager().isPluginEnabled("Slimefun");
-		}
 		if (!BConfig.hasSlimefun) return false;
 
 		try {

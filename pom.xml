@@ -266,7 +266,7 @@
 		</dependency>
 		<dependency>
 			<!-- https://github.com/Slimefun/Slimefun4/releases -->
-			<groupId>com.github.slimefun</groupId>
+			<groupId>com.github.Slimefun</groupId>
 			<artifactId>Slimefun4</artifactId>
 			<version>RC-32</version>
 			<scope>provided</scope>

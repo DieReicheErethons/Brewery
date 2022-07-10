@@ -15,7 +15,7 @@
 
 ### JavaDocs
 
-[JavaDocs on Jitpack](https://javadoc.jitpack.io/com/github/DieReicheErethons/Brewery/-3166f8c81b-1/javadoc/index.html)
+[JavaDocs on Jitpack](https://javadoc.jitpack.io/com/github/DieReicheErethons/Brewery/3.1.1/javadoc/index.html)
 
 ### Maven
 
@@ -28,11 +28,11 @@
 <dependency>
    <groupId>com.github.DieReicheErethons</groupId>
    <artifactId>Brewery</artifactId>
-   <version>3.1</version>
+   <version>3.1.1</version>
    <scope>provided</scope>
 </dependency>
 ```
-_For older maven releases see [here](https://github.com/DieReicheErethons/Brewery/blob/v2.1.2/README.md)_
+
 
 
 ### License

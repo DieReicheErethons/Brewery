@@ -148,5 +148,12 @@ public class SimpleItem extends RecipeItem implements Ingredient {
 		p.registerForItemLoader("SI", SimpleItem::loadFrom);
 	}
 
+	@Override
+	public String displayName() {
+		// approximate a user-friendly display name since
+		// server doesn't have access to translations :/
+		return mat.toString().toLowerCase().replace("_", " ");
+	}
+
 }
 

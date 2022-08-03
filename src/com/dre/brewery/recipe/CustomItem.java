@@ -289,4 +289,9 @@ public class CustomItem extends RecipeItem implements Ingredient {
 	public static void registerItemLoader(P p) {
 		p.registerForItemLoader("CI", CustomItem::loadFrom);
 	}
+
+	@Override
+	public String displayName() {
+		return this.name;
+	}
 }

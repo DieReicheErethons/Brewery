@@ -77,6 +77,11 @@ public abstract class RecipeItem implements Cloneable {
 	public abstract List<Material> getMaterials();
 
 	/**
+	 * @return A user-displayable name for this recipeItem
+	 */
+	public abstract String displayName();
+
+	/**
 	 * @return The Id this Item uses in the config in the custom-items section
 	 */
 	@Nullable

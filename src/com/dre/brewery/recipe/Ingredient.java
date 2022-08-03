@@ -56,5 +56,6 @@ public interface Ingredient {
 	 */
 	boolean isSimilar(Ingredient item);
 
+	String displayName();
 
 }

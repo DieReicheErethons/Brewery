@@ -30,4 +30,9 @@ public class MMOItemsPluginItem extends PluginItem {
 			return false;
 		}
 	}
+
+	@Override
+	public String displayName() {
+		return getItemId();
+	}
 }

@@ -494,6 +494,16 @@ public class BRecipe {
 		return 0;
 	}
 
+	@Nullable
+	public RecipeItem recipeItemFor(Ingredient ing) {
+		for (RecipeItem rItem : ingredients) {
+			if (rItem.matches(ing)) {
+				return rItem;
+			}
+		}
+		return null;
+	}
+
 	/**
 	 * how many of a specific ingredient in the recipe
 	 */

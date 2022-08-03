@@ -5,6 +5,7 @@ import com.dre.brewery.lore.Base91EncoderStream;
 import com.dre.brewery.lore.BrewLore;
 import com.dre.brewery.recipe.BCauldronRecipe;
 import com.dre.brewery.recipe.BRecipe;
+import com.dre.brewery.recipe.BUserError;
 import com.dre.brewery.recipe.Ingredient;
 import com.dre.brewery.recipe.ItemLoader;
 import com.dre.brewery.recipe.RecipeItem;
@@ -21,6 +22,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Represents ingredients in Cauldron, Brew
@@ -295,6 +297,62 @@ public class BIngredients {
 			}
 		}
 		return null;
+	}
+
+	public List<BUserError> getErrorsForRecipe(float wood, float time, boolean distilled, BRecipe recipe) {
+		List<BUserError> errors = new ArrayList<BUserError>();
+
+		for (Ingredient ingredient : ingredients) {
+			int amountInRecipe = recipe.amountOf(ingredient);
+			int amount = ingredient.getAmount();
+
+			if (amountInRecipe == 0 && amount > 0) {
+				errors.add(new BUserError.BadIngredientKindError(ingredient));
+			} else if (amountInRecipe != amount) {
+				errors.add(new BUserError.IngredientQuantityError(recipe.recipeItemFor(ingredient), amount));
+			}
+		}
+		for (RecipeItem ingredient : recipe.getIngredients()) {
+			if (!ingredients.stream().anyMatch(ing -> ingredient.matches(ing))) {
+				errors.add(new BUserError.MissingIngredientKindError(ingredient));
+			}
+		}
+		if (recipe.needsDistilling() != distilled) {
+			errors.add(new BUserError.DistillationError(distilled, recipe.needsDistilling()));
+		}
+
+		return errors;
+	}
+
+	/**
+	 * @see getErrorsForRecipe
+	 * @return A random list of errors from a close random recipe
+	 */
+	public List<BUserError> getErrors(float wood, float time, boolean distilled) {
+		List<List<BUserError>> matchingRecipes = new ArrayList<List<BUserError>>();
+		int mostErrors = Integer.MAX_VALUE;
+
+		for (BRecipe recipe : BRecipe.getAllRecipes()) {
+			List<BUserError> errors = getErrorsForRecipe(wood, time, distilled, recipe);
+			if (errors.size() < mostErrors) {
+				mostErrors = errors.size();
+				matchingRecipes = new ArrayList<List<BUserError>>(){{add(errors);}};
+			} else if (errors.size() == mostErrors) {
+				matchingRecipes.add(errors);
+			}
+		}
+
+		return matchingRecipes.get(ThreadLocalRandom.current().nextInt(matchingRecipes.size()));
+	}
+
+	/**
+	 * @see getErrors
+	 * @return A random error from a close random recipe
+	 */
+	public BUserError getError(float wood, float time, boolean distilled) {
+		List<BUserError> errors = getErrors(wood, time, distilled);
+
+		return errors.get(ThreadLocalRandom.current().nextInt(errors.size()));
 	}
 
 	/**

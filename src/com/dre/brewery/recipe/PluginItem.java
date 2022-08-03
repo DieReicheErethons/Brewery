@@ -152,6 +152,10 @@ public abstract class PluginItem extends RecipeItem implements Ingredient {
 					public boolean matches(ItemStack item) {
 						return false;
 					}
+					@Override
+					public String displayName() {
+						return "Invalid Item";
+					}
 				};
 			}
 			return item;

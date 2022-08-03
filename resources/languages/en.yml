@@ -49,6 +49,22 @@ Error_UnknownCommand: Unknown Command
 Error_YmlRead: 'Could not read file config.yml, please make sure the file is in valid yml format (correct spaces, using '' '' etc.)'
 Error_NoPlayer: 'Player not found: &v1'
 
+# User errors
+UserError_BadIngredientKind_1: 'Eugh, the taste of the &v1 clashes with the other ingredients...'
+UserError_BadIngredientKind_2: 'The &v1 doesn''t taste very good here...'
+UserError_BadIngredientKind_3: 'There''s something in here that shouldn''t be in here...'
+UserError_MissingIngredientKind_1: 'Seems like something''s missing...'
+UserError_MissingIngredientKind_2: 'This would be better with some &v1...'
+UserError_MissingIngredientKind_3: 'Missing &v1...'
+UserError_IngredientQuantity_TooMuch_1: 'Whoa, that''s definitely too much &v1!'
+UserError_IngredientQuantity_TooMuch_2: 'That''s a lot of &v1...'
+UserError_IngredientQuantity_TooLittle_1: 'It could do with a bit more of the taste of &v1...'
+UserError_IngredientQuantity_TooLittle_2: 'Not getting enough of that &v1 in here.'
+UserError_NeededDistillation_1: 'There''s something in here that shouldn''t be in here...'
+UserError_NeededDistillation_2: 'I think this needs some distillation...'
+UserError_DidntNeedDistillation_1: 'Seems like something''s missing...'
+UserError_DidntNeedDistillation_2: 'I think this didn''t need distillation...'
+
 # Etc
 Etc_Barrel: Barrel
 Etc_Page: Page

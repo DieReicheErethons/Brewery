@@ -228,4 +228,9 @@ public class CustomMatchAnyItem extends RecipeItem {
 			", loresize: " + (lore != null ? lore.size() : 0) +
 			'}';
 	}
+
+	@Override
+	public String displayName() {
+		return String.format("One of %s", String.join(", ", this.names));
+	}
 }

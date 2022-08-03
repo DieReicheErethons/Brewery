@@ -523,7 +523,8 @@ public class BrewLore {
 		DISTILL("§p"),
 		AGE("§y"),
 		WOOD("§z"),
-		ALC("§q");
+		ALC("§q"),
+		ERROR("§o");
 
 		public final String id;
 

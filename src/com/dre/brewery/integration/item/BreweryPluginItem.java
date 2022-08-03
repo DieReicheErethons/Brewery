@@ -27,4 +27,9 @@ public class BreweryPluginItem extends PluginItem {
 		}
 		return false;
 	}
+
+	@Override
+	public String displayName() {
+		return getItemId();
+	}
 }

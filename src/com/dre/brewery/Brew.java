@@ -4,8 +4,10 @@ import com.dre.brewery.api.events.brew.BrewModifyEvent;
 import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.filedata.ConfigUpdater;
 import com.dre.brewery.lore.*;
+import com.dre.brewery.lore.BrewLore.Type;
 import com.dre.brewery.recipe.BEffect;
 import com.dre.brewery.recipe.BRecipe;
+import com.dre.brewery.recipe.BUserError;
 import com.dre.brewery.recipe.PotionColor;
 import com.dre.brewery.utility.BUtil;
 import org.bukkit.Material;
@@ -637,8 +639,10 @@ public class Brew implements Cloneable {
 			recipe.getColor().colorBrew(potionMeta, slotItem, canDistill());
 
 		} else {
+			BUserError error = ingredients.getError(wood, ageTime, distillRuns > 0);
 			quality = 0;
 			lore.removeEffects();
+			lore.addOrReplaceLore(Type.ERROR, "", error.userMessage());
 			potionMeta.setDisplayName(P.p.color("&f" + P.p.languageReader.get("Brew_DistillUndefined")));
 			PotionColor.GREY.colorBrew(potionMeta, slotItem, canDistill());
 		}
@@ -709,9 +713,11 @@ public class Brew implements Cloneable {
 				potionMeta.setDisplayName(P.p.color("&f" + recipe.getName(quality)));
 				recipe.getColor().colorBrew(potionMeta, item, canDistill());
 			} else {
+				BUserError error = ingredients.getError(wood, ageTime, distillRuns > 0);
 				quality = 0;
 				lore.convertLore(false);
 				lore.removeEffects();
+				lore.addOrReplaceLore(Type.ERROR, "", error.userMessage());
 				currentRecipe = null;
 				potionMeta.setDisplayName(P.p.color("&f" + P.p.languageReader.get("Brew_BadPotion")));
 				PotionColor.GREY.colorBrew(potionMeta, item, canDistill());

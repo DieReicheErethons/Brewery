@@ -1,5 +1,6 @@
 package com.dre.brewery.utility;
 
+import com.dre.brewery.BCauldron;
 import com.dre.brewery.P;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -82,6 +83,8 @@ public class LegacyUtil {
 	}
 
 	public static final Material WATER_CAULDRON = get("WATER_CAULDRON");
+	public static final Material LAVA_CAULDRON = get("LAVA_CAULDRON");
+	public static final Material POWDERED_SNOW_CAULDRON = get("POWDER_SNOW_CAULDRON");
 	public static final Material MAGMA_BLOCK = get("MAGMA_BLOCK", "MAGMA");
 	public static final Material CAMPFIRE = get("CAMPFIRE");
 	public static final Material SOUL_CAMPFIRE = get("SOUL_CAMPFIRE");
@@ -229,8 +232,20 @@ public class LegacyUtil {
 	/**
 	 * Test if this Material Type is a Cauldron filled with water, or any cauldron in 1.16 and lower
 	 */
-	public static boolean isWaterCauldron(Material type) {
-		return WATER_CAULDRON != null ? type == WATER_CAULDRON : type == Material.CAULDRON;
+	public static BCauldron.LiquidType getCauldronType(Material type) {
+		if (WATER_CAULDRON == null) {
+			return BCauldron.LiquidType.WATER;
+		}
+		switch (type) {
+			case WATER_CAULDRON:
+				return BCauldron.LiquidType.WATER;
+			case LAVA_CAULDRON:
+				return BCauldron.LiquidType.LAVA;
+			case POWDER_SNOW_CAULDRON:
+				return BCauldron.LiquidType.SNOW;
+			default:
+				return null;
+		}
 	}
 
 	/**
@@ -239,8 +254,12 @@ public class LegacyUtil {
 	 * @return 0 = empty, 1 = something in, 2 = full
 	 */
 	public static byte getFillLevel(Block block) {
-		if (!isWaterCauldron(block.getType())) {
+		if (getCauldronType(block.getType()) == null) {
 			return EMPTY;
+		}
+
+		if (block.getType() == LAVA_CAULDRON) {
+			return FULL;
 		}
 
 		if (P.use1_13) {

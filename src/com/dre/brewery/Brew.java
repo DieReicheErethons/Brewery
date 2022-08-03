@@ -46,6 +46,7 @@ public class Brew implements Cloneable {
 	private byte distillRuns;
 	private float ageTime;
 	private float wood;
+	private BCauldron.LiquidType liquidType;
 	private BRecipe currentRecipe; // Recipe this Brew is currently based off. May change between modifications and is often null when not modifying
 	private boolean unlabeled;
 	private boolean persistent; // Only for legacy
@@ -55,7 +56,7 @@ public class Brew implements Cloneable {
 	private boolean needsSave; // There was a change that has not yet been saved
 
 	/**
-	 * A new Brew with only ingredients
+	 * A new Brew with only ingredients and a liquid type
 	 */
 	public Brew(BIngredients ingredients) {
 		this.ingredients = ingredients;
@@ -76,7 +77,7 @@ public class Brew implements Cloneable {
 	/**
 	 * Loading a Brew with all values set
 	 */
-	public Brew(BIngredients ingredients, int quality, int alc, byte distillRuns, float ageTime, float wood, String recipe, boolean unlabeled, boolean immutable, int lastUpdate) {
+	public Brew(BIngredients ingredients, int quality, int alc, byte distillRuns, float ageTime, float wood, BCauldron.LiquidType liquidType, String recipe, boolean unlabeled, boolean immutable, int lastUpdate) {
 		this.ingredients = ingredients;
 		this.quality = quality;
 		this.alc = alc;
@@ -86,6 +87,7 @@ public class Brew implements Cloneable {
 		this.unlabeled = unlabeled;
 		this.immutable = immutable;
 		this.lastUpdate = lastUpdate;
+		this.liquidType = liquidType;
 		setRecipeFromString(recipe);
 	}
 
@@ -246,7 +248,7 @@ public class Brew implements Cloneable {
 			}
 
 			if (quality > 0) {
-				currentRecipe = ingredients.getBestRecipe(wood, ageTime, distillRuns > 0);
+				currentRecipe = ingredients.getBestRecipe(wood, ageTime, distillRuns > 0, liquidType);
 				if (currentRecipe != null) {
 					/*if (!immutable) {
 						this.quality = calcQuality();
@@ -462,6 +464,10 @@ public class Brew implements Cloneable {
 		}
 	}
 
+	public BCauldron.LiquidType getLiquidType() {
+		return liquidType;
+	}
+
 	/**
 	 * Sealing the Brew to make it Immutable, Unlabeled and Stripped
 	 * <p>This makes it easier to sell in shops as Brews that are mostly the same will be equal after
@@ -626,7 +632,7 @@ public class Brew implements Cloneable {
 
 		distillRuns += 1;
 		BrewLore lore = new BrewLore(this, potionMeta);
-		BRecipe recipe = ingredients.getDistillRecipe(wood, ageTime);
+		BRecipe recipe = ingredients.getDistillRecipe(wood, ageTime, liquidType);
 		if (recipe != null) {
 			// distillRuns will have an effect on the amount of alcohol, not the quality
 			currentRecipe = recipe;
@@ -677,7 +683,7 @@ public class Brew implements Cloneable {
 			return currentRecipe.getDistillTime();
 		}
 
-		BRecipe recipe = ingredients.getDistillRecipe(wood, ageTime);
+		BRecipe recipe = ingredients.getDistillRecipe(wood, ageTime, liquidType);
 		if (recipe != null) {
 			return recipe.getDistillTime();
 		}
@@ -700,7 +706,7 @@ public class Brew implements Cloneable {
 			} else if (wood != woodType) {
 				woodShift(time, woodType);
 			}
-			BRecipe recipe = ingredients.getAgeRecipe(wood, ageTime, distillRuns > 0);
+			BRecipe recipe = ingredients.getAgeRecipe(wood, ageTime, distillRuns > 0, liquidType);
 			if (recipe != null) {
 				currentRecipe = recipe;
 				quality = calcQuality();
@@ -1074,7 +1080,7 @@ public class Brew implements Cloneable {
 	 * Load potion data from data file for backwards compatibility
 	 */
 	public static void loadLegacy(BIngredients ingredients, int uid, int quality, int alc, byte distillRuns, float ageTime, float wood, String recipe, boolean unlabeled, boolean persistent, boolean stat, int lastUpdate) {
-		Brew brew = new Brew(ingredients, quality, alc, distillRuns, ageTime, wood, recipe, unlabeled, stat, lastUpdate);
+		Brew brew = new Brew(ingredients, quality, alc, distillRuns, ageTime, wood, BCauldron.LiquidType.WATER, recipe, unlabeled, stat, lastUpdate);
 		brew.persistent = persistent;
 		if (brew.lastUpdate <= 0) {
 			// We failed to save the lastUpdate, restart the countdown

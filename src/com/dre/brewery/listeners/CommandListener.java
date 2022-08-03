@@ -516,8 +516,8 @@ public class CommandListener implements CommandExecutor {
 					int ageQ = ingredients.getAgeQuality(recipe, brew.getAgeTime());
 					P.p.log(recipe.getRecipeName() + ": ingQlty: " + ingQ + ", cookQlty:" + cookQ + ", cook+DistQlty: " + cookDistQ + ", ageQlty: " + ageQ);
 				}
-				BRecipe distill = ingredients.getBestRecipe(brew.getWood(), brew.getAgeTime(), true);
-				BRecipe nonDistill = ingredients.getBestRecipe(brew.getWood(), brew.getAgeTime(), false);
+				BRecipe distill = ingredients.getBestRecipe(brew.getWood(), brew.getAgeTime(), true, brew.getLiquidType());
+				BRecipe nonDistill = ingredients.getBestRecipe(brew.getWood(), brew.getAgeTime(), false, brew.getLiquidType());
 				P.p.log("&lWould prefer Recipe: " + (nonDistill == null ? "none" : nonDistill.getRecipeName()) + " and Distill-Recipe: " + (distill == null ? "none" : distill.getRecipeName()));
 			} else {
 				BRecipe recipe = BRecipe.getMatching(recipeName);

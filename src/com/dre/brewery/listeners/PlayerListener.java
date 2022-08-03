@@ -70,7 +70,7 @@ public class PlayerListener implements Listener {
 		if (player.isSneaking()) return;
 
 		// -- Interacting with a Cauldron --
-		if (LegacyUtil.isWaterCauldron(type)) {
+		if (LegacyUtil.getCauldronType(type) != null) {
 			// Handle the Cauldron Interact
 			// The Event might get cancelled in here
 			BCauldron.clickCauldron(event);

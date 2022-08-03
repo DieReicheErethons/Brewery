@@ -32,7 +32,7 @@ public class SlimefunListener implements Listener {
 	public void onCauldronClickSlimefun(PlayerRightClickEvent event) {
 		try {
 			if (event.getClickedBlock().isPresent() && event.getHand() == EquipmentSlot.HAND) {
-				if (LegacyUtil.isWaterCauldron(event.getClickedBlock().get().getType())) {
+				if (LegacyUtil.getCauldronType(event.getClickedBlock().get().getType()) != null) {
 					Optional<SlimefunItem> slimefunItem = event.getSlimefunItem();
 					if (slimefunItem.isPresent()) {
 						for (RecipeItem rItem : BCauldronRecipe.acceptedCustom) {

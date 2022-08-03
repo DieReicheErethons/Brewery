@@ -101,7 +101,7 @@ public class BIngredients {
 	/**
 	 * returns an Potion item with cooked ingredients
 	 */
-	public ItemStack cook(int state) {
+	public ItemStack cook(BCauldron.LiquidType liquidType, int state) {
 
 		ItemStack potion = new ItemStack(Material.POTION);
 		PotionMeta potionMeta = (PotionMeta) potion.getItemMeta();
@@ -110,7 +110,7 @@ public class BIngredients {
 		// cookedTime is always time in minutes, state may differ with number of ticks
 		cookedTime = state;
 		String cookedName = null;
-		BRecipe cookRecipe = getCookRecipe();
+		BRecipe cookRecipe = getCookRecipe(liquidType);
 		Brew brew;
 
 		//int uid = Brew.generateUID();
@@ -206,7 +206,7 @@ public class BIngredients {
 	/**
 	 * best recipe for current state of potion, STILL not always returns the correct one...
 	 */
-	public BRecipe getBestRecipe(float wood, float time, boolean distilled) {
+	public BRecipe getBestRecipe(float wood, float time, boolean distilled, BCauldron.LiquidType liquidType) {
 		float quality = 0;
 		int ingredientQuality;
 		int cookingQuality;
@@ -214,6 +214,12 @@ public class BIngredients {
 		int ageQuality;
 		BRecipe bestRecipe = null;
 		for (BRecipe recipe : BRecipe.getAllRecipes()) {
+			// if they're not even in the right liquid, don't bother...
+			if (liquidType != recipe.getLiquidType()) {
+				P.p.log("Liquid type: " + liquidType + ", recipe liquid type: " + recipe.getLiquidType() + " (" + recipe.getRecipeName() + ")");
+				continue;
+			}
+
 			ingredientQuality = getIngredientQuality(recipe);
 			cookingQuality = getCookingQuality(recipe, distilled);
 
@@ -249,8 +255,8 @@ public class BIngredients {
 	/**
 	 * returns recipe that is cooking only and matches the ingredients and cooking time
 	 */
-	public BRecipe getCookRecipe() {
-		BRecipe bestRecipe = getBestRecipe(0, 0, false);
+	public BRecipe getCookRecipe(BCauldron.LiquidType liquidType) {
+		BRecipe bestRecipe = getBestRecipe(0, 0, false, liquidType);
 
 		// Check if best recipe is cooking only
 		if (bestRecipe != null) {
@@ -285,8 +291,8 @@ public class BIngredients {
 	/**
 	 * returns the currently best matching recipe for distilling for the ingredients and cooking time
 	 */
-	public BRecipe getDistillRecipe(float wood, float time) {
-		BRecipe bestRecipe = getBestRecipe(wood, time, true);
+	public BRecipe getDistillRecipe(float wood, float time, BCauldron.LiquidType liquidType) {
+		BRecipe bestRecipe = getBestRecipe(wood, time, true, liquidType);
 
 		// Check if best recipe needs to be destilled
 		if (bestRecipe != null) {
@@ -300,8 +306,8 @@ public class BIngredients {
 	/**
 	 * returns currently best matching recipe for ingredients, cooking- and ageingtime
 	 */
-	public BRecipe getAgeRecipe(float wood, float time, boolean distilled) {
-		BRecipe bestRecipe = getBestRecipe(wood, time, distilled);
+	public BRecipe getAgeRecipe(float wood, float time, boolean distilled, BCauldron.LiquidType liquidType) {
+		BRecipe bestRecipe = getBestRecipe(wood, time, distilled, liquidType);
 
 		if (bestRecipe != null) {
 			if (bestRecipe.needsToAge()) {

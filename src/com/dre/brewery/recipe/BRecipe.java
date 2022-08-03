@@ -1,5 +1,6 @@
 package com.dre.brewery.recipe;
 
+import com.dre.brewery.BCauldron;
 import com.dre.brewery.BIngredients;
 import com.dre.brewery.Brew;
 import com.dre.brewery.P;
@@ -42,6 +43,7 @@ public class BRecipe {
 	private int distillTime; // time for one distill run in seconds
 	private byte wood; // type of wood the barrel has to consist of
 	private int age; // time in minecraft days for the potions to age in barrels
+	private BCauldron.LiquidType liquidType; // what kind of liquid does the recipe go in
 
 	// outcome
 	private PotionColor color; // color of the distilled/finished potion
@@ -129,6 +131,9 @@ public class BRecipe {
 			P.p.errorLog("Invalid Color '" + col + "' in Recipe: " + recipe.getRecipeName());
 			return null;
 		}
+
+		String liquid = configSectionRecipes.getString(recipeId + ".liquid", "water");
+		recipe.liquidType = BCauldron.LiquidType.fromString(liquid);
 
 		recipe.lore = loadQualityStringList(configSectionRecipes, recipeId + ".lore", StringParser.ParseType.LORE);
 
@@ -389,6 +394,10 @@ public class BRecipe {
 		return age != 0;
 	}
 
+	public BCauldron.LiquidType getLiquidType() {
+		return liquidType;
+	}
+
 	/**
 	 * true if given list misses an ingredient
 	 */
@@ -460,7 +469,7 @@ public class BRecipe {
 
 		BIngredients bIngredients = new BIngredients(list, cookingTime);
 
-		return new Brew(bIngredients, quality, 0, distillruns, getAge(), wood, getRecipeName(), false, true, 0);
+		return new Brew(bIngredients, quality, 0, distillruns, getAge(), wood, getLiquidType(), getRecipeName(), false, true, 0);
 	}
 
 	public void updateAcceptedLists() {

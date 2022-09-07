@@ -37,4 +37,4 @@
 
 ### License
 
-This Project is licensed under GPLv3
+This Project is licensed under GPLv3.

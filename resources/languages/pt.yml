@@ -57,58 +57,58 @@ Etc_Usage: 'Uso:'
 Etc_SealingTable: Mesa de Selagem de Infusão
 
 # Help
-Help_Copy: '&6/brew copy [Quantity]&9 Copies the potion in your hand'
-Help_Create: '&6/brew create <Recipe> [Quality] [Player] &9Create a Brew with optional quality (1-10)'
-Help_Give: '&6/brew give <Recipe> [Quality] [Player] &9Alias for /brew create'
-Help_Delete: '&6/brew delete &9Deletes the potion in your hand'
-Help_Help: '&6/brew help [Page] &9Shows a specific help-page'
-Help_Info: '&6/brew info&9 Displays your current Drunkeness and Quality'
-Help_InfoOther: '&6/brew info [Player]&9 Displays the current Drunkeness and Quality of [Player]'
-Help_Player: '&6/brew <Player> <%Drunkeness> [Quality]&9 Sets Drunkeness (and Quality) of a Player'
-Help_Reload: '&6/brew reload &9Reload config'
-Help_Configname: '&6/brew ItemName &9Display name of item in hand for the config'
-Help_Static: '&6/brew static &9Make Brew static -> No further ageing or distilling'
-Help_UnLabel: '&6/brew unlabel &9Removes the detailled label of a potion'
-Help_Seal: '&6/brew seal &9Seal Brews for selling in shops'
-Help_Wakeup: '&6/brew wakeup list <Page>&9 Lists all wakeup points'
-Help_WakeupAdd: '&6/brew wakeup add &9Adds a wakeup point at your current position'
-Help_WakeupCheck: '&6/brew wakeup check &9Teleports to all wakeup points'
-Help_WakeupCheckSpecific: '&6/brew wakeup check <id> &9Teleports to the wakeup point with <id>'
-Help_WakeupList: '&6/brew wakeup list <Page> [World]&9 Lists all wakeup points of <world>'
-Help_WakeupRemove: '&6/brew wakeup remove <id> &9Removes the wakeup point with <id>'
-Help_Puke: '&6/brew puke [Player] [Amount] &9Makes you or [Player] puke'
-Help_Drink: '&6/brew drink <Recipe> [Quality] [Player] &9Simulates [Player] drinking a Brew'
+Help_Copy: '&6/brew copy [Quantidade]&9 Copia a poção em sua mão'
+Help_Create: '&6/brew create <Receita> [Qualidade] [Jogador] &9Crie uma bebida com qualidade opcional (1-10)'
+Help_Give: '&6/brew give <Receita> [Qualidade] [Jogador] &9Alternativa para /brew create'
+Help_Delete: '&6/brew delete &9Remove a poção em sua mão'
+Help_Help: '&6/brew help [Página] &9Mostra uma página de ajuda específica'
+Help_Info: '&6/brew info&9 Exibe sua embriaguez e qualidade atuais'
+Help_InfoOther: '&6/brew info [Jogador]&9 Exibe a embriaguez e a qualidade atuais do [Jogador]'
+Help_Player: '&6/brew <Jogador> <%Embriaguez> [Qualidade]&9 Define a embriaguez (e qualidade) de um jogador'
+Help_Reload: '&6/brew reload &9Recarregar configuração'
+Help_Configname: '&6/brew ItemName &9Mostra o nome do item em mãos para configuração'
+Help_Static: '&6/brew static &9Tornar a bebida estática -> Sem mais envelhecimento ou destilação'
+Help_UnLabel: '&6/brew unlabel &9Remove o rótulo detalhado de uma poção'
+Help_Seal: '&6/brew seal &9Sela bebidas para vender em lojas'
+Help_Wakeup: '&6/brew wakeup list <Página>&9 Lista todos os ponto de despertar'
+Help_WakeupAdd: '&6/brew wakeup add &9Adiciona um ponto de despertar na sua posição atual'
+Help_WakeupCheck: '&6/brew wakeup check &9Teleporta para todos os pontos de despertar'
+Help_WakeupCheckSpecific: '&6/brew wakeup check <id> &9Teleporta-se para o ponto de despertar com <id>'
+Help_WakeupList: '&6/brew wakeup list <Página> [Mundo]&9 Lista todos os pontos de despertar de <Mundo>'
+Help_WakeupRemove: '&6/brew wakeup remove <id> &9Remove o ponto de despertador com <id>'
+Help_Puke: '&6/brew puke [Jogador] [Quantia] &9Faz você ou [Jogador] vomitar'
+Help_Drink: '&6/brew drink <Receita> [Qualidade] [Jogador] &9Simulates [Jogador] drinking a Brew'
 
 # Perms
-Perms_NoBarrelCreate: '&cYou don''t have permissions to create barrels!'
-Perms_NoBigBarrelCreate: '&cYou don''t have permissions to create big barrels!'
-Perms_NoCauldronFill: '&cYou don''t have permissions to fill bottles from this cauldron!'
-Perms_NoCauldronInsert: '&cYou don''t have permissions to put ingredients into cauldrons!'
-Perms_NoSmallBarrelCreate: '&cYou don''t have permissions to create small barrels!'
+Perms_NoBarrelCreate: '&cVocê não tem permissão para criar barris!'
+Perms_NoBigBarrelCreate: '&cVocê não tem permissão para criar barris grandes!'
+Perms_NoCauldronFill: '&cVocê não tem permissão para encher garrafas deste caldeirão!'
+Perms_NoCauldronInsert: '&cVocê não tem permissão para colocar ingredientes em caldeirões!'
+Perms_NoSmallBarrelCreate: '&cVocê não tem permissão para criar barris pequenos!'
 
 # Player
-Player_BarrelCreated: Barrel created
-Player_BarrelFull: '&cThis barrel can''t hold any more drinks'
-Player_CantDrink: You can't drink any more.
-Player_CauldronInfo1: This cauldron has been boiling for &v1 minutes.
-Player_CauldronInfo2: This cauldron has just started boiling.
-Player_DrunkPassOut: You drank too much and passed out.
-Player_LoginDeny: Your character tries to log in, but is too drunk to find the server. Try again!
-Player_LoginDenyLong: Your character is really drunk and has passed out. Try again in 10 minutes!
-Player_TriedToSay: '&v1 tried to say: &0&v2'
-Player_Wake: Ohh no! I cannot remember how I got here...
-Player_WakeAlreadyDeleted: '&cThe Wakeup Point with the id: &6&v1 &chas already been deleted!'
-Player_WakeCancel: '&6Wakeup Point Check was cancelled'
-Player_WakeCreated: '&aWakeup Point with id: &6&v1 &awas created successfully!'
-Player_WakeDeleted: '&aThe Wakeup Point with the id: &6&v1 &awas successfully deleted!'
-Player_WakeFilled: '&cThe Wakeup Point with the id: &6&v1&c at position &6&v2 &v3, &v4, &v5&c is filled with Blocks!'
-Player_WakeHint1: 'To Next Wakeup Point: Punch your fist in the air'
-Player_WakeHint2: 'To Cancel: &9/brew wakeup cancel'
-Player_WakeLast: '&aThis was the last Wakeup Point'
-Player_WakeNoCheck: '&cNo Wakeup Point Check is currently active'
-Player_WakeNoPoints: '&cThere are no Wakeup Points!'
-Player_WakeNotExist: '&cThe Wakeup Point with the id: &6&v1 &cdoesn''t exist!'
-Player_WakeTeleport: 'Teleport to Wakeup Point with the id: &6&v1&f At position: &6&v2 &v3, &v4, &v5'
-Player_ShopSealBrew: '&eIt''s recommended to trade/sell &6sealed &eBrews'
+Player_BarrelCreated: Barril criado
+Player_BarrelFull: '&cEste barril não pode conter mais bebidas'
+Player_CantDrink: Você não pode beber mais.
+Player_CauldronInfo1: Este caldeirão está fervendo há &v1 minutos.
+Player_CauldronInfo2: Este caldeirão começou a ferver.
+Player_DrunkPassOut: Você bebeu demais e desmaiou.
+Player_LoginDeny: Seu personagem tenta fazer login, mas está bêbado demais para encontrar o servidor. Tente novamente!
+Player_LoginDenyLong: Seu personagem está muito bêbado e desmaiou. Tente novamente em 10 minutos!
+Player_TriedToSay: '&v1 tentou dizer: &0&v2'
+Player_Wake: Oh não! Não me lembro como cheguei aqui...
+Player_WakeAlreadyDeleted: '&cO ponto de despertar com o id: &6&v1 &cjá foi deletado!'
+Player_WakeCancel: '&6A verificação do ponto de despertar foi cancelada'
+Player_WakeCreated: '&aPonto de despertar com id: &6&v1 &afoi criado com sucesso!'
+Player_WakeDeleted: '&aO ponto de despertar com o id: &6&v1 &afoi deletado com sucesso!'
+Player_WakeFilled: '&cO ponto de despertar com o id: &6&v1&c na posição &6&v2 &v3, &v4, &v5&c está bloqueado por Blocos!'
+Player_WakeHint1: 'Para o próximo ponto de despertar: dê um soco no ar'
+Player_WakeHint2: 'Para cancelar: &9/brew wakeup cancel'
+Player_WakeLast: '&aEste foi o último ponto de despertar'
+Player_WakeNoCheck: '&cNenhuma verificação do ponto de despertar está atualmente ativa'
+Player_WakeNoPoints: '&cNão há pontos de despertar!'
+Player_WakeNotExist: '&cO ponto de despertar com o id: &6&v1 &cnão existe!'
+Player_WakeTeleport: 'Teleporte para o ponto de despertar com o id: &6&v1&f Na posição: &6&v2 &v3, &v4, &v5'
+Player_ShopSealBrew: '&eRecomenda-se negociar/vender &eBebidas &6seladas'
 Player_Drunkeness: 'Drunkeness'
 Player_Hangover: 'Your Hangover'

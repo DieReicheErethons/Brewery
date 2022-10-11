@@ -106,9 +106,9 @@ customItems:
   ex-item:
     # A Barrier item called Wall and has the given line in its lore
     material: Barrier
-    name: 'Wall'
+    name: 'Muro'
     lore:
-      - '&7Very well protected'
+      - '&7Muito bem protegido'
 
   ex-item2:
     # Using matchAny only one of the following has to match.
@@ -119,12 +119,12 @@ customItems:
       - Oak_Door
       - Spruce_Door
     name:
-      - 'Beechwood Door'
+      - 'Porta de Madeira de Faia'
     lore:
-      - 'A door'
+      - 'Uma porta'
 
   rasp:
-    name: '&cRaspberry'
+    name: '&cFramboesa'
 
   blue-flowers:
     matchAny: true
@@ -178,7 +178,7 @@ cauldron:
       - '2d8686/8' # Dark Aqua
 
   sugarcane:
-    name: Cerveja de Azúcar
+    name: Caldo de Cana
     ingredients: Sugar_Cane
     color: 'f1ffad' # yellowish green
     cookParticles:
@@ -218,14 +218,14 @@ cauldron:
       - '99ff99/20' # faded green
 
   rmushroom:
-    name: Sopa de Cogumelo
+    name: Infusão de Cogumelo Vermelho
     ingredients: Red_Mushroom
     color: 'ff5c33' # amber red
     cookParticles:
       - 'fab09e/15' # faded red
 
   bmushroom:
-    name: Sopa de Cogumelo
+    name: Infusão de Cogumelo Marrom
     ingredients: Brown_Mushroom
     color: 'c68c53' # brighter brown
     cookParticles:
@@ -249,14 +249,14 @@ cauldron:
       - 'WHITE/6'
 
   bl_flow:
-    name: Cerveja Azulada
+    name: Infusão Azulada
     ingredients: blue-flowers
     color: '0099ff' # sky blue
     cookParticles:
       - '0099ff'
 
   cactus:
-    name: Cerveza de Agave
+    name: Infusão de Agave
     ingredients: cactus
     color: '00b300' # cactus green
     cookParticles:
@@ -296,15 +296,15 @@ cauldron:
     ingredients: melon_slice
 
   wheat_seeds:
-    name: Cerveja Amarga
+    name: Infusão Amarga
     ingredients: Wheat_Seeds
 
   melon_seeds:
-    name: Cerveja Amarga
+    name: Infusão Amarga
     ingredients: Melon_Seeds
 
   pumpkin_seeds:
-    name: Cerveja Amarga
+    name: Infusão Amarga
     ingredients: Pumpkin_Seeds
 
   bone_meal:
@@ -326,7 +326,7 @@ cauldron:
     ingredients: Fermented_Spider_Eye
 
   ghast_tear:
-    name: Cerveja Triste
+    name: Infusão Triste
     ingredients: ghast_tear
 
   snowball:
@@ -341,7 +341,7 @@ cauldron:
       - 'ffd11a'
 
   glowstone_dust:
-    name: Cerveja Brilhante
+    name: Infusão Brilhante
     ingredients: Glowstone_Dust
     color: 'ffff33' # bright yellow
     cookParticles:
@@ -350,7 +350,7 @@ cauldron:
 
   # -- Multiple Ingredients: --
   applemead_base:
-    name: Cerveja de Maçã com Açúcar
+    name: Infusão de Maçã com Cana-de-Açúcar
     ingredients:
       - Sugar_Cane/3
       - Apple

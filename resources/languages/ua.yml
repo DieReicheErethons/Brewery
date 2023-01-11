@@ -1,0 +1,111 @@
+# Brew
+Brew_-times: -раз
+Brew_BadPotion: Зіпсоване зілля
+Brew_BarrelRiped: Настояне в бочці
+Brew_DistillUndefined: Мутний дистилят
+Brew_Distilled: Дистильований
+Brew_LessDistilled: Менш дистильований
+Brew_HundredsOfYears: Сотні років
+Brew_Ingredients: Інгредієнти
+Brew_MinutePluralPostfix: и
+Brew_OneYear: Один рік
+Brew_ThickBrew: Мутний напій
+Brew_Undefined: Зілля з котла
+Brew_Woodtype: тип дерева
+Brew_Years: роки
+Brew_fermented: ферментований
+Brew_minute: хвилина
+Brew_Alc: Алк &v1ml
+
+# CMD
+CMD_Copy_Error: '&6&v1 &cЗілля не помістилися у вашому інвентарі'
+CMD_Info_Drunk: '&v1 is &6&v2% &fп''яний, з якістю &6&v3'
+CMD_Info_NotDrunk: '&v1 не п''яний'
+CMD_NonStatic: '&eЗілля більше не є настоюєтья і тепер починає псуватися в бочці.'
+CMD_Player: '&a&v1 тепер &6&v2% &aп''яний, з якістю &6&v3'
+CMD_Player_Error: '&cЯкість має бути від 1 до 10!'
+CMD_Reload: '&aConfig was successfully reloaded'
+CMD_Created: '&aНапій створено'
+CMD_Configname: '&aName for the Config is: &f&v1'
+CMD_Configname_Error: '&cНе вдалося знайти предмет у ваших руках'
+CMD_Static: '&aЗілля тепер є статичним і не змінюватиметься в бочках або стендах для зілля.'
+CMD_UnLabel: '&aЕтикетку видалено!'
+CMD_Drink: '&aYou drank one &v1'
+CMD_DrinkOther: '&a&v1 drinks one &v2'
+
+# Error
+Error_ConfigUpdate: 'Невідома версія Конфігу Brewery: v&v1, конфіг не оновлений!'
+Error_ItemNotPotion: '&cПредмет у вашій руці не можна визначити як зілля!'
+Error_SealingTableDisabled: '&cЗапечатувальний стіл вимкнено.'
+Error_SealedAlwaysStatic: 'Запечатані зілля завжди статичні!'
+Error_AlreadyUnlabeled: '&cЗілля у твоїй руці вже без етикетки!'
+Error_NoBarrelAccess: '&cУ вас немає прав доступу до цієї бочки!'
+Error_NoBrewName: '&cРецепт з іменем: ''&v1&c'' не знайдено!'
+Error_NoPermissions: '&cУ вас немає дозволу на це!'
+Error_PlayerCommand: '&cЦю команду може виконати лише гравець'
+Error_Recipeload: '&cНе всі рецепти можна відновити: більше інформації в журналі сервера!'
+Error_ShowHelp: Використай &6/brew help &fдля відображення довідки
+Error_UnknownCommand: Невідома команда
+Error_YmlRead: 'Неможливо прочитати файл config.yml, переконайтеся, що файл має дійсний yml формат (правильні пробіли, використовуючи '' '' тощо.)'
+Error_NoPlayer: 'Гравець не знайдений: &v1'
+
+# Etc
+Etc_Barrel: 'Бочка'
+Etc_Page: 'Сторінка'
+Etc_Usage: 'Використання:'
+Etc_SealingTable: 'Запечатувальний стіл'
+
+# Help
+Help_Copy: '&6/brew copy [Кількість]&9 Копіює зілля у вашій руці'
+Help_Create: '&6/brew create <Рецепт> [Якість] [Гравець] &9Створює Brew із необов’язковою якістю (1-10)'
+Help_Give: '&6/brew give <Рецепт> [Якість] [Гравець] &9Псевдонім для /brew create'
+Help_Delete: '&6/brew delete &9Видаляє зілля в руці'
+Help_Help: '&6/brew help [Сторінка] &9Показує певну сторінку довідки'
+Help_Info: '&6/brew info&9 Відображає ваше поточне сп''яніння та якість'
+Help_InfoOther: '&6/brew info [Гравець]&9 Відображає поточне сп'яніння та якість [Гравець]'
+Help_Player: '&6/brew <Гравець> <%Сп''яніння> [Якість]&9 Встановлює сп''яніння (та Якість) Гравця'
+Help_Reload: '&6/brew reload &9Перезавантажити конфіг'
+Help_Configname: '&6/brew ItemName &9Відображуване ім'я предмету в руках для конфігу'
+Help_Static: '&6/brew static &9Зробити зілля статичним -> Без подальшої витримки чи дистиляції'
+Help_UnLabel: '&6/brew unlabel &9Видаляє детальну інформацію про зілля'
+Help_Seal: '&6/brew seal &9Запечатує напій для продажу'
+Help_Wakeup: '&6/brew wakeup list <Сторінка>&9 Перелічує всі точки пробудження'
+Help_WakeupAdd: '&6/brew wakeup add &9Додає точку пробудження у вашій поточній позиції'
+Help_WakeupCheck: '&6/brew wakeup check &9Телепортується до всіх точок пробудження'
+Help_WakeupCheckSpecific: '&6/brew wakeup check <id> &9Телепортується в точку пробудження з айді <id>'
+Help_WakeupList: '&6/brew wakeup list <Сторінка> [Світ]&9 Перелічує всі точки пробудження в <світ>'
+Help_WakeupRemove: '&6/brew wakeup remove <id> &9Видаляє точку пробудження з айді <id>'
+Help_Puke: '&6/brew puke [Гравець] [Кількість] &9Змушує вас або [Гравець] блювати'
+Help_Drink: '&6/brew drink <Рецепт> [Якість] [Гравець] &9Імітує, як [Гравець] п’є напій'
+# Perms
+Perms_NoBarrelCreate: '&cВи не маєте прав на створення бочок!'
+Perms_NoBigBarrelCreate: '&cУ вас немає прав на створення великих бочок!'
+Perms_NoCauldronFill: '&cВи не маєте прав на наповнення пляшок із цього казана!'
+Perms_NoCauldronInsert: '&cВи не маєте дозволу класти інгредієнти в казани!'
+Perms_NoSmallBarrelCreate: '&cУ вас немає прав на створення маленьких бочок!'
+# Player
+Player_BarrelCreated: Бочка створена
+Player_BarrelFull: '&cЦя бочка більше не вміщує напоїв'
+Player_CantDrink: Ви не можете пити більше.
+Player_CauldronInfo1: Цей казан варить вже &v1 хвилин.
+Player_CauldronInfo2: Цей казан щойно почав варити.
+Player_DrunkPassOut: Ви випили занадто багато і втратили свідомість.
+Player_LoginDeny: Ваш персонаж намагається увійти, але занадто п'яний, щоб знайти сервер. Спробуйте знову!
+Player_LoginDenyLong: Ваш персонаж дійсно п'яний і втратив свідомість. Повторіть спробу через 10 хвилин!
+Player_TriedToSay: '&v1 спробував сказати: &0&v2'
+Player_Wake: О ні! Я не пам'ятаю, як я сюди потрапив...
+Player_WakeAlreadyDeleted: '&cТочка пробудження з айді: &6&v1 &cвже видалено!'
+Player_WakeCancel: '&6Перевірку точки пробудження скасовано'
+Player_WakeCreated: '&aТочку пробудження з айді: &6&v1 &aуспішно створено!'
+Player_WakeDeleted: '&aТочка пробудження з айді: &6&v1 &aбула успішно видалена!'
+Player_WakeFilled: '&cТочка пробудження з айді: &6&v1&c у позиції &6&v2 &v3, &v4, &v5&c заповнена блоками!'
+Player_WakeHint1: 'До наступної точки пробудження: Вдарте кулаком у повітря'
+Player_WakeHint2: 'Щоб скасувати: &9/brew wakeup cancel'
+Player_WakeLast: '&aЦе була остання точка пробудження'
+Player_WakeNoCheck: '&cПеревірка точки пробудження наразі не активна'
+Player_WakeNoPoints: '&cТочок пробудження немає!'
+Player_WakeNotExist: '&cТочка пробудження з айді: &6&v1 &cне існує!'
+Player_WakeTeleport: 'Телепорт до точки пробудження з айді: &6&v1&f У позиції: &6&v2 &v3, &v4, &v5'
+Player_ShopSealBrew: '&eРекомендується торгувати/продавати &6запечатані &eнапої'
+Player_Drunkeness: 'Сп'яніння'
+Player_Hangover: 'Ваше похмілля'

@@ -50,6 +50,7 @@ public class BConfig {
 	public static boolean useLWC; //LWC
 	public static boolean useLB; //LogBlock
 	public static boolean useGP; //GriefPrevention
+	public static boolean useKingdomsX; //KingdomsX
 	public static boolean useTowny; //Towny
 	public static boolean useBlocklocker; //LockBlocker
 	public static boolean hasVault; // Vault
@@ -206,6 +207,7 @@ public class BConfig {
 		useLWC = config.getBoolean("useLWC", true) && plMan.isPluginEnabled("LWC");
 		useTowny = config.getBoolean("useTowny", true) && plMan.isPluginEnabled("Towny");
 		useGP = config.getBoolean("useGriefPrevention", true) && plMan.isPluginEnabled("GriefPrevention");
+		useKingdomsX = config.getBoolean("useKingdomsX", true) && plMan.isPluginEnabled("Kingdoms");
 		useLB = config.getBoolean("useLogBlock", false) && plMan.isPluginEnabled("LogBlock");
 		useGMInventories = config.getBoolean("useGMInventories", false);
 		useCitadel = config.getBoolean("useCitadel", false) && plMan.isPluginEnabled("Citadel");

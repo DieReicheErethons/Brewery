@@ -6,11 +6,7 @@ import com.dre.brewery.api.events.barrel.BarrelAccessEvent;
 import com.dre.brewery.api.events.barrel.BarrelDestroyEvent;
 import com.dre.brewery.api.events.barrel.BarrelRemoveEvent;
 import com.dre.brewery.filedata.BConfig;
-import com.dre.brewery.integration.barrel.BlocklockerBarrel;
-import com.dre.brewery.integration.barrel.GriefPreventionBarrel;
-import com.dre.brewery.integration.barrel.LWCBarrel;
-import com.dre.brewery.integration.barrel.LogBlockBarrel;
-import com.dre.brewery.integration.barrel.TownyBarrel;
+import com.dre.brewery.integration.barrel.*;
 import com.dre.brewery.integration.item.MMOItemsPluginItem;
 import com.dre.brewery.recipe.BCauldronRecipe;
 import com.dre.brewery.recipe.RecipeItem;
@@ -107,6 +103,30 @@ public class IntegrationListener implements Listener {
 					if (player.hasPermission("brewery.admin") || player.hasPermission("brewery.mod")) {
 						P.p.msg(player, "&cGriefPrevention check Error, Brewery was tested with up to v16.9 of GriefPrevention");
 						P.p.msg(player, "&cSet &7useGriefPrevention: false &cin the config and /brew reload");
+					} else {
+						P.p.msg(player, "&cError opening Barrel, please report to an Admin!");
+					}
+					return;
+				}
+			}
+		}
+		if (BConfig.useKingdomsX) {
+			if (P.p.getServer().getPluginManager().isPluginEnabled("Kingdoms")) {
+				try {
+					if (!KingdomsXBarrel.checkAccess(event)) {
+						P.p.msg(event.getPlayer(), P.p.languageReader.get("Error_NoBarrelAccess"));
+						event.setCancelled(true);
+						return;
+					}
+				} catch (Throwable e) {
+					event.setCancelled(true);
+					P.p.errorLog("Failed to Check KingdomsX for Barrel Open Permissions!");
+					P.p.errorLog("Disable the KingdomsX support in the config and do /brew reload");
+					e.printStackTrace();
+					Player player = event.getPlayer();
+					if (player.hasPermission("brewery.admin") || player.hasPermission("brewery.mod")) {
+						P.p.msg(player, "&cKingdomsX check Error");
+						P.p.msg(player, "&cSet &7useKingdomsX: false &cin the config and /brew reload");
 					} else {
 						P.p.msg(player, "&cError opening Barrel, please report to an Admin!");
 					}

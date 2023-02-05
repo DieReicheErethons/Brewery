@@ -852,6 +852,7 @@ eggnog:
 useWorldGuard: true
 useLWC: true
 useGriefPrevention: true
+useKingdomsX: true
 useTowny: true
 useBlockLocker: true
 useGMInventories: true

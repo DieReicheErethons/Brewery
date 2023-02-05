@@ -127,11 +127,11 @@
 			<id>chestshop-repo</id>
 			<url>https://repo.minebench.de/</url>
 		</repository>
-        <repository>
-            <!-- BlockLocker -->
-            <id>CodeMC</id>
-            <url>https://repo.codemc.org/repository/maven-public</url>
-        </repository>
+		<repository>
+			<!-- BlockLocker -->
+			<id>CodeMC</id>
+			<url>https://repo.codemc.org/repository/maven-public</url>
+		</repository>
 		<repository>
 			<!-- MythicLib (MMOItems) -->
 			<id>MMOPlugins</id>
@@ -210,6 +210,18 @@
 			<groupId>com.sk89q.worldedit</groupId>
 			<artifactId>worldedit-core</artifactId>
 			<version>7.2.11-beta-01</version>
+			<scope>provided</scope>
+			<exclusions>
+				<exclusion>
+					<artifactId>*</artifactId>
+					<groupId>*</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>com.github.cryptomorin</groupId>
+			<artifactId>kingdoms</artifactId>
+			<version>1.14.15.3-SNAPSHOT</version>
 			<scope>provided</scope>
 			<exclusions>
 				<exclusion>

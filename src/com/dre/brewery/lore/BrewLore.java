@@ -1,5 +1,6 @@
 package com.dre.brewery.lore;
 
+import com.dre.brewery.filedata.LanguageReader;
 import com.dre.brewery.recipe.BEffect;
 import com.dre.brewery.BIngredients;
 import com.dre.brewery.recipe.BRecipe;
@@ -7,6 +8,9 @@ import com.dre.brewery.Brew;
 import com.dre.brewery.P;
 import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.utility.BUtil;
+import me.clip.placeholderapi.PlaceholderAPI;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -89,9 +93,6 @@ public class BrewLore {
 		}
 	}*/
 
-	/**
-	 * Add the list of strings as custom lore for the base potion coming out of the cauldron
-	 */
 	public void addCauldronLore(List<String> l) {
 		int index = -1;
 		for (String line : l) {
@@ -103,6 +104,16 @@ public class BrewLore {
 				index++;
 			}
 		}
+	}
+
+	public void updateMaker(String name){
+		String str = ChatColor.
+			translateAlternateColorCodes('&',P.p.languageReader.get("Brew_Maker_Prefix"));
+		addOrReplaceLore(BrewLore.Type.MAKER,str,name);
+	}
+
+	public void updateMaker(boolean b){
+		removeLore(Type.MAKER);
 	}
 
 	/**
@@ -214,6 +225,9 @@ public class BrewLore {
 		if (recipe != null && recipe.hasLore()) {
 			int index = -1;
 			for (String line : recipe.getLoreForQuality(brew.getQuality())) {
+				if(Bukkit.getPluginManager().isPluginEnabled("placeholderapi")){
+					line = PlaceholderAPI.setPlaceholders(null,line);
+				}
 				if (index == -1) {
 					index = addLore(Type.CUSTOM, "", line);
 					index++;
@@ -237,38 +251,46 @@ public class BrewLore {
 		}
 		int quality = brew.getQuality();
 		if (quality > 0 && (qualityColor || BConfig.alwaysShowQuality)) {
-			int stars = quality / 2;
-			boolean half = quality % 2 > 0;
-			int noStars = 5 - stars - (half ? 1 : 0);
-			StringBuilder b = new StringBuilder(24);
-			String color;
-			if (qualityColor) {
-				color = getQualityColor(quality);
-			} else {
-				color = "§7";
+//			int stars = quality / 2;
+//			boolean half = quality % 2 > 0;
+//			int noStars = 5 - stars - (half ? 1 : 0);
+//			StringBuilder b = new StringBuilder(24);
+//			String color;
+//
+//			if (qualityColor) {
+//				color = getQualityColor(quality);
+//			} else {
+//				color = "§7";
+//			}
+//			if (withBars) {
+//				color = "§8[" + color;
+//			}
+//			for (; stars > 0; stars--) {
+//				b.append("⭑");
+//			}
+//			if (half) {
+//				if (!qualityColor) {
+//					b.append("§8");
+//				}
+//				b.append("⭒");
+//			}
+//			if (withBars) {
+//				if (noStars > 0) {
+//					b.append("§0");
+//					for (; noStars > 0; noStars--) {
+//						b.append("⭑");
+//					}
+//				}
+//				b.append("§8]");
+//			}
+			String stars;
+			if(BConfig.ranks.size()>=quality){
+				stars = BConfig.ranks.get(quality-1);
+				stars = ChatColor.translateAlternateColorCodes('&',stars);
+			}else {
+				stars = "";
 			}
-			if (withBars) {
-				color = "§8[" + color;
-			}
-			for (; stars > 0; stars--) {
-				b.append("⭑");
-			}
-			if (half) {
-				if (!qualityColor) {
-					b.append("§8");
-				}
-				b.append("⭒");
-			}
-			if (withBars) {
-				if (noStars > 0) {
-					b.append("§0");
-					for (; noStars > 0; noStars--) {
-						b.append("⭑");
-					}
-				}
-				b.append("§8]");
-			}
-			addOrReplaceLore(Type.STARS, color, b.toString());
+			addOrReplaceLore(Type.STARS, "", stars);
 		} else {
 			removeLore(Type.STARS);
 		}
@@ -523,7 +545,8 @@ public class BrewLore {
 		DISTILL("§p"),
 		AGE("§y"),
 		WOOD("§z"),
-		ALC("§q");
+		ALC("§q"),
+		MAKER("§g");
 
 		public final String id;
 

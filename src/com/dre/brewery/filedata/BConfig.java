@@ -106,6 +106,8 @@ public class BConfig {
 
 	public static P p = P.p;
 
+	public static List<String> ranks = new ArrayList<>();
+
 	private static boolean checkConfigs() {
 		File cfg = new File(p.getDataFolder(), "config.yml");
 		if (!cfg.exists()) {
@@ -245,6 +247,8 @@ public class BConfig {
 		useOffhandForCauldron = config.getBoolean("useOffhandForCauldron", false);
 		loadDataAsync = config.getBoolean("loadDataAsync", true);
 		brewHopperDump = config.getBoolean("brewHopperDump", false);
+		//xjqsh
+		ranks = config.getStringList("Rank");
 
 		if (P.use1_14) {
 			MCBarrel.maxBrews = config.getInt("maxBrewsInMCBarrels", 6);

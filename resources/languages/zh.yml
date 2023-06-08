@@ -16,6 +16,7 @@ Brew_Years: 年
 Brew_fermented: 炖煮发酵
 Brew_minute: 分钟
 Brew_Alc: 酒精度 &v1ml
+Brew_Maker_Prefix: '酿酒师：'
 
 # CMD
 CMD_Copy_Error: '&6&v1&r, &c你的背包塞不下了.'
@@ -111,3 +112,5 @@ Player_WakeTeleport: '前往id为: &6&v1 &f坐标为: &6&v2 &v3, &v4, &v5 &r的�
 Player_ShopSealBrew: '&eIt''s recommended to trade/sell &6sealed &eBrews'
 Player_Drunkeness: '醉酒'
 Player_Hangover: '你的宿醉'
+
+

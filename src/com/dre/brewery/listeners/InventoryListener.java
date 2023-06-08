@@ -157,6 +157,9 @@ public class InventoryListener implements Listener {
 					lore.updateAlc(false);
 				}
 				if (lore != null) {
+					if(event.getWhoClicked() instanceof Player){
+						lore.updateMaker(event.getWhoClicked().getName());
+					}
 					lore.write();
 					item.setItemMeta(meta);
 					if (event.getWhoClicked() instanceof Player) {

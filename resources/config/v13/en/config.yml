@@ -91,7 +91,18 @@ debug: false
 # Config Version
 version: '3.1'
 
-
+#rank
+Rank:
+  - '&7劣等'
+  - '&7粗制'
+  - '&8下品'
+  - '&8平庸'
+  - '&2良品'
+  - '&2上品'
+  - '&d极上'
+  - '&d举世罕有'
+  - '&6绝世臻品'
+  - '&b神造'
 
 # -- Define custom items --
 # The defined id can then be used in recipes

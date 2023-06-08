@@ -457,6 +457,7 @@ public class Brew implements Cloneable {
 			}
 			lore.updateQualityStars(false);
 			lore.updateAlc(false);
+			lore.updateMaker(false);
 			lore.write();
 			item.setItemMeta(meta);
 		}

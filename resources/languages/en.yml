@@ -16,6 +16,7 @@ Brew_Years: Years
 Brew_fermented: fermented
 Brew_minute: minute
 Brew_Alc: Alc &v1ml
+Brew_Maker_Prefix: 'Maker：'
 
 # CMD
 CMD_Copy_Error: '&6&v1 &cPotions did not fit into your inventory'

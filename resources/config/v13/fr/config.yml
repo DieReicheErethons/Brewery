@@ -414,7 +414,7 @@ cauldron:
 # cookingtime: Temps en minutes réelles durant lesquelles les ingrédients devront bouillir
 # distillruns: Combien de fois le breuvage devra être distillé pour un alcool de qualité (0=Ne pas distiller)
 # distilltime: Combien de temps (en secondes) dure une distillation (0=Temps par défaut de 40 secondes) MC Par défaut serait de 20 secondes
-# wood: Type de bois du baril 0=aucun 1=Bouleau 2=Chêne 3=Jungle 4=Pin 5=Acacia 6=Chêne Noir 7=Crimson 8=Warped 9=Mangrove
+# wood: Type de bois du baril 0=aucun 1=Bouleau 2=Chêne 3=Jungle 4=Pin 5=Acacia 6=Chêne Noir 7=Crimson 8=Warped 9=Mangrove 10=Cerise
 #   Le tonneau Minecraft est en chêne.
 # age: Temps en jours de Minecraft, la potion devra être âgée dans un baril. 0=Pas besoin d'âge
 # color: Couleur de la potion après distillation/avoir laissé vieillir.

@@ -63,6 +63,7 @@ public class LegacyUtil {
 			get("CRIMSON_STAIRS"),
 			get("WARPED_STAIRS"),
 			get("MANGROVE_STAIRS"),
+			get("CHERRY_STAIRS"),
 		};
 		for (Material stair : gotStairs) {
 			if (stair != null) {
@@ -191,6 +192,8 @@ public class LegacyUtil {
 				return 8;
 			} else if (material.startsWith("MANGROVE")) {
 				return 9;
+			} else if (material.startsWith("CHERRY")) {
+				return 10;
 			} else {
 				return 0;
 			}

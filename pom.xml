@@ -47,7 +47,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
-				<version>3.2.1</version>
+				<version>3.5.0</version>
 				<executions>
 					<execution>
 						<phase>package</phase>
@@ -58,12 +58,17 @@
 							<artifactSet>
 								<includes>
 									<include>org.bstats:*</include>
+									<include>com.github.Anon8281:*</include>
 								</includes>
 							</artifactSet>
 							<relocations>
 								<relocation>
 									<pattern>org.bstats</pattern>
 									<shadedPattern>com.dre.brewery.integration.bstats</shadedPattern>
+								</relocation>
+								<relocation>
+									<pattern>com.github.Anon8281.universalScheduler</pattern>
+									<shadedPattern>com.dre.brewery.integration.universalScheduler</shadedPattern>
 								</relocation>
 							</relocations>
 						</configuration>
@@ -127,11 +132,11 @@
 			<id>chestshop-repo</id>
 			<url>https://repo.minebench.de/</url>
 		</repository>
-        <repository>
-            <!-- BlockLocker -->
-            <id>CodeMC</id>
-            <url>https://repo.codemc.org/repository/maven-public</url>
-        </repository>
+		<repository>
+			<!-- BlockLocker -->
+			<id>CodeMC</id>
+			<url>https://repo.codemc.org/repository/maven-public</url>
+		</repository>
 		<repository>
 			<!-- MythicLib (MMOItems) -->
 			<id>MMOPlugins</id>
@@ -142,7 +147,6 @@
 			<id>Lichtspiele</id>
 			<url>https://nexus.lichtspiele.org/repository/releases/</url>
 		</repository>
-
 	</repositories>
 
 	<dependencies>
@@ -318,6 +322,12 @@
 			<groupId>org.jetbrains</groupId>
 			<artifactId>annotations</artifactId>
 			<version>16.0.2</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.github.Anon8281</groupId>
+			<artifactId>UniversalScheduler</artifactId>
+			<version>0.1.3</version>
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>

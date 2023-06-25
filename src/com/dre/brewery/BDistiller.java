@@ -1,6 +1,8 @@
 package com.dre.brewery;
 
 import com.dre.brewery.lore.BrewLore;
+import com.github.Anon8281.universalScheduler.UniversalRunnable;
+import com.github.Anon8281.universalScheduler.scheduling.tasks.MyScheduledTask;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -10,7 +12,6 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.BrewerInventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,7 +30,7 @@ public class BDistiller {
 	private static final int DISTILLTIME = 400;
 	private static Map<Block, BDistiller> trackedDistillers = new HashMap<>();
 
-	private int taskId;
+	private MyScheduledTask task;
 	private int runTime = -1;
 	private int brewTime = -1;
 	private Block standBlock;
@@ -41,11 +42,11 @@ public class BDistiller {
 	}
 
 	public void cancelDistill() {
-		Bukkit.getScheduler().cancelTask(taskId); // cancel prior
+		task.cancel();
 	}
 
 	public void start() {
-		taskId = new DistillRunnable().runTaskTimer(P.p, 2L, 1L).getTaskId();
+		task = new DistillRunnable().runTaskTimer(P.p, 2L, 1L);
 	}
 
 	public static void distillerClick(InventoryClickEvent event) {
@@ -167,7 +168,7 @@ public class BDistiller {
 		}
 	}
 
-	public class DistillRunnable extends BukkitRunnable {
+	public class DistillRunnable extends UniversalRunnable {
 		private Brew[] contents = null;
 
 		@Override

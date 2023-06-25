@@ -80,7 +80,7 @@ public class SQLSync {
 			if (statement.execute("SELECT * FROM Brewery_Z_BPlayers WHERE uuid = '" + uuid.toString() + "';")) {
 				final ResultSet result = statement.getResultSet();
 				if (result.next()) {
-					P.p.getServer().getScheduler().runTask(P.p, () -> {
+					P.getScheduler().runTask(() -> {
 						try {
 							new BPlayer(uuid.toString(), result.getInt("quality"), result.getInt("drunkeness"), result.getInt("offlineDrunk"));
 						} catch (SQLException e) {
@@ -90,7 +90,7 @@ public class SQLSync {
 					return;
 				}
 			}
-			P.p.getServer().getScheduler().runTask(P.p, () -> BPlayer.sqlRemoved(uuid));
+			P.getScheduler().runTask(() -> BPlayer.sqlRemoved(uuid));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -99,7 +99,7 @@ public class SQLSync {
 	private void initAsyncTask() {
 		if (sqlTaskRunning) return;
 		sqlTaskRunning = true;
-		P.p.getServer().getScheduler().runTaskAsynchronously(P.p, new SQLSaver());
+		P.getScheduler().runTaskAsynchronously(new SQLSaver());
 	}
 
 
@@ -230,7 +230,7 @@ public class SQLSync {
 									if (storedOfflineDrunk != d.offlineDrunk) {
 										// The player is not offlineDrunk anymore,
 										// Someone else is changing the mysql data
-										P.p.getServer().getScheduler().runTask(P.p, () -> BPlayer.sqlRemoved(d.uuid));
+										P.getScheduler().runTask(() -> BPlayer.sqlRemoved(d.uuid));
 										continue;
 									}
 								}

@@ -441,7 +441,7 @@ public class BCauldron {
 				if (event.getHand() == EquipmentSlot.HAND) {
 					final UUID id = player.getUniqueId();
 					plInteracted.add(id);
-					P.p.getServer().getScheduler().runTask(P.p, () -> plInteracted.remove(id));
+					P.getScheduler().runTask(() -> plInteracted.remove(id));
 				} else if (event.getHand() == EquipmentSlot.OFF_HAND) {
 					if (!plInteracted.remove(player.getUniqueId())) {
 						item = player.getInventory().getItemInMainHand();
@@ -563,7 +563,7 @@ public class BCauldron {
 	// bukkit bug not updating the inventory while executing event, have to
 	// schedule the give
 	public static void giveItem(final Player player, final ItemStack item) {
-		P.p.getServer().getScheduler().runTaskLater(P.p, () -> player.getInventory().addItem(item), 1L);
+		P.getScheduler().runTaskLater(() -> player.getInventory().addItem(item), 1L);
 	}
 
 }

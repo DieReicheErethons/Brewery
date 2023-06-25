@@ -10,6 +10,7 @@ import com.dre.brewery.lore.BrewLore;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.BoundingBox;
 import com.dre.brewery.utility.LegacyUtil;
+import com.github.Anon8281.universalScheduler.UniversalRunnable;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -24,7 +25,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -551,7 +551,7 @@ public class Barrel implements InventoryHolder {
 		}
 	}
 
-	public static class BarrelCheck extends BukkitRunnable {
+	public static class BarrelCheck extends UniversalRunnable {
 		@Override
 		public void run() {
 			boolean repeat = true;

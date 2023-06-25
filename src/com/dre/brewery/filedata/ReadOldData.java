@@ -3,13 +3,13 @@ package com.dre.brewery.filedata;
 
 import java.io.File;
 
+import com.github.Anon8281.universalScheduler.UniversalRunnable;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import com.dre.brewery.P;
 
-public class ReadOldData extends BukkitRunnable {
+public class ReadOldData extends UniversalRunnable {
 
 	public FileConfiguration data;
 	public boolean done = false;

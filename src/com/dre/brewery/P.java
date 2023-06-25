@@ -1,34 +1,27 @@
 /**
- *
- *     Brewery Minecraft-Plugin for an alternate Brewing Process
- *     Copyright (C) 2021 Milan Albrecht
- *
- *     This file is part of Brewery.
- *
- *     Brewery is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU General Public License as published by
- *     the Free Software Foundation, either version 3 of the License, or
- *     (at your option) any later version.
- *
- *     Brewery is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU General Public License for more details.
- *
- *     You should have received a copy of the GNU General Public License
- *     along with Brewery.  If not, see <http://www.gnu.org/licenses/>.
- *
+ * Brewery Minecraft-Plugin for an alternate Brewing Process
+ * Copyright (C) 2021 Milan Albrecht
+ * <p>
+ * This file is part of Brewery.
+ * <p>
+ * Brewery is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * <p>
+ * Brewery is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * <p>
+ * You should have received a copy of the GNU General Public License
+ * along with Brewery.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 
 
 package com.dre.brewery;
 
-import com.dre.brewery.filedata.BConfig;
-import com.dre.brewery.filedata.BData;
-import com.dre.brewery.filedata.DataSave;
-import com.dre.brewery.filedata.LanguageReader;
-import com.dre.brewery.filedata.UpdateChecker;
+import com.dre.brewery.filedata.*;
 import com.dre.brewery.integration.ChestShopListener;
 import com.dre.brewery.integration.IntegrationListener;
 import com.dre.brewery.integration.ShopKeepersListener;
@@ -40,6 +33,8 @@ import com.dre.brewery.recipe.*;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.LegacyUtil;
 import com.dre.brewery.utility.Stats;
+import com.github.Anon8281.universalScheduler.UniversalScheduler;
+import com.github.Anon8281.universalScheduler.scheduling.schedulers.TaskScheduler;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -51,7 +46,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -64,6 +58,8 @@ public class P extends JavaPlugin {
 	public static boolean use1_11;
 	public static boolean use1_13;
 	public static boolean use1_14;
+
+	private static TaskScheduler scheduler;
 
 	// Listeners
 	public BlockListener blockListener;
@@ -86,6 +82,7 @@ public class P extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		p = this;
+		scheduler = UniversalScheduler.getScheduler(p);
 
 		// Version check
 		String v = Bukkit.getBukkitVersion();
@@ -167,17 +164,17 @@ public class P extends JavaPlugin {
 		}
 
 		// Heartbeat
-		p.getServer().getScheduler().runTaskTimer(p, new BreweryRunnable(), 650, 1200);
-		p.getServer().getScheduler().runTaskTimer(p, new DrunkRunnable(), 120, 120);
+		P.getScheduler().runTaskTimer(new BreweryRunnable(), 650, 1200);
+		P.getScheduler().runTaskTimer(new DrunkRunnable(), 120, 120);
 
 		if (use1_9) {
-			p.getServer().getScheduler().runTaskTimer(p, new CauldronParticles(), 1, 1);
+			P.getScheduler().runTaskTimer(new CauldronParticles(), 1, 1);
 		}
 
 		// Disable Update Check for older mc versions
 		if (use1_14 && BConfig.updateCheck) {
 			try {
-				p.getServer().getScheduler().runTaskLaterAsynchronously(p, new UpdateChecker(), 135);
+				P.getScheduler().runTaskLaterAsynchronously(new UpdateChecker(), 135);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -193,7 +190,7 @@ public class P extends JavaPlugin {
 		HandlerList.unregisterAll(this);
 
 		// Stop shedulers
-		getServer().getScheduler().cancelTasks(this);
+		getScheduler().cancelTasks(this);
 
 		if (p == null) {
 			return;
@@ -309,6 +306,10 @@ public class P extends JavaPlugin {
 		return p;
 	}
 
+	public static TaskScheduler getScheduler() {
+		return scheduler;
+	}
+
 	// Utility
 
 	public void msg(CommandSender sender, String msg) {
@@ -387,13 +388,8 @@ public class P extends JavaPlugin {
 		public void run() {
 			long t1 = System.nanoTime();
 			BConfig.reloader = null;
-			Iterator<BCauldron> iter = BCauldron.bcauldrons.values().iterator();
-			while (iter.hasNext()) {
-				// runs every min to update cooking time
-				if (!iter.next().onUpdate()) {
-					iter.remove();
-				}
-			}
+			// runs every min to update cooking time
+			BCauldron.bcauldrons.values().removeIf(bCauldron -> !bCauldron.onUpdate());
 			long t2 = System.nanoTime();
 			Barrel.onUpdate();// runs every min to check and update ageing time
 			long t3 = System.nanoTime();
@@ -411,7 +407,7 @@ public class P extends JavaPlugin {
 				" | t2: " + (t3 - t2) / 1000000.0 + "ms" +
 				" | t3: " + (t4 - t3) / 1000000.0 + "ms" +
 				" | t4: " + (t5 - t4) / 1000000.0 + "ms" +
-				" | t5: " + (t6 - t5) / 1000000.0 + "ms" );
+				" | t5: " + (t6 - t5) / 1000000.0 + "ms");
 		}
 
 	}

@@ -27,7 +27,7 @@ public class BCauldron {
 	public static final int PARTICLEPAUSE = 15;
 	public static Random particleRandom = new Random();
 	private static Set<UUID> plInteracted = new HashSet<>(); // Interact Event helper
-	public static Map<Block, BCauldron> bcauldrons = new HashMap<>(); // All active cauldrons. Mapped to their block for fast retrieve
+	public volatile static Map<Block, BCauldron> bcauldrons = new HashMap<>(); // All active cauldrons. Mapped to their block for fast retrieve
 
 	private BIngredients ingredients = new BIngredients();
 	private final Block block;

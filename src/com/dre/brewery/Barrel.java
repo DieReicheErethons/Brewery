@@ -577,7 +577,6 @@ public class Barrel implements InventoryHolder {
 						}, 1L, 1L);
 						repeat = false;
 					}
-					;
 					check++;
 				} else {
 					check = 0;

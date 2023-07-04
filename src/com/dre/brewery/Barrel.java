@@ -562,21 +562,22 @@ public class Barrel implements InventoryHolder {
 					Barrel barrel = barrels.get(check);
 					if (!barrel.checked) {
 						P.getScheduler().runTaskTimer(barrel.getSpigot().getLocation(), () -> {
-              Block broken = barrel.body.getBrokenBlock(false);
-              
-              if (broken != null) {
-                P.p.debugLog("Barrel at "
-                  + broken.getWorld().getName() + "/" + broken.getX() + "/" + broken.getY() + "/" + broken.getZ()
-                  + " has been destroyed unexpectedly, contents will drop");
-                // remove the barrel if it was destroyed
-                barrel.remove(broken, null, true);
-              } else {
-                barrel.checked = true;
-                return;
-              }
-            }, 1L, 1L);
-            repeat = false;
-					};
+							Block broken = barrel.body.getBrokenBlock(false);
+
+							if (broken != null) {
+								P.p.debugLog("Barrel at "
+									+ broken.getWorld().getName() + "/" + broken.getX() + "/" + broken.getY() + "/" + broken.getZ()
+									+ " has been destroyed unexpectedly, contents will drop");
+								// remove the barrel if it was destroyed
+								barrel.remove(broken, null, true);
+							} else {
+								barrel.checked = true;
+								return;
+							}
+						}, 1L, 1L);
+						repeat = false;
+					}
+					;
 					check++;
 				} else {
 					check = 0;

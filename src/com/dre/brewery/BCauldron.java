@@ -373,8 +373,8 @@ public class BCauldron {
 		for (BCauldron cauldron : bcauldrons.values()) {
 			if (particleRandom.nextFloat() < chance) {
 				P.getScheduler().runTask(cauldron.block.getLocation(), () -> {
-          cauldron.cookEffect();
-        });
+					cauldron.cookEffect();
+				});
 			}
 		}
 	}

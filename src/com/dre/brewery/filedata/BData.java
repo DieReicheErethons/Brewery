@@ -368,23 +368,23 @@ public class BData {
 							}
 						}
 
-            final BoundingBox bbox = box;
+						final BoundingBox bbox = box;
 						P.getScheduler().runTask(block.getLocation(), () -> {
-              Barrel b;
-              if (invSection != null) {
-                b = new Barrel(block, sign, bbox, invSection.getValues(true), time, true);
-              } else {
-                // Barrel has no inventory
-                b = new Barrel(block, sign, bbox, null, time, true);
-              }
+							Barrel b;
+							if (invSection != null) {
+								b = new Barrel(block, sign, bbox, invSection.getValues(true), time, true);
+							} else {
+								// Barrel has no inventory
+								b = new Barrel(block, sign, bbox, null, time, true);
+							}
 
-              if (b.getBody().getBounds() != null) {
-                initBarrels.add(b);
-              } else {
-                // The Barrel Bounds need recreating, as they were missing or corrupt
-                initBadBarrels.add(b);
-              }
-            });
+							if (b.getBody().getBounds() != null) {
+								initBarrels.add(b);
+							} else {
+								// The Barrel Bounds need recreating, as they were missing or corrupt
+								initBadBarrels.add(b);
+							}
+						});
 
 					} else {
 						P.p.errorLog("Incomplete Block-Data in data.yml: " + section.getCurrentPath() + "." + barrel);

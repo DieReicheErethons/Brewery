@@ -390,14 +390,13 @@ public class P extends JavaPlugin {
 			long t1 = System.nanoTime();
 			BConfig.reloader = null;
 			// runs every min to update cooking time
-      Collection<BCauldron> bCauldronsToRemove = BCauldron.bcauldrons.values();
-			BCauldron.bcauldrons.values().forEach(bcauldron -> {
-        getScheduler().runTask(bcauldron.getBlock().getLocation(), () -> {
-          if (!bcauldron.onUpdate())
-            bCauldronsToRemove.add(bcauldron);
-        });
-      });
-      BCauldron.bcauldrons.values().removeIf(bCaulron -> bCauldronsToRemove.contains(bCaulron));
+			Collection<BCauldron> bCauldronsToRemove = BCauldron.bcauldrons.values();
+			BCauldron.bcauldrons.values().forEach(bcauldron ->
+				getScheduler().runTask(bcauldron.getBlock().getLocation(), () -> {
+				if (!bcauldron.onUpdate())
+					bCauldronsToRemove.add(bcauldron);
+			}));
+			BCauldron.bcauldrons.values().removeIf(bCaulron -> bCauldronsToRemove.contains(bCaulron));
 
 			long t2 = System.nanoTime();
 			Barrel.onUpdate();// runs every min to check and update ageing time

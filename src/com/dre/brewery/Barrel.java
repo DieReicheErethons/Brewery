@@ -361,7 +361,6 @@ public class Barrel implements InventoryHolder {
 				BarrelCreateEvent createEvent = new BarrelCreateEvent(barrel, player);
 				P.p.getServer().getPluginManager().callEvent(createEvent);
 				if (!createEvent.isCancelled()) {
-          Bukkit.getLogger().info("CCC");
 					barrels.add(0, barrel);
 					return true;
 				}

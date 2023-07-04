@@ -8,6 +8,8 @@ import com.dre.brewery.recipe.PluginItem;
 import com.dre.brewery.recipe.SimpleItem;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.BoundingBox;
+
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -334,6 +336,7 @@ public class BData {
 				// block spigot is splitted into x/y/z
 				String spigot = section.getString(barrel + ".spigot");
 				if (spigot != null) {
+          Bukkit.getLogger().info("LOL");
 					String[] splitted = spigot.split("/");
 					if (splitted.length == 3) {
 
@@ -370,20 +373,23 @@ public class BData {
 							}
 						}
 
-						Barrel b;
-						if (invSection != null) {
-							b = new Barrel(block, sign, box, invSection.getValues(true), time, true);
-						} else {
-							// Barrel has no inventory
-							b = new Barrel(block, sign, box, null, time, true);
-						}
+            final BoundingBox bbox = box;
+						P.getScheduler().runTask(block.getLocation(), () -> {
+              Barrel b;
+              if (invSection != null) {
+                b = new Barrel(block, sign, bbox, invSection.getValues(true), time, true);
+              } else {
+                // Barrel has no inventory
+                b = new Barrel(block, sign, bbox, null, time, true);
+              }
 
-						if (b.getBody().getBounds() != null) {
-							initBarrels.add(b);
-						} else {
-							// The Barrel Bounds need recreating, as they were missing or corrupt
-							initBadBarrels.add(b);
-						}
+              if (b.getBody().getBounds() != null) {
+                initBarrels.add(b);
+              } else {
+                // The Barrel Bounds need recreating, as they were missing or corrupt
+                initBadBarrels.add(b);
+              }
+            });
 
 					} else {
 						P.p.errorLog("Incomplete Block-Data in data.yml: " + section.getCurrentPath() + "." + barrel);

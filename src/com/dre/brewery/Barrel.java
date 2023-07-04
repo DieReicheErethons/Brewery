@@ -11,6 +11,8 @@ import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.BoundingBox;
 import com.dre.brewery.utility.LegacyUtil;
 import com.github.Anon8281.universalScheduler.UniversalRunnable;
+
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -559,19 +561,20 @@ public class Barrel implements InventoryHolder {
 				if (check < barrels.size()) {
 					Barrel barrel = barrels.get(check);
 					if (!barrel.checked) {
-						Block broken = barrel.body.getBrokenBlock(false);
-						if (broken != null) {
-							P.p.debugLog("Barrel at "
-								+ broken.getWorld().getName() + "/" + broken.getX() + "/" + broken.getY() + "/" + broken.getZ()
-								+ " has been destroyed unexpectedly, contents will drop");
-							// remove the barrel if it was destroyed
-							barrel.remove(broken, null, true);
-						} else {
-							// Dont check this barrel again, its enough to check it once after every restart (and when randomly chosen)
-							// as now this is only the backup if we dont register the barrel breaking,
-							// for example when removing it with some world editor
-							barrel.checked = true;
-						}
+						P.getScheduler().runTaskTimer(barrel.getSpigot().getLocation(), () -> {
+							Block broken = barrel.body.getBrokenBlock(false);
+
+							if (broken != null) {
+								P.p.debugLog("Barrel at "
+									+ broken.getWorld().getName() + "/" + broken.getX() + "/" + broken.getY() + "/" + broken.getZ()
+									+ " has been destroyed unexpectedly, contents will drop");
+								// remove the barrel if it was destroyed
+								barrel.remove(broken, null, true);
+							} else {
+								barrel.checked = true;
+								return;
+							}
+						}, 1L, 1L);
 						repeat = false;
 					}
 					check++;

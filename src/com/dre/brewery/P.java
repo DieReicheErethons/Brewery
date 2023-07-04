@@ -45,6 +45,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -388,8 +389,15 @@ public class P extends JavaPlugin {
 		public void run() {
 			long t1 = System.nanoTime();
 			BConfig.reloader = null;
+
 			// runs every min to update cooking time
-			BCauldron.bcauldrons.values().removeIf(bCauldron -> !bCauldron.onUpdate());
+			Collection<BCauldron> bCauldronsToRemove = BCauldron.bcauldrons.values();
+			bCauldronsToRemove.forEach(bcauldron ->
+				getScheduler().runTask(bcauldron.getBlock().getLocation(), () -> {
+					if (!bcauldron.onUpdate())
+						BCauldron.bcauldrons.values().remove(bcauldron);
+				}));
+
 			long t2 = System.nanoTime();
 			Barrel.onUpdate();// runs every min to check and update ageing time
 			long t3 = System.nanoTime();

@@ -2,12 +2,11 @@ package com.dre.brewery.filedata;
 
 import com.dre.brewery.*;
 import com.dre.brewery.lore.Base91DecoderStream;
-import com.dre.brewery.recipe.CustomItem;
 import com.dre.brewery.recipe.Ingredient;
-import com.dre.brewery.recipe.PluginItem;
 import com.dre.brewery.recipe.SimpleItem;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.BoundingBox;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -22,7 +21,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.IntStream;
 
 public class BData {
 
@@ -370,20 +368,23 @@ public class BData {
 							}
 						}
 
-						Barrel b;
-						if (invSection != null) {
-							b = new Barrel(block, sign, box, invSection.getValues(true), time, true);
-						} else {
-							// Barrel has no inventory
-							b = new Barrel(block, sign, box, null, time, true);
-						}
+						final BoundingBox bbox = box;
+						P.getScheduler().runTask(block.getLocation(), () -> {
+							Barrel b;
+							if (invSection != null) {
+								b = new Barrel(block, sign, bbox, invSection.getValues(true), time, true);
+							} else {
+								// Barrel has no inventory
+								b = new Barrel(block, sign, bbox, null, time, true);
+							}
 
-						if (b.getBody().getBounds() != null) {
-							initBarrels.add(b);
-						} else {
-							// The Barrel Bounds need recreating, as they were missing or corrupt
-							initBadBarrels.add(b);
-						}
+							if (b.getBody().getBounds() != null) {
+								initBarrels.add(b);
+							} else {
+								// The Barrel Bounds need recreating, as they were missing or corrupt
+								initBadBarrels.add(b);
+							}
+						});
 
 					} else {
 						P.p.errorLog("Incomplete Block-Data in data.yml: " + section.getCurrentPath() + "." + barrel);

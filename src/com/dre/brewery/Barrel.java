@@ -39,7 +39,7 @@ import java.util.Map;
  */
 public class Barrel implements InventoryHolder {
 
-	public static List<Barrel> barrels = new ArrayList<>();
+	public static volatile List<Barrel> barrels = new ArrayList<>();
 	private static int check = 0; // Which Barrel was last checked
 
 	private final Block spigot;
@@ -68,7 +68,6 @@ public class Barrel implements InventoryHolder {
 	/**
 	 * Load from File
 	 * <p>If async: true, The Barrel Bounds will not be recreated when missing/corrupt, getBody().getBounds() will be null if it needs recreating
-	 *
 	 */
 	public Barrel(Block spigot, byte sign, BoundingBox bounds, Map<String, Object> items, float time, boolean async) {
 		this.spigot = spigot;
@@ -92,7 +91,8 @@ public class Barrel implements InventoryHolder {
 	public static void onUpdate() {
 		for (Barrel barrel : barrels) {
 			// Minecraft day is 20 min, so add 1/20 to the time every minute
-			barrel.time += (1.0 / 20.0);
+			if (barrel != null)
+				barrel.time += (1.0 / 20.0);
 		}
 		int numBarrels = barrels.size();
 		if (check == 0 && numBarrels > 0) {

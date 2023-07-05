@@ -674,7 +674,7 @@ public class BPlayer {
 			return;
 		}
 		for (PotionEffect effect : l) {
-			effect.apply(player);
+			P.getScheduler().runTask(player, () -> effect.apply(player));
 		}
 	}
 

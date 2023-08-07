@@ -15,6 +15,7 @@ import org.bukkit.inventory.meta.PotionMeta;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Updated for 1.9 to replicate the "Brewing" process for distilling.
@@ -28,7 +29,7 @@ import java.util.Map;
 public class BDistiller {
 
 	private static final int DISTILLTIME = 400;
-	private static Map<Block, BDistiller> trackedDistillers = new HashMap<>();
+	private static Map<Block, BDistiller> trackedDistillers = new ConcurrentHashMap<>();
 
 	private MyScheduledTask task;
 	private int runTime = -1;

@@ -1,21 +1,21 @@
 # Brew
 Brew_-times: -veces
 Brew_BadPotion: Poción arruinada
-Brew_BarrelRiped: Barril añejo
+Brew_BarrelRiped: envejecido en barril
 Brew_DistillUndefined: Destilado turbio
 Brew_Distilled: Destilado
 Brew_LessDistilled: Menos destilado
-Brew_HundredsOfYears: Siglos
+Brew_HundredsOfYears: siglos
 Brew_Ingredients: Ingredientes
 Brew_MinutePluralPostfix: s
-Brew_OneYear: Un año
+Brew_OneYear: 1 año
 Brew_ThickBrew: Brebaje turbio
 Brew_Undefined: Caldero de brebaje
 Brew_Woodtype: Tipo de madera
-Brew_Years: Años
+Brew_Years: años
 Brew_fermented: fermentado
 Brew_minute: minuto
-Brew_Alc: &v1ml Alc
+Brew_Alc: &v1ml alcohólico
 
 # CMD
 CMD_Copy_Error: '&6&v1 &cLas pociones no caben en tu inventario'

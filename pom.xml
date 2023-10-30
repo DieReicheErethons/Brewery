@@ -38,8 +38,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.10.1</version>
 				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
+					<source>1.17</source>
+					<target>1.17</target>
 					<encoding>UTF-8</encoding>
 				</configuration>
 			</plugin>
@@ -47,7 +47,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
-				<version>3.2.1</version>
+				<version>3.5.0</version>
 				<executions>
 					<execution>
 						<phase>package</phase>
@@ -130,12 +130,12 @@
         <repository>
             <!-- BlockLocker -->
             <id>CodeMC</id>
-            <url>https://repo.codemc.org/repository/maven-public</url>
+            <url>https://repo.codemc.org/repository/maven-public/</url>
         </repository>
 		<repository>
 			<!-- MythicLib (MMOItems) -->
-			<id>MMOPlugins</id>
-			<url>https://mvn.lumine.io/repository/maven/</url>
+			<id>phoenix</id>
+			<url>https://nexus.phoenixdevt.fr/repository/maven-public/</url>
 		</repository>
 		<repository>
 			<!-- Shopkeepers -->
@@ -149,7 +149,7 @@
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot-api</artifactId>
-			<version>1.19-R0.1-SNAPSHOT</version>
+			<version>1.20.2-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
@@ -166,7 +166,7 @@
 			<!-- https://bstats.org/getting-started/include-metrics -->
 			<groupId>org.bstats</groupId>
 			<artifactId>bstats-bukkit</artifactId>
-			<version>3.0.0</version>
+			<version>3.0.2</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -197,7 +197,7 @@
 			<!-- https://dev.bukkit.org/projects/worldedit/files  -->
 			<groupId>com.sk89q.worldedit</groupId>
 			<artifactId>worldedit-bukkit</artifactId>
-			<version>7.2.11-beta-01</version>
+			<version>7.3.0-SNAPSHOT</version>
 			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
@@ -209,7 +209,7 @@
 		<dependency>
 			<groupId>com.sk89q.worldedit</groupId>
 			<artifactId>worldedit-core</artifactId>
-			<version>7.2.11-beta-01</version>
+			<version>7.3.0-SNAPSHOT</version>
 			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
@@ -222,7 +222,7 @@
 			<!-- https://dev.bukkit.org/projects/worldguard/files -->
 			<groupId>com.sk89q.worldguard</groupId>
 			<artifactId>worldguard-core</artifactId>
-			<version>7.0.4</version>
+			<version>7.0.9</version>
 			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
@@ -235,7 +235,7 @@
 			<!-- https://www.spigotmc.org/resources/lwc-extended.69551/history -->
 			<groupId>com.griefcraft.lwc</groupId>
 			<artifactId>LWCX</artifactId>
-			<version>2.2.8</version>
+			<version>2.2.9-dev</version>
 			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
@@ -248,7 +248,7 @@
 			<!-- https://www.spigotmc.org/resources/griefprevention.1884/history -->
 			<groupId>com.github.TechFortress</groupId>
 			<artifactId>GriefPrevention</artifactId>
-			<version>16.17.1</version>
+			<version>16.18.1</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -268,7 +268,7 @@
 			<!-- https://github.com/Slimefun/Slimefun4/releases -->
 			<groupId>com.github.Slimefun</groupId>
 			<artifactId>Slimefun4</artifactId>
-			<version>RC-32</version>
+			<version>RC-35</version>
 			<scope>provided</scope>
 		</dependency>
 		<!--<dependency>
@@ -282,7 +282,7 @@
 			<!-- https://www.spigotmc.org/resources/mythiclib.90306/history -->
 			<groupId>io.lumine</groupId>
 			<artifactId>MythicLib-dist</artifactId>
-			<version>1.3.1</version>
+			<version>1.6-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -296,14 +296,14 @@
 			<!-- https://www.spigotmc.org/resources/towny-advanced.72694/history -->
 			<groupId>com.github.TownyAdvanced</groupId>
 			<artifactId>Towny</artifactId>
-			<version>0.98.3.0</version>
+			<version>0.100.0.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<!-- https://www.spigotmc.org/resources/shopkeepers.80756/history -->
 			<groupId>com.nisovin.shopkeepers</groupId>
 			<artifactId>ShopkeepersAPI</artifactId>
-			<version>2.16.0</version>
+			<version>2.18.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

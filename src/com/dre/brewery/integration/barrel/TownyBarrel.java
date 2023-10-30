@@ -14,15 +14,8 @@ public class TownyBarrel {
 		Location barrelLoc = event.getSpigot().getLocation();
 		Material mat = P.use1_14 ? Material.BARREL : Material.CHEST;
 
-		try {
-			if (!TownySettings.isSwitchMaterial(mat, barrelLoc)) {
-				return true;
-			}
-		} catch (Exception e) {
-			//noinspection deprecation
-			if (!TownySettings.isSwitchMaterial("CHEST")) {
-				return true;
-			}
+		if (!TownySettings.isSwitchMaterial(mat, barrelLoc)) {
+			return true;
 		}
 		return PlayerCacheUtil.getCachePermission(event.getPlayer(), barrelLoc, mat, TownyPermission.ActionType.SWITCH);
 	}

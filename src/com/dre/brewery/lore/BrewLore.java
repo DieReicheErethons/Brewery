@@ -148,10 +148,12 @@ public class BrewLore {
 	public void updateDistillLore(boolean qualityColor) {
 		if (brew.getDistillRuns() <= 0) return;
 		String prefix;
+		String suffix = "";
 		byte distillRuns = brew.getDistillRuns();
-		int quality = brew.getIngredients().getDistillQuality(brew.getCurrentRecipe(), distillRuns);
 		if (qualityColor && !brew.isUnlabeled() && brew.hasRecipe()) {
+			int quality = brew.getIngredients().getDistillQuality(brew.getCurrentRecipe(), distillRuns);
 			prefix = getQualityColor(quality);
+			suffix = " " + getQualityIcon(quality);
 		} else {
 			prefix = "§7";
 		}
@@ -161,9 +163,9 @@ public class BrewLore {
 			}
 		}
 		if (brew.isUnlabeled() && brew.hasRecipe() && distillRuns < brew.getCurrentRecipe().getDistillRuns()) {
-			addOrReplaceLore(Type.DISTILL, prefix, P.p.languageReader.get("Brew_LessDistilled"), " " + getQualityIcon(quality));
+			addOrReplaceLore(Type.DISTILL, prefix, P.p.languageReader.get("Brew_LessDistilled"), suffix);
 		} else {
-			addOrReplaceLore(Type.DISTILL, prefix, P.p.languageReader.get("Brew_Distilled"), " " + getQualityIcon(quality));
+			addOrReplaceLore(Type.DISTILL, prefix, P.p.languageReader.get("Brew_Distilled"), suffix);
 		}
 	}
 
@@ -175,10 +177,12 @@ public class BrewLore {
 	public void updateAgeLore(boolean qualityColor) {
 		if (brew.isStripped()) return;
 		String prefix;
+		String suffix = "";
 		float age = brew.getAgeTime();
-		int quality = brew.getIngredients().getAgeQuality(brew.getCurrentRecipe(), age);
 		if (qualityColor && !brew.isUnlabeled() && brew.hasRecipe()) {
+			int quality = brew.getIngredients().getAgeQuality(brew.getCurrentRecipe(), age);
 			prefix = getQualityColor(quality);
+			suffix = " " + getQualityIcon(quality);
 		} else {
 			prefix = "§7";
 		}
@@ -191,7 +195,7 @@ public class BrewLore {
 				prefix = prefix + P.p.languageReader.get("Brew_HundredsOfYears") + " ";
 			}
 		}
-		addOrReplaceLore(Type.AGE, prefix, P.p.languageReader.get("Brew_BarrelRiped"), " " + getQualityIcon(quality));
+		addOrReplaceLore(Type.AGE, prefix, P.p.languageReader.get("Brew_BarrelRiped"), suffix);
 	}
 
 	/**

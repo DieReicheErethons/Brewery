@@ -325,7 +325,7 @@ public class BRecipe {
 			P.p.errorLog("Invalid distilltime '" + distillTime + "' in Recipe: " + getRecipeName());
 			return false;
 		}
-		if (wood < 0 || wood > 9) {
+		if (wood < 0 || wood > 11) {
 			P.p.errorLog("Invalid wood type '" + wood + "' in Recipe: " + getRecipeName());
 			return false;
 		}

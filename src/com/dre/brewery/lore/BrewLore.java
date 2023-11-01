@@ -112,8 +112,10 @@ public class BrewLore {
 	 */
 	public void updateIngredientLore(boolean qualityColor) {
 		if (qualityColor && brew.hasRecipe() && !brew.isStripped()) {
-			String prefix = getQualityColor(brew.getIngredients().getIngredientQuality(brew.getCurrentRecipe()));
-			addOrReplaceLore(Type.INGR, prefix, P.p.languageReader.get("Brew_Ingredients"));
+			int quality = brew.getIngredients().getIngredientQuality(brew.getCurrentRecipe());
+			String prefix = getQualityColor(quality);
+			char icon = getQualityIcon(quality);
+			addOrReplaceLore(Type.INGR, prefix, P.p.languageReader.get("Brew_Ingredients"), " " + icon);
 		} else {
 			removeLore(Type.INGR, P.p.languageReader.get("Brew_Ingredients"));
 		}
@@ -132,7 +134,7 @@ public class BrewLore {
 			if (ingredients.getCookedTime() > 1) {
 				prefix = prefix + P.p.languageReader.get("Brew_MinutePluralPostfix");
 			}
-			addOrReplaceLore(Type.COOK, prefix, " " + P.p.languageReader.get("Brew_fermented"));
+			addOrReplaceLore(Type.COOK, prefix, " " + P.p.languageReader.get("Brew_fermented"), " " + getQualityIcon(quality));
 		} else {
 			removeLore(Type.COOK, P.p.languageReader.get("Brew_fermented"));
 		}
@@ -146,9 +148,12 @@ public class BrewLore {
 	public void updateDistillLore(boolean qualityColor) {
 		if (brew.getDistillRuns() <= 0) return;
 		String prefix;
+		String suffix = "";
 		byte distillRuns = brew.getDistillRuns();
 		if (qualityColor && !brew.isUnlabeled() && brew.hasRecipe()) {
-			prefix = getQualityColor(brew.getIngredients().getDistillQuality(brew.getCurrentRecipe(), distillRuns));
+			int quality = brew.getIngredients().getDistillQuality(brew.getCurrentRecipe(), distillRuns);
+			prefix = getQualityColor(quality);
+			suffix = " " + getQualityIcon(quality);
 		} else {
 			prefix = "§7";
 		}
@@ -158,9 +163,9 @@ public class BrewLore {
 			}
 		}
 		if (brew.isUnlabeled() && brew.hasRecipe() && distillRuns < brew.getCurrentRecipe().getDistillRuns()) {
-			addOrReplaceLore(Type.DISTILL, prefix, P.p.languageReader.get("Brew_LessDistilled"));
+			addOrReplaceLore(Type.DISTILL, prefix, P.p.languageReader.get("Brew_LessDistilled"), suffix);
 		} else {
-			addOrReplaceLore(Type.DISTILL, prefix, P.p.languageReader.get("Brew_Distilled"));
+			addOrReplaceLore(Type.DISTILL, prefix, P.p.languageReader.get("Brew_Distilled"), suffix);
 		}
 	}
 
@@ -172,9 +177,12 @@ public class BrewLore {
 	public void updateAgeLore(boolean qualityColor) {
 		if (brew.isStripped()) return;
 		String prefix;
+		String suffix = "";
 		float age = brew.getAgeTime();
 		if (qualityColor && !brew.isUnlabeled() && brew.hasRecipe()) {
-			prefix = getQualityColor(brew.getIngredients().getAgeQuality(brew.getCurrentRecipe(), age));
+			int quality = brew.getIngredients().getAgeQuality(brew.getCurrentRecipe(), age);
+			prefix = getQualityColor(quality);
+			suffix = " " + getQualityIcon(quality);
 		} else {
 			prefix = "§7";
 		}
@@ -187,7 +195,7 @@ public class BrewLore {
 				prefix = prefix + P.p.languageReader.get("Brew_HundredsOfYears") + " ";
 			}
 		}
-		addOrReplaceLore(Type.AGE, prefix, P.p.languageReader.get("Brew_BarrelRiped"));
+		addOrReplaceLore(Type.AGE, prefix, P.p.languageReader.get("Brew_BarrelRiped"), suffix);
 	}
 
 	/**
@@ -198,7 +206,7 @@ public class BrewLore {
 	public void updateWoodLore(boolean qualityColor) {
 		if (qualityColor && brew.hasRecipe() && !brew.isUnlabeled()) {
 			int quality = brew.getIngredients().getWoodQuality(brew.getCurrentRecipe(), brew.getWood());
-			addOrReplaceLore(Type.WOOD, getQualityColor(quality), P.p.languageReader.get("Brew_Woodtype"));
+			addOrReplaceLore(Type.WOOD, getQualityColor(quality), P.p.languageReader.get("Brew_Woodtype"), " " + getQualityIcon(quality));
 		} else {
 			removeLore(Type.WOOD, P.p.languageReader.get("Brew_Woodtype"));
 		}
@@ -326,11 +334,24 @@ public class BrewLore {
 	 * @param type The Type of BrewLore to replace
 	 * @param prefix The Prefix to add to the line of lore
 	 * @param line The Line of Lore to add or replace
- 	 */
+	 */
 	public int addOrReplaceLore(Type type, String prefix, String line) {
+		return addOrReplaceLore(type, prefix, line, "");
+	}
+
+	/**
+	 * Adds or replaces a line of Lore.
+	 * <p>Searches for type and if not found for Substring lore and replaces it
+	 *
+	 * @param type The Type of BrewLore to replace
+	 * @param prefix The Prefix to add to the line of lore
+	 * @param line The Line of Lore to add or replace
+	 * @param suffix The Suffix to add to the line of lore
+	 */
+	public int addOrReplaceLore(Type type, String prefix, String line, String suffix) {
 		int index = type.findInLore(lore);
 		if (index > -1) {
-			lore.set(index, type.id + prefix + line);
+			lore.set(index, type.id + prefix + line + suffix);
 			return index;
 		}
 
@@ -339,7 +360,7 @@ public class BrewLore {
 		if (index > -1) {
 			lore.remove(index);
 		}
-		return addLore(type, prefix, line);
+		return addLore(type, prefix, line, suffix);
 	}
 
 	/**
@@ -348,17 +369,28 @@ public class BrewLore {
 	 * @param type The Type of BrewLore to add
 	 * @param prefix The Prefix to add to the line of lore
 	 * @param line The Line of Lore to add or add
- 	 */
+	 */
 	public int addLore(Type type, String prefix, String line) {
+		return addLore(type, prefix, line, "");
+	}
+	/**
+	 * Adds a line of Lore in the correct ordering
+	 *
+	 * @param type The Type of BrewLore to add
+	 * @param prefix The Prefix to add to the line of lore
+	 * @param line The Line of Lore to add or add
+	 * @param suffix The Suffix to add to the line of lore
+	 */
+	public int addLore(Type type, String prefix, String line, String suffix) {
 		lineAddedOrRem = true;
 		for (int i = 0; i < lore.size(); i++) {
 			Type existing = Type.get(lore.get(i));
 			if (existing != null && existing.isAfter(type)) {
-				lore.add(i, type.id + prefix + line);
+				lore.add(i, type.id + prefix + line + suffix);
 				return i;
 			}
 		}
-		lore.add(type.id + prefix + line);
+		lore.add(type.id + prefix + line + suffix);
 		return lore.size() - 1;
 	}
 
@@ -508,6 +540,28 @@ public class BrewLore {
 			color = "&4";
 		}
 		return P.p.color(color);
+	}
+
+	/**
+	 * Gets the icon representing a quality for use in lore
+	 *
+	 * @param quality The quality used for the icon
+	 * @return The icon for the given quality
+	 */
+	public static char getQualityIcon(int quality) {
+		char icon;
+		if (quality > 8) {
+			icon = '\u2605';
+		} else if (quality > 6) {
+			icon = '\u2BEA';
+		} else if (quality > 4) {
+			icon = '\u2606';
+		} else if (quality > 2) {
+			icon = '\u2718';
+		} else {
+			icon = '\u2620';
+		}
+		return icon;
 	}
 
 	/**

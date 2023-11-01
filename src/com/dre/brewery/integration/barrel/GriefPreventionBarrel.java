@@ -3,9 +3,12 @@ package com.dre.brewery.integration.barrel;
 import com.dre.brewery.P;
 import com.dre.brewery.api.events.barrel.BarrelAccessEvent;
 import me.ryanhamshire.GriefPrevention.Claim;
+import me.ryanhamshire.GriefPrevention.ClaimPermission;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
 import me.ryanhamshire.GriefPrevention.PlayerData;
 import org.bukkit.entity.Player;
+
+import java.util.function.Supplier;
 
 public class GriefPreventionBarrel {
 
@@ -29,7 +32,8 @@ public class GriefPreventionBarrel {
 		Claim claim = griefPrevention.dataStore.getClaimAt(event.getSpigot().getLocation(), false, playerData.lastClaim);
 		if (claim != null) {
 			playerData.lastClaim = claim;
-			String noContainersReason = claim.allowContainers(player);
+			Supplier<String> supplier = claim.checkPermission(player, ClaimPermission.Inventory, null);
+			String noContainersReason = supplier != null ? supplier.get() : null;
 			if (noContainersReason != null) {
 				return false;
 			}

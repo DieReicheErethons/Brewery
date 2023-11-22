@@ -66,7 +66,6 @@ public class Barrel implements InventoryHolder {
 	/**
 	 * Load from File
 	 * <p>If async: true, The Barrel Bounds will not be recreated when missing/corrupt, getBody().getBounds() will be null if it needs recreating
-	 *
 	 */
 	public Barrel(Block spigot, byte sign, BoundingBox bounds, Map<String, Object> items, float time, boolean async) {
 		this.spigot = spigot;
@@ -266,7 +265,7 @@ public class Barrel implements InventoryHolder {
 			return null;
 		}
 		Material type = block.getType();
-		if (LegacyUtil.isFence(type) || LegacyUtil.isSign(type) ) {
+		if (LegacyUtil.isFence(type) || LegacyUtil.isSign(type)) {
 			return getBySpigot(block);
 		} else {
 			return getByWood(block);
@@ -375,8 +374,8 @@ public class Barrel implements InventoryHolder {
 	/**
 	 * Removes a barrel, throwing included potions to the ground
 	 *
-	 * @param broken The Block that was broken
-	 * @param breaker The Player that broke it, or null if not known
+	 * @param broken    The Block that was broken
+	 * @param breaker   The Player that broke it, or null if not known
 	 * @param dropItems If the items in the barrels inventory should drop to the ground
 	 */
 	public void remove(@Nullable Block broken, @Nullable Player breaker, boolean dropItems) {
@@ -542,7 +541,7 @@ public class Barrel implements InventoryHolder {
 			}
 		}
 		// also save barrels that are not loaded
-		if (oldData != null){
+		if (oldData != null) {
 			for (String uuid : oldData.getKeys(false)) {
 				if (!config.contains(uuid)) {
 					config.set(uuid, oldData.get(uuid));

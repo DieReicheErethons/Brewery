@@ -14,6 +14,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 
 /**
  * Updated for 1.9 to replicate the "Brewing" process for distilling.
@@ -48,8 +49,7 @@ public class BDistiller {
 		taskId = new DistillRunnable().runTaskTimer(P.p, 2L, 1L).getTaskId();
 	}
 
-	public static void distillerClick(InventoryClickEvent event) {
-		BrewerInventory standInv = (BrewerInventory) event.getInventory();
+	public static void distillerClick(BrewerInventory standInv) {
 		final Block standBlock = standInv.getHolder().getBlock();
 
 		// If we were already tracking the brewer, cancel any ongoing event due to the click.

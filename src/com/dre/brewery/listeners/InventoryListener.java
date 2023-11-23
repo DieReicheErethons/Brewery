@@ -1,6 +1,11 @@
 package com.dre.brewery.listeners;
 
-import com.dre.brewery.*;
+import com.dre.brewery.BDistiller;
+import com.dre.brewery.BSealer;
+import com.dre.brewery.Barrel;
+import com.dre.brewery.Brew;
+import com.dre.brewery.MCBarrel;
+import com.dre.brewery.P;
 import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.lore.BrewLore;
 import org.bukkit.Material;
@@ -9,7 +14,16 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.*;
+import org.bukkit.event.inventory.BrewEvent;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryAction;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryMoveItemEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.inventory.InventoryPickupItemEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.BrewerInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -20,6 +34,7 @@ import org.bukkit.inventory.meta.PotionMeta;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.UUID;
+import java.util.logging.Level;
 
 public class InventoryListener implements Listener {
 
@@ -82,7 +97,7 @@ public class InventoryListener implements Listener {
 		if (InventoryType.BREWING != inv.getType()) return;
 		if (event.getAction() == InventoryAction.NOTHING) return; // Ignore clicks that do nothing
 
-		BDistiller.distillerClick(event);
+		BDistiller.distillerClick((BrewerInventory) event.getInventory());
 	}
 
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
@@ -258,7 +273,7 @@ public class InventoryListener implements Listener {
 
 	// block the pickup of items where getPickupDelay is > 1000 (puke)
 	@EventHandler(ignoreCancelled = true)
-	public void onHopperPickupPuke(InventoryPickupItemEvent event){
+	public void onHopperPickupPuke(InventoryPickupItemEvent event) {
 		if (event.getItem().getPickupDelay() > 1000 && event.getItem().getItemStack().getType() == BConfig.pukeItem) {
 			event.setCancelled(true);
 		}
@@ -267,34 +282,47 @@ public class InventoryListener implements Listener {
 	// Block taking out items from running distillers,
 	// Convert Color Lore from MC Barrels back into normal color on taking out
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
-	public void onHopperMove(InventoryMoveItemEvent event){
-		if (event.getSource() instanceof BrewerInventory) {
-			if (BDistiller.isTrackingDistiller(((BrewerInventory) event.getSource()).getHolder().getBlock())) {
-				event.setCancelled(true);
-			}
-			return;
+	public void onHopperMove(InventoryMoveItemEvent event) {
+		if (event.getDestination().getType() == InventoryType.BREWING) {
+			dealWithBrewery(event.getItem(), (BrewerInventory) event.getDestination());
 		}
 
-		if (!P.use1_14) return;
+		if (event.getSource().getType() == InventoryType.BREWING) {
+			dealWithBrewery(event.getItem(), (BrewerInventory) event.getSource());
+		}
 
 		if (event.getSource().getType() == InventoryType.BARREL) {
-			ItemStack item = event.getItem();
-			if (item.getType() == Material.POTION && Brew.isBrew(item)) {
-				PotionMeta meta = (PotionMeta) item.getItemMeta();
-				assert meta != null;
-				if (BrewLore.hasColorLore(meta)) {
-					// has color lore, convert lore back to normal
-					Brew brew = Brew.get(meta);
-					if (brew != null) {
-						BrewLore lore = new BrewLore(brew, meta);
-						lore.convertLore(false);
-						lore.write();
-						item.setItemMeta(meta);
-						event.setItem(item);
-					}
-				}
-			}
+			dealWithBarrel(event);
 		}
+	}
+
+	private void dealWithBarrel(InventoryMoveItemEvent event){
+		if (!P.use1_14) return;
+		ItemStack item = event.getItem();
+		if (item.getType() != Material.POTION || !Brew.isBrew(item)) {
+			return;
+		}
+		PotionMeta meta = (PotionMeta) item.getItemMeta();
+		assert meta != null;
+		if (!BrewLore.hasColorLore(meta)) {
+			return;
+		}
+		// has color lore, convert lore back to normal
+		Brew brew = Brew.get(meta);
+		if (brew != null) {
+			BrewLore lore = new BrewLore(brew, meta);
+			lore.convertLore(false);
+			lore.write();
+			item.setItemMeta(meta);
+			event.setItem(item);
+		}
+	}
+
+	private void dealWithBrewery(ItemStack item, BrewerInventory inventory){
+		if (item.getType() != Material.POTION || !Brew.isBrew(item)) {
+			return;
+		}
+		BDistiller.distillerClick(inventory);
 	}
 
 	@EventHandler

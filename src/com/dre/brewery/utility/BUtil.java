@@ -384,4 +384,7 @@ public class BUtil {
 		out.close();
 	}
 
+	public static void saveFile(InputStream in, File file, boolean overwrite) throws IOException {
+		saveFile(in, file.getParentFile(), file.getName(), overwrite);
+	}
 }

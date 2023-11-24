@@ -1,0 +1,114 @@
+# Traduzido para o português por Mikeliro
+# Brew
+Brew_-times: -vezes
+Brew_BadPotion: Poção Arruinada
+Brew_BarrelRiped: Envelhecido em Barril
+Brew_DistillUndefined: Destilado Turvo
+Brew_Distilled: Destilado
+Brew_LessDistilled: Menos Destilado
+Brew_HundredsOfYears: Centenas de Anos
+Brew_Ingredients: Ingredientes
+Brew_MinutePluralPostfix: s
+Brew_OneYear: Um Ano
+Brew_ThickBrew: Mistura Viscosa
+Brew_Undefined: Cerveja Caldeirão
+Brew_Woodtype: Tipo de Madeira
+Brew_Years: Anos
+Brew_fermented: fermentado
+Brew_minute: minuto
+Brew_Alc: Alc &v1ml
+
+# CMD
+CMD_Copy_Error: '&6&v1 &cAs poções não couberam no seu inventário'
+CMD_Info_Drunk: '&v1 está &6&v2% &fbêbado(a), com uma qualidade de &6&v3'
+CMD_Info_NotDrunk: '&v1 não está bêbado(a)'
+CMD_NonStatic: '&eA poção não é mais estática e envelhece normalmente em barris'
+CMD_Player: '&a&v1 está agora &6&v2% &abêbado(a), com uma qualidade de &6&v3'
+CMD_Player_Error: '&cA qualidade deve estar entre 1 e 10!'
+CMD_Reload: '&aConfiguração recarregada com sucesso'
+CMD_Created: '&aCerveja Criada'
+CMD_Configname: '&aO nome da configuração é: &f&v1'
+CMD_Configname_Error: '&cNão foi possível encontrar o item em sua mão'
+CMD_Static: '&aA poção agora é estática e não mudará em barris ou suportes de poções.'
+CMD_UnLabel: '&aEtiqueta removida!'
+CMD_Drink: '&aVocê bebeu um(a) &v1'
+CMD_DrinkOther: '&a&v1 bebeu um(a) &v2'
+
+# Error
+Error_ConfigUpdate: 'Versão de configuração Brewery desconhecida: v&v1, configuração não foi atualizada!'!'
+Error_ItemNotPotion: '&cO item na sua mão não pôde ser identificado como uma poção!'
+Error_SealingTableDisabled: '&cA Mesa de Vedação está desativada'
+Error_SealedAlwaysStatic: 'As cervejas seladas são sempre estáticas!'
+Error_AlreadyUnlabeled: '&cA cerveja na sua mão já está sem rótulo!'
+Error_NoBarrelAccess: '&cVocê não tem permissão para acessar este barril!'
+Error_NoBrewName: '&cNenhuma receita com o nome: ''&v1&c'' encontrada!'
+Error_NoPermissions: '&cVocê não tem permissão para fazer isso!'
+Error_PlayerCommand: '&cEste comando só pode ser executado como jogador!'
+Error_Recipeload: '&cFalha ao restaurar todas as receitas: Mais informações no log do servidor!'
+Error_ShowHelp: Use &6/brew help &fpara exibir a ajuda
+Error_UnknownCommand: Comando desconhecido
+Error_YmlRead: 'Não foi possível ler o arquivo config.yml, verifique se o arquivo está no formato yml válido (espaços corretos, etc.)'
+Error_NoPlayer: 'Jogador não encontrado: &v1'
+
+# Etc
+Etc_Barrel: Barril
+Etc_Page: Página
+Etc_Usage: 'Uso:'
+Etc_SealingTable: Mesa de Selagem de Infusão
+
+# Help
+Help_Copy: '&6/brew copy [Quantidade]&9 Copia a poção em sua mão'
+Help_Create: '&6/brew create <Receita> [Qualidade] [Jogador] &9Crie uma bebida com qualidade opcional (1-10)'
+Help_Give: '&6/brew give <Receita> [Qualidade] [Jogador] &9Alternativa para /brew create'
+Help_Delete: '&6/brew delete &9Remove a poção em sua mão'
+Help_Help: '&6/brew help [Página] &9Mostra uma página de ajuda específica'
+Help_Info: '&6/brew info&9 Exibe sua embriaguez e qualidade atuais'
+Help_InfoOther: '&6/brew info [Jogador]&9 Exibe a embriaguez e a qualidade atuais do [Jogador]'
+Help_Player: '&6/brew <Jogador> <%Embriaguez> [Qualidade]&9 Define a embriaguez (e qualidade) de um jogador'
+Help_Reload: '&6/brew reload &9Recarregar configuração'
+Help_Configname: '&6/brew ItemName &9Mostra o nome do item em mãos para configuração'
+Help_Static: '&6/brew static &9Tornar a bebida estática -> Sem mais envelhecimento ou destilação'
+Help_UnLabel: '&6/brew unlabel &9Remove o rótulo detalhado de uma poção'
+Help_Seal: '&6/brew seal &9Sela bebidas para vender em lojas'
+Help_Wakeup: '&6/brew wakeup list <Página>&9 Lista todos os ponto de despertar'
+Help_WakeupAdd: '&6/brew wakeup add &9Adiciona um ponto de despertar na sua posição atual'
+Help_WakeupCheck: '&6/brew wakeup check &9Teleporta para todos os pontos de despertar'
+Help_WakeupCheckSpecific: '&6/brew wakeup check <id> &9Teleporta-se para o ponto de despertar com <id>'
+Help_WakeupList: '&6/brew wakeup list <Página> [Mundo]&9 Lista todos os pontos de despertar de <Mundo>'
+Help_WakeupRemove: '&6/brew wakeup remove <id> &9Remove o ponto de despertador com <id>'
+Help_Puke: '&6/brew puke [Jogador] [Quantia] &9Faz você ou [Jogador] vomitar'
+Help_Drink: '&6/brew drink <Receita> [Qualidade] [Jogador] &9Simulates [Jogador] drinking a Brew'
+
+# Perms
+Perms_NoBarrelCreate: '&cVocê não tem permissão para criar barris!'
+Perms_NoBigBarrelCreate: '&cVocê não tem permissão para criar barris grandes!'
+Perms_NoCauldronFill: '&cVocê não tem permissão para encher garrafas deste caldeirão!'
+Perms_NoCauldronInsert: '&cVocê não tem permissão para colocar ingredientes em caldeirões!'
+Perms_NoSmallBarrelCreate: '&cVocê não tem permissão para criar barris pequenos!'
+
+# Player
+Player_BarrelCreated: Barril criado
+Player_BarrelFull: '&cEste barril não pode conter mais bebidas'
+Player_CantDrink: Você não pode beber mais.
+Player_CauldronInfo1: Este caldeirão está fervendo há &v1 minutos.
+Player_CauldronInfo2: Este caldeirão começou a ferver.
+Player_DrunkPassOut: Você bebeu demais e desmaiou.
+Player_LoginDeny: Seu personagem tenta fazer login, mas está bêbado demais para encontrar o servidor. Tente novamente!
+Player_LoginDenyLong: Seu personagem está muito bêbado e desmaiou. Tente novamente em 10 minutos!
+Player_TriedToSay: '&v1 tentou dizer: &0&v2'
+Player_Wake: Oh não! Não me lembro como cheguei aqui...
+Player_WakeAlreadyDeleted: '&cO ponto de despertar com o id: &6&v1 &cjá foi deletado!'
+Player_WakeCancel: '&6A verificação do ponto de despertar foi cancelada'
+Player_WakeCreated: '&aPonto de despertar com id: &6&v1 &afoi criado com sucesso!'
+Player_WakeDeleted: '&aO ponto de despertar com o id: &6&v1 &afoi deletado com sucesso!'
+Player_WakeFilled: '&cO ponto de despertar com o id: &6&v1&c na posição &6&v2 &v3, &v4, &v5&c está bloqueado por Blocos!'
+Player_WakeHint1: 'Para o próximo ponto de despertar: dê um soco no ar'
+Player_WakeHint2: 'Para cancelar: &9/brew wakeup cancel'
+Player_WakeLast: '&aEste foi o último ponto de despertar'
+Player_WakeNoCheck: '&cNenhuma verificação do ponto de despertar está atualmente ativa'
+Player_WakeNoPoints: '&cNão há pontos de despertar!'
+Player_WakeNotExist: '&cO ponto de despertar com o id: &6&v1 &cnão existe!'
+Player_WakeTeleport: 'Teleporte para o ponto de despertar com o id: &6&v1&f Na posição: &6&v2 &v3, &v4, &v5'
+Player_ShopSealBrew: '&eRecomenda-se negociar/vender &eBebidas &6seladas'
+Player_Drunkeness: 'Drunkeness'
+Player_Hangover: 'Your Hangover'

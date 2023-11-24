@@ -1,0 +1,1202 @@
+# config for Brewery.jar
+
+
+# -- Settings --
+# Defaults are written in []
+
+# Languagefile to be used (found in plugins/Brewery/languages)
+language: pt
+
+# If the player wakes up at /home when logging in after excessive drinking (/home plugin must be installed!) [true]
+enableHome: true
+
+# Type of the home-teleport: ['cmd: home']
+# bed = Player will be teleported to his spawn bed
+# 'cmd: home' = /home will be executed by the player. He has to have permissions for it without any delay!
+# 'cmd: spawn' = /spawn will be executed by the player.
+# 'cmd: whatever' = /whatever will be executed by the player.
+homeType: 'cmd: home'
+
+# If the player "wakes up" at a random place when offline for some time while drinking (the places have to be defined with '/brew Wakeup add' through an admin)
+# The Player wakes at the nearest of two random places of his world [true]
+enableWake: true
+
+# If the Player may have to try multiple times when logging in while extremely drunk [true]
+enableLoginDisallow: true
+
+# If the Player faints shortly (gets kicked from the server) if he drinks the max amount of alcohol possible [false]
+enableKickOnOverdrink: false
+
+# If the Player vomits on high drunkeness (drops item defined below) [true]
+# The item can not be collected and stays on the ground until it despawns.
+enablePuke: true
+
+# Item that is dropped multiple times uncollectable when puking [Soul_Sand]
+pukeItem: Soul_Sand
+
+# Time in seconds until the pukeitems despawn, (mc default is 300 = 5 min) [60]
+# If the item despawn time was changed in the spigot.yml, the pukeDespawntime changes as well.
+pukeDespawntime: 60
+
+# How much the Player stumbles depending on the amount of alcohol he drank. Can be set to 0 and higher than 100 [100]
+stumblePercent: 100
+
+# Display his drunkeness to the player when he drinks a brew or eats a drainItem [true]
+showStatusOnDrink: true
+
+# Consumable Item/strength. Decreases the alcohol level by <strength> when consumed. (list)
+drainItems:
+  - Bread/4
+  - Milk_Bucket/2
+
+# Show Particles over Cauldrons when they have ingredients and a heat source. [true]
+# The changing color of the particles can help with timing some recipes
+enableCauldronParticles: true
+# If Cauldron Particles should be reduced to the bare minimum [false]
+minimalParticles: false
+
+# If crafting and using of the Brew Sealing Table is enabled (2 Bottles over 4 Planks) [true, true]
+craftSealingTable: true
+enableSealingTable: true
+
+# Always show the 1-5 stars on the item depending on the quality. If false, they will only appear when brewing [true]
+alwaysShowQuality: true
+
+# Always show the alcohol content on the item. If false, it will only show in the brewing stand [false]
+alwaysShowAlc: false
+
+# If aging in -Minecraft- Barrels in enabled [true] and how many Brewery drinks can be put into them [6]
+ageInMCBarrels: true
+maxBrewsInMCBarrels: 6
+
+# The used Ingredients and other brewing-data is saved to all Brewery Items. To prevent
+# hacked clients from reading what exactly was used to brew an item, the data can be encoded/scrambled.
+# This is a fast process to stop players from hacking out recipes, once they get hold of a brew.
+# Only drawback: brew items can only be used on another server with the same encodeKey.
+# When using Brews on multiple (BungeeCord) Servers, define a shared Database below at 'multiServerDB'
+# So enable this if you want to make recipe cheating harder, but don't share any brews by world download, schematics, or other means. [false]
+enableEncode: false
+encodeKey: 0
+
+# Enable checking for Updates, Checks the curseforge api for updates to Brewery [true]
+# If an Update is found a Message is logged on Server-start and displayed to OPs joining the game
+updateCheck: true
+
+# Autosave interval in minutes [3]
+autosave: 3
+
+# Show debug messages in log [false]
+debug: false
+
+# Config Version
+version: '3.1'
+
+
+
+# -- Define custom items --
+# The defined id can then be used in recipes
+
+#  matchAny: true if it is already enough if one of the info matches
+#  material: Which type the item has to be
+#  name: Which name the item has to be (Formatting codes possible: such as &6)
+#  lore: What has to be in the lore of the item
+
+customItems:
+  # Three Example Items
+  ex-item:
+    # A Barrier item called Wall and has the given line in its lore
+    material: Barrier
+    name: 'Muro'
+    lore:
+      - '&7Muito bem protegido'
+
+  ex-item2:
+    # Using matchAny only one of the following has to match.
+    # In this case on of the door types, or an item called Beechwood Door, or an item with 'A door' in its lore
+    matchAny: true
+    material:
+      - Acacia_Door
+      - Oak_Door
+      - Spruce_Door
+    name:
+      - 'Porta de Madeira de Faia'
+    lore:
+      - 'Uma porta'
+
+  rasp:
+    name: '&cFramboesa'
+
+  blue-flowers:
+    matchAny: true
+    material:
+      - cornflower
+      - blue_orchid
+
+
+# -- Ingredients in the Cauldron --
+# Which Ingredients are accepted by the Cauldron and the base potion resulting from them
+# You only need to add something here if you want to specify a custom name or color for the base potion
+
+ # name: Name of the base potion coming out of the Cauldron (Formatting codes possible: such as &6)
+ # ingredients: List of 'material/amount'
+ #   With an item in your hand, use /brew ItemName to get its material for use in a recipe
+ #   (Item-ids instead of material are not supported by bukkit anymore and will not work)
+ #   A list of materials can be found here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
+ # color: Color of the base potion from a cauldron. Defaults to CYAN
+ #   Usable Colors: DARK_RED, RED, BRIGHT_RED, ORANGE, YELLOW, PINK, PURPLE, BLUE, CYAN, WATER, TEAL, OLIVE, GREEN, LIME, BLACK, GREY, BRIGHT_GREY, WHITE
+ #   Or RGB colors (hex: for example '99FF33') (with '') (search for "HTML color" on the internet)
+ # cookParticles:
+ #   Color of the Particles above the cauldron at different cooking-times
+ #   Color and minute during which each color should appear, i.e. one color at 8 minutes fading to another at 18 minutes.
+ #   As List, each Color as name or RGB, see above. Written as 'Color/Minute'
+ #   It will fade to the last color in the end, if there is only one color in the list, it will fade to grey
+ # lore: List of additional text on the base potion. (Formatting codes possible: such as &6)
+ # customModelData: Custom Model Data Tag. This is a number that can be used to add custom textures to the item.
+
+cauldron:
+  # Example with all possible entries
+  ex:
+    name: Exemplo
+    ingredients:
+      - Bedrock/2
+      - Diamond
+    color: BLACK
+    cookParticles:
+      - 'RED/5'
+      - 'WHITE/10'
+      - '800000/25' # maroon
+    lore:
+      - Um exemplo para uma Poção Base
+      - É assim que sai do caldeirão
+    customModelData: 545
+
+  # -- One Ingredient: --
+  wheat:
+    name: Trigo Fermentado
+    ingredients: Wheat
+    cookParticles:
+      - '2d8686/8' # Dark Aqua
+
+  sugarcane:
+    name: Caldo de Cana
+    ingredients: Sugar_Cane
+    color: 'f1ffad' # yellowish green
+    cookParticles:
+      - 'f1ffad/4'
+      - '858547/10' # dark olive
+
+  sugar:
+    name: Água Açucarada
+    ingredients: Sugar
+    cookParticles:
+      - 'WHITE/4'
+      - 'BRIGHT_GREY/25'
+
+  apple:
+    name: Mosto de Maçã
+    ingredients: Apple
+
+  berries:
+    name: Mosto de Uva
+    ingredients: Sweet_Berries
+    color: RED
+    cookParticles:
+      - 'ff6666/2' # bright red
+      - 'RED/7'
+      - 'ac6553/13' # brown-red
+
+  potato:
+    name: Purê de Batata
+    ingredients: Potato
+
+  grass:
+    name: Ervas Fervidas
+    ingredients: Grass
+    color: '99ff66' # bright green
+    cookParticles:
+      - 'GREEN/2'
+      - '99ff99/20' # faded green
+
+  rmushroom:
+    name: Infusão de Cogumelo Vermelho
+    ingredients: Red_Mushroom
+    color: 'ff5c33' # amber red
+    cookParticles:
+      - 'fab09e/15' # faded red
+
+  bmushroom:
+    name: Infusão de Cogumelo Marrom
+    ingredients: Brown_Mushroom
+    color: 'c68c53' # brighter brown
+    cookParticles:
+      - 'c68c53/15'
+
+  cocoa:
+    name: Bebida de Chocolate
+    ingredients: Cocoa_Beans
+    color: '804600' # mocca
+    cookParticles:
+      - 'a26011/1'
+      - '5c370a/3'
+      - '4d4133/8' # Gray-brown
+
+  milk:
+    name: Água Leitosa
+    ingredients: Milk_Bucket
+    color: BRIGHT_GREY
+    cookParticles:
+      - 'fbfbd0/1' # yellow-white
+      - 'WHITE/6'
+
+  bl_flow:
+    name: Infusão Azulada
+    ingredients: blue-flowers
+    color: '0099ff' # sky blue
+    cookParticles:
+      - '0099ff'
+
+  cactus:
+    name: Infusão de Agave
+    ingredients: cactus
+    color: '00b300' # cactus green
+    cookParticles:
+      - '00b300/16'
+
+  poi_potato:
+    name: Caldo Venenoso
+    ingredients: Poisonous_Potato
+
+  egg:
+    name: Mistura Pegajosa
+    ingredients: Egg
+
+
+  oak_sapling:
+    name: Caldo de Ervas Fibrosas
+    ingredients: Oak_Sapling
+
+  vine:
+    name: Ervas Fervidas
+    ingredients: vine
+    color: '99ff66' # bright green
+    cookParticles:
+      - 'GREEN/2'
+      - '99ff99/20' # faded green
+
+  rot_flesh:
+    name: Praga Nojenta
+    ingredients: Rotten_Flesh
+    color: '263300' # brown green
+    cookParticles:
+      - '263300/8'
+      - 'BLACK/20'
+
+  melon:
+    name: Suco de Melancia
+    ingredients: melon_slice
+
+  wheat_seeds:
+    name: Infusão Amarga
+    ingredients: Wheat_Seeds
+
+  melon_seeds:
+    name: Infusão Amarga
+    ingredients: Melon_Seeds
+
+  pumpkin_seeds:
+    name: Infusão Amarga
+    ingredients: Pumpkin_Seeds
+
+  bone_meal:
+    name: Mistura Òssea
+    ingredients: bone_meal
+    color: BRIGHT_GREY
+
+  cookie:
+    name: Seiva de Chocolate
+    ingredients: Cookie
+    color: '804600' # mocca
+    cookParticles:
+      - 'a26011/1'
+      - '5c370a/3'
+      - '4d4133/8' # Gray-brown
+
+  fer_spid_eye:
+    name: Olho Fermentado
+    ingredients: Fermented_Spider_Eye
+
+  ghast_tear:
+    name: Infusão Triste
+    ingredients: ghast_tear
+
+  snowball:
+    name: Água Gelada
+    ingredients: Snowball
+
+  Gold_Nugget:
+    name: Mistura Reluzente
+    ingredients: Gold_Nugget
+    color: 'ffd11a' # gold
+    cookParticles:
+      - 'ffd11a'
+
+  glowstone_dust:
+    name: Infusão Brilhante
+    ingredients: Glowstone_Dust
+    color: 'ffff33' # bright yellow
+    cookParticles:
+      - 'ffff99/3'
+      - 'd9d926/15' # faded yellow
+
+  # -- Multiple Ingredients: --
+  applemead_base:
+    name: Infusão de Maçã com Cana-de-Açúcar
+    ingredients:
+      - Sugar_Cane/3
+      - Apple
+    color: 'e1ff4d' # greenish yellow
+    cookParticles:
+      - 'e1ff4d/4'
+
+  poi_grass:
+    name: Ervas Ácidas Fervidas
+    ingredients:
+      - Grass
+      - Poisonous_Potato
+    color: '99ff66' # bright green
+    cookParticles:
+      - 'GREEN/2'
+      - '99ff99/20' # faded green
+
+  juniper:
+    name: Mistura de Junípero
+    ingredients:
+      - blue-flowers
+      - wheat
+    color: '00ccff' # aqua
+    cookParticles:
+      - '00ccff/8'
+
+  gin_base:
+    name: Mistura Frutada de Junípero
+    ingredients:
+      - blue-flowers
+      - wheat
+      - apple
+    color: '66e0ff' # lighter aqua
+    cookParticles:
+      - '00ccff/5'
+
+  eggnog_base:
+    name: Mistura Suave de Ovos
+    ingredients:
+      - egg
+      - sugar
+      - milk_bucket
+    color: 'ffecb3' # yellow-orange
+    cookParticles:
+      - 'ffecb3/2'
+
+
+
+# -- Recipes for Potions --
+
+# name: Different names for bad/normal/good (Formatting codes possible: such as &6)
+# ingredients: List of 'material/amount'
+#   With an item in your hand, use /brew ItemName to get its material for use in a recipe
+#   (Item-ids instead of material are not supported by bukkit anymore and will not work)
+#   A list of materials can be found here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
+#   Plugin items with 'plugin:id' (Currently supporting ExoticGarden, Slimefun, MMOItems, Brewery)
+#   Or a custom item defined above
+# cookingtime: Time in real minutes ingredients have to boil
+# distillruns: How often it has to be distilled for full alcohol (0=without distilling)
+# distilltime: How long (in seconds) one distill-run takes (0=Default time of 40 sec) MC Default would be 20 sec
+# wood: Wood of the barrel 0=any 1=Birch 2=Oak 3=Jungle 4=Spruce 5=Acacia 6=Dark Oak 7=Crimson 8=Warped 9=Mangrove
+#   The Minecraft barrel is made of oak
+# age: Time in Minecraft-days, the potion has to age in a barrel 0=no aging
+# color: Color of the potion after distilling/aging.
+#   Usable Colors: DARK_RED, RED, BRIGHT_RED, ORANGE, YELLOW, PINK, PURPLE, BLUE, CYAN, WATER, TEAL, OLIVE, GREEN, LIME, BLACK, GREY, BRIGHT_GREY, WHITE
+#   Or RGB colors (hex: for example '99FF33') (with '') (search for "HTML color" on the internet)
+# difficulty: 1-10 accuracy needed to get good quality (1 = unaccurate/easy, 10 = very precise/hard)
+# alcohol: Absolute amount of alcohol 0-100 in a perfect potion (will be added directly to the player, where 100 means fainting)
+# lore: List of additional text on the finished brew. (Formatting codes possible: such as &6)
+#   Specific lore for quality possible, using + bad, ++ normal, +++ good, added to the front of the line.
+# servercommands: List of Commands executed by the -Server- when drinking the brew (Can use %player_name%  %quality%)
+# playercommands: List of Commands executed by the -Player- when drinking the brew (Can use %player_name%  %quality%)
+#   Specific Commands for quality possible, using + bad, ++ normal, +++ good, added to the front of the line.
+# drinkmessage: Chat-message to the Player when drinking the Brew
+# drinktitle: Title on Screen to the Player when drinking the Brew
+# customModelData: Custom Model Data Tag. This is a number that can be used to add custom textures to the item.
+#   Can specify one for all, or one for each quality, separated by /
+# effects: List of effect/level/duration  Special potion-effect when drinking, duration in sek.
+#   Possible Effects: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/potion/PotionEffectType.html
+#   Level or Duration ranges may be specified with a "-", ex. 'SPEED/1-2/30-40' = lvl 1 and 30 sec at worst and lvl 2 and 40 sec at best
+#   Ranges also work high-low, ex. 'POISON/3-1/20-5' for weaker effects at good quality.
+#   Highest possible Duration: 1638 sec. Instant Effects dont need any duration specified.
+
+recipes:
+  #  Example Recipe with every possible entry first:
+  ex:
+    name: Exemplo Ruim/Exemplo/Exemplo Bom
+    ingredients:
+      - Diamond/1
+      - Spruce_Planks/8
+      - Bedrock/1
+      - Brewery:Wheatbeer/2
+#      - ExoticGarden:Grape/3
+      - ex-item/4
+    cookingtime: 3
+    distillruns: 2
+    distilltime: 60
+    wood: 4
+    age: 11
+    color: DARK_RED
+    difficulty: 3
+    alcohol: 14
+    lore:
+      - Este é um exemplo de bebida
+      - ++Apenas um exemplo normal
+      - Este texto seria sobre a bebida
+      - + Cheira desagradável
+      - ++ Cheira bem
+      - +++ Cheira muito bem
+    servercommands:
+      - +++ weather clear
+      - + weather rain
+    playercommands:
+      - homes
+    drinkmessage: Tem gosto bom
+    drinktitle: Aquece você por dentro
+    customModelData: 556/557/557
+    effects:
+      - FIRE_RESISTANCE/20
+      - HEAL/1
+      - WEAKNESS/2-3/50-60
+      - POISON/1-0/20-0
+
+  wheatbeer:
+    name: Cerveja de Trigo Fedorenta/Cerveja de Trigo/Cerveja de Trigo Fina
+    ingredients:
+      - Wheat/3
+    cookingtime: 8
+    distillruns: 0
+    wood: 1
+    age: 2
+    color: 'ffb84d' # Orange
+    difficulty: 1
+    alcohol: 5
+    lore: +++ &8Refrescante
+
+  beer:
+    name: Cerveja Fedorenta/Cerveja/Cerveja Fina
+    ingredients:
+      - Wheat/6
+    cookingtime: 8
+    distillruns: 0
+    wood: 0
+    age: 3
+    color: 'ffd333' # Bright Orange
+    difficulty: 1
+    lore:
+      - +++ &8Sabor Nítido
+    alcohol: 6
+
+  darkbeer:
+    name: Cerveja Escura Fedorenta/Cerveja Escura/Cerveja Escura Fina
+    ingredients:
+      - Wheat/6
+    cookingtime: 8
+    distillruns: 0
+    wood: 6
+    age: 8
+    color: '650013' # Dark Red-Brown
+    difficulty: 2
+    lore:
+      - +++ &8Sabor de Torrado
+    alcohol: 7
+
+  wine:
+    name: Vinho Tinto
+    ingredients:
+      - Sweet_Berries/5
+    cookingtime: 5
+    distillruns: 0
+    wood: 0
+    age: 20
+    color: RED
+    difficulty: 4
+    alcohol: 8
+    lore:
+      - '+ &8Áspero'
+      - '+ &8Arrolhado'
+      - '++ &8Suave'
+      - '+++ &8Encorpado'
+
+  mead:
+    name: Hidromel Estranho/Hidromel/&6Hidromel Dourado
+    ingredients:
+      - Sugar_Cane/6
+    cookingtime: 3
+    distillruns: 0
+    wood: 2
+    age: 4
+    color: ORANGE
+    difficulty: 2
+    lore:
+      - +++ Tem um brilho dourado
+    alcohol: 9
+
+  ap_mead:
+    name: Hidromel de Maçã/Hidromel Doce de Maçã/&6Hidromel Doce de Maçã Dourada
+    ingredients:
+      - Sugar_Cane/6
+      - Apple/2
+    cookingtime: 4
+    distillruns: 0
+    wood: 2
+    age: 4
+    color: ORANGE
+    difficulty: 4
+    alcohol: 11
+    lore:
+      - +Existe alguma Maçã nisso?
+      - ++Sabor refrescante de Maçã
+      - +++A mais doce sugestão de Maçã
+    effects:
+      - WATER_BREATHING/1-2/150
+
+  cidre:
+    name: Cidra Pobre/Cidra de Maçã/Cidra de Maçã Excelente
+    ingredients:
+      - Apple/14
+    cookingtime: 7
+    distillruns: 0
+    wood: 0
+    age: 3
+    color: 'f86820' # Red-Orange
+    difficulty: 4
+    alcohol: 7
+
+  apple_liquor:
+    name: Licor de Maçã Azeda/Licor de Maçã/Calvados
+    ingredients:
+      - Apple/12
+    cookingtime: 16
+    distillruns: 3
+    wood: 5
+    age: 6
+    color: BRIGHT_RED
+    difficulty: 5
+    alcohol: 14
+    lore:
+      - +Azedo como ácido
+      - +++ Bom licor de maçã
+
+  whiskey:
+    name: Uísque Feio/Uísque/Uísque Escocês
+    ingredients:
+      - Wheat/10
+    cookingtime: 10
+    distillruns: 2
+    distilltime: 50
+    wood: 4
+    age: 18
+    color: ORANGE
+    difficulty: 7
+    alcohol: 26
+    lore: '&7Puro Malte'
+
+  rum:
+    name: Rum Amargo/Rum Picante/&6Rum Dourado
+    ingredients:
+      - Sugar_Cane/18
+    cookingtime: 6
+    distillruns: 2
+    distilltime: 30
+    wood: 2
+    age: 14
+    color: DARK_RED
+    difficulty: 6
+    alcohol: 30
+    effects:
+      - FIRE_RESISTANCE/1/20-100
+      - POISON/1-0/30-0
+    lore:
+      - +&8Muito amargo para beber
+      - ++&8Temperado pelo barril
+      - +++&eOuro condimentado
+
+  vodka:
+    name: Vodka Ruim/Vodka/Vodka Russa
+    ingredients:
+      - Potato/10
+    cookingtime: 15
+    distillruns: 3
+    age: 0
+    color: WHITE
+    difficulty: 4
+    alcohol: 20
+    lore: + &8Quase intragável
+    effects:
+      - WEAKNESS/15
+      - POISON/10
+
+  shroom_vodka:
+    name: Vodka de Cogumelo/Vodka de Cogumelo/Vodka de Cogumelo Brilhante
+    ingredients:
+      - Potato/10
+      - Red_Mushroom/3
+      - Brown_Mushroom/3
+    cookingtime: 18
+    distillruns: 5
+    age: 0
+    color: 'ff9999' # Pink-Red
+    difficulty: 7
+    alcohol: 18
+    lore: +++&aBrilha no escuro
+    effects:
+      - WEAKNESS/80
+      - CONFUSION/27
+      - NIGHT_VISION/50-80
+      - BLINDNESS/12-2
+      - SLOW/10-3
+
+  gin:
+    name: Gin Claro/Gin/Gim Velho Tom
+    ingredients:
+      - Wheat/9
+      - blue-flowers/6  # Custom-Item: Blue Orchids or Cornflowers
+      - Apple/1
+    cookingtime: 6
+    distillruns: 2
+    color: '99ddff' # Very light blue
+    difficulty: 6
+    alcohol: 20
+    lore:
+      - ++ Com sabor de
+      - ++ Junipero
+      - +++ Perfeitamente finalizado 
+      - +++ com Junipero
+
+  tequila:
+    name: Mezcal/Tequila/Tequila anejo
+    ingredients:
+      - cactus/8
+    cookingtime: 15
+    distillruns: 2
+    color: 'f5f07e' # Green-Orange
+    difficulty: 5
+    wood: 1
+    age: 12
+    alcohol: 20
+    lore: Espírito do deserto
+
+  absinthe:
+    name: Absinto Pobre/Absinto/Absinto Forte
+    ingredients:
+      - Grass/15
+    cookingtime: 3
+    distillruns: 6
+    distilltime: 80
+    color: GREEN
+    difficulty: 8
+    alcohol: 42
+    effects:
+      - POISON/15-25
+    lore: '+++&8Alto teor alcoólico'
+
+  gr_absinthe:
+    name: Absinto Pobre/Absinto Verde/Absinto Verde Brilhante
+    ingredients:
+      - Grass/17
+      - Poisonous_Potato/2
+    cookingtime: 5
+    distillruns: 6
+    distilltime: 85
+    color: LIME
+    difficulty: 9
+    alcohol: 46
+    effects:
+      - POISON/25-40
+      - HARM/2
+      - NIGHT_VISION/40-60
+    lore: '&aParece venenoso'
+
+  potato_soup:
+    name: Sopa de Batata
+    ingredients:
+      - Potato/5
+      - Grass/3
+    cookingtime: 3
+    color: ORANGE
+    difficulty: 1
+    effects:
+      - HEAL/0-1
+
+  coffee:
+    name: Café Velho/Café/Café Forte
+    ingredients:
+      - Cocoa_Beans/12
+      - Milk_Bucket/2
+    cookingtime: 2
+    color: BLACK
+    difficulty: 3
+    alcohol: -6
+    lore: + &8Passado há uma semana
+    effects:
+      - REGENERATION/1/2-5
+      - SPEED/1/30-140
+
+  eggnog:
+    name: Licor de Ovos/Gemada/Advocaat
+    ingredients:
+      - Egg/5
+      - Sugar/2
+      - Milk_Bucket/1
+    cookingtime: 2
+    color: 'ffe680'
+    difficulty: 4
+    alcohol: 10
+    wood: 0
+    age: 3
+    lore: Feito com ovo cru
+
+
+
+
+# I don't want to add more Recipes to the default config, as they would be public and viewable by users to cheat.
+# It is up to the Serveradmin to change and add Recipes, so players cannot cheat from the default config.
+# Some suggestions for recipes you could use:
+
+  # g_vodka:
+  #   name: 'Rancid Vodka/&6Golden Vodka/&6Shimmering Golden Vodka'
+  #   ingredients:
+  #     - Potato/10
+  #     - Gold_Nugget/2
+  #   cookingtime: 18
+  #   distillruns: 3
+  #   age: 0
+  #   color: ORANGE
+  #   difficulty: 6
+  #   alcohol: 20
+  #   effects:
+  #     - WEAKNESS/28
+  #     - POISON/4
+
+  # fire_whiskey:
+  #   name: Powdery Whiskey/Burning Whiskey/Blazing Whiskey
+  #   ingredients:
+  #     - Wheat/10
+  #     - Blaze_Powder/2
+  #   cookingtime: 12
+  #   distillruns: 3
+  #   distilltime: 55
+  #   wood: 4
+  #   age: 18
+  #   color: ORANGE
+  #   difficulty: 7
+  #   alcohol: 28
+  #   drinkmessage: 'You get a burning feeling in your mouth'
+
+# Without Alcohol:
+
+  # hot_choc:
+  #   name: Hot Chocolate
+  #   ingredients:
+  #     - cookie/3
+  #   cookingtime: 2
+  #   color: DARK_RED
+  #   difficulty: 2
+  #   effects:
+  #     - FAST_DIGGING/40
+
+  # iced_coffee:
+  #   name: Watery Coffee/Iced Coffee/Strong Iced Coffee
+  #   ingredients:
+  #     - cookie/8
+  #     - snowball/4
+  #     - milk_bucket/1
+  #   cookingtime: 1
+  #   color: BLACK
+  #   difficulty: 4
+  #   alcohol: -8
+  #   effects:
+  #     - REGENERATION/30
+  #     - SPEED/10
+
+
+# More Recipe ideas:
+# Dandelion Liquor
+# Beetroot Spirit,
+# Poppy Liquor: Macum/Grand Poppy,
+# Bamboo Liquor: Chu Yeh Ching,
+# Cachaca,
+# Cognac,
+# Sake,
+# Buorbon,
+# Moonshine,
+# Different Wines,
+# Brandy,
+# Amaretto,
+# etc. as well as variations like,
+# Pumpkin Spice Beer,
+# Melon Vodka
+
+# There are a lot of items in Minecraft like Vines, Milk and items added by plugins that would make great ingredients.
+
+
+# -- Plugin Compatibility --
+
+# Enable checking of other Plugins (if installed) for Barrel Permissions [true]
+# Plugins 'Landlord' and 'Protection Stones' use the WorldGuard Flag. 'ClaimChunk' is natively supported.
+useWorldGuard: true
+useLWC: true
+useGriefPrevention: true
+useTowny: true
+useBlockLocker: true
+useGMInventories: true
+
+# Use a virtual chest when opening a Barrel to check with all other protection plugins
+# This could confuse Anti-Cheat plugins, but is otherwise good to use
+# use this for 'Residence' Plugin and any others that don't check all cases in the PlayerInteractEvent
+useVirtualChestPerms: false
+
+
+# Enable the Logging of Barrel Inventories to LogBlock [true]
+useLogBlock: true
+
+
+# -- MultiServer/BungeeCord --
+# If Brewery is running on multiple connected Servers (via BungeeCord)
+# a shared Database can be used here to synchronise drunkeness and to be able to use encoded brews between them.
+
+multiServerDB:
+  # If using the Database is enabled
+  enabled: false
+  # If the drunkeness of players should be synchronised between Servers
+  syncDrunkeness: true
+  host: localhost
+  port: '3306'
+  user: minec
+  password: xyz
+  database: base
+
+
+# -- Various Other Settings --
+
+# If items in Offhand should be added to the cauldron as well [false]
+useOffhandForCauldron: false
+
+# If Barrel and Cauldron data can be loaded Async/in the Background [true]
+loadDataAsync: true
+
+# Time (in days) that drunkeness-data stays in memory after a player goes offline, to apply hangover etc. [7]
+hangoverDays: 7
+
+# Color the Item information (lore) depending on quality while it is 1. in a barrel and/or 2. in a brewing stand [true, true]
+colorInBarrels: true
+colorInBrewer: true
+
+# If a Large Barrel can be opened by clicking on any of its blocks, not just Spigot or Sign. This is always true for Small Barrels. [true]
+openLargeBarrelEverywhere: true
+
+# Allow emptying brews into hoppers to discard brews while keeping the glass bottle [true]
+brewHopperDump: true
+
+
+# -- Chat Distortion Settings --
+
+# If written Chat is distorted when the Player is Drunk, so that it looks like drunk writing
+# How much the chat is distorted depends on how drunk the Player is
+# Below are settings for what and how changes in chat occur
+enableChatDistortion: true
+
+# Log to the Serverlog what the player actually wrote, before his words were altered [false]
+logRealChat: false
+
+# Text after specified commands will be distorted when drunk (list) [- /gl]
+distortCommands:
+- /gl
+- /global
+- /fl
+- /s
+- /letter
+- /g
+- /l
+- /lokal
+- /local
+- /mail send
+- /m
+- /msg
+- /w
+- /whisper
+- /reply
+- /r
+- /t
+- /tell
+
+# Distort the Text written on a Sign while drunk [false]
+distortSignText: false
+
+# Enclose a Chat text with these Letters to bypass Chat Distortion (Use "," as Separator) (list) [- '[,]']
+# Chat Example: Hello i am drunk *I am testing Brewery*
+distortBypass:
+- '*,*'
+- '[,]'
+
+# words: Words and letters that will be altered when chatting while being drunk.
+# Will be processed from first to last and a written sentece is altered in that order.
+
+# replace: Word or letter to be replaced. (Special: "-space": replaces space, "-random": insert into random position, "-all": everything, "-start": At Beginning, "-end": At the End.)
+# to: What to replace it with.
+# pre: Words and Letters before the wanted word (split with ",")
+# match: true = one of the "pre"-Words has to be before the wanted Word,  false = none of the "pre" Words is allowed before the wanted Word
+# alcohol: 1-100 minimum drunkeness after which this word ist replaced
+# percentage: Probability of replacing a Word in percent
+
+words:
+-  replace: s
+   to: x
+   percentage: 90
+   alcohol: 30
+
+-  replace: ch
+   to: x
+   pre: u,s,o,a
+   match: false
+   alcohol: 10
+   percentage: 70
+
+-  replace: h
+   to: hh
+   pre: sch,h,t
+   match: false
+   percentage: 60
+   alcohol: 20
+
+-  replace: th
+   to: thl
+   percentage: 40
+   alcohol: 30
+
+-  replace: ss
+   to: ç
+   percentage: 60
+   alcohol: 40
+
+-  replace: u
+   to: uuh
+   percentage: 20
+
+-  replace: y
+   to: yy
+   percentage: 60
+   alcohol: 15
+
+-  replace: e
+   to: ee
+   percentage: 40
+   alcohol: 15
+
+-  replace: você
+   to: covê
+   percentage: 40
+
+-  replace: u
+   to: uo
+   pre: u
+   match: false
+   percentage: 60
+
+-  replace: esse
+   to: edde
+   percentage: 20
+   alcohol: 40
+
+-  replace: p
+   to: b
+   percentage: 30
+
+-  replace: p
+   to: b
+   percentage: 70
+   alcohol: 60
+
+-  replace: up
+   to: ubb
+   percentage: 80
+   alcohol: 25
+
+-  replace: o
+   to: oh
+   percentage: 20
+
+-  replace: ei
+   to: i
+   percentage: 30
+   alcohol: 15
+
+-  replace: b
+   to: bb
+   percentage: 80
+   alcohol: 40
+
+-  replace: '!!!'
+   to: '!!!111!!!eleven!1!'
+   pre: '!'
+   match: false
+   percentage: 20
+   alcohol: 70
+
+-  replace: '!'
+   to: '!!'
+   pre: '!'
+   match: false
+   percentage: 90
+
+-  replace: bêbado
+   to: bêabdo
+   pre: está
+   match: false
+   percentage: 70
+   alcohol: 65
+
+-  replace: andar
+   to: amdaarr
+   pre: você consegue, você ainda consegue, você não consegue
+   match: false
+   percentage: 80
+   alcohol: 30
+
+-  replace: wtf
+   to: wft
+   percentage: 20
+   alcohol: 40
+
+-  replace: lol
+   to: loool
+   percentage: 80
+   alcohol: 10
+
+-  replace: afk
+   to: aafkayyy
+   percentage: 30
+   alcohol: 30
+
+-  replace: escrever
+   to: excrevrr
+   pre: você consegue, você ainda consegue, você não consegue
+   match: false
+   percentage: 80
+   alcohol: 50
+
+-  replace: drink
+   to: booze
+   percentage: 80
+   alcohol: 70
+
+-  replace: '?'
+   to: '????'
+   pre: '?'
+   match: false
+   percentage: 80
+   alcohol: 40
+
+-  replace: -space
+   to: ''
+   pre: h,g,w
+   match: true
+   alcohol: 10
+
+-  replace: -space
+   to: ''
+   percentage: 30
+   alcohol: 35
+
+-  replace: -space
+   to: ''
+   percentage: 10
+
+-  replace: -start
+   to: dho
+   percentage: 15
+   alcohol: 50
+
+-  replace: -start
+   to: hhn
+   percentage: 10
+   alcohol: 50
+
+-  replace: -random
+   to: lu
+   percentage: 10
+
+-  replace: -random
+   to: lug
+   percentage: 10
+   alcohol: 50
+
+-  replace: -random
+   to: blub
+   percentage: 20
+   alcohol: 80
+
+-  replace: -random
+   to: lerg
+   percentage: 40
+   alcohol: 85
+
+-  replace: -random
+   to: gul
+   percentage: 40
+   alcohol: 80
+
+-  replace: -random
+   to: ' '
+   percentage: 100
+   alcohol: 70
+
+-  replace: -random
+   to: ' '
+   percentage: 60
+   alcohol: 40
+
+-  replace: -random
+   to: ' '
+   percentage: 50
+   alcohol: 30
+
+-  replace: -end
+   to: '!'
+   percentage: 40
+   alcohol: 30
+
+-  replace: -random
+   to: ' *hic* '
+   percentage: 80
+   alcohol: 70
+
+-  replace: -random
+   to: ' *hic* '
+   percentage: 15
+   alcohol: 40
+
+-  replace: -space
+   to: ' *hic* '
+   percentage: 5
+   alcohol: 20
+
+-  replace: -end
+   to: ' *hic*'
+   percentage: 70
+   alcohol: 50
+
+-  replace: -all
+   to: '*burp*'
+   percentage: 3
+   alcohol: 60
+
+-  replace: -all
+   to: '*burp*'
+   percentage: 6
+   alcohol: 80

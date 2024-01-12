@@ -312,7 +312,7 @@ public class P extends JavaPlugin {
 	// Utility
 
 	public void msg(CommandSender sender, String msg) {
-		sender.sendMessage(color("&2[Brewery] &f" + msg));
+		sender.sendMessage(color(BConfig.pluginPrefix + msg));
 	}
 
 	public void log(String msg) {
@@ -326,9 +326,9 @@ public class P extends JavaPlugin {
 	}
 
 	public void errorLog(String msg) {
-		Bukkit.getConsoleSender().sendMessage(ChatColor.DARK_GREEN + "[Brewery] " + ChatColor.DARK_RED + "ERROR: " + ChatColor.RED + msg);
+		Bukkit.getConsoleSender().sendMessage(ChatColor.DARK_GREEN + BConfig.pluginPrefix + ChatColor.DARK_RED + "ERROR: " + ChatColor.RED + msg);
 		if (BConfig.reloader != null) {
-			BConfig.reloader.sendMessage(ChatColor.DARK_GREEN + "[Brewery] " + ChatColor.DARK_RED + "ERROR: " + ChatColor.RED + msg);
+			BConfig.reloader.sendMessage(ChatColor.DARK_GREEN + BConfig.pluginPrefix + ChatColor.DARK_RED + "ERROR: " + ChatColor.RED + msg);
 		}
 	}
 

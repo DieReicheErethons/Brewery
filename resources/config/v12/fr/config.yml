@@ -8,6 +8,9 @@
 # Fichier de langage utilisé (trouvable dans plugins/Brewery/languages)
 language: fr
 
+# Prefix used on messages
+pluginPrefix: '&2[Brewery]&f '
+
 # Si le joueur se réveille à son /home lors de sa connexion après un excès alcool (Un plugin de /home est nécessaire!) [true]
 enableHome: true
 

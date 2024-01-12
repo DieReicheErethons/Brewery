@@ -97,6 +97,11 @@
 	</build>
 	<repositories>
 		<repository>
+			<!-- GriefPrevention, SlimeFun, Towny, Brewery -->
+			<id>jitpack.io</id>
+			<url>https://jitpack.io</url>
+		</repository>
+		<repository>
 			<id>md_5-public</id>
 			<url>https://repo.md-5.net/content/groups/public/</url>
 		</repository>
@@ -112,11 +117,6 @@
 			<!-- WorldEdit, WorldGuard -->
 			<id>enginehub-maven</id>
 			<url>https://maven.enginehub.org/repo/</url>
-		</repository>
-		<repository>
-			<!-- GriefPrevention, SlimeFun, Towny, Brewery -->
-			<id>jitpack.io</id>
-			<url>https://jitpack.io</url>
 		</repository>
 		<repository>
 			<!-- LWC Extended -->
@@ -248,7 +248,7 @@
 			<!-- https://www.spigotmc.org/resources/griefprevention.1884/history -->
 			<groupId>com.github.TechFortress</groupId>
 			<artifactId>GriefPrevention</artifactId>
-			<version>16.18.1</version>
+			<version>16.18</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -296,7 +296,7 @@
 			<!-- https://www.spigotmc.org/resources/towny-advanced.72694/history -->
 			<groupId>com.github.TownyAdvanced</groupId>
 			<artifactId>Towny</artifactId>
-			<version>0.100.0.0</version>
+			<version>0.100.1.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

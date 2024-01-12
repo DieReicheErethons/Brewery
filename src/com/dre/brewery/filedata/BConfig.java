@@ -95,6 +95,7 @@ public class BConfig {
 	//Features
 	public static boolean craftSealingTable; // Allow Crafting of Sealing Table
 	public static boolean enableSealingTable; // Allow Usage of Sealing Table
+	public static String pluginPrefix = "&2[Brewery]&f ";
 
 	//Item
 	public static List<RecipeItem> customItems = new ArrayList<>();
@@ -234,6 +235,7 @@ public class BConfig {
 		enableWake = config.getBoolean("enableWake", false);
 		craftSealingTable = config.getBoolean("craftSealingTable", false);
 		enableSealingTable = config.getBoolean("enableSealingTable", false);
+		pluginPrefix = config.getString("pluginPrefix", "&2[Brewery]&f ");
 		colorInBarrels = config.getBoolean("colorInBarrels", false);
 		colorInBrewer = config.getBoolean("colorInBrewer", false);
 		alwaysShowQuality = config.getBoolean("alwaysShowQuality", false);

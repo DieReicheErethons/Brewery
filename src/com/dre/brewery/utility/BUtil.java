@@ -38,6 +38,8 @@ public class BUtil {
 	/* *********                      ********* */
 	/* **************************************** */
 
+	private static final String WITH_DELIMITER = "((?<=%1$s)|(?=%1$s))";
+
 	/**
 	 * Check if the Chunk of a Block is loaded !without loading it in the process!
 	 */
@@ -45,11 +47,31 @@ public class BUtil {
 		return block.getWorld().isChunkLoaded(block.getX() >> 4, block.getZ() >> 4);
 	}
 
+	/**
+	 * Color code a message. Supports HEX colors and default minecraft colors! &2 &#FFFFFF
+	 * @param msg The message to color
+	 * @return The colored message, or null if msg was null
+	 */
 	public static String color(String msg) {
-		if (msg != null) {
-			msg = ChatColor.translateAlternateColorCodes('&', msg);
+		if (msg == null) return null;
+		String[] texts = msg.split(String.format(WITH_DELIMITER, "&"));
+
+		StringBuilder finalText = new StringBuilder();
+
+		for (int i = 0; i < texts.length; i++) {
+			if (texts[i].equalsIgnoreCase("&")) {
+				//get the next string
+				i++;
+				if (texts[i].charAt(0) == '#') {
+					finalText.append(net.md_5.bungee.api.ChatColor.of(texts[i].substring(0, 7)) + texts[i].substring(7));
+				} else {
+					finalText.append(ChatColor.translateAlternateColorCodes('&', "&" + texts[i]));
+				}
+			} else {
+				finalText.append(texts[i]);
+			}
 		}
-		return msg;
+		return finalText.toString();
 	}
 
 	/**

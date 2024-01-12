@@ -7,6 +7,9 @@
 # Sprachedatei die genutzt werden sollte (befindet sich in plugins/Brewery/languages)
 language: de
 
+# Prefix used on messages
+pluginPrefix: '&2[Brewery]&f '
+
 # Ob der Spieler beim nächsten Einloggen nach starker Trunkenheit am nächsten morgen Zuhause "aufwacht" (Ein home Plugin muss installiert sein!) [true]
 enableHome: true
 

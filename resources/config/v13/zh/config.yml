@@ -9,6 +9,9 @@
 # 语言文件(可在plugins/Brewery/languages下找到)
 language: zh
 
+# Prefix used on messages
+pluginPrefix: '&2[Brewery]&f '
+
 # 喝高了的下线玩家会在家里醒来(需要/home等功能支持)[true]
 enableHome: true
 

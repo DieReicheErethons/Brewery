@@ -1,11 +1,11 @@
 package com.dre.brewery.utility;
 
-import com.dre.brewery.P;
+import com.dre.brewery.BreweryPlugin;
 
 public class StringParser {
 
 	public static Tuple<Integer, String> parseQuality(String line, ParseType type) {
-		line = P.p.color(line);
+		line = BreweryPlugin.breweryPlugin.color(line);
 		int plus = 0;
 		if (line.startsWith("+++")) {
 			plus = 3;

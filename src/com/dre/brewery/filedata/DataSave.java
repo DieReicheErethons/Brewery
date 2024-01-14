@@ -31,7 +31,7 @@ public class DataSave extends BukkitRunnable {
 	public DataSave(ReadOldData read) {
 		this.read = read;
 		time = System.currentTimeMillis();
-		loadedWorlds = P.p.getServer().getWorlds();
+		loadedWorlds = BreweryPlugin.breweryPlugin.getServer().getWorlds();
 	}
 
 
@@ -46,7 +46,7 @@ public class DataSave extends BukkitRunnable {
 				if (!read.done) {
 					// Wait for async thread to load old data
 					if (System.currentTimeMillis() - time > 50000) {
-						P.p.errorLog("Old Data took too long to load! Mutex: " + BData.dataMutex.get());
+						BreweryPlugin.breweryPlugin.errorLog("Old Data took too long to load! Mutex: " + BData.dataMutex.get());
 						try {
 							cancel();
 							read.cancel();
@@ -76,13 +76,13 @@ public class DataSave extends BukkitRunnable {
 			Brew.writePrevSeeds(data);
 
 			List<Integer> brewsCreated = new ArrayList<>(7);
-			brewsCreated.add(P.p.stats.brewsCreated);
-			brewsCreated.add(P.p.stats.brewsCreatedCmd);
-			brewsCreated.add(P.p.stats.exc);
-			brewsCreated.add(P.p.stats.good);
-			brewsCreated.add(P.p.stats.norm);
-			brewsCreated.add(P.p.stats.bad);
-			brewsCreated.add(P.p.stats.terr);
+			brewsCreated.add(BreweryPlugin.breweryPlugin.stats.brewsCreated);
+			brewsCreated.add(BreweryPlugin.breweryPlugin.stats.brewsCreatedCmd);
+			brewsCreated.add(BreweryPlugin.breweryPlugin.stats.exc);
+			brewsCreated.add(BreweryPlugin.breweryPlugin.stats.good);
+			brewsCreated.add(BreweryPlugin.breweryPlugin.stats.norm);
+			brewsCreated.add(BreweryPlugin.breweryPlugin.stats.bad);
+			brewsCreated.add(BreweryPlugin.breweryPlugin.stats.terr);
 			data.set("brewsCreated", brewsCreated);
 			data.set("brewsCreatedH", brewsCreated.hashCode());
 
@@ -126,10 +126,10 @@ public class DataSave extends BukkitRunnable {
 				unloadingWorlds.clear();
 			}
 
-			P.p.debugLog("saving: " + ((System.nanoTime() - saveTime) / 1000000.0) + "ms");
+			BreweryPlugin.breweryPlugin.debugLog("saving: " + ((System.nanoTime() - saveTime) / 1000000.0) + "ms");
 
-			if (P.p.isEnabled()) {
-				P.p.getServer().getScheduler().runTaskAsynchronously(P.p, new WriteData(data, worldData));
+			if (BreweryPlugin.breweryPlugin.isEnabled()) {
+				BreweryPlugin.breweryPlugin.getServer().getScheduler().runTaskAsynchronously(BreweryPlugin.breweryPlugin, new WriteData(data, worldData));
 			} else {
 				new WriteData(data, worldData).run();
 			}
@@ -173,7 +173,7 @@ public class DataSave extends BukkitRunnable {
 	// Save all data. Takes a boolean whether all data should be collected in instantly
 	public static void save(boolean collectInstant) {
 		if (running != null) {
-			P.p.log("Another Save was started while a Save was in Progress");
+			BreweryPlugin.breweryPlugin.log("Another Save was started while a Save was in Progress");
 			if (collectInstant) {
 				running.now();
 			}
@@ -186,9 +186,9 @@ public class DataSave extends BukkitRunnable {
 			running = new DataSave(read);
 			running.run();
 		} else {
-			read.runTaskAsynchronously(P.p);
+			read.runTaskAsynchronously(BreweryPlugin.breweryPlugin);
 			running = new DataSave(read);
-			running.runTaskTimer(P.p, 1, 2);
+			running.runTaskTimer(BreweryPlugin.breweryPlugin, 1, 2);
 		}
 	}
 

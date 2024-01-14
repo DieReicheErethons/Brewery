@@ -1,6 +1,6 @@
 package com.dre.brewery.integration.item;
 
-import com.dre.brewery.P;
+import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.recipe.PluginItem;
 import io.lumine.mythic.lib.api.item.NBTItem;
@@ -15,8 +15,8 @@ public class MMOItemsPluginItem extends PluginItem {
 	@Override
 	public boolean matches(ItemStack item) {
 		if (BConfig.hasMMOItems == null) {
-			BConfig.hasMMOItems = P.p.getServer().getPluginManager().isPluginEnabled("MMOItems")
-				&& P.p.getServer().getPluginManager().isPluginEnabled("MythicLib");
+			BConfig.hasMMOItems = BreweryPlugin.breweryPlugin.getServer().getPluginManager().isPluginEnabled("MMOItems")
+				&& BreweryPlugin.breweryPlugin.getServer().getPluginManager().isPluginEnabled("MythicLib");
 		}
 		if (!BConfig.hasMMOItems) return false;
 
@@ -25,7 +25,7 @@ public class MMOItemsPluginItem extends PluginItem {
 			return nbtItem.hasType() && nbtItem.getString("MMOITEMS_ITEM_ID").equalsIgnoreCase(getItemId());
 		} catch (Throwable e) {
 			e.printStackTrace();
-			P.p.errorLog("Could not check MMOItems for Item ID");
+			BreweryPlugin.breweryPlugin.errorLog("Could not check MMOItems for Item ID");
 			BConfig.hasMMOItems = false;
 			return false;
 		}

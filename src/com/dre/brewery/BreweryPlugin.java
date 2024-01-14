@@ -56,8 +56,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.function.Function;
 
-public class P extends JavaPlugin {
-	public static P p;
+public class BreweryPlugin extends JavaPlugin {
+	public static BreweryPlugin breweryPlugin;
 	public static boolean debug;
 	public static boolean useUUID;
 	public static boolean useNBT;
@@ -86,7 +86,7 @@ public class P extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
-		p = this;
+		breweryPlugin = this;
 
 		// Version check
 		String v = Bukkit.getBukkitVersion();
@@ -112,15 +112,13 @@ public class P extends JavaPlugin {
 		try {
 			FileConfiguration cfg = BConfig.loadConfigFile();
 			if (cfg == null) {
-				p = null;
-				getServer().getPluginManager().disablePlugin(this);
+				log("Something went wrong when trying to load the config file! Please check your config.yml");
 				return;
 			}
 			BConfig.readConfig(cfg);
 		} catch (Exception e) {
 			e.printStackTrace();
-			p = null;
-			getServer().getPluginManager().disablePlugin(this);
+			log("Something went wrong when trying to load the config file! Please check your config.yml");
 			return;
 		}
 
@@ -144,37 +142,37 @@ public class P extends JavaPlugin {
 		integrationListener = new IntegrationListener();
 		getCommand("brewery").setExecutor(new CommandManager()); // Not null. Check plugin.yml!
 
-		p.getServer().getPluginManager().registerEvents(blockListener, p);
-		p.getServer().getPluginManager().registerEvents(playerListener, p);
-		p.getServer().getPluginManager().registerEvents(entityListener, p);
-		p.getServer().getPluginManager().registerEvents(inventoryListener, p);
-		p.getServer().getPluginManager().registerEvents(worldListener, p);
-		p.getServer().getPluginManager().registerEvents(integrationListener, p);
+		breweryPlugin.getServer().getPluginManager().registerEvents(blockListener, breweryPlugin);
+		breweryPlugin.getServer().getPluginManager().registerEvents(playerListener, breweryPlugin);
+		breweryPlugin.getServer().getPluginManager().registerEvents(entityListener, breweryPlugin);
+		breweryPlugin.getServer().getPluginManager().registerEvents(inventoryListener, breweryPlugin);
+		breweryPlugin.getServer().getPluginManager().registerEvents(worldListener, breweryPlugin);
+		breweryPlugin.getServer().getPluginManager().registerEvents(integrationListener, breweryPlugin);
 		if (use1_9) {
-			p.getServer().getPluginManager().registerEvents(new CauldronListener(), p);
+			breweryPlugin.getServer().getPluginManager().registerEvents(new CauldronListener(), breweryPlugin);
 		}
 		if (BConfig.hasChestShop && use1_13) {
-			p.getServer().getPluginManager().registerEvents(new ChestShopListener(), p);
+			breweryPlugin.getServer().getPluginManager().registerEvents(new ChestShopListener(), breweryPlugin);
 		}
 		if (BConfig.hasShopKeepers) {
-			p.getServer().getPluginManager().registerEvents(new ShopKeepersListener(), p);
+			breweryPlugin.getServer().getPluginManager().registerEvents(new ShopKeepersListener(), breweryPlugin);
 		}
 		if (BConfig.hasSlimefun && use1_14) {
-			p.getServer().getPluginManager().registerEvents(new SlimefunListener(), p);
+			breweryPlugin.getServer().getPluginManager().registerEvents(new SlimefunListener(), breweryPlugin);
 		}
 
 		// Heartbeat
-		p.getServer().getScheduler().runTaskTimer(p, new BreweryRunnable(), 650, 1200);
-		p.getServer().getScheduler().runTaskTimer(p, new DrunkRunnable(), 120, 120);
+		breweryPlugin.getServer().getScheduler().runTaskTimer(breweryPlugin, new BreweryRunnable(), 650, 1200);
+		breweryPlugin.getServer().getScheduler().runTaskTimer(breweryPlugin, new DrunkRunnable(), 120, 120);
 
 		if (use1_9) {
-			p.getServer().getScheduler().runTaskTimer(p, new CauldronParticles(), 1, 1);
+			breweryPlugin.getServer().getScheduler().runTaskTimer(breweryPlugin, new CauldronParticles(), 1, 1);
 		}
 
 		// Disable Update Check for older mc versions
 		if (use1_14 && BConfig.updateCheck) {
 			try {
-				p.getServer().getScheduler().runTaskLaterAsynchronously(p, new UpdateChecker(), 135);
+				breweryPlugin.getServer().getScheduler().runTaskLaterAsynchronously(breweryPlugin, new UpdateChecker(), 135);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -192,7 +190,7 @@ public class P extends JavaPlugin {
 		// Stop shedulers
 		getServer().getScheduler().cancelTasks(this);
 
-		if (p == null) {
+		if (breweryPlugin == null) {
 			return;
 		}
 
@@ -220,6 +218,7 @@ public class P extends JavaPlugin {
 		FileConfiguration cfg = BConfig.loadConfigFile();
 		if (cfg == null) {
 			// Could not read yml file, do not proceed, error was printed
+			log("Something went wrong when trying to load the config file! Please check your config.yml");
 			return;
 		}
 
@@ -231,8 +230,7 @@ public class P extends JavaPlugin {
 			BConfig.readConfig(cfg);
 		} catch (Exception e) {
 			e.printStackTrace();
-			p = null;
-			getServer().getPluginManager().disablePlugin(this);
+			log("Something went wrong when trying to load the config file! Please check your config.yml");
 			return;
 		}
 
@@ -251,9 +249,9 @@ public class P extends JavaPlugin {
 		}
 		if (sender != null) {
 			if (!successful) {
-				msg(sender, p.languageReader.get("Error_Recipeload"));
+				msg(sender, breweryPlugin.languageReader.get("Error_Recipeload"));
 			} else {
-				p.msg(sender, p.languageReader.get("CMD_Reload"));
+				breweryPlugin.msg(sender, breweryPlugin.languageReader.get("CMD_Reload"));
 			}
 		}
 		BConfig.reloader = null;
@@ -302,8 +300,8 @@ public class P extends JavaPlugin {
 		ingredientLoaders.remove(saveID);
 	}
 
-	public static P getInstance() {
-		return p;
+	public static BreweryPlugin getInstance() {
+		return breweryPlugin;
 	}
 
 	// Utility

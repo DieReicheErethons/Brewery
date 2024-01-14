@@ -1,7 +1,7 @@
 package com.dre.brewery.commands.subcommands;
 
 import com.dre.brewery.Brew;
-import com.dre.brewery.P;
+import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.api.events.brew.BrewModifyEvent;
 import com.dre.brewery.commands.SubCommand;
 import org.bukkit.Material;
@@ -14,7 +14,7 @@ import java.util.List;
 
 public class StaticCommand implements SubCommand {
     @Override
-    public void execute(P p, CommandSender sender, String label, String[] args) {
+    public void execute(BreweryPlugin breweryPlugin, CommandSender sender, String label, String[] args) {
         Player player = (Player) sender;
         ItemStack hand = player.getItemInHand();
         if (hand.getType() != Material.AIR) {
@@ -23,20 +23,20 @@ public class StaticCommand implements SubCommand {
                 if (brew.isStatic()) {
                     if (!brew.isStripped()) {
                         brew.setStatic(false, hand);
-                        p.msg(sender, p.languageReader.get("CMD_NonStatic"));
+                        breweryPlugin.msg(sender, breweryPlugin.languageReader.get("CMD_NonStatic"));
                     } else {
-                        p.msg(sender, p.languageReader.get("Error_SealedAlwaysStatic"));
+                        breweryPlugin.msg(sender, breweryPlugin.languageReader.get("Error_SealedAlwaysStatic"));
                         return;
                     }
                 } else {
                     brew.setStatic(true, hand);
-                    p.msg(sender, p.languageReader.get("CMD_Static"));
+                    breweryPlugin.msg(sender, breweryPlugin.languageReader.get("CMD_Static"));
                 }
                 brew.touch();
                 ItemMeta meta = hand.getItemMeta();
                 assert meta != null;
                 BrewModifyEvent modifyEvent = new BrewModifyEvent(brew, meta, BrewModifyEvent.Type.STATIC);
-                P.p.getServer().getPluginManager().callEvent(modifyEvent);
+                BreweryPlugin.breweryPlugin.getServer().getPluginManager().callEvent(modifyEvent);
                 if (modifyEvent.isCancelled()) {
                     return;
                 }
@@ -45,11 +45,11 @@ public class StaticCommand implements SubCommand {
                 return;
             }
         }
-        p.msg(sender, p.languageReader.get("Error_ItemNotPotion"));
+        breweryPlugin.msg(sender, breweryPlugin.languageReader.get("Error_ItemNotPotion"));
     }
 
     @Override
-    public List<String> tabComplete(P p, CommandSender sender, String label, String[] args) {
+    public List<String> tabComplete(BreweryPlugin breweryPlugin, CommandSender sender, String label, String[] args) {
         return null;
     }
 

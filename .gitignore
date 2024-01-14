@@ -8,7 +8,7 @@
 /build.xml
 
 # vim
-.*.sw[a-p]
+.*.sw[a-breweryPlugin]
 
 # IntelliJ
 /.idea

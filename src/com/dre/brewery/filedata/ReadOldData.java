@@ -3,7 +3,7 @@ package com.dre.brewery.filedata;
 
 import java.io.File;
 
-import com.dre.brewery.P;
+import com.dre.brewery.BreweryPlugin;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -20,7 +20,7 @@ public class ReadOldData extends BukkitRunnable {
 		// Set the Data Mutex to -1 if it is 0=Free
 		while (!BData.dataMutex.compareAndSet(0, -1)) {
 			if (wait > 300) {
-				P.p.errorLog("Loading Process active for too long while trying to save! Mutex: " + BData.dataMutex.get());
+				BreweryPlugin.breweryPlugin.errorLog("Loading Process active for too long while trying to save! Mutex: " + BData.dataMutex.get());
 				return;
 			}
 			wait++;
@@ -32,7 +32,7 @@ public class ReadOldData extends BukkitRunnable {
 		}
 
 
-		File worldDataFile = new File(P.p.getDataFolder(), "worlddata.yml");
+		File worldDataFile = new File(BreweryPlugin.breweryPlugin.getDataFolder(), "worlddata.yml");
 		if (BData.worldData == null) {
 			if (!worldDataFile.exists()) {
 				data = new YamlConfiguration();
@@ -46,7 +46,7 @@ public class ReadOldData extends BukkitRunnable {
 		}
 
 		if (DataSave.lastBackup > 10) {
-			worldDataFile.renameTo(new File(P.p.getDataFolder(), "worlddataBackup.yml"));
+			worldDataFile.renameTo(new File(BreweryPlugin.breweryPlugin.getDataFolder(), "worlddataBackup.yml"));
 			DataSave.lastBackup = 0;
 		} else {
 			DataSave.lastBackup++;

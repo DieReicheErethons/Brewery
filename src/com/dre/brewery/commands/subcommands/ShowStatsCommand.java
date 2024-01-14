@@ -9,19 +9,19 @@ import java.util.List;
 
 public class ShowStatsCommand implements SubCommand {
     @Override
-    public void execute(P p, CommandSender sender, String label, String[] args) {
+    public void execute(BreweryPlugin breweryPlugin, CommandSender sender, String label, String[] args) {
         //if (sender instanceof ConsoleCommandSender && !sender.isOp()) return;
 
-        P.p.msg(sender, "Drunk Players: " + BPlayer.numDrunkPlayers());
-        P.p.msg(sender, "Brews created: " + P.p.stats.brewsCreated);
-        P.p.msg(sender, "Barrels built: " + Barrel.barrels.size());
-        P.p.msg(sender, "Cauldrons boiling: " + BCauldron.bcauldrons.size());
-        P.p.msg(sender, "Number of Recipes: " + BRecipe.getAllRecipes().size());
-        P.p.msg(sender, "Wakeups: " + Wakeup.wakeups.size());
+        BreweryPlugin.breweryPlugin.msg(sender, "Drunk Players: " + BPlayer.numDrunkPlayers());
+        BreweryPlugin.breweryPlugin.msg(sender, "Brews created: " + BreweryPlugin.breweryPlugin.stats.brewsCreated);
+        BreweryPlugin.breweryPlugin.msg(sender, "Barrels built: " + Barrel.barrels.size());
+        BreweryPlugin.breweryPlugin.msg(sender, "Cauldrons boiling: " + BCauldron.bcauldrons.size());
+        BreweryPlugin.breweryPlugin.msg(sender, "Number of Recipes: " + BRecipe.getAllRecipes().size());
+        BreweryPlugin.breweryPlugin.msg(sender, "Wakeups: " + Wakeup.wakeups.size());
     }
 
     @Override
-    public List<String> tabComplete(P p, CommandSender sender, String label, String[] args) {
+    public List<String> tabComplete(BreweryPlugin breweryPlugin, CommandSender sender, String label, String[] args) {
         return null;
     }
 

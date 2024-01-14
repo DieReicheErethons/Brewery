@@ -1,6 +1,6 @@
 package com.dre.brewery.lore;
 
-import com.dre.brewery.P;
+import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.utility.LegacyUtil;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -10,7 +10,7 @@ import java.io.IOException;
 
 public class NBTSaveStream extends ByteArrayOutputStream {
 	private static final String TAG = "brewdata";
-	private static final NamespacedKey KEY = new NamespacedKey(P.p, TAG);
+	private static final NamespacedKey KEY = new NamespacedKey(BreweryPlugin.breweryPlugin, TAG);
 
 	private final ItemMeta meta;
 

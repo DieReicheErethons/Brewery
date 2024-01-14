@@ -1,7 +1,7 @@
 package com.dre.brewery.commands.subcommands;
 
 import com.dre.brewery.Brew;
-import com.dre.brewery.P;
+import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.api.events.brew.BrewModifyEvent;
 import com.dre.brewery.commands.SubCommand;
 import org.bukkit.Material;
@@ -14,7 +14,7 @@ import java.util.List;
 
 public class UnLabelCommand implements SubCommand {
     @Override
-    public void execute(P p, CommandSender sender, String label, String[] args) {
+    public void execute(BreweryPlugin breweryPlugin, CommandSender sender, String label, String[] args) {
         Player player = (Player) sender;
         ItemStack hand = player.getInventory().getItemInMainHand();
         if (hand.getType() != Material.AIR) {
@@ -27,26 +27,26 @@ public class UnLabelCommand implements SubCommand {
                     ItemMeta meta = hand.getItemMeta();
                     assert meta != null;
                     BrewModifyEvent modifyEvent = new BrewModifyEvent(brew, meta, BrewModifyEvent.Type.UNLABEL);
-                    P.p.getServer().getPluginManager().callEvent(modifyEvent);
+                    BreweryPlugin.breweryPlugin.getServer().getPluginManager().callEvent(modifyEvent);
                     if (modifyEvent.isCancelled()) {
                         hand.setItemMeta(origMeta);
                         return;
                     }
                     brew.save(meta);
                     hand.setItemMeta(meta);
-                    p.msg(sender, p.languageReader.get("CMD_UnLabel"));
+                    breweryPlugin.msg(sender, breweryPlugin.languageReader.get("CMD_UnLabel"));
                     return;
                 } else {
-                    p.msg(sender, p.languageReader.get("Error_AlreadyUnlabeled"));
+                    breweryPlugin.msg(sender, breweryPlugin.languageReader.get("Error_AlreadyUnlabeled"));
                     return;
                 }
             }
         }
-        p.msg(sender, p.languageReader.get("Error_ItemNotPotion"));
+        breweryPlugin.msg(sender, breweryPlugin.languageReader.get("Error_ItemNotPotion"));
     }
 
     @Override
-    public List<String> tabComplete(P p, CommandSender sender, String label, String[] args) {
+    public List<String> tabComplete(BreweryPlugin breweryPlugin, CommandSender sender, String label, String[] args) {
         return null;
     }
 

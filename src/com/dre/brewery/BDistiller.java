@@ -32,8 +32,8 @@ public class BDistiller {
 	private int taskId;
 	private int runTime = -1;
 	private int brewTime = -1;
-	private Block standBlock;
-	private int fuel;
+	private final Block standBlock;
+	private final int fuel;
 
 	public BDistiller(Block standBlock, int fuel) {
 		this.standBlock = standBlock;
@@ -45,7 +45,7 @@ public class BDistiller {
 	}
 
 	public void start() {
-		taskId = new DistillRunnable().runTaskTimer(P.p, 2L, 1L).getTaskId();
+		taskId = new DistillRunnable().runTaskTimer(BreweryPlugin.breweryPlugin, 2L, 1L).getTaskId();
 	}
 
 	public static void distillerClick(InventoryClickEvent event) {
@@ -191,10 +191,10 @@ public class BDistiller {
 					if (!runDistill(stand.getInventory(), contents)) {
 						this.cancel();
 						trackedDistillers.remove(standBlock);
-						P.p.debugLog("All done distilling");
+						BreweryPlugin.breweryPlugin.debugLog("All done distilling");
 					} else {
 						brewTime = -1; // go again.
-						P.p.debugLog("Can distill more! Continuing.");
+						BreweryPlugin.breweryPlugin.debugLog("Can distill more! Continuing.");
 					}
 				} else {
 					stand.update();
@@ -202,7 +202,7 @@ public class BDistiller {
 			} else {
 				this.cancel();
 				trackedDistillers.remove(standBlock);
-				P.p.debugLog("The block was replaced; not a brewing stand.");
+				BreweryPlugin.breweryPlugin.debugLog("The block was replaced; not a brewing stand.");
 			}
 		}
 
@@ -217,7 +217,7 @@ public class BDistiller {
 				case 1:
 					// Custom potion but not for distilling. Stop any brewing and cancel this task
 					if (stand.getBrewingTime() > 0) {
-						if (P.use1_11) {
+						if (BreweryPlugin.use1_11) {
 							// The trick below doesnt work in 1.11, but we dont need it anymore
 							// This should only happen with older Brews that have been made with the old Potion Color System
 							// This causes standard potions to not brew in the brewing stand if put together with Brews, but the bubble animation will play
@@ -236,12 +236,12 @@ public class BDistiller {
 					this.cancel();
 					trackedDistillers.remove(standBlock);
 					showAlc(inventory, contents);
-					P.p.debugLog("nothing to distill");
+					BreweryPlugin.breweryPlugin.debugLog("nothing to distill");
 					return false;
 				default:
 					runTime = getLongestDistillTime(contents);
 					brewTime = runTime;
-					P.p.debugLog("using brewtime: " + runTime);
+					BreweryPlugin.breweryPlugin.debugLog("using brewtime: " + runTime);
 
 			}
 			return true;

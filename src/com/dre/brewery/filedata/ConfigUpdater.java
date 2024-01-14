@@ -1,6 +1,6 @@
 package com.dre.brewery.filedata;
 
-import com.dre.brewery.P;
+import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.utility.LegacyUtil;
 import com.dre.brewery.utility.Tuple;
 import org.bukkit.Material;
@@ -196,7 +196,7 @@ public class ConfigUpdater {
 		}
 
 		if (fromVersion.equals("1.5") || fromVersion.equals("1.6")) {
-			update15(P.use1_13, de);
+			update15(BreweryPlugin.use1_13, de);
 			fromVersion = "1.7";
 			oldMat = false;
 		}
@@ -261,13 +261,13 @@ public class ConfigUpdater {
 			fromVersion = "3.1";
 		}
 
-		if (P.use1_13 && oldMat) {
+		if (BreweryPlugin.use1_13 && oldMat) {
 			updateMaterials(true);
 			updateMaterialDescriptions(de);
 		}
 
 		if (!fromVersion.equals(BConfig.configVersion)) {
-			P.p.log(P.p.languageReader.get("Error_ConfigUpdate", fromVersion));
+			BreweryPlugin.breweryPlugin.log(BreweryPlugin.breweryPlugin.languageReader.get("Error_ConfigUpdate", fromVersion));
 			return;
 		}
 		saveConfig();
@@ -300,7 +300,7 @@ public class ConfigUpdater {
 		int index = indexOfStart("language: en");
 		if (index != -1) {
 			setLine(index, "language: de");
-			P.p.language = "de";
+			BreweryPlugin.breweryPlugin.language = "de";
 		}
 
 		// Add the new entries for the Word Distortion above the words section
@@ -1266,7 +1266,7 @@ public class ConfigUpdater {
 		if (index != -1) {
 			addLines(index + 1, "#   Das Minecraft Fass besteht aus Eiche");
 		}
-		if (P.use1_13) updateMaterialDescriptions(true);
+		if (BreweryPlugin.use1_13) updateMaterialDescriptions(true);
 	}
 
 	// Update en from 1.7 to 1.8
@@ -1317,7 +1317,7 @@ public class ConfigUpdater {
 		if (index != -1) {
 			addLines(index + 1, "#   The Minecraft barrel is made of oak");
 		}
-		if (P.use1_13) updateMaterialDescriptions(false);
+		if (BreweryPlugin.use1_13) updateMaterialDescriptions(false);
 	}
 
 	private void update18de(FileConfiguration yml) {
@@ -1359,7 +1359,7 @@ public class ConfigUpdater {
 
 		index = indexOfStart("%%%%MAT1%%%%");
 		if (index != -1) {
-			if (P.use1_13) {
+			if (BreweryPlugin.use1_13) {
 				setLine(index, "    material: Barrier");
 			} else {
 				setLine(index, "    material: BEDROCK");
@@ -1368,7 +1368,7 @@ public class ConfigUpdater {
 		index = indexOfStart("%%%%MAT2%%%%");
 		if (index != -1) {
 			removeLine(index);
-			if (P.use1_13) {
+			if (BreweryPlugin.use1_13) {
 				addLines(index, "    material:",
 					"      - Acacia_Door",
 					"      - Oak_Door",
@@ -1460,7 +1460,7 @@ public class ConfigUpdater {
 
 		index = indexOfStart("%%%%MAT1%%%%");
 		if (index != -1) {
-			if (P.use1_13) {
+			if (BreweryPlugin.use1_13) {
 				setLine(index, "    material: Barrier");
 			} else {
 				setLine(index, "    material: BEDROCK");
@@ -1469,7 +1469,7 @@ public class ConfigUpdater {
 		index = indexOfStart("%%%%MAT2%%%%");
 		if (index != -1) {
 			removeLine(index);
-			if (P.use1_13) {
+			if (BreweryPlugin.use1_13) {
 				addLines(index, "    material:",
 					"      - Acacia_Door",
 					"      - Oak_Door",
@@ -1561,7 +1561,7 @@ public class ConfigUpdater {
 
 		index = indexOfStart("%%%%MAT1%%%%");
 		if (index != -1) {
-			if (P.use1_13) {
+			if (BreweryPlugin.use1_13) {
 				setLine(index, "    material: Barrier");
 			} else {
 				setLine(index, "    material: BEDROCK");
@@ -1570,7 +1570,7 @@ public class ConfigUpdater {
 		index = indexOfStart("%%%%MAT2%%%%");
 		if (index != -1) {
 			removeLine(index);
-			if (P.use1_13) {
+			if (BreweryPlugin.use1_13) {
 				addLines(index, "    material:",
 					"      - Acacia_Door",
 					"      - Oak_Door",
@@ -2057,7 +2057,7 @@ public class ConfigUpdater {
 	public void applyPatch(String resourcePath, int toLine) {
 		try {
 			List<String> patch = new ArrayList<>();
-			BufferedReader reader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(P.p.getResource(resourcePath), "Resource not found")));
+			BufferedReader reader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(BreweryPlugin.breweryPlugin.getResource(resourcePath), "Resource not found")));
 			String currentLine;
 			while((currentLine = reader.readLine()) != null) {
 				patch.add(currentLine);
@@ -2065,7 +2065,7 @@ public class ConfigUpdater {
 			reader.close();
 			config.addAll(toLine, patch);
 		} catch (IOException | NullPointerException e) {
-			P.p.errorLog("Could not apply Patch: " + resourcePath);
+			BreweryPlugin.breweryPlugin.errorLog("Could not apply Patch: " + resourcePath);
 			e.printStackTrace();
 		}
 	}
@@ -2185,11 +2185,11 @@ public class ConfigUpdater {
 
 	private String convertIdtoMaterial(String line, String regexPrefix, String regexPostfix) {
 		String idString = line.replaceFirst(regexPrefix, "").replaceFirst(regexPostfix, "");
-		int id = P.p.parseInt(idString);
+		int id = BreweryPlugin.breweryPlugin.parseInt(idString);
 		if (id > 0) {
 			Material material = LegacyUtil.getMaterial(id);
 			if (material == null) {
-				P.p.errorLog("Could not find Material with id: " + line);
+				BreweryPlugin.breweryPlugin.errorLog("Could not find Material with id: " + line);
 				return line;
 			} else {
 				return line.replaceAll(idString, material.name());

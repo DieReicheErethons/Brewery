@@ -1,7 +1,7 @@
 package com.dre.brewery.commands.subcommands;
 
 import com.dre.brewery.Brew;
-import com.dre.brewery.P;
+import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.commands.CommandUtil;
 import com.dre.brewery.commands.SubCommand;
 import com.dre.brewery.utility.Tuple;
@@ -13,17 +13,17 @@ import java.util.List;
 
 public class CreateCommand implements SubCommand {
 
-    private final P p;
+    private final BreweryPlugin breweryPlugin;
 
-    public CreateCommand(P p) {
-        this.p = p;
+    public CreateCommand(BreweryPlugin breweryPlugin) {
+        this.breweryPlugin = breweryPlugin;
     }
 
     @Override
-    public void execute(P p, CommandSender sender, String label, String[] args) {
+    public void execute(BreweryPlugin breweryPlugin, CommandSender sender, String label, String[] args) {
         if (args.length < 2) {
-            p.msg(sender, p.languageReader.get("Etc_Usage"));
-            p.msg(sender, p.languageReader.get("Help_Create"));
+            breweryPlugin.msg(sender, breweryPlugin.languageReader.get("Etc_Usage"));
+            breweryPlugin.msg(sender, breweryPlugin.languageReader.get("Help_Create"));
             return;
         }
         // Is this just a map?
@@ -31,20 +31,20 @@ public class CreateCommand implements SubCommand {
 
         if (brewForPlayer != null) {
             if (brewForPlayer.b().getInventory().firstEmpty() == -1) {
-                p.msg(sender, p.languageReader.get("CMD_Copy_Error", "1"));
+                breweryPlugin.msg(sender, breweryPlugin.languageReader.get("CMD_Copy_Error", "1"));
                 return;
             }
 
             ItemStack item = brewForPlayer.a().createItem(null);
             if (item != null) {
                 brewForPlayer.b().getInventory().addItem(item);
-                p.msg(sender, p.languageReader.get("CMD_Created"));
+                breweryPlugin.msg(sender, breweryPlugin.languageReader.get("CMD_Created"));
             }
         }
     }
 
     @Override
-    public List<String> tabComplete(P p, CommandSender sender, String label, String[] args) {
+    public List<String> tabComplete(BreweryPlugin breweryPlugin, CommandSender sender, String label, String[] args) {
         return CommandUtil.tabCreateAndDrink(args);
     }
 

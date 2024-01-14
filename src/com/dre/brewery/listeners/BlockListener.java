@@ -1,7 +1,7 @@
 package com.dre.brewery.listeners;
 
 import com.dre.brewery.*;
-import com.dre.brewery.P;
+import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.api.events.barrel.BarrelDestroyEvent;
 import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.filedata.BData;
@@ -24,22 +24,22 @@ public class BlockListener implements Listener {
 		if (hasBarrelLine(lines)) {
 			Player player = event.getPlayer();
 			if (!player.hasPermission("brewery.createbarrel.small") && !player.hasPermission("brewery.createbarrel.big")) {
-				P.p.msg(player, P.p.languageReader.get("Perms_NoBarrelCreate"));
+				BreweryPlugin.breweryPlugin.msg(player, BreweryPlugin.breweryPlugin.languageReader.get("Perms_NoBarrelCreate"));
 				return;
 			}
 			if (BData.dataMutex.get() > 0) {
-				P.p.msg(player, "§cCurrently loading Data");
+				BreweryPlugin.breweryPlugin.msg(player, "§cCurrently loading Data");
 				return;
 			}
 			if (Barrel.create(event.getBlock(), player)) {
-				P.p.msg(player, P.p.languageReader.get("Player_BarrelCreated"));
+				BreweryPlugin.breweryPlugin.msg(player, BreweryPlugin.breweryPlugin.languageReader.get("Player_BarrelCreated"));
 			}
 		}
 	}
 
 	public static boolean hasBarrelLine(String[] lines) {
 		for (String line : lines) {
-			if (line.equalsIgnoreCase("Barrel") || line.equalsIgnoreCase(P.p.languageReader.get("Etc_Barrel"))) {
+			if (line.equalsIgnoreCase("Barrel") || line.equalsIgnoreCase(BreweryPlugin.breweryPlugin.languageReader.get("Etc_Barrel"))) {
 				return true;
 			}
 		}
@@ -63,7 +63,7 @@ public class BlockListener implements Listener {
 
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onBlockPlace(BlockPlaceEvent event) {
-		if (!P.use1_14 || event.getBlock().getType() != Material.SMOKER) return;
+		if (!BreweryPlugin.use1_14 || event.getBlock().getType() != Material.SMOKER) return;
 		BSealer.blockPlace(event.getItemInHand(), event.getBlock());
 	}
 

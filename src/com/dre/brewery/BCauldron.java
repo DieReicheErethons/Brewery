@@ -149,7 +149,7 @@ public class BCauldron {
 			}
 
 			IngedientAddEvent event = new IngedientAddEvent(player, block, bcauldron, ingredient.clone(), rItem);
-			P.p.getServer().getPluginManager().callEvent(event);
+			BreweryPlugin.breweryPlugin.getServer().getPluginManager().callEvent(event);
 			if (!event.isCancelled()) {
 				bcauldron.add(event.getIngredient(), event.getRecipeItem());
 				//P.p.debugLog("Cauldron add: t2 " + ((t2 - t1) / 1000) + " t3: " + ((t3 - t2) / 1000) + " t4: " + ((t4 - t3) / 1000) + " t5: " + ((t5 - t4) / 1000) + "µs");
@@ -164,13 +164,13 @@ public class BCauldron {
 	// fills players bottle with cooked brew
 	public boolean fill(Player player, Block block) {
 		if (!player.hasPermission("brewery.cauldron.fill")) {
-			P.p.msg(player, P.p.languageReader.get("Perms_NoCauldronFill"));
+			BreweryPlugin.breweryPlugin.msg(player, BreweryPlugin.breweryPlugin.languageReader.get("Perms_NoCauldronFill"));
 			return true;
 		}
 		ItemStack potion = ingredients.cook(state);
 		if (potion == null) return false;
 
-		if (P.use1_13) {
+		if (BreweryPlugin.use1_13) {
 			BlockData data = block.getBlockData();
 			if (!(data instanceof Levelled)) {
 				bcauldrons.remove(block);
@@ -220,7 +220,7 @@ public class BCauldron {
 				changed = true;
 			}
 		}
-		if (P.use1_9) {
+		if (BreweryPlugin.use1_9) {
 			block.getWorld().playSound(block.getLocation(), Sound.ITEM_BOTTLE_FILL, 1f, 1f);
 		}
 		// Bukkit Bug, inventory not updating while in event so this
@@ -235,15 +235,15 @@ public class BCauldron {
 	// prints the current cooking time to the player
 	public static void printTime(Player player, Block block) {
 		if (!player.hasPermission("brewery.cauldron.time")) {
-			P.p.msg(player, P.p.languageReader.get("Error_NoPermissions"));
+			BreweryPlugin.breweryPlugin.msg(player, BreweryPlugin.breweryPlugin.languageReader.get("Error_NoPermissions"));
 			return;
 		}
 		BCauldron bcauldron = get(block);
 		if (bcauldron != null) {
 			if (bcauldron.state > 1) {
-				P.p.msg(player, P.p.languageReader.get("Player_CauldronInfo1", "" + bcauldron.state));
+				BreweryPlugin.breweryPlugin.msg(player, BreweryPlugin.breweryPlugin.languageReader.get("Player_CauldronInfo1", "" + bcauldron.state));
 			} else {
-				P.p.msg(player, P.p.languageReader.get("Player_CauldronInfo2"));
+				BreweryPlugin.breweryPlugin.msg(player, BreweryPlugin.breweryPlugin.languageReader.get("Player_CauldronInfo2"));
 			}
 		}
 	}
@@ -274,7 +274,7 @@ public class BCauldron {
 				block.getWorld().spawnParticle(Particle.WATER_SPLASH, particleLocation, 1, 0.2, 0, 0.2);
 			}
 
-			if (P.use1_13 && particleRandom.nextFloat() > 0.4) {
+			if (BreweryPlugin.use1_13 && particleRandom.nextFloat() > 0.4) {
 				// Two hovering pixely dust clouds, a bit offset and with DustOptions to give some color and size
 				block.getWorld().spawnParticle(Particle.REDSTONE, particleLocation, 2, 0.15, 0.2, 0.15, new Particle.DustOptions(color, 1.5f));
 			}
@@ -415,7 +415,7 @@ public class BCauldron {
 
 			// Ignore Water Buckets
 		} else if (materialInHand == Material.WATER_BUCKET) {
-			if (!P.use1_9) {
+			if (!BreweryPlugin.use1_9) {
 				// reset < 1.9 cauldron when refilling to prevent unlimited source of potions
 				// We catch >=1.9 cases in the Cauldron Listener
 				if (LegacyUtil.getFillLevel(clickedBlock) == 1) {
@@ -437,11 +437,11 @@ public class BCauldron {
 			// Certain Items in Hand cause one of them to be cancelled or not called at all sometimes.
 			// We mark if a player had the event for the main hand
 			// If not, we handle the main hand in the event for the off hand
-			if (P.use1_9) {
+			if (BreweryPlugin.use1_9) {
 				if (event.getHand() == EquipmentSlot.HAND) {
 					final UUID id = player.getUniqueId();
 					plInteracted.add(id);
-					P.p.getServer().getScheduler().runTask(P.p, () -> plInteracted.remove(id));
+					BreweryPlugin.breweryPlugin.getServer().getScheduler().runTask(BreweryPlugin.breweryPlugin, () -> plInteracted.remove(id));
 				} else if (event.getHand() == EquipmentSlot.OFF_HAND) {
 					if (!plInteracted.remove(player.getUniqueId())) {
 						item = player.getInventory().getItemInMainHand();
@@ -457,7 +457,7 @@ public class BCauldron {
 			if (item == null) return;
 
 			if (!player.hasPermission("brewery.cauldron.insert")) {
-				P.p.msg(player, P.p.languageReader.get("Perms_NoCauldronInsert"));
+				BreweryPlugin.breweryPlugin.msg(player, BreweryPlugin.breweryPlugin.languageReader.get("Perms_NoCauldronInsert"));
 				return;
 			}
 			if (ingredientAdd(clickedBlock, item, player)) {
@@ -523,7 +523,7 @@ public class BCauldron {
 	 * Unload all Cauldrons that have are in a unloaded World
 	 */
 	public static void unloadWorlds() {
-		List<World> worlds = P.p.getServer().getWorlds();
+		List<World> worlds = BreweryPlugin.breweryPlugin.getServer().getWorlds();
 		bcauldrons.keySet().removeIf(block -> !worlds.contains(block.getWorld()));
 	}
 
@@ -563,7 +563,7 @@ public class BCauldron {
 	// bukkit bug not updating the inventory while executing event, have to
 	// schedule the give
 	public static void giveItem(final Player player, final ItemStack item) {
-		P.p.getServer().getScheduler().runTaskLater(P.p, () -> player.getInventory().addItem(item), 1L);
+		BreweryPlugin.breweryPlugin.getServer().getScheduler().runTaskLater(BreweryPlugin.breweryPlugin, () -> player.getInventory().addItem(item), 1L);
 	}
 
 }

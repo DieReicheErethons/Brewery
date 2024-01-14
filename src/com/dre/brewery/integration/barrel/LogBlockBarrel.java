@@ -1,6 +1,6 @@
 package com.dre.brewery.integration.barrel;
 
-import com.dre.brewery.P;
+import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.utility.LegacyUtil;
 import de.diddiz.LogBlock.Actor;
 
@@ -31,14 +31,14 @@ public class LogBlockBarrel {
 	private static Method queueChestAccess;
 
 	static {
-		if (!P.use1_13) {
+		if (!BreweryPlugin.use1_13) {
 			try {
 				rawData = BukkitUtils.class.getDeclaredMethod("rawData", ItemStack.class);
 				queueChestAccess = Consumer.class.getDeclaredMethod("queueChestAccess", String.class, Location.class, int.class, short.class, short.class, short.class);
 			} catch (NoSuchMethodException e) {
-				P.p.errorLog("Failed to hook into LogBlock to log barrels. Logging barrel contents is not going to work.");
-				P.p.errorLog("Brewery was tested with version 1.12 to 1.13.1 of LogBlock.");
-				P.p.errorLog("Disable LogBlock support in the configuration file and type /brew reload.");
+				BreweryPlugin.breweryPlugin.errorLog("Failed to hook into LogBlock to log barrels. Logging barrel contents is not going to work.");
+				BreweryPlugin.breweryPlugin.errorLog("Brewery was tested with version 1.12 to 1.13.1 of LogBlock.");
+				BreweryPlugin.breweryPlugin.errorLog("Disable LogBlock support in the configuration file and type /brew reload.");
 				e.printStackTrace();
 			}
 		}
@@ -61,7 +61,7 @@ public class LogBlockBarrel {
 		}
 		final ItemStack[] diff = compareInventories(items, after);
 		for (final ItemStack item : diff) {
-			if (!P.use1_13) {
+			if (!BreweryPlugin.use1_13) {
 				try {
 					//noinspection deprecation
 					queueChestAccess.invoke(consumer, player.getName(), loc, LegacyUtil.getBlockTypeIdAt(loc), (short) item.getType().getId(), (short) item.getAmount(), rawData.invoke(null, item));
@@ -109,7 +109,7 @@ public class LogBlockBarrel {
 		if (!isLogging(spigotLoc.getWorld(), Logging.CHESTACCESS)) return;
 		final ItemStack[] items = compressInventory(contents);
 		for (final ItemStack item : items) {
-			if (!P.use1_13) {
+			if (!BreweryPlugin.use1_13) {
 				try {
 					//noinspection deprecation
 					queueChestAccess.invoke(consumer, player.getName(), spigotLoc, LegacyUtil.getBlockTypeIdAt(spigotLoc), (short) item.getType().getId(), (short) (item.getAmount() * -1), rawData.invoke(null, item));

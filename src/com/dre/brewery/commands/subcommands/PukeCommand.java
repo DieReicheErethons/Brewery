@@ -1,7 +1,7 @@
 package com.dre.brewery.commands.subcommands;
 
 import com.dre.brewery.BPlayer;
-import com.dre.brewery.P;
+import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.commands.SubCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -10,31 +10,31 @@ import java.util.List;
 
 public class PukeCommand implements SubCommand {
     @Override
-    public void execute(P p, CommandSender sender, String label, String[] args) {
+    public void execute(BreweryPlugin breweryPlugin, CommandSender sender, String label, String[] args) {
         Player player = null;
         if (args.length > 1) {
-            player = p.getServer().getPlayer(args[1]);
+            player = breweryPlugin.getServer().getPlayer(args[1]);
             if (player == null) {
-                p.msg(sender, p.languageReader.get("Error_NoPlayer", args[1]));
+                breweryPlugin.msg(sender, breweryPlugin.languageReader.get("Error_NoPlayer", args[1]));
                 return;
             }
         }
 
         if (!(sender instanceof Player) && player == null) {
-            p.msg(sender, p.languageReader.get("Error_PlayerCommand"));
+            breweryPlugin.msg(sender, breweryPlugin.languageReader.get("Error_PlayerCommand"));
             return;
         }
         if (player == null) {
             player = ((Player) sender);
         } else {
             if (!sender.hasPermission("brewery.cmd.pukeOther") && !player.equals(sender)) {
-                p.msg(sender, p.languageReader.get("Error_NoPermissions"));
+                breweryPlugin.msg(sender, breweryPlugin.languageReader.get("Error_NoPermissions"));
                 return;
             }
         }
         int count = 0;
         if (args.length > 2) {
-            count = P.p.parseInt(args[2]);
+            count = BreweryPlugin.breweryPlugin.parseInt(args[2]);
         }
         if (count <= 0) {
             count = 20 + (int) (Math.random() * 40);
@@ -43,7 +43,7 @@ public class PukeCommand implements SubCommand {
     }
 
     @Override
-    public List<String> tabComplete(P p, CommandSender sender, String label, String[] args) {
+    public List<String> tabComplete(BreweryPlugin breweryPlugin, CommandSender sender, String label, String[] args) {
         return null;
     }
 

@@ -1,7 +1,7 @@
 package com.dre.brewery.commands.subcommands;
 
 import com.dre.brewery.Brew;
-import com.dre.brewery.P;
+import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.commands.SubCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -11,23 +11,23 @@ import java.util.List;
 
 public class CopyCommand implements SubCommand {
 
-    private final P p;
+    private final BreweryPlugin breweryPlugin;
 
-    public CopyCommand(P p) {
-        this.p = p;
+    public CopyCommand(BreweryPlugin breweryPlugin) {
+        this.breweryPlugin = breweryPlugin;
     }
 
     @Override
-    public void execute(P p, CommandSender sender, String label, String[] args) {
+    public void execute(BreweryPlugin breweryPlugin, CommandSender sender, String label, String[] args) {
         if (args.length > 1) {
-            cmdCopy(sender, p.parseInt(args[1]));
+            cmdCopy(sender, breweryPlugin.parseInt(args[1]));
         } else {
             cmdCopy(sender, 1);
         }
     }
 
     @Override
-    public List<String> tabComplete(P p, CommandSender sender, String label, String[] args) {
+    public List<String> tabComplete(BreweryPlugin breweryPlugin, CommandSender sender, String label, String[] args) {
         return null;
     }
 
@@ -44,8 +44,8 @@ public class CopyCommand implements SubCommand {
     //@Deprecated but still used?
     public void cmdCopy(CommandSender sender, int count) {
         if (count < 1 || count > 36) {
-            p.msg(sender, p.languageReader.get("Etc_Usage"));
-            p.msg(sender, p.languageReader.get("Help_Copy"));
+            breweryPlugin.msg(sender, breweryPlugin.languageReader.get("Etc_Usage"));
+            breweryPlugin.msg(sender, breweryPlugin.languageReader.get("Help_Copy"));
             return;
         }
         Player player = (Player) sender;
@@ -55,7 +55,7 @@ public class CopyCommand implements SubCommand {
                 while (count > 0) {
                     ItemStack item = hand.clone();
                     if (!(player.getInventory().addItem(item)).isEmpty()) {
-                        p.msg(sender, p.languageReader.get("CMD_Copy_Error", "" + count));
+                        breweryPlugin.msg(sender, breweryPlugin.languageReader.get("CMD_Copy_Error", "" + count));
                         return;
                     }
                     count--;
@@ -64,7 +64,7 @@ public class CopyCommand implements SubCommand {
             }
         }
 
-        p.msg(sender, p.languageReader.get("Error_ItemNotPotion"));
+        breweryPlugin.msg(sender, breweryPlugin.languageReader.get("Error_ItemNotPotion"));
 
     }
 }

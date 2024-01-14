@@ -1,6 +1,6 @@
 package com.dre.brewery.lore;
 
-import com.dre.brewery.P;
+import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.recipe.BEffect;
 import com.dre.brewery.BIngredients;
 import com.dre.brewery.recipe.BRecipe;
@@ -20,9 +20,9 @@ import java.util.List;
  * <p>Can efficiently replace certain lines of lore, to update brew information on an item.
  */
 public class BrewLore {
-	private Brew brew;
-	private PotionMeta meta;
-	private List<String> lore;
+	private final Brew brew;
+	private final PotionMeta meta;
+	private final List<String> lore;
 	private boolean lineAddedOrRem = false;
 
 	public BrewLore(Brew brew, PotionMeta meta) {
@@ -62,7 +62,7 @@ public class BrewLore {
 			} else if (t != null && t.isAfter(Type.SPACE)) {
 				if (hasSpace) return;
 
-				if (hasCustom || P.useNBT) {
+				if (hasCustom || BreweryPlugin.useNBT) {
 					// We want to add the spacer if we have Custom Lore, to have a space between custom and brew lore.
 					// Also add a space if there is no Custom Lore but we don't already have a invisible data line
 					lore.add(i, Type.SPACE.id);
@@ -115,9 +115,9 @@ public class BrewLore {
 			int quality = brew.getIngredients().getIngredientQuality(brew.getCurrentRecipe());
 			String prefix = getQualityColor(quality);
 			char icon = getQualityIcon(quality);
-			addOrReplaceLore(Type.INGR, prefix, P.p.languageReader.get("Brew_Ingredients"), " " + icon);
+			addOrReplaceLore(Type.INGR, prefix, BreweryPlugin.breweryPlugin.languageReader.get("Brew_Ingredients"), " " + icon);
 		} else {
-			removeLore(Type.INGR, P.p.languageReader.get("Brew_Ingredients"));
+			removeLore(Type.INGR, BreweryPlugin.breweryPlugin.languageReader.get("Brew_Ingredients"));
 		}
 	}
 
@@ -130,13 +130,13 @@ public class BrewLore {
 		if (qualityColor && brew.hasRecipe() && brew.getDistillRuns() > 0 == brew.getCurrentRecipe().needsDistilling() && !brew.isStripped()) {
 			BIngredients ingredients = brew.getIngredients();
 			int quality = ingredients.getCookingQuality(brew.getCurrentRecipe(), brew.getDistillRuns() > 0);
-			String prefix = getQualityColor(quality) + ingredients.getCookedTime() + " " + P.p.languageReader.get("Brew_minute");
+			String prefix = getQualityColor(quality) + ingredients.getCookedTime() + " " + BreweryPlugin.breweryPlugin.languageReader.get("Brew_minute");
 			if (ingredients.getCookedTime() > 1) {
-				prefix = prefix + P.p.languageReader.get("Brew_MinutePluralPostfix");
+				prefix = prefix + BreweryPlugin.breweryPlugin.languageReader.get("Brew_MinutePluralPostfix");
 			}
-			addOrReplaceLore(Type.COOK, prefix, " " + P.p.languageReader.get("Brew_fermented"), " " + getQualityIcon(quality));
+			addOrReplaceLore(Type.COOK, prefix, " " + BreweryPlugin.breweryPlugin.languageReader.get("Brew_fermented"), " " + getQualityIcon(quality));
 		} else {
-			removeLore(Type.COOK, P.p.languageReader.get("Brew_fermented"));
+			removeLore(Type.COOK, BreweryPlugin.breweryPlugin.languageReader.get("Brew_fermented"));
 		}
 	}
 
@@ -159,13 +159,13 @@ public class BrewLore {
 		}
 		if (!brew.isUnlabeled()) {
 			if (distillRuns > 1) {
-				prefix = prefix + distillRuns + P.p.languageReader.get("Brew_-times") + " ";
+				prefix = prefix + distillRuns + BreweryPlugin.breweryPlugin.languageReader.get("Brew_-times") + " ";
 			}
 		}
 		if (brew.isUnlabeled() && brew.hasRecipe() && distillRuns < brew.getCurrentRecipe().getDistillRuns()) {
-			addOrReplaceLore(Type.DISTILL, prefix, P.p.languageReader.get("Brew_LessDistilled"), suffix);
+			addOrReplaceLore(Type.DISTILL, prefix, BreweryPlugin.breweryPlugin.languageReader.get("Brew_LessDistilled"), suffix);
 		} else {
-			addOrReplaceLore(Type.DISTILL, prefix, P.p.languageReader.get("Brew_Distilled"), suffix);
+			addOrReplaceLore(Type.DISTILL, prefix, BreweryPlugin.breweryPlugin.languageReader.get("Brew_Distilled"), suffix);
 		}
 	}
 
@@ -188,14 +188,14 @@ public class BrewLore {
 		}
 		if (!brew.isUnlabeled()) {
 			if (age >= 1 && age < 2) {
-				prefix = prefix + P.p.languageReader.get("Brew_OneYear") + " ";
+				prefix = prefix + BreweryPlugin.breweryPlugin.languageReader.get("Brew_OneYear") + " ";
 			} else if (age < 201) {
-				prefix = prefix + (int) Math.floor(age) + " " + P.p.languageReader.get("Brew_Years") + " ";
+				prefix = prefix + (int) Math.floor(age) + " " + BreweryPlugin.breweryPlugin.languageReader.get("Brew_Years") + " ";
 			} else {
-				prefix = prefix + P.p.languageReader.get("Brew_HundredsOfYears") + " ";
+				prefix = prefix + BreweryPlugin.breweryPlugin.languageReader.get("Brew_HundredsOfYears") + " ";
 			}
 		}
-		addOrReplaceLore(Type.AGE, prefix, P.p.languageReader.get("Brew_BarrelRiped"), suffix);
+		addOrReplaceLore(Type.AGE, prefix, BreweryPlugin.breweryPlugin.languageReader.get("Brew_BarrelRiped"), suffix);
 	}
 
 	/**
@@ -206,9 +206,9 @@ public class BrewLore {
 	public void updateWoodLore(boolean qualityColor) {
 		if (qualityColor && brew.hasRecipe() && !brew.isUnlabeled()) {
 			int quality = brew.getIngredients().getWoodQuality(brew.getCurrentRecipe(), brew.getWood());
-			addOrReplaceLore(Type.WOOD, getQualityColor(quality), P.p.languageReader.get("Brew_Woodtype"), " " + getQualityIcon(quality));
+			addOrReplaceLore(Type.WOOD, getQualityColor(quality), BreweryPlugin.breweryPlugin.languageReader.get("Brew_Woodtype"), " " + getQualityIcon(quality));
 		} else {
-			removeLore(Type.WOOD, P.p.languageReader.get("Brew_Woodtype"));
+			removeLore(Type.WOOD, BreweryPlugin.breweryPlugin.languageReader.get("Brew_Woodtype"));
 		}
 	}
 
@@ -285,7 +285,7 @@ public class BrewLore {
 	public void updateAlc(boolean inDistiller) {
 		if (!brew.isUnlabeled() && (inDistiller || BConfig.alwaysShowAlc) && (!brew.hasRecipe() || brew.getCurrentRecipe().getAlcohol() != 0)) {
 			int alc = brew.getOrCalcAlc();
-			addOrReplaceLore(Type.ALC, "§8", P.p.languageReader.get("Brew_Alc", alc + ""));
+			addOrReplaceLore(Type.ALC, "§8", BreweryPlugin.breweryPlugin.languageReader.get("Brew_Alc", alc + ""));
 		} else {
 			removeLore(Type.ALC);
 		}
@@ -445,7 +445,7 @@ public class BrewLore {
 	 * Adds the Effect names to the Items description
  	 */
 	public void addOrReplaceEffects(List<BEffect> effects, int quality) {
-		if (!P.use1_9 && effects != null) {
+		if (!BreweryPlugin.use1_9 && effects != null) {
 			for (BEffect effect : effects) {
 				if (!effect.isHidden()) {
 					effect.writeInto(meta, quality);
@@ -482,7 +482,7 @@ public class BrewLore {
 	 * Remove the Old Spacer from the legacy potion data system
 	 */
 	public void removeLegacySpacing() {
-		if (P.useNBT) {
+		if (BreweryPlugin.useNBT) {
 			// Using NBT we don't get the invisible line, so we keep our spacing
 			return;
 		}
@@ -539,7 +539,7 @@ public class BrewLore {
 		} else {
 			color = "&4";
 		}
-		return P.p.color(color);
+		return BreweryPlugin.breweryPlugin.color(color);
 	}
 
 	/**

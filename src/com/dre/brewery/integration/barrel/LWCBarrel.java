@@ -1,7 +1,7 @@
 package com.dre.brewery.integration.barrel;
 
 import com.dre.brewery.Barrel;
-import com.dre.brewery.P;
+import com.dre.brewery.BreweryPlugin;
 import com.griefcraft.listeners.LWCPlayerListener;
 import com.griefcraft.lwc.LWC;
 import com.griefcraft.model.Flag;
@@ -40,7 +40,7 @@ public class LWCBarrel {
 					}
 				} catch (Exception e) {
 					lwc.sendLocale(player, "protection.internalerror", "id", "BLOCK_BREAK");
-					P.p.errorLog("Failed to dispatch LWCProtectionDestroyEvent");
+					BreweryPlugin.breweryPlugin.errorLog("Failed to dispatch LWCProtectionDestroyEvent");
 					e.printStackTrace();
 					return true;
 				}
@@ -71,7 +71,7 @@ public class LWCBarrel {
 					}
 				} catch (EventException e) {
 					lwc.sendLocale(player, "protection.internalerror", "id", "PLAYER_INTERACT");
-					P.p.errorLog("Block Interact could not be passed to LWC");
+					BreweryPlugin.breweryPlugin.errorLog("Block Interact could not be passed to LWC");
 					e.printStackTrace();
 					return false;
 				}

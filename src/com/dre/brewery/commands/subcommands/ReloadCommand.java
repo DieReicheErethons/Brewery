@@ -1,6 +1,6 @@
 package com.dre.brewery.commands.subcommands;
 
-import com.dre.brewery.P;
+import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.commands.SubCommand;
 import org.bukkit.command.CommandSender;
 
@@ -8,19 +8,19 @@ import java.util.List;
 
 public class ReloadCommand implements SubCommand {
 
-    private final P p;
+    private final BreweryPlugin breweryPlugin;
 
-    public ReloadCommand(P p) {
-        this.p = p;
+    public ReloadCommand(BreweryPlugin breweryPlugin) {
+        this.breweryPlugin = breweryPlugin;
     }
 
     @Override
-    public void execute(P p, CommandSender sender, String label, String[] args) {
-        p.reload(sender);
+    public void execute(BreweryPlugin breweryPlugin, CommandSender sender, String label, String[] args) {
+        breweryPlugin.reload(sender);
     }
 
     @Override
-    public List<String> tabComplete(P p, CommandSender sender, String label, String[] args) {
+    public List<String> tabComplete(BreweryPlugin breweryPlugin, CommandSender sender, String label, String[] args) {
         return null;
     }
 

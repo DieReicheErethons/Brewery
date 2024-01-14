@@ -1,6 +1,6 @@
 package com.dre.brewery.commands;
 
-import com.dre.brewery.P;
+import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.commands.subcommands.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -16,7 +16,7 @@ import java.util.Map;
 
 public class CommandManager implements TabExecutor {
 
-    private static final P BREWERY_PLUGIN = P.p;
+    private static final BreweryPlugin BREWERY_PLUGIN = BreweryPlugin.breweryPlugin;
 
     private static final Map<String, SubCommand> subCommands = new HashMap<>();
 

@@ -1,6 +1,6 @@
 package com.dre.brewery.recipe;
 
-import com.dre.brewery.P;
+import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.utility.BUtil;
 import org.bukkit.Material;
@@ -163,7 +163,7 @@ public abstract class RecipeItem implements Cloneable {
 		}
 		if (rItem == null && (acceptAll || BCauldronRecipe.acceptedSimple.contains(item.getType()))) {
 			// No Custom item found
-			if (P.use1_13) {
+			if (BreweryPlugin.use1_13) {
 				return new SimpleItem(item.getType());
 			} else {
 				@SuppressWarnings("deprecation")
@@ -201,8 +201,8 @@ public abstract class RecipeItem implements Cloneable {
 
 		load = BUtil.loadCfgStringList(cfg, id + ".name");
 		if (load != null && !load.isEmpty()) {
-			names = load.stream().map(l -> P.p.color(l)).collect(Collectors.toList());
-			if (P.use1_13) {
+			names = load.stream().map(l -> BreweryPlugin.breweryPlugin.color(l)).collect(Collectors.toList());
+			if (BreweryPlugin.use1_13) {
 				// In 1.13 trailing Color white is removed from display names
 				names = names.stream().map(l -> l.startsWith("§f") ? l.substring(2) : l).collect(Collectors.toList());
 			}
@@ -212,13 +212,13 @@ public abstract class RecipeItem implements Cloneable {
 
 		load = BUtil.loadCfgStringList(cfg, id + ".lore");
 		if (load != null && !load.isEmpty()) {
-			lore = load.stream().map(l -> P.p.color(l)).collect(Collectors.toList());
+			lore = load.stream().map(l -> BreweryPlugin.breweryPlugin.color(l)).collect(Collectors.toList());
 		} else {
 			lore = new ArrayList<>(0);
 		}
 
 		if (materials.isEmpty() && names.isEmpty() && lore.isEmpty()) {
-			P.p.errorLog("No Config Entries found for Custom Item");
+			BreweryPlugin.breweryPlugin.errorLog("No Config Entries found for Custom Item");
 			return null;
 		}
 
@@ -247,12 +247,12 @@ public abstract class RecipeItem implements Cloneable {
 		for (String item : ingredientsList) {
 			String[] ingredParts = item.split("/");
 			if (ingredParts.length == 2) {
-				P.p.errorLog("Item Amount can not be specified for Custom Items: " + item);
+				BreweryPlugin.breweryPlugin.errorLog("Item Amount can not be specified for Custom Items: " + item);
 				return null;
 			}
 			Material mat = Material.matchMaterial(ingredParts[0]);
 
-			if (mat == null && !P.use1_14 && ingredParts[0].equalsIgnoreCase("cornflower")) {
+			if (mat == null && !BreweryPlugin.use1_14 && ingredParts[0].equalsIgnoreCase("cornflower")) {
 				// Using this in default custom-items, but will error on < 1.14
 				materials.add(Material.BEDROCK);
 				continue;
@@ -265,14 +265,14 @@ public abstract class RecipeItem implements Cloneable {
 						mat = vaultItem.getType();
 					}
 				} catch (Exception e) {
-					P.p.errorLog("Could not check vault for Item Name");
+					BreweryPlugin.breweryPlugin.errorLog("Could not check vault for Item Name");
 					e.printStackTrace();
 				}
 			}
 			if (mat != null) {
 				materials.add(mat);
 			} else {
-				P.p.errorLog("Unknown Material: " + ingredParts[0]);
+				BreweryPlugin.breweryPlugin.errorLog("Unknown Material: " + ingredParts[0]);
 				return null;
 			}
 		}

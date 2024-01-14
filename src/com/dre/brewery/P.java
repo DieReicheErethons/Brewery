@@ -24,6 +24,9 @@
 
 package com.dre.brewery;
 
+import com.dre.brewery.commands.CommandManager;
+
+import com.dre.brewery.commands.CommandUtil;
 import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.filedata.BData;
 import com.dre.brewery.filedata.DataSave;
@@ -41,10 +44,8 @@ import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.LegacyUtil;
 import com.dre.brewery.utility.Stats;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -141,11 +142,7 @@ public class P extends JavaPlugin {
 		inventoryListener = new InventoryListener();
 		worldListener = new WorldListener();
 		integrationListener = new IntegrationListener();
-		PluginCommand c = getCommand("Brewery");
-		if (c != null) {
-			c.setExecutor(new CommandListener());
-			c.setTabCompleter(new TabListener());
-		}
+		getCommand("brewery").setExecutor(new CommandManager()); // Not null. Check plugin.yml!
 
 		p.getServer().getPluginManager().registerEvents(blockListener, p);
 		p.getServer().getPluginManager().registerEvents(playerListener, p);
@@ -243,7 +240,7 @@ public class P extends JavaPlugin {
 		BCauldron.reload();
 
 		// Clear Recipe completions
-		TabListener.reload();
+		CommandUtil.reloadTabCompleter();
 
 		// Reload Recipes
 		boolean successful = true;
@@ -326,9 +323,9 @@ public class P extends JavaPlugin {
 	}
 
 	public void errorLog(String msg) {
-		Bukkit.getConsoleSender().sendMessage(ChatColor.DARK_GREEN + BConfig.pluginPrefix + ChatColor.DARK_RED + "ERROR: " + ChatColor.RED + msg);
+		Bukkit.getConsoleSender().sendMessage(color(BConfig.pluginPrefix + "&cERROR: " + msg));
 		if (BConfig.reloader != null) {
-			BConfig.reloader.sendMessage(ChatColor.DARK_GREEN + BConfig.pluginPrefix + ChatColor.DARK_RED + "ERROR: " + ChatColor.RED + msg);
+			BConfig.reloader.sendMessage(color(BConfig.pluginPrefix + "&cERROR: " + msg));
 		}
 	}
 

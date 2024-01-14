@@ -3,11 +3,10 @@ package com.dre.brewery.filedata;
 
 import java.io.File;
 
+import com.dre.brewery.P;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
-
-import com.dre.brewery.P;
 
 public class ReadOldData extends BukkitRunnable {
 

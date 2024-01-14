@@ -1,24 +1,16 @@
 package com.dre.brewery.integration;
 
-import com.Acrobot.ChestShop.Events.ShopCreatedEvent;
-import com.dre.brewery.Brew;
 import com.dre.brewery.P;
-import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.integration.item.SlimefunPluginItem;
 import com.dre.brewery.recipe.BCauldronRecipe;
 import com.dre.brewery.recipe.RecipeItem;
 import com.dre.brewery.utility.LegacyUtil;
 import io.github.thebusybiscuit.slimefun4.api.events.PlayerRightClickEvent;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItem;
-import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.block.Container;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
 import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.Optional;
 

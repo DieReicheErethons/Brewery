@@ -1,9 +1,6 @@
 package com.dre.brewery.filedata;
 
-import com.dre.brewery.BSealer;
-import com.dre.brewery.Brew;
-import com.dre.brewery.DistortChat;
-import com.dre.brewery.MCBarrel;
+import com.dre.brewery.*;
 import com.dre.brewery.P;
 import com.dre.brewery.api.events.ConfigLoadEvent;
 import com.dre.brewery.integration.barrel.BlocklockerBarrel;

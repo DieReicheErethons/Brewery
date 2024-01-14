@@ -1,7 +1,7 @@
 package com.dre.brewery.filedata;
 
-import com.dre.brewery.utility.LegacyUtil;
 import com.dre.brewery.P;
+import com.dre.brewery.utility.LegacyUtil;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;

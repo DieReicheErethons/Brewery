@@ -3,9 +3,8 @@ package com.dre.brewery.filedata;
 
 import java.io.File;
 
-import org.bukkit.configuration.file.FileConfiguration;
-
 import com.dre.brewery.P;
+import org.bukkit.configuration.file.FileConfiguration;
 
 /**
  * Writes the collected Data to file in Async Thread

@@ -48,7 +48,8 @@ permissions:
       brewery.cmd.delete: true
       brewery.cmd.static: true
       brewery.cmd.reload: true
-# *
+      brewery.cmd.itemname: true
+  # *
   brewery.*:
     description: Gives Access to every Permission, including bypasses and overrides
     children:
@@ -89,6 +90,8 @@ permissions:
     description: Make Brews Static
   brewery.cmd.reload:
     description: Reload config
+  brewery.cmd.itemname:
+    description: View the material name of an item
 
 # -- Barrel --
   brewery.createbarrel:

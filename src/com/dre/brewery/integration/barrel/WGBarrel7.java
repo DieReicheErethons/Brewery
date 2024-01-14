@@ -1,12 +1,12 @@
 package com.dre.brewery.integration.barrel;
 
 
+import com.dre.brewery.P;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.dre.brewery.P;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.World;

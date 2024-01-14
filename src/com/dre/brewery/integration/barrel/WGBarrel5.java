@@ -3,12 +3,12 @@ package com.dre.brewery.integration.barrel;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import com.dre.brewery.P;
 import org.bukkit.block.Block;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-import com.dre.brewery.P;
 import com.sk89q.worldguard.LocalPlayer;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;

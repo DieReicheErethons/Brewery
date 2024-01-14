@@ -1,10 +1,10 @@
 package com.dre.brewery.lore;
 
+import com.dre.brewery.P;
 import com.dre.brewery.recipe.BEffect;
 import com.dre.brewery.BIngredients;
 import com.dre.brewery.recipe.BRecipe;
 import com.dre.brewery.Brew;
-import com.dre.brewery.P;
 import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.utility.BUtil;
 import org.bukkit.inventory.meta.PotionMeta;

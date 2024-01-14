@@ -48,7 +48,7 @@ public class BUtil {
 	}
 
 	/**
-	 * Color code a message. Supports HEX colors and default minecraft colors! &2 &#FFFFFF
+	 * Color code a message. Supports HEX colors and default minecraft colors!
 	 * @param msg The message to color
 	 * @return The colored message, or null if msg was null
 	 */

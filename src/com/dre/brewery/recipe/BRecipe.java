@@ -5,6 +5,7 @@ import com.dre.brewery.Brew;
 import com.dre.brewery.P;
 import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.utility.BUtil;
+import com.dre.brewery.utility.LegacyUtil;
 import com.dre.brewery.utility.StringParser;
 import com.dre.brewery.utility.Tuple;
 import org.bukkit.Color;
@@ -140,7 +141,7 @@ public class BRecipe {
 		if (configSectionRecipes.isString(recipeId + ".customModelData")) {
 			String[] cmdParts = configSectionRecipes.getString(recipeId + ".customModelData", "").split("/");
 			if (cmdParts.length == 3) {
-				recipe.cmData = new int[]{P.p.parseInt(cmdParts[0]), P.p.parseInt(cmdParts[1]), P.p.parseInt(cmdParts[2])};
+				recipe.cmData = new int[] {P.p.parseInt(cmdParts[0]), P.p.parseInt(cmdParts[1]), P.p.parseInt(cmdParts[2])};
 				if (recipe.cmData[0] == 0 && recipe.cmData[1] == 0 && recipe.cmData[2] == 0) {
 					P.p.errorLog("Invalid customModelData in Recipe: " + recipe.getRecipeName());
 					recipe.cmData = null;
@@ -151,7 +152,7 @@ public class BRecipe {
 		} else {
 			int cmd = configSectionRecipes.getInt(recipeId + ".customModelData", 0);
 			if (cmd != 0) {
-				recipe.cmData = new int[]{cmd, cmd, cmd};
+				recipe.cmData = new int[] {cmd, cmd, cmd};
 			}
 		}
 
@@ -181,7 +182,8 @@ public class BRecipe {
 			return null;
 		}
 		List<RecipeItem> ingredients = new ArrayList<>(ingredientsList.size());
-		listLoop: for (String item : ingredientsList) {
+		listLoop:
+		for (String item : ingredientsList) {
 			String[] ingredParts = item.split("/");
 			int amount = 1;
 			if (ingredParts.length == 2) {
@@ -325,7 +327,7 @@ public class BRecipe {
 			P.p.errorLog("Invalid distilltime '" + distillTime + "' in Recipe: " + getRecipeName());
 			return false;
 		}
-		if (wood < 0 || wood > 11) {
+		if (wood < 0 || wood > LegacyUtil.TOTAL_WOOD_TYPES) {
 			P.p.errorLog("Invalid wood type '" + wood + "' in Recipe: " + getRecipeName());
 			return false;
 		}
@@ -879,7 +881,7 @@ public class BRecipe {
 		 * Add a Line of Lore
 		 *
 		 * @param quality 0 for any quality, 1: bad, 2: normal, 3: good
-		 * @param line The Line for custom lore to add
+		 * @param line    The Line for custom lore to add
 		 * @return this
 		 */
 		public Builder addLore(int quality, String line) {
@@ -897,7 +899,7 @@ public class BRecipe {
 		 * Add Commands that are executed by the player on drinking
 		 */
 		public Builder addPlayerCmds(String... cmds) {
-			ArrayList<Tuple<Integer,String>> playercmds = new ArrayList<>(cmds.length);
+			ArrayList<Tuple<Integer, String>> playercmds = new ArrayList<>(cmds.length);
 
 			for (String cmd : cmds) {
 				playercmds.add(StringParser.parseQuality(cmd, StringParser.ParseType.CMD));
@@ -914,7 +916,7 @@ public class BRecipe {
 		 * Add Commands that are executed by the server on drinking
 		 */
 		public Builder addServerCmds(String... cmds) {
-			ArrayList<Tuple<Integer,String>> servercmds = new ArrayList<>(cmds.length);
+			ArrayList<Tuple<Integer, String>> servercmds = new ArrayList<>(cmds.length);
 
 			for (String cmd : cmds) {
 				servercmds.add(StringParser.parseQuality(cmd, StringParser.ParseType.CMD));

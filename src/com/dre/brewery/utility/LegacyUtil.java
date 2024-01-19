@@ -13,7 +13,9 @@ import org.bukkit.material.Wood;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static com.dre.brewery.BCauldron.EMPTY;
@@ -45,33 +47,73 @@ public class LegacyUtil {
 		// EnumSet not supposed to be used anymore
 		// See https://www.spigotmc.org/threads/spigot-bungeecord-1-19.559742/
 		Set<Material> planks = new HashSet<>();
+		Set<String> allWoodTypes = new HashSet<>();
+		List<String> unknownWoodTypes = new ArrayList<>();
 		for (Material m : Material.values()) {
-			if (m.name().endsWith("PLANKS")) {
+			String name = m.name();
+			if (name.endsWith("PLANKS")) {
+				String woodName = name.substring(0, name.lastIndexOf("_"));
 				planks.add(m);
+				allWoodTypes.add(woodName);
+				if (!name.startsWith("OAK") &&
+					!name.startsWith("SPRUCE") &&
+					!name.startsWith("BIRCH") &&
+					!name.startsWith("JUNGLE") &&
+					!name.startsWith("ACACIA") &&
+					!name.startsWith("DARK_OAK") &&
+					!name.startsWith("CRIMSON") &&
+					!name.startsWith("WARPED") &&
+					!name.startsWith("MANGROVE") &&
+					!name.startsWith("CHERRY") &&
+					!name.startsWith("BAMBOO")) {
+
+					unknownWoodTypes.add(woodName);
+				}
 			}
 		}
+		unknownWoodTypes.sort(null);
 		PLANKS = planks;
+		UNKNOWN_WOOD = unknownWoodTypes;
+		TOTAL_WOOD_TYPES = allWoodTypes.size();
+
+		if (!unknownWoodTypes.isEmpty()) {
+			P.p.log("New wood types detected. Assigning recipe numbers:");
+			int lastKnownNumber = 12;
+			for (int i = 0; i < unknownWoodTypes.size(); i++) {
+				P.p.log("  " + unknownWoodTypes.get(i) + ": " + (i + lastKnownNumber));
+			}
+		}
+
 
 		Set<Material> woodStairs = new HashSet<>();
-		Material[] gotStairs = {
-			get("OAK_STAIRS", "WOOD_STAIRS"),
-			get("SPRUCE_STAIRS", "SPRUCE_WOOD_STAIRS"),
-			get("BIRCH_STAIRS", "BIRCH_WOOD_STAIRS"),
-			get("JUNGLE_STAIRS", "JUNGLE_WOOD_STAIRS"),
-			get("ACACIA_STAIRS"),
-			get("DARK_OAK_STAIRS"),
-			get("CRIMSON_STAIRS"),
-			get("WARPED_STAIRS"),
-			get("MANGROVE_STAIRS"),
-			get("CHERRY_STAIRS"),
-			get("BAMBOO_STAIRS"),
-		};
-		for (Material stair : gotStairs) {
+		for (String wood : allWoodTypes) {
+			Material stair = get(wood + "_STAIRS");
 			if (stair != null) {
 				woodStairs.add(stair);
 			}
 		}
+		if (!P.use1_13) {
+			Material[] legacyStairs = {
+				get("OAK_STAIRS", "WOOD_STAIRS"),
+				get("SPRUCE_STAIRS", "SPRUCE_WOOD_STAIRS"),
+				get("BIRCH_STAIRS", "BIRCH_WOOD_STAIRS"),
+				get("JUNGLE_STAIRS", "JUNGLE_WOOD_STAIRS"),
+			};
+			for (Material stair : legacyStairs) {
+				if (stair != null) {
+					woodStairs.add(stair);
+				}
+			}
+		}
 		WOOD_STAIRS = woodStairs;
+
+		// Special case for Bamboo mosaic, which simply counts as bamboo in recipes
+		if (get("BAMBOO_MOSAIC") != null) {
+			planks.add(get("BAMBOO_MOSAIC"));
+		}
+		if (get("BAMBOO_MOSAIC_STAIRS") != null) {
+			woodStairs.add(get("BAMBOO_MOSAIC_STAIRS"));
+		}
 
 
 		Set<Material> fences = new HashSet<>();
@@ -92,6 +134,8 @@ public class LegacyUtil {
 	public static final Set<Material> PLANKS;
 	public static final Set<Material> WOOD_STAIRS;
 	public static final Set<Material> FENCES;
+	public static final List<String> UNKNOWN_WOOD;
+	public static final int TOTAL_WOOD_TYPES;
 
 	// Materials removed in 1.13
 	public static final Material STATIONARY_LAVA = get("STATIONARY_LAVA");
@@ -197,6 +241,13 @@ public class LegacyUtil {
 				return 10;
 			} else if (material.startsWith("BAMBOO")) {
 				return 11;
+			} else if (!UNKNOWN_WOOD.isEmpty()) {
+				for (int i = 0; i < UNKNOWN_WOOD.size(); i++) {
+					if (material.startsWith(UNKNOWN_WOOD.get(i))) {
+						return (byte) (i + 12);
+					}
+				}
+				return 0;
 			} else {
 				return 0;
 			}

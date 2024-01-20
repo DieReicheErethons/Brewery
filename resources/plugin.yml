@@ -1,5 +1,5 @@
 name: Brewery
-version: 3.1.1
+version: '${project.version}'
 main: com.dre.brewery.BreweryPlugin
 softdepend: [LWC, LogBlock, WorldGuard, GriefPrevention, Vault, ChestShop, Shopkeepers, Towny, BlockLocker, Slimefun]
 authors: [Milan Albrecht, Frank Baumann, ProgrammerDan, Daniel Saukel, Jsinco]

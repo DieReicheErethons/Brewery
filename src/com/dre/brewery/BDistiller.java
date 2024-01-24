@@ -174,38 +174,40 @@ public class BDistiller {
 
 		@Override
 		public void run() {
-			BlockState now = standBlock.getState();
-			if (now instanceof BrewingStand) {
-				BrewingStand stand = (BrewingStand) now;
-				if (brewTime == -1) { // check at the beginning for distillables
-					if (!prepareForDistillables(stand)) {
-						return;
+			P.getScheduler().runTask(standBlock.getLocation(), () -> {
+				BlockState now = standBlock.getState();
+				if (now instanceof BrewingStand) {
+					BrewingStand stand = (BrewingStand) now;
+					if (brewTime == -1) { // check at the beginning for distillables
+						if (!prepareForDistillables(stand)) {
+							return;
+						}
 					}
-				}
 
-				brewTime--; // count down.
-				stand.setBrewingTime((int) ((float) brewTime / ((float) runTime / (float) DISTILLTIME)) + 1);
+					brewTime--; // count down.
+					stand.setBrewingTime((int) ((float) brewTime / ((float) runTime / (float) DISTILLTIME)) + 1);
 
-				if (brewTime <= 1) { // Done!
-					contents = getDistillContents(stand.getInventory()); // Get the contents again at the end just in case
-					stand.setBrewingTime(0);
-					stand.update();
-					if (!runDistill(stand.getInventory(), contents)) {
-						this.cancel();
-						trackedDistillers.remove(standBlock);
-						P.p.debugLog("All done distilling");
+					if (brewTime <= 1) { // Done!
+						contents = getDistillContents(stand.getInventory()); // Get the contents again at the end just in case
+						stand.setBrewingTime(0);
+						stand.update();
+						if (!runDistill(stand.getInventory(), contents)) {
+							this.cancel();
+							trackedDistillers.remove(standBlock);
+							P.p.debugLog("All done distilling");
+						} else {
+							brewTime = -1; // go again.
+							P.p.debugLog("Can distill more! Continuing.");
+						}
 					} else {
-						brewTime = -1; // go again.
-						P.p.debugLog("Can distill more! Continuing.");
+						stand.update();
 					}
 				} else {
-					stand.update();
+					this.cancel();
+					trackedDistillers.remove(standBlock);
+					P.p.debugLog("The block was replaced; not a brewing stand.");
 				}
-			} else {
-				this.cancel();
-				trackedDistillers.remove(standBlock);
-				P.p.debugLog("The block was replaced; not a brewing stand.");
-			}
+			});
 		}
 
 		private boolean prepareForDistillables(BrewingStand stand) {

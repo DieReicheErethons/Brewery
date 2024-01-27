@@ -99,6 +99,9 @@ public class BreweryPlugin extends JavaPlugin {
 		use1_13 = !v.matches("(^|.*[^.\\d])1\\.1[0-2]([^\\d].*|$)") && !v.matches("(^|.*[^.\\d])1\\.[0-9]([^\\d].*|$)");
 		use1_14 = !v.matches("(^|.*[^.\\d])1\\.1[0-3]([^\\d].*|$)") && !v.matches("(^|.*[^.\\d])1\\.[0-9]([^\\d].*|$)");
 
+		// Load Addons
+		addonManager.loadAddons();
+
 		//MC 1.13 uses a different NBT API than the newer versions..
 		// We decide here which to use, the new or the old or none at all
 		if (LegacyUtil.initNbt()) {
@@ -178,7 +181,6 @@ public class BreweryPlugin extends JavaPlugin {
 		}
 
 
-		addonManager.loadAddons();
 		this.log(this.getDescription().getName() + " enabled!");
 	}
 

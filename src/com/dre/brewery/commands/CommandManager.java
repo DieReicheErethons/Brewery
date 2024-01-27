@@ -36,6 +36,7 @@ public class CommandManager implements TabExecutor {
         subCommands.put("showstats", new ShowStatsCommand());
         subCommands.put("puke", new PukeCommand());
         subCommands.put("drink", new DrinkCommand());
+		subCommands.put("reloadaddons", new ReloadAddonsCommand());
     }
 
     @Override

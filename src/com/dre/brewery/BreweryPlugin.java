@@ -174,11 +174,7 @@ public class BreweryPlugin extends JavaPlugin {
 
 		// Disable Update Check for older mc versions
 		if (use1_14 && BConfig.updateCheck) {
-			try {
-				breweryPlugin.getServer().getScheduler().runTaskLaterAsynchronously(breweryPlugin, new UpdateChecker(), 135);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			//breweryPlugin.getServer().getScheduler().runTaskLaterAsynchronously(breweryPlugin, new UpdateChecker(), 135);
 		}
 
 

@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 public abstract class AddonCommand extends BukkitCommand {
-	protected AddonCommand(@NotNull String name, @NotNull String description, @NotNull String usageMessage, @NotNull List<String> aliases) {
+	public AddonCommand(@NotNull String name, @NotNull String description, @NotNull String usageMessage, @NotNull List<String> aliases) {
 		super(name, description, usageMessage, aliases);
 	}
 }

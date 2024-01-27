@@ -24,6 +24,7 @@
 
 package com.dre.brewery;
 
+import com.dre.brewery.api.addons.AddonManager;
 import com.dre.brewery.commands.CommandManager;
 
 import com.dre.brewery.commands.CommandUtil;
@@ -57,6 +58,8 @@ import java.util.Map;
 import java.util.function.Function;
 
 public class BreweryPlugin extends JavaPlugin {
+	AddonManager addonManager = new AddonManager(this);
+
 	public static BreweryPlugin breweryPlugin;
 	public static boolean debug;
 	public static boolean useUUID;
@@ -178,11 +181,14 @@ public class BreweryPlugin extends JavaPlugin {
 			}
 		}
 
+
+		addonManager.loadAddons();
 		this.log(this.getDescription().getName() + " enabled!");
 	}
 
 	@Override
 	public void onDisable() {
+		addonManager.unloadAddons();
 
 		// Disable listeners
 		HandlerList.unregisterAll(this);

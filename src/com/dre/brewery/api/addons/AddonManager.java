@@ -31,6 +31,14 @@ public class AddonManager {
 
 	public void loadAddons() {
 		addons = getAllAddonClasses();
+		plugin.getLogger().info("Loaded " + addons.size() + " addons");
+	}
+
+	public void unloadAddons() {
+		for (Addon addon : addons) {
+			addon.onAddonDisable();
+		}
+		addons = null;
 	}
 
 	/**
@@ -50,7 +58,7 @@ public class AddonManager {
 			for (CompletableFuture<Class<? extends Addon>> addonClass : addonClasses) {
 				addonClass.thenAccept(clazz -> {
 					try {
-						Addon addon = clazz.getConstructor(BreweryPlugin.class).newInstance(plugin);
+						Addon addon = clazz.getConstructor(BreweryPlugin.class, AddonLogger.class).newInstance(plugin, new AddonLogger(clazz));
 						addon.onAddonEnable();
 						addons.add(addon);
 					} catch (Exception e) {

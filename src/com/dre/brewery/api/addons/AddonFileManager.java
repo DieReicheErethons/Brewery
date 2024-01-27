@@ -26,7 +26,7 @@ public class AddonFileManager {
 	public AddonFileManager(BreweryAddon addon) {
 		this.addon = addon;
 		this.addonName = addon.getClass().getSimpleName();
-		this.addonFolder = new File(plugin.getDataFolder().getAbsolutePath() + "/addons/" + addonName);
+		this.addonFolder = new File(plugin.getDataFolder().getAbsolutePath() + File.separator + "addons" + File.separator + addonName);
 		this.logger = addon.getLogger();
 		this.configFile = new File(addonFolder, addonName + ".yml");
 		this.addonConfig = YamlConfiguration.loadConfiguration(configFile);

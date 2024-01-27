@@ -263,7 +263,7 @@ public class BreweryPlugin extends JavaPlugin {
 		BConfig.reloader = null;
 	}
 
-	private void clearConfigData() {
+	public void clearConfigData() {
 		BRecipe.getConfigRecipes().clear();
 		BRecipe.numConfigRecipes = 0;
 		BCauldronRecipe.acceptedMaterials.clear();

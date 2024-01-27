@@ -19,7 +19,7 @@ public class AddonManager {
 
 	private final BreweryPlugin plugin;
 	private final File addonsFolder;
-	private static List<Addon> addons;
+	private static List<BreweryAddon> addons;
 
 	public AddonManager(BreweryPlugin plugin) {
 		this.plugin = plugin;
@@ -31,35 +31,40 @@ public class AddonManager {
 
 	public void loadAddons() {
 		addons = getAllAddonClasses();
-		plugin.getLogger().info("Loaded " + addons.size() + " addons");
 	}
 
 	public void unloadAddons() {
-		for (Addon addon : addons) {
+		for (BreweryAddon addon : addons) {
 			addon.onAddonDisable();
 		}
 		addons = null;
+	}
+
+	public void reloadAddons() {
+		for (BreweryAddon addon : addons) {
+			addon.onBreweryReload();
+		}
 	}
 
 	/**
 	 * Get all classes that extend Addon and instantiates them
 	 * @return A list of all instantiated Addons
 	 */
-	public List<Addon> getAllAddonClasses() {
+	public List<BreweryAddon> getAllAddonClasses() {
 		File[] files = addonsFolder.listFiles((dir, name) -> name.endsWith(".jar"));
 		if (files == null) {
 			return Collections.emptyList();
 		}
 
-		List<Addon> addons = new ArrayList<>();
+		List<BreweryAddon> addons = new ArrayList<>();
 
 		for (File file : files) {
-			List<CompletableFuture<Class<? extends Addon>>> addonClasses = findClassesAsync(file, Addon.class);
-			for (CompletableFuture<Class<? extends Addon>> addonClass : addonClasses) {
+			List<CompletableFuture<Class<? extends BreweryAddon>>> addonClasses = findClassesAsync(file, BreweryAddon.class);
+			for (CompletableFuture<Class<? extends BreweryAddon>> addonClass : addonClasses) {
 				addonClass.thenAccept(clazz -> {
 					try {
-						Addon addon = clazz.getConstructor(BreweryPlugin.class, AddonLogger.class).newInstance(plugin, new AddonLogger(clazz));
-						addon.onAddonEnable();
+						BreweryAddon addon = clazz.getConstructor(BreweryPlugin.class, AddonLogger.class).newInstance(plugin, new AddonLogger(clazz));
+						addon.onAddonEnable(new AddonFileManager(addon));
 						addons.add(addon);
 					} catch (Exception e) {
 						plugin.getLogger().log(Level.SEVERE,"Failed to load addon class " + clazz.getSimpleName(), e);

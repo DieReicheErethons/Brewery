@@ -164,7 +164,7 @@ public class InventoryListener implements Listener {
 							case MOVE_TO_OTHER_INVENTORY:
 							case HOTBAR_SWAP:
 								// Fix a Graphical glitch of item still showing colors until clicking it
-								P.p.getServer().getScheduler().runTask(P.p, () -> ((Player) event.getWhoClicked()).updateInventory());
+								P.getScheduler().runTask(() -> ((Player) event.getWhoClicked()).updateInventory());
 						}
 					}
 				}
@@ -238,7 +238,7 @@ public class InventoryListener implements Listener {
 		if (!opening) {
 			opening = true;
 			Barrel finalBarrel = x;
-			P.p.getServer().getScheduler().scheduleSyncDelayedTask(P.p, () -> {finalBarrel.remove(null, null); opening = false;}, 100);
+			P.getScheduler().scheduleSyncDelayedTask(() -> {finalBarrel.remove(null, null); opening = false;}, 100);
 		}*/
 
 		// Check for MC Barrel

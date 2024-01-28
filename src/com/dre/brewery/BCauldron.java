@@ -21,13 +21,14 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class BCauldron {
 	public static final byte EMPTY = 0, SOME = 1, FULL = 2;
 	public static final int PARTICLEPAUSE = 15;
 	public static Random particleRandom = new Random();
 	private static Set<UUID> plInteracted = new HashSet<>(); // Interact Event helper
-	public static Map<Block, BCauldron> bcauldrons = new HashMap<>(); // All active cauldrons. Mapped to their block for fast retrieve
+	public volatile static Map<Block, BCauldron> bcauldrons = new ConcurrentHashMap<>(); // All active cauldrons. Mapped to their block for fast retrieve
 
 	private BIngredients ingredients = new BIngredients();
 	private final Block block;
@@ -372,7 +373,7 @@ public class BCauldron {
 
 		for (BCauldron cauldron : bcauldrons.values()) {
 			if (particleRandom.nextFloat() < chance) {
-				cauldron.cookEffect();
+				P.getScheduler().runTask(cauldron.block.getLocation(), cauldron::cookEffect);
 			}
 		}
 	}
@@ -441,7 +442,7 @@ public class BCauldron {
 				if (event.getHand() == EquipmentSlot.HAND) {
 					final UUID id = player.getUniqueId();
 					plInteracted.add(id);
-					P.p.getServer().getScheduler().runTask(P.p, () -> plInteracted.remove(id));
+					P.getScheduler().runTask(() -> plInteracted.remove(id));
 				} else if (event.getHand() == EquipmentSlot.OFF_HAND) {
 					if (!plInteracted.remove(player.getUniqueId())) {
 						item = player.getInventory().getItemInMainHand();
@@ -563,7 +564,7 @@ public class BCauldron {
 	// bukkit bug not updating the inventory while executing event, have to
 	// schedule the give
 	public static void giveItem(final Player player, final ItemStack item) {
-		P.p.getServer().getScheduler().runTaskLater(P.p, () -> player.getInventory().addItem(item), 1L);
+		P.getScheduler().runTaskLater(() -> player.getInventory().addItem(item), 1L);
 	}
 
 }

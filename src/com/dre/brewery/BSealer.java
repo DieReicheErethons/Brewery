@@ -1,5 +1,6 @@
 package com.dre.brewery;
 
+import com.github.Anon8281.universalScheduler.scheduling.tasks.MyScheduledTask;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
@@ -30,7 +31,7 @@ public class BSealer implements InventoryHolder {
 	private final Player player;
 	private short[] slotTime = new short[9];
 	private ItemStack[] contents = null;
-	private BukkitTask task;
+	private MyScheduledTask task;
 
 	public BSealer(Player player) {
 		this.player = player;
@@ -56,7 +57,7 @@ public class BSealer implements InventoryHolder {
 	public void clickInv() {
 		contents = null;
 		if (task == null) {
-			task = P.p.getServer().getScheduler().runTaskTimer(P.p, this::itemChecking, 1, 1);
+			task = P.getScheduler().runTaskTimer(P.p, this::itemChecking, 1, 1);
 		}
 	}
 

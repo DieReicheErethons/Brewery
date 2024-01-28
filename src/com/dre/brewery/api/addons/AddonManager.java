@@ -3,7 +3,6 @@ package com.dre.brewery.api.addons;
 import com.dre.brewery.BreweryPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandMap;
-import org.bukkit.command.defaults.BukkitCommand;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -13,7 +12,9 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.CompletionException;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
@@ -57,17 +58,6 @@ public class AddonManager {
 		}
 
 		for (File file : files) {
-			/*List<Class<? extends BreweryAddon>> addonClasses = findClasses(file, BreweryAddon.class);
-			for (Class<? extends BreweryAddon> addonClass : addonClasses) {
-				try {
-					BreweryAddon addon = addonClass.getConstructor(BreweryPlugin.class, AddonLogger.class).newInstance(plugin, new AddonLogger(addonClass));
-					addon.onAddonEnable(new AddonFileManager(addon));
-					addons.add(addon);
-					plugin.getLogger().info("Loaded " + addons.size() + " addons");
-				} catch (Exception e) {
-					plugin.getLogger().log(Level.SEVERE,"Failed to load addon class " + addonClass.getSimpleName(), e);
-				}
-			}*/
 
 			try {
 				List<Class<?>> classes = loadAllClassesFromJar(file);
@@ -78,7 +68,6 @@ public class AddonManager {
 						BreweryAddon addon = addonClass.getConstructor(BreweryPlugin.class, AddonLogger.class).newInstance(plugin, new AddonLogger(addonClass));
 						addon.onAddonEnable(new AddonFileManager(addon));
 						addons.add(addon);
-						plugin.getLogger().info("Loaded " + addons.size() + " addons");
 					} catch (Exception e) {
 						plugin.getLogger().log(Level.SEVERE,"Failed to load addon class " + clazz.getSimpleName(), e);
 					}
@@ -87,6 +76,7 @@ public class AddonManager {
 				plugin.getLogger().log(Level.SEVERE, "Failed to load addon classes from jar " + file.getName(), ex);
 			}
 		}
+		plugin.getLogger().info("Loaded " + addons.size() + " addons");
 	}
 
 
@@ -130,7 +120,6 @@ public class AddonManager {
 							if (BreweryAddon.class.isAssignableFrom(clazz)) {
 								classes.add(clazz);
 							}
-							plugin.getLogger().info("Loaded class: " + className);
 						} catch (ClassNotFoundException e) {
 							plugin.getLogger().log(Level.SEVERE, "Failed to load class " + className, e);
 						}
@@ -142,28 +131,6 @@ public class AddonManager {
 		}
 		return classes;
 	}
-
-	/*public List<Class<?>> loadAllClassesFromJar(File jarFile) throws IOException {
-
-		List<Class<?>> classes = new ArrayList<>();
-		try (URLClassLoader classLoader = new URLClassLoader(new URL[]{jarFile.toURI().toURL()})) {
-			try (JarInputStream jarInputStream = new JarInputStream(new FileInputStream(jarFile))) {
-				JarEntry jarEntry;
-				while ((jarEntry = jarInputStream.getNextJarEntry()) != null) {
-					if (jarEntry.getName().endsWith(".class")) {
-						String className = jarEntry.getName().replaceAll("/", ".").replace(".class", "");
-						try {
-							Class<?> clazz = Class.forName(className, true, classLoader);
-							classes.add(clazz);
-						} catch (ClassNotFoundException e) {
-							plugin.getLogger().log(Level.SEVERE, "Failed to load class " + className, e);
-						}
-					}
-				}
-			}
-		}
-		return classes;
-	}*/
 
 	private static @NotNull List<String> matchingNames(final File file) {
 		final List<String> matches = new ArrayList<>();

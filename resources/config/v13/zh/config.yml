@@ -37,7 +37,7 @@ enableKickOnOverdrink: false
 enablePuke: true
 
 # 呕吐物[Soul_Sand]
-pukeItem: Soul_Sand
+pukeItem: [Soul_Sand]
 
 # 呕吐物消失的时间, 单位为秒(MC默认为300 = 5分钟)[60]
 # 如果spigot.yml中的物品消失时间被变更, 此处也会变更.

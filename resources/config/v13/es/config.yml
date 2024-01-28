@@ -35,7 +35,7 @@ enableKickOnOverdrink: false
 enablePuke: true
 
 # Item that is dropped multiple times uncollectable when puking [Soul_Sand]
-pukeItem: Soul_Sand
+pukeItem: [Soul_Sand]
 
 # Time in seconds until the pukeitems despawn, (mc default is 300 = 5 min) [60]
 # If the item despawn time was changed in the spigot.yml, the pukeDespawntime changes as well.

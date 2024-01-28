@@ -35,7 +35,7 @@ enableKickOnOverdrink: false
 enablePuke: true
 
 # Item das beim Erbrechen mehrfach unaufsammelbar fallen gelassen wird [Soul_Sand]
-pukeItem: Soul_Sand
+pukeItem: [Soul_Sand]
 
 # Zeit in Sekunden bis die pukeitems despawnen, (mc standard wäre 300 = 5 min) [60]
 # Wurde die item Despawnzeit in der spigot.yml verändert, verändert sich auch die pukeDespawnzeit in Abhängigkeit.

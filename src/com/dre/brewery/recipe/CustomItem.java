@@ -24,6 +24,7 @@ public class CustomItem extends RecipeItem implements Ingredient {
 	private Material mat;
 	private String name;
 	private List<String> lore;
+	private int customModelData = 0;
 
 	public CustomItem() {
 	}
@@ -36,6 +37,13 @@ public class CustomItem extends RecipeItem implements Ingredient {
 		this.mat = mat;
 		this.name = name;
 		this.lore = lore;
+	}
+
+	public CustomItem(Material mat, String name, List<String> lore, int customModelData) {
+		this.mat = mat;
+		this.name = name;
+		this.lore = lore;
+		this.customModelData = customModelData;
 	}
 
 	public CustomItem(ItemStack item) {
@@ -64,6 +72,10 @@ public class CustomItem extends RecipeItem implements Ingredient {
 
 	public boolean hasLore() {
 		return lore != null && !lore.isEmpty();
+	}
+
+	public boolean hasCustomModelData() {
+		return customModelData != 0;
 	}
 
 	@Override
@@ -100,6 +112,14 @@ public class CustomItem extends RecipeItem implements Ingredient {
 		this.lore = lore;
 	}
 
+	public int getCustomModelData() {
+		return customModelData;
+	}
+
+	protected void setCustomModelData(int customModelData) {
+		this.customModelData = customModelData;
+	}
+
 	@NotNull
 	@Override
 	public Ingredient toIngredient(ItemStack forItem) {
@@ -123,11 +143,13 @@ public class CustomItem extends RecipeItem implements Ingredient {
 				// If the recipe item is just a simple item, only match if we also only define material
 				// If this is a custom item with more info, we don't want to match a simple item
 				return hasMaterials() && !hasLore() && !hasName() && getMaterial() == ((SimpleItem) rItem).getMaterial();
-			} else if (rItem instanceof CustomItem) {
+			} else if (rItem instanceof CustomItem other) {
 				// If the other is a CustomItem as well and not Similar to ours, it might have more data and we still match
-				CustomItem other = ((CustomItem) rItem);
-				if (mat == null || mat == other.mat) {
+                if (mat == null || mat == other.mat) {
 					if (!hasName() || (other.name != null && name.equalsIgnoreCase(other.name))) {
+						if (hasCustomModelData() && customModelData != other.customModelData) {
+							return false;
+						}
 						return !hasLore() || lore == other.lore || (other.hasLore() && matchLore(other.lore));
 					}
 				}
@@ -162,6 +184,10 @@ public class CustomItem extends RecipeItem implements Ingredient {
 				return false;
 			}
 			return matchLore(meta.getLore());
+		}
+
+		if (customModelData != 0) {
+            return meta.hasCustomModelData() && meta.getCustomModelData() == customModelData;
 		}
 		return true;
 	}
@@ -204,9 +230,8 @@ public class CustomItem extends RecipeItem implements Ingredient {
 		if (this == item) {
 			return true;
 		}
-		if (item instanceof CustomItem) {
-			CustomItem ci = ((CustomItem) item);
-			return mat == ci.mat && Objects.equals(name, ci.name) && Objects.equals(lore, ci.lore);
+		if (item instanceof CustomItem ci) {
+            return mat == ci.mat && Objects.equals(name, ci.name) && Objects.equals(lore, ci.lore) && customModelData == ci.customModelData;
 		}
 		return false;
 	}
@@ -222,7 +247,7 @@ public class CustomItem extends RecipeItem implements Ingredient {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(super.hashCode(), mat, name, lore);
+		return Objects.hash(super.hashCode(), mat, name, lore, customModelData);
 	}
 
 	@Override
@@ -232,6 +257,7 @@ public class CustomItem extends RecipeItem implements Ingredient {
 			", mat=" + (mat != null ? mat.name().toLowerCase() : "null") +
 			", name='" + name + '\'' +
 			", loresize: " + (lore != null ? lore.size() : 0) +
+			", modelData=" + customModelData +
 			'}';
 	}
 
@@ -259,6 +285,12 @@ public class CustomItem extends RecipeItem implements Ingredient {
 		} else {
 			out.writeShort(0);
 		}
+		if (customModelData != 0) {
+			out.writeBoolean(true);
+			out.writeInt(customModelData);
+		} else {
+			out.writeBoolean(false);
+		}
 	}
 
 	public static CustomItem loadFrom(ItemLoader loader) {
@@ -277,6 +309,9 @@ public class CustomItem extends RecipeItem implements Ingredient {
 				for (short i = 0; i < size; i++) {
 					item.lore.add(in.readUTF());
 				}
+			}
+			if (in.readBoolean()) {
+				item.customModelData = in.readInt();
 			}
 			return item;
 		} catch (IOException e) {

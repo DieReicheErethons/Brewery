@@ -189,6 +189,7 @@ public abstract class RecipeItem implements Cloneable {
 		List<Material> materials;
 		List<String> names;
 		List<String> lore;
+		List<Integer> customModelDatas;
 
 		List<String> load = BUtil.loadCfgStringList(cfg, id + ".material");
 		if (load != null && !load.isEmpty()) {
@@ -217,25 +218,38 @@ public abstract class RecipeItem implements Cloneable {
 			lore = new ArrayList<>(0);
 		}
 
-		if (materials.isEmpty() && names.isEmpty() && lore.isEmpty()) {
+		load = BUtil.loadCfgStringList(cfg, id + ".modeldata");
+		if (load != null && !load.isEmpty()) {
+			customModelDatas = new ArrayList<>(load.size());
+			for (String s : load) {
+				customModelDatas.add(BreweryPlugin.getInstance().parseInt(s));
+			}
+		} else {
+			customModelDatas = new ArrayList<>(0);
+		}
+
+		if (materials.isEmpty() && names.isEmpty() && lore.isEmpty() && customModelDatas.isEmpty()) {
 			BreweryPlugin.breweryPlugin.errorLog("No Config Entries found for Custom Item");
 			return null;
 		}
 
-		if (rItem instanceof CustomItem) {
-			CustomItem cItem = ((CustomItem) rItem);
-			if (!materials.isEmpty()) {
+		if (rItem instanceof CustomItem cItem) {
+            if (!materials.isEmpty()) {
 				cItem.setMat(materials.get(0));
 			}
 			if (!names.isEmpty()) {
 				cItem.setName(names.get(0));
 			}
 			cItem.setLore(lore);
+			if (!customModelDatas.isEmpty()) {
+				cItem.setCustomModelData(customModelDatas.get(0));
+			}
 		} else {
 			CustomMatchAnyItem maItem = (CustomMatchAnyItem) rItem;
 			maItem.setMaterials(materials);
 			maItem.setNames(names);
 			maItem.setLore(lore);
+			maItem.setCustomModelDatas(customModelDatas);
 		}
 
 		return rItem;

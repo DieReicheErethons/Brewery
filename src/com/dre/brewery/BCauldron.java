@@ -384,7 +384,7 @@ public class BCauldron {
 		Block clickedBlock = event.getClickedBlock();
 		assert clickedBlock != null;
 
-		if (materialInHand == null || materialInHand == Material.AIR || materialInHand == Material.BUCKET) {
+		if (materialInHand == Material.AIR || materialInHand == Material.BUCKET) {
 			return;
 
 		} else if (materialInHand == LegacyUtil.CLOCK) {

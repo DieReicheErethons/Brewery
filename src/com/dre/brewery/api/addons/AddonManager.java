@@ -20,7 +20,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 import java.util.logging.Level;
 
-public class AddonManager {
+public class AddonManager extends ClassLoader {
 
 	private final BreweryPlugin plugin;
 	private final File addonsFolder;
@@ -28,7 +28,7 @@ public class AddonManager {
 	private final static List<AddonCommand> addonCommands = new ArrayList<>();
 
 	public AddonManager(BreweryPlugin plugin) {
-		this.plugin = plugin;
+        this.plugin = plugin;
 		this.addonsFolder = new File(plugin.getDataFolder(), "addons");
 		if (!addonsFolder.exists()) {
 			addonsFolder.mkdirs();
@@ -66,7 +66,7 @@ public class AddonManager {
 					Class<? extends BreweryAddon> addonClass = clazz.asSubclass(BreweryAddon.class);
 					try {
 						BreweryAddon addon = addonClass.getConstructor(BreweryPlugin.class, AddonLogger.class).newInstance(plugin, new AddonLogger(addonClass));
-						addon.onAddonEnable(new AddonFileManager(addon));
+						addon.onAddonEnable(new AddonFileManager(addon, file));
 						addons.add(addon);
 					} catch (Exception e) {
 						plugin.getLogger().log(Level.SEVERE,"Failed to load addon class " + clazz.getSimpleName(), e);
@@ -107,9 +107,9 @@ public class AddonManager {
 	}
 
 	public List<Class<?>> loadAllClassesFromJar(File jarFile) {
-
 		List<Class<?>> classes = new ArrayList<>();
 		try (URLClassLoader classLoader = new URLClassLoader(new URL[]{jarFile.toURI().toURL()}, getClass().getClassLoader())) {
+
 			try (JarInputStream jarInputStream = new JarInputStream(new FileInputStream(jarFile))) {
 				JarEntry jarEntry;
 				while ((jarEntry = jarInputStream.getNextJarEntry()) != null) {
@@ -117,9 +117,11 @@ public class AddonManager {
 						String className = jarEntry.getName().replaceAll("/", ".").replace(".class", "");
 						try {
 							Class<?> clazz = Class.forName(className, true, classLoader);
-							if (BreweryAddon.class.isAssignableFrom(clazz)) {
-								classes.add(clazz);
+							if (!BreweryAddon.class.isAssignableFrom(clazz)) {
+								continue;
 							}
+							classes.add(clazz);
+
 						} catch (ClassNotFoundException e) {
 							plugin.getLogger().log(Level.SEVERE, "Failed to load class " + className, e);
 						}

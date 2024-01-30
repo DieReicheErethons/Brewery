@@ -2,7 +2,7 @@ package com.dre.brewery.api.addons;
 
 import com.dre.brewery.BreweryPlugin;
 
-public abstract class BreweryAddon {
+public abstract class BreweryAddon extends ClassLoader {
 
 	protected final BreweryPlugin plugin;
 	protected final AddonLogger logger;

@@ -211,7 +211,7 @@ cauldron:
 
   grass:
     name: Boiled herbs
-    ingredients: Grass
+    ingredients: Short_Grass
     color: '99ff66' # bright green
     cookParticles:
       - 'GREEN/2'
@@ -361,7 +361,7 @@ cauldron:
   poi_grass:
     name: Boiled acidy herbs
     ingredients:
-      - Grass
+      - Short_Grass
       - Poisonous_Potato
     color: '99ff66' # bright green
     cookParticles:
@@ -694,7 +694,7 @@ recipes:
   absinthe:
     name: Poor Absinthe/Absinthe/Strong Absinthe
     ingredients:
-      - Grass/15
+      - Short_Grass/15
     cookingtime: 3
     distillruns: 6
     distilltime: 80
@@ -708,7 +708,7 @@ recipes:
   gr_absinthe:
     name: Poor Absinthe/Green Absinthe/Bright Green Absinthe
     ingredients:
-      - Grass/17
+      - Short_Grass/17
       - Poisonous_Potato/2
     cookingtime: 5
     distillruns: 6
@@ -726,7 +726,7 @@ recipes:
     name: Potato soup
     ingredients:
       - Potato/5
-      - Grass/3
+      - Short_Grass/3
     cookingtime: 3
     color: ORANGE
     difficulty: 1

@@ -1,41 +1,44 @@
 package com.dre.brewery.api.addons;
 
+import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.utility.BUtil;
 import org.bukkit.Bukkit;
-import org.jetbrains.annotations.Contract;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class AddonLogger {
-
+	private final static Logger logger = BreweryPlugin.getInstance().getLogger();
+	private final String fullPrefix;
 	private final String prefix;
 
 	public AddonLogger(Class<? extends BreweryAddon> addonUninstantiated) {
-		this.prefix = "[BreweryAddon: " + addonUninstantiated.getSimpleName() + "] ";
+		this.fullPrefix = "[Brewery] [" + addonUninstantiated.getSimpleName() + "] ";
+		this.prefix = "[" + addonUninstantiated.getSimpleName() + "] ";
 	}
 
 	public void info(String message) {
-		Bukkit.getConsoleSender().sendMessage(BUtil.color(prefix + message));
+		Bukkit.getConsoleSender().sendMessage(BUtil.color(fullPrefix + message));
 	}
 
 	public void warning(String message) {
-		Bukkit.getConsoleSender().sendMessage(BUtil.color("&e" + prefix + message));
+		logger.log(Level.WARNING, prefix + message);
 	}
 
 	public void severe(String message) {
-		Bukkit.getConsoleSender().sendMessage(BUtil.color("&c" + prefix + message));
+		logger.log(Level.SEVERE, prefix + message);
 	}
 
 	public void info(String message, Throwable throwable) {
-		Bukkit.getConsoleSender().sendMessage(BUtil.color(prefix + message));
+		info(message);
 		throwable.printStackTrace();
 	}
 
 	public void warning(String message, Throwable throwable) {
-		Bukkit.getConsoleSender().sendMessage(BUtil.color("&e" + prefix + message));
-		throwable.printStackTrace();
+		logger.log(Level.WARNING, prefix + message, throwable);
 	}
 
 	public void severe(String message, Throwable throwable) {
-		Bukkit.getConsoleSender().sendMessage(BUtil.color("&c" + prefix + message));
-		throwable.printStackTrace();
+		logger.log(Level.SEVERE, prefix + message, throwable);
 	}
 }

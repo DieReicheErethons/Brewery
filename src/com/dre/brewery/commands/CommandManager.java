@@ -16,23 +16,23 @@ import java.util.Map;
 
 public class CommandManager implements TabExecutor {
 
-    private static final BreweryPlugin BREWERY_PLUGIN = BreweryPlugin.breweryPlugin;
+    private static final BreweryPlugin plugin = BreweryPlugin.getInstance();
 
     private static final Map<String, SubCommand> subCommands = new HashMap<>();
 
     public CommandManager() {
         subCommands.put("help" , new HelpCommand());
-        subCommands.put("reload", new ReloadCommand(BREWERY_PLUGIN));
+        subCommands.put("reload", new ReloadCommand(plugin));
         subCommands.put("wakeup", new WakeupCommand());
         subCommands.put("itemName", new ItemName());
-        subCommands.put("create", new CreateCommand(BREWERY_PLUGIN));
-        subCommands.put("info", new InfoCommand(BREWERY_PLUGIN));
+        subCommands.put("create", new CreateCommand(plugin));
+        subCommands.put("info", new InfoCommand(plugin));
         subCommands.put("seal", new SealCommand());
-        subCommands.put("copy", new CopyCommand(BREWERY_PLUGIN));
-        subCommands.put("delete", new DeleteCommand(BREWERY_PLUGIN));
+        subCommands.put("copy", new CopyCommand(plugin));
+        subCommands.put("delete", new DeleteCommand(plugin));
         subCommands.put("static", new StaticCommand());
         subCommands.put("unLabel", new UnLabelCommand());
-        subCommands.put("debuginfo", new DebugInfoCommand(BREWERY_PLUGIN));
+        subCommands.put("debuginfo", new DebugInfoCommand(plugin));
         subCommands.put("showstats", new ShowStatsCommand());
         subCommands.put("puke", new PukeCommand());
         subCommands.put("drink", new DrinkCommand());
@@ -55,14 +55,14 @@ public class CommandManager implements TabExecutor {
         String permission = subCommand.permission();
 
         if (playerOnly && !(sender instanceof Player)) {
-            BREWERY_PLUGIN.msg(sender, BREWERY_PLUGIN.languageReader.get("Error_NotPlayer"));
+            plugin.msg(sender, plugin.languageReader.get("Error_NotPlayer"));
             return true;
         } else if (permission != null && !sender.hasPermission(permission)) {
-            BREWERY_PLUGIN.msg(sender, BREWERY_PLUGIN.languageReader.get("Error_NoPermission"));
+            plugin.msg(sender, plugin.languageReader.get("Error_NoPermission"));
             return true;
         }
 
-        subCommand.execute(BREWERY_PLUGIN, sender, s, args);
+        subCommand.execute(plugin, sender, s, args);
         return false;
     }
 
@@ -82,7 +82,7 @@ public class CommandManager implements TabExecutor {
 
         SubCommand subCommand = subCommands.get(strings[0].toLowerCase());
         if (subCommand != null) {
-            return subCommand.tabComplete(BREWERY_PLUGIN, commandSender, s, strings);
+            return subCommand.tabComplete(plugin, commandSender, s, strings);
         }
         return null;
     }

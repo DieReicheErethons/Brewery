@@ -1,9 +1,12 @@
 name: Brewery
 version: '${project.version}'
+website: 'https://www.spigotmc.org/resources/breweryx.114777/'
 main: com.dre.brewery.BreweryPlugin
 softdepend: [LWC, LogBlock, WorldGuard, GriefPrevention, Vault, ChestShop, Shopkeepers, Towny, BlockLocker, Slimefun]
 authors: [Milan Albrecht, Frank Baumann, ProgrammerDan, Daniel Saukel, Jsinco]
 api-version: 1.13
+libraries:
+  - 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.10'
 commands:
   brewery:
     description: Mostly admin commands to create/modify Brews and drunkeness

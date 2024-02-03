@@ -3,6 +3,7 @@ package com.dre.brewery.api.addons;
 import com.dre.brewery.BreweryPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandMap;
+import org.bukkit.command.SimpleCommandMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -63,6 +64,9 @@ public class AddonManager extends ClassLoader {
 				List<Class<?>> classes = loadAllClassesFromJar(file);
 
 				for (Class<?> clazz : classes) {
+					if (!BreweryAddon.class.isAssignableFrom(clazz)) {
+						continue;
+					}
 					Class<? extends BreweryAddon> addonClass = clazz.asSubclass(BreweryAddon.class);
 					try {
 						BreweryAddon addon = addonClass.getConstructor(BreweryPlugin.class, AddonLogger.class).newInstance(plugin, new AddonLogger(addonClass));
@@ -72,7 +76,7 @@ public class AddonManager extends ClassLoader {
 						plugin.getLogger().log(Level.SEVERE,"Failed to load addon class " + clazz.getSimpleName(), e);
 					}
 				}
-			} catch (Exception ex) {
+			} catch (Throwable ex) {
 				plugin.getLogger().log(Level.SEVERE, "Failed to load addon classes from jar " + file.getName(), ex);
 			}
 		}
@@ -112,18 +116,37 @@ public class AddonManager extends ClassLoader {
 
 			try (JarInputStream jarInputStream = new JarInputStream(new FileInputStream(jarFile))) {
 				JarEntry jarEntry;
+				String mainDir = "";
 				while ((jarEntry = jarInputStream.getNextJarEntry()) != null) {
 					if (jarEntry.getName().endsWith(".class")) {
 						String className = jarEntry.getName().replaceAll("/", ".").replace(".class", "");
 						try {
-							Class<?> clazz = Class.forName(className, true, classLoader);
-							if (!BreweryAddon.class.isAssignableFrom(clazz)) {
+							Class<?> clazz;
+							try {
+								clazz = Class.forName(className, false, classLoader);
+							} catch (ClassNotFoundException | NoClassDefFoundError e) {
+								continue;
+							}
+                            if (BreweryAddon.class.isAssignableFrom(clazz)) {
+								classLoader.loadClass(className);
+								mainDir = className.substring(0, className.lastIndexOf('.'));
+							}
+							if (!clazz.getName().contains(mainDir)) {
 								continue;
 							}
 							classes.add(clazz);
 
 						} catch (ClassNotFoundException e) {
 							plugin.getLogger().log(Level.SEVERE, "Failed to load class " + className, e);
+						}
+					}
+				}
+				for (Class<?> clazz : classes) {
+					if (!BreweryAddon.class.isAssignableFrom(clazz)) {
+						try {
+							classLoader.loadClass(clazz.getName());
+						} catch (ClassNotFoundException e) {
+							plugin.getLogger().log(Level.SEVERE, "Failed to load class " + clazz.getName(), e);
 						}
 					}
 				}
@@ -185,7 +208,7 @@ public class AddonManager extends ClassLoader {
 	}
 
 	public static void unRegisterAddonCommand(AddonCommand addonCommand) {
-		try {
+		try { // no worky :(
 			final Field bukkitCommandMap = Bukkit.getServer().getClass().getDeclaredField("commandMap");
 
 			bukkitCommandMap.setAccessible(true);
@@ -194,9 +217,9 @@ public class AddonManager extends ClassLoader {
 
 			for (AddonCommand bukkitCommand : addonCommands) {
 				for (String alias : bukkitCommand.getAliases()) {
-					commandMap.getCommand(alias).unregister(commandMap);
+					commandMap.getCommand("brewery:" + alias).unregister(commandMap);
 				}
-				commandMap.getCommand(bukkitCommand.getName()).unregister(commandMap);
+				commandMap.getCommand("brewery:" + bukkitCommand.getName()).unregister(commandMap);
 			}
 		} catch (NoSuchFieldException | IllegalAccessException e) {
 			e.printStackTrace();

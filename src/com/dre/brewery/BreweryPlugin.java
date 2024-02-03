@@ -100,7 +100,11 @@ public class BreweryPlugin extends JavaPlugin {
 		use1_14 = !v.matches("(^|.*[^.\\d])1\\.1[0-3]([^\\d].*|$)") && !v.matches("(^|.*[^.\\d])1\\.[0-9]([^\\d].*|$)");
 
 		// Load Addons
-		addonManager.loadAddons();
+		try {
+			addonManager.loadAddons();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		//MC 1.13 uses a different NBT API than the newer versions..
 		// We decide here which to use, the new or the old or none at all

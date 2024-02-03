@@ -177,7 +177,16 @@ public class BreweryPlugin extends JavaPlugin {
 
 		// Disable Update Check for older mc versions
 		if (use1_14 && BConfig.updateCheck) {
-			//breweryPlugin.getServer().getScheduler().runTaskLaterAsynchronously(breweryPlugin, new UpdateChecker(), 135);
+			new UpdateChecker(114777).query(latestVersion -> {
+				int pluginVersion = parseInt(getDescription().getVersion().replace(".","").strip());
+				int latest = parseInt(latestVersion.replace(".", "").strip());
+
+				if (latest > pluginVersion) {
+					UpdateChecker.setUpdateAvailable(true);
+					UpdateChecker.setLatestVersion(latestVersion);
+					msg(Bukkit.getConsoleSender(), languageReader.get("Etc_UpdateAvailable", "v" + getDescription().getVersion(), "v" + latestVersion));
+				}
+			});
 		}
 
 

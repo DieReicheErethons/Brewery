@@ -54,6 +54,7 @@ Etc_Barrel: 釀造桶
 Etc_Page: 頁數
 Etc_Usage: '用法:'
 Etc_SealingTable: Brew Sealing Table
+Etc_UpdateAvailable: 'Update available: &a&v1 &f-> &a&v2'
 
 # Help
 Help_Copy: '&6/brew copy [數量]&9 複製手中的藥水'

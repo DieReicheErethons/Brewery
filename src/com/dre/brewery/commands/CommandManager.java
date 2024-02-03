@@ -87,6 +87,11 @@ public class CommandManager implements TabExecutor {
         return null;
     }
 
+	public static void addSubCommand(String name, SubCommand subCommand) {
+		subCommands.put(name, subCommand);
+	}
 
-
+	public static void removeSubCommand(String name) {
+		subCommands.remove(name);
+	}
 }

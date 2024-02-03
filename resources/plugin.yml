@@ -33,6 +33,7 @@ permissions:
     description: Gives access to Every Command and most bypasses
     default: op
     children:
+      brewery.update: true
       brewery.user: true
       brewery.mod: true
       brewery.cmd.info: true
@@ -140,3 +141,7 @@ permissions:
 
   brewery.recovery.2:
     description: How quickly the player will naturally reduce his drunkeness per minute
+
+# -- Misc --
+  brewery.update:
+    description: Get notified about new versions

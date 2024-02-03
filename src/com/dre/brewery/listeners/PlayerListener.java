@@ -274,7 +274,7 @@ public class PlayerListener implements Listener {
 
 	@EventHandler(ignoreCancelled = true)
 	public void onPlayerJoin(PlayerJoinEvent event) {
-		//UpdateChecker.notify(event.getPlayer());
+		UpdateChecker.notify(event.getPlayer());
 	}
 
 	@EventHandler

@@ -80,7 +80,7 @@ public class AddonManager extends ClassLoader {
 	}
 
 
-	public static <T> @NotNull List<Class<? extends T>> findClasses(@NotNull final File file, @NotNull final Class<T> clazz) throws CompletionException {
+	private static <T> @NotNull List<Class<? extends T>> findClasses(@NotNull final File file, @NotNull final Class<T> clazz) throws CompletionException {
 		if (!file.exists()) {
 			return Collections.emptyList();
 		}
@@ -106,7 +106,7 @@ public class AddonManager extends ClassLoader {
 		return classes;
 	}
 
-	public List<Class<?>> loadAllClassesFromJar(File jarFile) {
+	private List<Class<?>> loadAllClassesFromJar(File jarFile) {
 		List<Class<?>> classes = new ArrayList<>();
 		try (URLClassLoader classLoader = new URLClassLoader(new URL[]{jarFile.toURI().toURL()}, getClass().getClassLoader())) {
 

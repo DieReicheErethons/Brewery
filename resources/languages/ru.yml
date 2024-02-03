@@ -54,6 +54,7 @@ Etc_Barrel: 'Бочка'
 Etc_Page: 'Страница'
 Etc_Usage: 'Использование:'
 Etc_SealingTable: 'Стол закупорки бражки.'
+Etc_UpdateAvailable: 'Update available: &a&v1 &f-> &a&v2'
 
 # Help
 Help_Copy: '&6/brew copy [Quantity]&9 Копирует зелье в твоей руке'

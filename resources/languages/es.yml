@@ -55,6 +55,7 @@ Etc_Barrel: Barril
 Etc_Page: Página
 Etc_Usage: 'Usa:'
 Etc_SealingTable: Mesa de sellado
+Etc_UpdateAvailable: 'Update available: &a&v1 &f-> &a&v2'
 
 # Help
 Help_Copy: '&6/brew copy [Cantidad]&9 Copia la poción en tu mano'

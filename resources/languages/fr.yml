@@ -54,7 +54,7 @@ Etc_Barrel: Baril
 Etc_Page: Page
 Etc_Usage: 'Utilise:'
 Etc_SealingTable: 'Table de scellage des boissons'
-Etc_UpdateAvailable: 'Update available: &a&v1 &f-> &a&v2'
+Etc_UpdateAvailable: 'Update available: &a&v1 &f-> &a&v2 &bhttps://www.spigotmc.org/resources/breweryx.114777/'
 
 # Aide
 Help_Copy: '&6/brew copy [Quantity]&9 Copie la potion qui est dans votre main'

@@ -54,7 +54,7 @@ Etc_Barrel: 木桶
 Etc_Page: 页
 Etc_Usage: '用途:'
 Etc_SealingTable: Brew Sealing Table
-Etc_UpdateAvailable: 'Update available: &a&v1 &f-> &a&v2'
+Etc_UpdateAvailable: 'Update available: &a&v1 &f-> &a&v2 &bhttps://www.spigotmc.org/resources/breweryx.114777/'
 
 # Help
 Help_Copy: '&6/brew copy [数量] &9复制当前手中的饮品.'

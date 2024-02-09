@@ -13,6 +13,7 @@ public class ReloadAddonsCommand implements SubCommand {
 		AddonManager addonManager = new AddonManager(breweryPlugin);
 		addonManager.unloadAddons();
 		addonManager.loadAddons();
+		breweryPlugin.msg(sender, "Loaded " + addonManager.getAddons().size() + " addons");
 	}
 
 	@Override

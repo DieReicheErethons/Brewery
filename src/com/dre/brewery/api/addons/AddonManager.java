@@ -40,6 +40,7 @@ public class AddonManager extends ClassLoader {
 		for (BreweryAddon addon : addons) {
 			addon.onAddonDisable();
 		}
+		addons.clear();
 	}
 
 	public void reloadAddons() {
@@ -47,6 +48,10 @@ public class AddonManager extends ClassLoader {
 			addon.onBreweryReload();
 		}
 		plugin.getLogger().info("Reloaded " + addons.size() + " addons");
+	}
+
+	public List<BreweryAddon> getAddons() {
+		return addons;
 	}
 
 	/**

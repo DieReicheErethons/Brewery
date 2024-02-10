@@ -203,7 +203,7 @@ public class BreweryPlugin extends JavaPlugin {
 		// Disable listeners
 		HandlerList.unregisterAll(this);
 
-		// Stop shedulers
+		// Stop schedulers
 		BreweryPlugin.getScheduler().cancelTasks(this);
 
 		if (breweryPlugin == null) {

@@ -12,6 +12,7 @@ import com.dre.brewery.utility.PermissionUtil;
 import com.github.Anon8281.universalScheduler.scheduling.tasks.MyScheduledTask;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -29,10 +30,11 @@ import org.bukkit.util.Vector;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class BPlayer {
-	private static Map<String, BPlayer> players = new HashMap<>();// Players uuid and BPlayer
-	private static Map<Player, Integer> pTasks = new HashMap<>();// Player and count
+	private static ConcurrentHashMap<String, BPlayer> players = new ConcurrentHashMap<>();// Players uuid and BPlayer
+	private static ConcurrentHashMap<Player, Integer> pTasks = new ConcurrentHashMap<>();// Player and count
 	private static MyScheduledTask task;
 	private static Random pukeRand;
 
@@ -574,7 +576,7 @@ public class BPlayer {
 		BUtil.reapplyPotionEffect(player, PotionEffectType.HUNGER.createEffect(80, 4), true);
 
 		if (pTasks.isEmpty()) {
-			task = BreweryPlugin.getScheduler().runTaskTimer(BreweryPlugin.getInstance(), BPlayer::pukeTask, 1L, 1L);
+			task = BreweryPlugin.getScheduler().runTaskTimer(player, BPlayer::pukeTask, 1L, 1L);
 		}
 		pTasks.put(player, event.getCount());
 	}
@@ -613,6 +615,7 @@ public class BPlayer {
 		Vector direction = loc.getDirection();
 		direction.multiply(0.5);
 		loc.add(direction);
+
 		Item item = player.getWorld().dropItem(loc, new ItemStack(BConfig.pukeItem.get(new Random().nextInt(BConfig.pukeItem.size()))));
 		item.setVelocity(direction);
 		item.setPickupDelay(32767); // Item can never be picked up when pickup delay is 32767

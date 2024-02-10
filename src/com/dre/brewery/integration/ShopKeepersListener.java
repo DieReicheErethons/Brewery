@@ -45,7 +45,7 @@ public class ShopKeepersListener implements Listener {
 		if (item != null && item.getType() == Material.POTION && event.getClickedInventory() == event.getView().getTopInventory()) {
 			Brew brew = Brew.get(item);
 			if (brew != null && !brew.isSealed()) {
-				BreweryPlugin.breweryPlugin.msg(event.getWhoClicked(), BreweryPlugin.breweryPlugin.languageReader.get("Player_ShopSealBrew"));
+				BreweryPlugin.getInstance().msg(event.getWhoClicked(), BreweryPlugin.getInstance().languageReader.get("Player_ShopSealBrew"));
 			}
 		}
 	}
@@ -60,7 +60,7 @@ public class ShopKeepersListener implements Listener {
 		HandlerList.unregisterAll(this);
 		BConfig.hasShopKeepers = false;
 		e.printStackTrace();
-		BreweryPlugin.breweryPlugin.errorLog("Failed to notify Player using 'ShopKeepers'. Disabling 'ShopKeepers' support");
+		BreweryPlugin.getInstance().errorLog("Failed to notify Player using 'ShopKeepers'. Disabling 'ShopKeepers' support");
 		openedEditors.clear();
 	}
 

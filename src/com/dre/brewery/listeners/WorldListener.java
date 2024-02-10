@@ -20,7 +20,7 @@ public class WorldListener implements Listener {
 	public void onWorldLoad(WorldLoadEvent event) {
 		final World world = event.getWorld();
 		if (BConfig.loadDataAsync) {
-			BreweryPlugin.breweryPlugin.getServer().getScheduler().runTaskAsynchronously(BreweryPlugin.breweryPlugin, () -> lwDataTask(world));
+			BreweryPlugin.getScheduler().runTaskAsynchronously(() -> lwDataTask(world));
 		} else {
 			lwDataTask(world);
 		}

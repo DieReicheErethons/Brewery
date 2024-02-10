@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 public class Wakeup {
 
 	public static List<Wakeup> wakeups = new ArrayList<>();
-	public static BreweryPlugin breweryPlugin = BreweryPlugin.breweryPlugin;
+	public static BreweryPlugin breweryPlugin = BreweryPlugin.getInstance();
 	public static int checkId = -1;
 	public static Player checkPlayer = null;
 
@@ -268,7 +268,7 @@ public class Wakeup {
 	}
 
 	public static void unloadWorlds() {
-		List<World> worlds = BreweryPlugin.breweryPlugin.getServer().getWorlds();
+		List<World> worlds = BreweryPlugin.getInstance().getServer().getWorlds();
 		wakeups.removeIf(wakeup -> !worlds.contains(wakeup.loc.getWorld()));
 	}
 

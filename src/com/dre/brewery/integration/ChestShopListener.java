@@ -22,7 +22,7 @@ public class ChestShopListener implements Listener {
 					if (item != null && item.getType() == Material.POTION) {
 						Brew brew = Brew.get(item);
 						if (brew != null && !brew.isSealed()) {
-							event.getPlayer().sendTitle("", BreweryPlugin.breweryPlugin.color(BreweryPlugin.breweryPlugin.languageReader.get("Player_ShopSealBrew")), 10, 70, 20);
+							event.getPlayer().sendTitle("", BreweryPlugin.getInstance().color(BreweryPlugin.getInstance().languageReader.get("Player_ShopSealBrew")), 10, 70, 20);
 							return;
 						}
 					}
@@ -32,7 +32,7 @@ public class ChestShopListener implements Listener {
 			HandlerList.unregisterAll(this);
 			BConfig.hasChestShop = false;
 			e.printStackTrace();
-			BreweryPlugin.breweryPlugin.errorLog("Failed to notify Player using ChestShop. Disabling ChestShop support");
+			BreweryPlugin.getInstance().errorLog("Failed to notify Player using ChestShop. Disabling ChestShop support");
 		}
 	}
 }

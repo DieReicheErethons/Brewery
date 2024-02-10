@@ -5,7 +5,7 @@ import com.dre.brewery.BreweryPlugin;
 public class StringParser {
 
 	public static Tuple<Integer, String> parseQuality(String line, ParseType type) {
-		line = BreweryPlugin.breweryPlugin.color(line);
+		line = BreweryPlugin.getInstance().color(line);
 		int plus = 0;
 		if (line.startsWith("+++")) {
 			plus = 3;

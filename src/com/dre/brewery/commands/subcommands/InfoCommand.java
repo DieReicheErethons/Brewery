@@ -61,7 +61,7 @@ public class InfoCommand implements SubCommand {
             }
         }
 
-        Player player = BreweryPlugin.breweryPlugin.getServer().getPlayerExact(playerName);
+        Player player = BreweryPlugin.getInstance().getServer().getPlayerExact(playerName);
         BPlayer bPlayer;
         if (player == null) {
             bPlayer = BPlayer.getByName(playerName);

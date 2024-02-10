@@ -72,7 +72,7 @@ public class EntityListener implements Listener {
 			if (barrel != null) {
 				BarrelDestroyEvent breakEvent = new BarrelDestroyEvent(barrel, block, BarrelDestroyEvent.Reason.EXPLODED, null);
 				// Listened to by LWCBarrel (IntegrationListener)
-				BreweryPlugin.breweryPlugin.getServer().getPluginManager().callEvent(breakEvent);
+				BreweryPlugin.getInstance().getServer().getPluginManager().callEvent(breakEvent);
 				breakEvents.add(breakEvent);
 				if (breakEvent.isCancelled()) {
 					iter.remove();

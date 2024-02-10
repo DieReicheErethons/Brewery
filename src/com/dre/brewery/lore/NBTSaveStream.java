@@ -10,7 +10,7 @@ import java.io.IOException;
 
 public class NBTSaveStream extends ByteArrayOutputStream {
 	private static final String TAG = "brewdata";
-	private static final NamespacedKey KEY = new NamespacedKey(BreweryPlugin.breweryPlugin, TAG);
+	private static final NamespacedKey KEY = new NamespacedKey(BreweryPlugin.getInstance(), TAG);
 
 	private final ItemMeta meta;
 

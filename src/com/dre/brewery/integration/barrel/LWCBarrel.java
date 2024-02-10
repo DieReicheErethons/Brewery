@@ -40,7 +40,7 @@ public class LWCBarrel {
 					}
 				} catch (Exception e) {
 					lwc.sendLocale(player, "protection.internalerror", "id", "BLOCK_BREAK");
-					BreweryPlugin.breweryPlugin.errorLog("Failed to dispatch LWCProtectionDestroyEvent");
+					BreweryPlugin.getInstance().errorLog("Failed to dispatch LWCProtectionDestroyEvent");
 					e.printStackTrace();
 					return true;
 				}
@@ -71,7 +71,7 @@ public class LWCBarrel {
 					}
 				} catch (EventException e) {
 					lwc.sendLocale(player, "protection.internalerror", "id", "PLAYER_INTERACT");
-					BreweryPlugin.breweryPlugin.errorLog("Block Interact could not be passed to LWC");
+					BreweryPlugin.getInstance().errorLog("Block Interact could not be passed to LWC");
 					e.printStackTrace();
 					return false;
 				}

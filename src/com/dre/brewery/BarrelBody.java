@@ -233,7 +233,7 @@ public class BarrelBody {
 	 * @return true if successful, false if Barrel was broken and should be removed.
 	 */
 	public boolean regenerateBounds() {
-		BreweryPlugin.breweryPlugin.log("Regenerating Barrel BoundingBox: " + (bounds == null ? "was null" : "area=" + bounds.area()));
+		BreweryPlugin.getInstance().log("Regenerating Barrel BoundingBox: " + (bounds == null ? "was null" : "area=" + bounds.area()));
 		Block broken = getBrokenBlock(true);
 		if (broken != null) {
 			barrel.remove(broken, null, true);

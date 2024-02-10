@@ -36,9 +36,9 @@ public class LogBlockBarrel {
 				rawData = BukkitUtils.class.getDeclaredMethod("rawData", ItemStack.class);
 				queueChestAccess = Consumer.class.getDeclaredMethod("queueChestAccess", String.class, Location.class, int.class, short.class, short.class, short.class);
 			} catch (NoSuchMethodException e) {
-				BreweryPlugin.breweryPlugin.errorLog("Failed to hook into LogBlock to log barrels. Logging barrel contents is not going to work.");
-				BreweryPlugin.breweryPlugin.errorLog("Brewery was tested with version 1.12 to 1.13.1 of LogBlock.");
-				BreweryPlugin.breweryPlugin.errorLog("Disable LogBlock support in the configuration file and type /brew reload.");
+				BreweryPlugin.getInstance().errorLog("Failed to hook into LogBlock to log barrels. Logging barrel contents is not going to work.");
+				BreweryPlugin.getInstance().errorLog("Brewery was tested with version 1.12 to 1.13.1 of LogBlock.");
+				BreweryPlugin.getInstance().errorLog("Disable LogBlock support in the configuration file and type /brew reload.");
 				e.printStackTrace();
 			}
 		}

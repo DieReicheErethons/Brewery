@@ -24,7 +24,7 @@ public class SlimefunPluginItem extends PluginItem {
 			}
 		} catch (Exception | LinkageError e) {
 			e.printStackTrace();
-			BreweryPlugin.breweryPlugin.errorLog("Could not check Slimefun for Item ID");
+			BreweryPlugin.getInstance().errorLog("Could not check Slimefun for Item ID");
 			BConfig.hasSlimefun = false;
 			return false;
 		}

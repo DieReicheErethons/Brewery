@@ -1,5 +1,6 @@
 package com.dre.brewery;
 
+import com.github.Anon8281.universalScheduler.scheduling.tasks.MyScheduledTask;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
@@ -12,7 +13,6 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
@@ -22,7 +22,7 @@ import java.util.Iterator;
  * <p>Class doesn't load in mc 1.12 and lower (Can't find RecipeChoice, BlockData and NamespacedKey)
  */
 public class BSealer implements InventoryHolder {
-	public static final NamespacedKey TAG_KEY = new NamespacedKey(BreweryPlugin.breweryPlugin, "SealingTable");
+	public static final NamespacedKey TAG_KEY = new NamespacedKey(BreweryPlugin.getInstance(), "SealingTable");
 	public static boolean recipeRegistered = false;
 	public static boolean inventoryHolderWorking = true;
 
@@ -30,12 +30,12 @@ public class BSealer implements InventoryHolder {
 	private final Player player;
 	private final short[] slotTime = new short[9];
 	private ItemStack[] contents = null;
-	private BukkitTask task;
+	private MyScheduledTask task;
 
 	public BSealer(Player player) {
 		this.player = player;
 		if (inventoryHolderWorking) {
-			Inventory inv = BreweryPlugin.breweryPlugin.getServer().createInventory(this, InventoryType.DISPENSER, BreweryPlugin.breweryPlugin.languageReader.get("Etc_SealingTable"));
+			Inventory inv = BreweryPlugin.getInstance().getServer().createInventory(this, InventoryType.DISPENSER, BreweryPlugin.getInstance().languageReader.get("Etc_SealingTable"));
 			// Inventory Holder (for DISPENSER, ...) is only passed in Paper, not in Spigot. Doing inventory.getHolder() will return null in spigot :/
 			if (inv.getHolder() == this) {
 				inventory = inv;
@@ -44,7 +44,7 @@ public class BSealer implements InventoryHolder {
 				inventoryHolderWorking = false;
 			}
 		}
-		inventory = BreweryPlugin.breweryPlugin.getServer().createInventory(this, 9, BreweryPlugin.breweryPlugin.languageReader.get("Etc_SealingTable"));
+		inventory = BreweryPlugin.getInstance().getServer().createInventory(this, 9, BreweryPlugin.getInstance().languageReader.get("Etc_SealingTable"));
 	}
 
 	@Override
@@ -56,7 +56,7 @@ public class BSealer implements InventoryHolder {
 	public void clickInv() {
 		contents = null;
 		if (task == null) {
-			task = BreweryPlugin.breweryPlugin.getServer().getScheduler().runTaskTimer(BreweryPlugin.breweryPlugin, this::itemChecking, 1, 1);
+			task = BreweryPlugin.getScheduler().runTaskTimer(BreweryPlugin.getInstance(), this::itemChecking, 1, 1);
 		}
 	}
 
@@ -107,7 +107,7 @@ public class BSealer implements InventoryHolder {
 		if (BreweryPlugin.use1_14 && block.getType() == Material.SMOKER) {
 			Container smoker = (Container) block.getState();
 			if (smoker.getCustomName() != null) {
-				if (smoker.getCustomName().equals("§e" + BreweryPlugin.breweryPlugin.languageReader.get("Etc_SealingTable"))) {
+				if (smoker.getCustomName().equals("§e" + BreweryPlugin.getInstance().languageReader.get("Etc_SealingTable"))) {
 					return true;
 				} else {
 					return smoker.getPersistentDataContainer().has(TAG_KEY, PersistentDataType.BYTE);
@@ -121,7 +121,7 @@ public class BSealer implements InventoryHolder {
 		if (item.getType() == Material.SMOKER && item.hasItemMeta()) {
 			ItemMeta itemMeta = item.getItemMeta();
 			assert itemMeta != null;
-			if ((itemMeta.hasDisplayName() && itemMeta.getDisplayName().equals("§e" + BreweryPlugin.breweryPlugin.languageReader.get("Etc_SealingTable"))) ||
+			if ((itemMeta.hasDisplayName() && itemMeta.getDisplayName().equals("§e" + BreweryPlugin.getInstance().languageReader.get("Etc_SealingTable"))) ||
 				itemMeta.getPersistentDataContainer().has(BSealer.TAG_KEY, PersistentDataType.BYTE)) {
 				Container smoker = (Container) block.getState();
 				// Rotate the Block 180° so it doesn't look like a Smoker
@@ -137,26 +137,26 @@ public class BSealer implements InventoryHolder {
 	public static void registerRecipe() {
 		recipeRegistered = true;
 		ItemStack sealingTableItem = new ItemStack(Material.SMOKER);
-		ItemMeta meta = BreweryPlugin.breweryPlugin.getServer().getItemFactory().getItemMeta(Material.SMOKER);
+		ItemMeta meta = BreweryPlugin.getInstance().getServer().getItemFactory().getItemMeta(Material.SMOKER);
 		if (meta == null) return;
-		meta.setDisplayName("§e" + BreweryPlugin.breweryPlugin.languageReader.get("Etc_SealingTable"));
+		meta.setDisplayName("§e" + BreweryPlugin.getInstance().languageReader.get("Etc_SealingTable"));
 		meta.getPersistentDataContainer().set(TAG_KEY, PersistentDataType.BYTE, (byte)1);
 		sealingTableItem.setItemMeta(meta);
 
-		ShapedRecipe recipe = new ShapedRecipe(new NamespacedKey(BreweryPlugin.breweryPlugin, "SealingTable"), sealingTableItem);
+		ShapedRecipe recipe = new ShapedRecipe(new NamespacedKey(BreweryPlugin.getInstance(), "SealingTable"), sealingTableItem);
 		recipe.shape("bb ",
 					"ww ",
 					"ww ");
 		recipe.setIngredient('b', Material.GLASS_BOTTLE);
 		recipe.setIngredient('w', new RecipeChoice.MaterialChoice(Tag.PLANKS));
 
-		BreweryPlugin.breweryPlugin.getServer().addRecipe(recipe);
+		BreweryPlugin.getInstance().getServer().addRecipe(recipe);
 	}
 
 	public static void unregisterRecipe() {
 		recipeRegistered = false;
 		//P.p.getServer().removeRecipe(new NamespacedKey(P.p, "SealingTable"));    1.15 Method
-		Iterator<Recipe> recipeIterator = BreweryPlugin.breweryPlugin.getServer().recipeIterator();
+		Iterator<Recipe> recipeIterator = BreweryPlugin.getInstance().getServer().recipeIterator();
 		while (recipeIterator.hasNext()) {
 			Recipe next = recipeIterator.next();
 			if (next instanceof ShapedRecipe && ((ShapedRecipe) next).getKey().equals(TAG_KEY)) {

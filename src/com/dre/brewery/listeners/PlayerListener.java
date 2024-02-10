@@ -62,7 +62,7 @@ public class PlayerListener implements Listener {
 				BSealer sealer = new BSealer(player);
 				event.getPlayer().openInventory(sealer.getInventory());
 			} else {
-				BreweryPlugin.breweryPlugin.msg(player, BreweryPlugin.breweryPlugin.languageReader.get("Error_SealingTableDisabled"));
+				BreweryPlugin.getInstance().msg(player, BreweryPlugin.getInstance().languageReader.get("Error_SealingTableDisabled"));
 			}
 			return;
 		}
@@ -81,7 +81,7 @@ public class PlayerListener implements Listener {
 		if (BreweryPlugin.use1_14 && type == Material.BARREL) {
 			if (!player.hasPermission("brewery.openbarrel.mc")) {
 				event.setCancelled(true);
-				BreweryPlugin.breweryPlugin.msg(player, BreweryPlugin.breweryPlugin.languageReader.get("Error_NoPermissions"));
+				BreweryPlugin.getInstance().msg(player, BreweryPlugin.getInstance().languageReader.get("Error_NoPermissions"));
 			}
 			return;
 		}
@@ -142,7 +142,7 @@ public class PlayerListener implements Listener {
 					}
 					if (useSlot != -1) {
 						inv.setHeldItemSlot(useSlot);
-						BreweryPlugin.breweryPlugin.getServer().getScheduler().scheduleSyncDelayedTask(BreweryPlugin.breweryPlugin, () -> player.getInventory().setHeldItemSlot(held), 2);
+						BreweryPlugin.getScheduler().runTaskLater(() -> player.getInventory().setHeldItemSlot(held), 2);
 					}
 				}
 
@@ -263,10 +263,10 @@ public class PlayerListener implements Listener {
 						bplayer.join(player);
 						return;
 					case 2:
-						event.disallow(PlayerLoginEvent.Result.KICK_OTHER, BreweryPlugin.breweryPlugin.languageReader.get("Player_LoginDeny"));
+						event.disallow(PlayerLoginEvent.Result.KICK_OTHER, BreweryPlugin.getInstance().languageReader.get("Player_LoginDeny"));
 						return;
 					case 3:
-						event.disallow(PlayerLoginEvent.Result.KICK_OTHER, BreweryPlugin.breweryPlugin.languageReader.get("Player_LoginDenyLong"));
+						event.disallow(PlayerLoginEvent.Result.KICK_OTHER, BreweryPlugin.getInstance().languageReader.get("Player_LoginDenyLong"));
 				}
 			}
 		}

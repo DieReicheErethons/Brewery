@@ -26,13 +26,8 @@ package com.dre.brewery;
 
 import com.dre.brewery.api.addons.AddonManager;
 import com.dre.brewery.commands.CommandManager;
-
 import com.dre.brewery.commands.CommandUtil;
-import com.dre.brewery.filedata.BConfig;
-import com.dre.brewery.filedata.BData;
-import com.dre.brewery.filedata.DataSave;
-import com.dre.brewery.filedata.LanguageReader;
-import com.dre.brewery.filedata.UpdateChecker;
+import com.dre.brewery.filedata.*;
 import com.dre.brewery.integration.ChestShopListener;
 import com.dre.brewery.integration.IntegrationListener;
 import com.dre.brewery.integration.ShopKeepersListener;
@@ -44,6 +39,8 @@ import com.dre.brewery.recipe.*;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.LegacyUtil;
 import com.dre.brewery.utility.Stats;
+import com.github.Anon8281.universalScheduler.UniversalScheduler;
+import com.github.Anon8281.universalScheduler.scheduling.schedulers.TaskScheduler;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
@@ -52,15 +49,16 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.function.Function;
 
 public class BreweryPlugin extends JavaPlugin {
-	AddonManager addonManager = new AddonManager(this);
+	private final AddonManager addonManager = new AddonManager(this);
+	private static TaskScheduler scheduler;
 
-	public static BreweryPlugin breweryPlugin;
+	private static BreweryPlugin breweryPlugin;
 	public static boolean debug;
 	public static boolean useUUID;
 	public static boolean useNBT;
@@ -90,6 +88,7 @@ public class BreweryPlugin extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		breweryPlugin = this;
+		scheduler = UniversalScheduler.getScheduler(this);
 
 		// Version check
 		String v = Bukkit.getBukkitVersion();
@@ -172,11 +171,11 @@ public class BreweryPlugin extends JavaPlugin {
 		}
 
 		// Heartbeat
-		breweryPlugin.getServer().getScheduler().runTaskTimer(breweryPlugin, new BreweryRunnable(), 650, 1200);
-		breweryPlugin.getServer().getScheduler().runTaskTimer(breweryPlugin, new DrunkRunnable(), 120, 120);
+		BreweryPlugin.getScheduler().runTaskTimer(new BreweryRunnable(), 650, 1200);
+		BreweryPlugin.getScheduler().runTaskTimer(new DrunkRunnable(), 120, 120);
 
 		if (use1_9) {
-			breweryPlugin.getServer().getScheduler().runTaskTimer(breweryPlugin, new CauldronParticles(), 1, 1);
+			BreweryPlugin.getScheduler().runTaskTimer(new CauldronParticles(), 1, 1);
 		}
 
 		// Disable Update Check for older mc versions
@@ -205,7 +204,7 @@ public class BreweryPlugin extends JavaPlugin {
 		HandlerList.unregisterAll(this);
 
 		// Stop shedulers
-		getServer().getScheduler().cancelTasks(this);
+		BreweryPlugin.getScheduler().cancelTasks(this);
 
 		if (breweryPlugin == null) {
 			return;
@@ -382,6 +381,10 @@ public class BreweryPlugin extends JavaPlugin {
 		return BUtil.color(msg);
 	}
 
+	public static TaskScheduler getScheduler() {
+		return scheduler;
+	}
+
 
 	// Runnables
 
@@ -399,13 +402,15 @@ public class BreweryPlugin extends JavaPlugin {
 		public void run() {
 			long t1 = System.nanoTime();
 			BConfig.reloader = null;
-			Iterator<BCauldron> iter = BCauldron.bcauldrons.values().iterator();
-			while (iter.hasNext()) {
-				// runs every min to update cooking time
-				if (!iter.next().onUpdate()) {
-					iter.remove();
-				}
-			}
+            // runs every min to update cooking time
+			Collection<BCauldron> bCauldronsToRemove = BCauldron.bcauldrons.values();
+			BCauldron.bcauldrons.values().forEach(bcauldron -> {
+				BreweryPlugin.getScheduler().runTask(bcauldron.getBlock().getLocation(), () -> {
+					if (!bcauldron.onUpdate())
+						bCauldronsToRemove.add(bcauldron);
+				});
+			});
+			BCauldron.bcauldrons.values().removeIf(bCauldronsToRemove::contains);
 			long t2 = System.nanoTime();
 			Barrel.onUpdate();// runs every min to check and update ageing time
 			long t3 = System.nanoTime();

@@ -98,17 +98,17 @@ public class BRecipe {
 				recipe.name[0] = name[0];
 			}
 		} else {
-			BreweryPlugin.breweryPlugin.errorLog(recipeId + ": Recipe Name missing or invalid!");
+			BreweryPlugin.getInstance().errorLog(recipeId + ": Recipe Name missing or invalid!");
 			return null;
 		}
 		if (recipe.getRecipeName() == null || recipe.getRecipeName().length() < 1) {
-			BreweryPlugin.breweryPlugin.errorLog(recipeId + ": Recipe Name invalid");
+			BreweryPlugin.getInstance().errorLog(recipeId + ": Recipe Name invalid");
 			return null;
 		}
 
 		recipe.ingredients = loadIngredients(configSectionRecipes, recipeId);
 		if (recipe.ingredients == null || recipe.ingredients.isEmpty()) {
-			BreweryPlugin.breweryPlugin.errorLog("No ingredients for: " + recipe.getRecipeName());
+			BreweryPlugin.getInstance().errorLog("No ingredients for: " + recipe.getRecipeName());
 			return null;
 		}
 		recipe.cookingTime = configSectionRecipes.getInt(recipeId + ".cookingtime", 1);
@@ -127,7 +127,7 @@ public class BRecipe {
 		String col = configSectionRecipes.getString(recipeId + ".color", "BLUE");
 		recipe.color = PotionColor.fromString(col);
 		if (recipe.color == PotionColor.WATER && !col.equals("WATER")) {
-			BreweryPlugin.breweryPlugin.errorLog("Invalid Color '" + col + "' in Recipe: " + recipe.getRecipeName());
+			BreweryPlugin.getInstance().errorLog("Invalid Color '" + col + "' in Recipe: " + recipe.getRecipeName());
 			return null;
 		}
 
@@ -136,18 +136,18 @@ public class BRecipe {
 		recipe.servercmds = loadQualityStringList(configSectionRecipes, recipeId + ".servercommands", StringParser.ParseType.CMD);
 		recipe.playercmds = loadQualityStringList(configSectionRecipes, recipeId + ".playercommands", StringParser.ParseType.CMD);
 
-		recipe.drinkMsg = BreweryPlugin.breweryPlugin.color(BUtil.loadCfgString(configSectionRecipes, recipeId + ".drinkmessage"));
-		recipe.drinkTitle = BreweryPlugin.breweryPlugin.color(BUtil.loadCfgString(configSectionRecipes, recipeId + ".drinktitle"));
+		recipe.drinkMsg = BreweryPlugin.getInstance().color(BUtil.loadCfgString(configSectionRecipes, recipeId + ".drinkmessage"));
+		recipe.drinkTitle = BreweryPlugin.getInstance().color(BUtil.loadCfgString(configSectionRecipes, recipeId + ".drinktitle"));
 		if (configSectionRecipes.isString(recipeId + ".customModelData")) {
 			String[] cmdParts = configSectionRecipes.getString(recipeId + ".customModelData", "").split("/");
 			if (cmdParts.length == 3) {
-				recipe.cmData = new int[] {BreweryPlugin.breweryPlugin.parseInt(cmdParts[0]), BreweryPlugin.breweryPlugin.parseInt(cmdParts[1]), BreweryPlugin.breweryPlugin.parseInt(cmdParts[2])};
+				recipe.cmData = new int[] {BreweryPlugin.getInstance().parseInt(cmdParts[0]), BreweryPlugin.getInstance().parseInt(cmdParts[1]), BreweryPlugin.getInstance().parseInt(cmdParts[2])};
 				if (recipe.cmData[0] == 0 && recipe.cmData[1] == 0 && recipe.cmData[2] == 0) {
-					BreweryPlugin.breweryPlugin.errorLog("Invalid customModelData in Recipe: " + recipe.getRecipeName());
+					BreweryPlugin.getInstance().errorLog("Invalid customModelData in Recipe: " + recipe.getRecipeName());
 					recipe.cmData = null;
 				}
 			} else {
-				BreweryPlugin.breweryPlugin.errorLog("Invalid customModelData in Recipe: " + recipe.getRecipeName());
+				BreweryPlugin.getInstance().errorLog("Invalid customModelData in Recipe: " + recipe.getRecipeName());
 			}
 		} else {
 			int cmd = configSectionRecipes.getInt(recipeId + ".customModelData", 0);
@@ -163,7 +163,7 @@ public class BRecipe {
 				if (effect.isValid()) {
 					recipe.effects.add(effect);
 				} else {
-					BreweryPlugin.breweryPlugin.errorLog("Error adding Effect to Recipe: " + recipe.getRecipeName());
+					BreweryPlugin.getInstance().errorLog("Error adding Effect to Recipe: " + recipe.getRecipeName());
 				}
 			}
 		}
@@ -187,9 +187,9 @@ public class BRecipe {
 			String[] ingredParts = item.split("/");
 			int amount = 1;
 			if (ingredParts.length == 2) {
-				amount = BreweryPlugin.breweryPlugin.parseInt(ingredParts[1]);
+				amount = BreweryPlugin.getInstance().parseInt(ingredParts[1]);
 				if (amount < 1) {
-					BreweryPlugin.breweryPlugin.errorLog(recipeId + ": Invalid Item Amount: " + ingredParts[1]);
+					BreweryPlugin.getInstance().errorLog(recipeId + ": Invalid Item Amount: " + ingredParts[1]);
 					return null;
 				}
 			}
@@ -220,7 +220,7 @@ public class BRecipe {
 					continue;
 				} else {
 					// TODO Maybe load later ie on first use of recipe?
-					BreweryPlugin.breweryPlugin.errorLog(recipeId + ": Could not Find Plugin: " + ingredParts[1]);
+					BreweryPlugin.getInstance().errorLog(recipeId + ": Could not Find Plugin: " + ingredParts[1]);
 					return null;
 				}
 			}
@@ -254,7 +254,7 @@ public class BRecipe {
 			Material mat = Material.matchMaterial(matParts[0]);
 			short durability = -1;
 			if (matParts.length == 2) {
-				durability = (short) BreweryPlugin.breweryPlugin.parseInt(matParts[1]);
+				durability = (short) BreweryPlugin.getInstance().parseInt(matParts[1]);
 			}
 			if (mat == null && BConfig.hasVault) {
 				try {
@@ -271,7 +271,7 @@ public class BRecipe {
 						}
 					}
 				} catch (Exception e) {
-					BreweryPlugin.breweryPlugin.errorLog("Could not check vault for Item Name");
+					BreweryPlugin.getInstance().errorLog("Could not check vault for Item Name");
 					e.printStackTrace();
 				}
 			}
@@ -288,7 +288,7 @@ public class BRecipe {
 				BCauldronRecipe.acceptedMaterials.add(mat);
 				BCauldronRecipe.acceptedSimple.add(mat);
 			} else {
-				BreweryPlugin.breweryPlugin.errorLog(recipeId + ": Unknown Material: " + ingredParts[0]);
+				BreweryPlugin.getInstance().errorLog(recipeId + ": Unknown Material: " + ingredParts[0]);
 				return null;
 			}
 		}
@@ -312,31 +312,31 @@ public class BRecipe {
 	 */
 	public boolean isValid() {
 		if (ingredients == null || ingredients.isEmpty()) {
-			BreweryPlugin.breweryPlugin.errorLog("No ingredients could be loaded for Recipe: " + getRecipeName());
+			BreweryPlugin.getInstance().errorLog("No ingredients could be loaded for Recipe: " + getRecipeName());
 			return false;
 		}
 		if (cookingTime < 1) {
-			BreweryPlugin.breweryPlugin.errorLog("Invalid cooking time '" + cookingTime + "' in Recipe: " + getRecipeName());
+			BreweryPlugin.getInstance().errorLog("Invalid cooking time '" + cookingTime + "' in Recipe: " + getRecipeName());
 			return false;
 		}
 		if (distillruns < 0) {
-			BreweryPlugin.breweryPlugin.errorLog("Invalid distillruns '" + distillruns + "' in Recipe: " + getRecipeName());
+			BreweryPlugin.getInstance().errorLog("Invalid distillruns '" + distillruns + "' in Recipe: " + getRecipeName());
 			return false;
 		}
 		if (distillTime < 0) {
-			BreweryPlugin.breweryPlugin.errorLog("Invalid distilltime '" + distillTime + "' in Recipe: " + getRecipeName());
+			BreweryPlugin.getInstance().errorLog("Invalid distilltime '" + distillTime + "' in Recipe: " + getRecipeName());
 			return false;
 		}
 		if (wood < 0 || wood > LegacyUtil.TOTAL_WOOD_TYPES) {
-			BreweryPlugin.breweryPlugin.errorLog("Invalid wood type '" + wood + "' in Recipe: " + getRecipeName());
+			BreweryPlugin.getInstance().errorLog("Invalid wood type '" + wood + "' in Recipe: " + getRecipeName());
 			return false;
 		}
 		if (age < 0) {
-			BreweryPlugin.breweryPlugin.errorLog("Invalid age time '" + age + "' in Recipe: " + getRecipeName());
+			BreweryPlugin.getInstance().errorLog("Invalid age time '" + age + "' in Recipe: " + getRecipeName());
 			return false;
 		}
 		if (difficulty < 0 || difficulty > 10) {
-			BreweryPlugin.breweryPlugin.errorLog("Invalid difficulty '" + difficulty + "' in Recipe: " + getRecipeName());
+			BreweryPlugin.getInstance().errorLog("Invalid difficulty '" + difficulty + "' in Recipe: " + getRecipeName());
 			return false;
 		}
 		return true;
@@ -423,7 +423,7 @@ public class BRecipe {
 		List<String> serverCmdsForQuality = getServercmdsForQuality(quality);
 		if (serverCmdsForQuality != null) {
 			for (String cmd : serverCmdsForQuality) {
-				BreweryPlugin.breweryPlugin.getServer().dispatchCommand(BreweryPlugin.breweryPlugin.getServer().getConsoleSender(), BUtil.applyPlaceholders(cmd, player.getName(), quality));
+				BreweryPlugin.getInstance().getServer().dispatchCommand(BreweryPlugin.getInstance().getServer().getConsoleSender(), BUtil.applyPlaceholders(cmd, player.getName(), quality));
 			}
 		}
 		if (drinkMsg != null) {

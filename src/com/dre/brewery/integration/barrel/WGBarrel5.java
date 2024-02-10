@@ -29,9 +29,9 @@ public class WGBarrel5 implements WGBarrel {
 			canBuild = ApplicableRegionSet.class.getMethod("canBuild", LocalPlayer.class);
 			getApplicableRegions = RegionManager.class.getMethod("getApplicableRegions", Location.class);
 		} catch (NoSuchMethodException e) {
-			BreweryPlugin.breweryPlugin.errorLog("Failed to Hook WorldGuard for Barrel Open Permissions! Opening Barrels will NOT work!");
-			BreweryPlugin.breweryPlugin.errorLog("Brewery was tested with version 5.8, 6.1 to 7.0 of WorldGuard!");
-			BreweryPlugin.breweryPlugin.errorLog("Disable the WorldGuard support in the config and do /brew reload");
+			BreweryPlugin.getInstance().errorLog("Failed to Hook WorldGuard for Barrel Open Permissions! Opening Barrels will NOT work!");
+			BreweryPlugin.getInstance().errorLog("Brewery was tested with version 5.8, 6.1 to 7.0 of WorldGuard!");
+			BreweryPlugin.getInstance().errorLog("Disable the WorldGuard support in the config and do /brew reload");
 			e.printStackTrace();
 		}
 	}

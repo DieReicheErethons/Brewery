@@ -31,7 +31,7 @@ public class SlimefunListener implements Listener {
 							if (rItem instanceof SlimefunPluginItem) {
 								if (slimefunItem.get().getId().equalsIgnoreCase(((SlimefunPluginItem) rItem).getItemId())) {
 									event.cancel();
-									BreweryPlugin.breweryPlugin.playerListener.onPlayerInteract(event.getInteractEvent());
+									BreweryPlugin.getInstance().playerListener.onPlayerInteract(event.getInteractEvent());
 									return;
 								}
 							}
@@ -41,7 +41,7 @@ public class SlimefunListener implements Listener {
 			}
 		} catch (Throwable e) {
 			HandlerList.unregisterAll(this);
-			BreweryPlugin.breweryPlugin.errorLog("Slimefun check failed");
+			BreweryPlugin.getInstance().errorLog("Slimefun check failed");
 			e.printStackTrace();
 		}
 	}

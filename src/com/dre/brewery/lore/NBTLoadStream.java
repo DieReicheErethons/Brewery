@@ -9,7 +9,7 @@ import java.io.ByteArrayInputStream;
 
 public class NBTLoadStream extends ByteArrayInputStream {
 	private static final String TAG = "brewdata";
-	private static final NamespacedKey KEY = new NamespacedKey(BreweryPlugin.breweryPlugin, TAG);
+	private static final NamespacedKey KEY = new NamespacedKey(BreweryPlugin.getInstance(), TAG);
 
 	public NBTLoadStream(ItemMeta meta) {
 		super(getNBTBytes(meta));

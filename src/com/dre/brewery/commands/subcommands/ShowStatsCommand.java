@@ -12,12 +12,12 @@ public class ShowStatsCommand implements SubCommand {
     public void execute(BreweryPlugin breweryPlugin, CommandSender sender, String label, String[] args) {
         //if (sender instanceof ConsoleCommandSender && !sender.isOp()) return;
 
-        BreweryPlugin.breweryPlugin.msg(sender, "Drunk Players: " + BPlayer.numDrunkPlayers());
-        BreweryPlugin.breweryPlugin.msg(sender, "Brews created: " + BreweryPlugin.breweryPlugin.stats.brewsCreated);
-        BreweryPlugin.breweryPlugin.msg(sender, "Barrels built: " + Barrel.barrels.size());
-        BreweryPlugin.breweryPlugin.msg(sender, "Cauldrons boiling: " + BCauldron.bcauldrons.size());
-        BreweryPlugin.breweryPlugin.msg(sender, "Number of Recipes: " + BRecipe.getAllRecipes().size());
-        BreweryPlugin.breweryPlugin.msg(sender, "Wakeups: " + Wakeup.wakeups.size());
+        BreweryPlugin.getInstance().msg(sender, "Drunk Players: " + BPlayer.numDrunkPlayers());
+        BreweryPlugin.getInstance().msg(sender, "Brews created: " + BreweryPlugin.getInstance().stats.brewsCreated);
+        BreweryPlugin.getInstance().msg(sender, "Barrels built: " + Barrel.barrels.size());
+        BreweryPlugin.getInstance().msg(sender, "Cauldrons boiling: " + BCauldron.bcauldrons.size());
+        BreweryPlugin.getInstance().msg(sender, "Number of Recipes: " + BRecipe.getAllRecipes().size());
+        BreweryPlugin.getInstance().msg(sender, "Wakeups: " + Wakeup.wakeups.size());
     }
 
     @Override

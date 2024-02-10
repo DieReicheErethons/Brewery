@@ -77,10 +77,10 @@ public class LegacyUtil {
 		TOTAL_WOOD_TYPES = allWoodTypes.size();
 
 		if (!unknownWoodTypes.isEmpty()) {
-			BreweryPlugin.breweryPlugin.log("New wood types detected. Assigning recipe numbers:");
+			BreweryPlugin.getInstance().log("New wood types detected. Assigning recipe numbers:");
 			int lastKnownNumber = 12;
 			for (int i = 0; i < unknownWoodTypes.size(); i++) {
-				BreweryPlugin.breweryPlugin.log("  " + unknownWoodTypes.get(i) + ": " + (i + lastKnownNumber));
+				BreweryPlugin.getInstance().log("  " + unknownWoodTypes.get(i) + ": " + (i + lastKnownNumber));
 			}
 		}
 

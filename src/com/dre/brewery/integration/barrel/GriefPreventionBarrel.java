@@ -12,7 +12,7 @@ import java.util.function.Supplier;
 
 public class GriefPreventionBarrel {
 
-	private static BreweryPlugin brewery = BreweryPlugin.breweryPlugin;
+	private static BreweryPlugin brewery = BreweryPlugin.getInstance();
 
 	public static boolean checkAccess(BarrelAccessEvent event) {
 		GriefPrevention griefPrevention = GriefPrevention.instance;

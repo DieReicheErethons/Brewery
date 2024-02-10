@@ -41,7 +41,7 @@ public class RecipeTests {
 			for (BCauldronRecipe r : BCauldronRecipe.recipes) {
 				match = r.getIngredientMatch(list);
 				if (match >= 10) {
-					BreweryPlugin.breweryPlugin.debugLog("Found match 10 Recipe: " + r);
+					BreweryPlugin.getInstance().debugLog("Found match 10 Recipe: " + r);
 					return;
 				}
 				if (match > bestMatch) {
@@ -49,7 +49,7 @@ public class RecipeTests {
 					bestMatch = match;
 				}
 			}
-			BreweryPlugin.breweryPlugin.debugLog("Found best for i:" + i + " " + best);
+			BreweryPlugin.getInstance().debugLog("Found best for i:" + i + " " + best);
 		}
 
 		item = new ItemStack(Material.BARRIER);
@@ -76,11 +76,11 @@ public class RecipeTests {
 			.get();
 		BreweryApi.addRecipe(recipe, false);
 
-		BreweryPlugin.breweryPlugin.log(BRecipe.getConfigRecipes().size() + "");
+		BreweryPlugin.getInstance().log(BRecipe.getConfigRecipes().size() + "");
 
 		BreweryApi.removeRecipe("Bier");
 
-		BreweryPlugin.breweryPlugin.log(BRecipe.getConfigRecipes().size() + "");
+		BreweryPlugin.getInstance().log(BRecipe.getConfigRecipes().size() + "");
 
 		BCauldronRecipe r = BreweryApi.cauldronRecipeBuilder("Cooler Trank")
 			.color(PotionColor.PINK)

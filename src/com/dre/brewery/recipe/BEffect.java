@@ -43,7 +43,7 @@ public class BEffect {
 		}
 		type = PotionEffectType.getByName(effect);
 		if (type == null) {
-			BreweryPlugin.breweryPlugin.errorLog("Effect: " + effect + " does not exist!");
+			BreweryPlugin.getInstance().errorLog("Effect: " + effect + " does not exist!");
 			return;
 		}
 
@@ -75,21 +75,21 @@ public class BEffect {
 
 	private void setLvl(String[] range) {
 		if (range.length == 1) {
-			maxlvl = (short) BreweryPlugin.breweryPlugin.parseInt(range[0]);
+			maxlvl = (short) BreweryPlugin.getInstance().parseInt(range[0]);
 			minlvl = 1;
 		} else {
-			maxlvl = (short) BreweryPlugin.breweryPlugin.parseInt(range[1]);
-			minlvl = (short) BreweryPlugin.breweryPlugin.parseInt(range[0]);
+			maxlvl = (short) BreweryPlugin.getInstance().parseInt(range[1]);
+			minlvl = (short) BreweryPlugin.getInstance().parseInt(range[0]);
 		}
 	}
 
 	private void setDuration(String[] range) {
 		if (range.length == 1) {
-			maxduration = (short) BreweryPlugin.breweryPlugin.parseInt(range[0]);
+			maxduration = (short) BreweryPlugin.getInstance().parseInt(range[0]);
 			minduration = (short) (maxduration / 8);
 		} else {
-			maxduration = (short) BreweryPlugin.breweryPlugin.parseInt(range[1]);
-			minduration = (short) BreweryPlugin.breweryPlugin.parseInt(range[0]);
+			maxduration = (short) BreweryPlugin.getInstance().parseInt(range[1]);
+			minduration = (short) BreweryPlugin.getInstance().parseInt(range[0]);
 		}
 	}
 

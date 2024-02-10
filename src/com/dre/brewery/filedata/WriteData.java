@@ -21,8 +21,8 @@ public class WriteData implements Runnable {
 
 	@Override
 	public void run() {
-		File datafile = new File(BreweryPlugin.breweryPlugin.getDataFolder(), "data.yml");
-		File worlddatafile = new File(BreweryPlugin.breweryPlugin.getDataFolder(), "worlddata.yml");
+		File datafile = new File(BreweryPlugin.getInstance().getDataFolder(), "data.yml");
+		File worlddatafile = new File(BreweryPlugin.getInstance().getDataFolder(), "worlddata.yml");
 
 		try {
 			data.save(datafile);

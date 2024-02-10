@@ -10,11 +10,8 @@ import com.dre.brewery.lore.BrewLore;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.BoundingBox;
 import com.dre.brewery.utility.LegacyUtil;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.SoundCategory;
-import org.bukkit.World;
+import com.github.Anon8281.universalScheduler.UniversalRunnable;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.HumanEntity;
@@ -24,7 +21,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -37,7 +33,7 @@ import java.util.Map;
  */
 public class Barrel implements InventoryHolder {
 
-	public static List<Barrel> barrels = new ArrayList<>();
+	public static volatile List<Barrel> barrels = new ArrayList<>();
 	private static int check = 0; // Which Barrel was last checked
 
 	private final Block spigot;
@@ -49,9 +45,9 @@ public class Barrel implements InventoryHolder {
 	public Barrel(Block spigot, byte signoffset) {
 		this.spigot = spigot;
 		if (isLarge()) {
-			inventory = BreweryPlugin.breweryPlugin.getServer().createInventory(this, 27, BreweryPlugin.breweryPlugin.languageReader.get("Etc_Barrel"));
+			inventory = BreweryPlugin.getInstance().getServer().createInventory(this, 27, BreweryPlugin.getInstance().languageReader.get("Etc_Barrel"));
 		} else {
-			inventory = BreweryPlugin.breweryPlugin.getServer().createInventory(this, 9, BreweryPlugin.breweryPlugin.languageReader.get("Etc_Barrel"));
+			inventory = BreweryPlugin.getInstance().getServer().createInventory(this, 9, BreweryPlugin.getInstance().languageReader.get("Etc_Barrel"));
 		}
 		body = new BarrelBody(this, signoffset);
 	}
@@ -70,14 +66,14 @@ public class Barrel implements InventoryHolder {
 	public Barrel(Block spigot, byte sign, BoundingBox bounds, Map<String, Object> items, float time, boolean async) {
 		this.spigot = spigot;
 		if (isLarge()) {
-			this.inventory = BreweryPlugin.breweryPlugin.getServer().createInventory(this, 27, BreweryPlugin.breweryPlugin.languageReader.get("Etc_Barrel"));
+			this.inventory = BreweryPlugin.getInstance().getServer().createInventory(this, 27, BreweryPlugin.getInstance().languageReader.get("Etc_Barrel"));
 		} else {
-			this.inventory = BreweryPlugin.breweryPlugin.getServer().createInventory(this, 9, BreweryPlugin.breweryPlugin.languageReader.get("Etc_Barrel"));
+			this.inventory = BreweryPlugin.getInstance().getServer().createInventory(this, 9, BreweryPlugin.getInstance().languageReader.get("Etc_Barrel"));
 		}
 		if (items != null) {
 			for (String slot : items.keySet()) {
 				if (items.get(slot) instanceof ItemStack) {
-					this.inventory.setItem(BreweryPlugin.breweryPlugin.parseInt(slot), (ItemStack) items.get(slot));
+					this.inventory.setItem(BreweryPlugin.getInstance().parseInt(slot), (ItemStack) items.get(slot));
 				}
 			}
 		}
@@ -89,7 +85,9 @@ public class Barrel implements InventoryHolder {
 	public static void onUpdate() {
 		for (Barrel barrel : barrels) {
 			// Minecraft day is 20 min, so add 1/20 to the time every minute
-			barrel.time += (1.0 / 20.0);
+			if (barrel != null) {
+				barrel.time += (1.0 / 20.0);
+			}
 		}
 		int numBarrels = barrels.size();
 		if (check == 0 && numBarrels > 0) {
@@ -106,19 +104,19 @@ public class Barrel implements InventoryHolder {
 					randomInTheBack.checked = false;
 				}
 			}
-			new BarrelCheck().runTaskTimer(BreweryPlugin.breweryPlugin, 1, 1);
+			new BarrelCheck().runTaskTimer(BreweryPlugin.getInstance(), 1, 1);
 		}
 	}
 
 	public boolean hasPermsOpen(Player player, PlayerInteractEvent event) {
 		if (isLarge()) {
 			if (!player.hasPermission("brewery.openbarrel.big")) {
-				BreweryPlugin.breweryPlugin.msg(player, BreweryPlugin.breweryPlugin.languageReader.get("Error_NoBarrelAccess"));
+				BreweryPlugin.getInstance().msg(player, BreweryPlugin.getInstance().languageReader.get("Error_NoBarrelAccess"));
 				return false;
 			}
 		} else {
 			if (!player.hasPermission("brewery.openbarrel.small")) {
-				BreweryPlugin.breweryPlugin.msg(player, BreweryPlugin.breweryPlugin.languageReader.get("Error_NoBarrelAccess"));
+				BreweryPlugin.getInstance().msg(player, BreweryPlugin.getInstance().languageReader.get("Error_NoBarrelAccess"));
 				return false;
 			}
 		}
@@ -126,7 +124,7 @@ public class Barrel implements InventoryHolder {
 		// Call event
 		BarrelAccessEvent accessEvent = new BarrelAccessEvent(this, player, event.getClickedBlock(), event.getBlockFace());
 		// Listened to by IntegrationListener
-		BreweryPlugin.breweryPlugin.getServer().getPluginManager().callEvent(accessEvent);
+		BreweryPlugin.getInstance().getServer().getPluginManager().callEvent(accessEvent);
 		return !accessEvent.isCancelled();
 	}
 
@@ -136,7 +134,7 @@ public class Barrel implements InventoryHolder {
 	public boolean hasPermsDestroy(Player player, Block block, BarrelDestroyEvent.Reason reason) {
 		// Listened to by LWCBarrel (IntegrationListener)
 		BarrelDestroyEvent destroyEvent = new BarrelDestroyEvent(this, block, reason, player);
-		BreweryPlugin.breweryPlugin.getServer().getPluginManager().callEvent(destroyEvent);
+		BreweryPlugin.getInstance().getServer().getPluginManager().callEvent(destroyEvent);
 		return !destroyEvent.isCancelled();
 	}
 
@@ -146,9 +144,9 @@ public class Barrel implements InventoryHolder {
 	public void open(Player player) {
 		if (inventory == null) {
 			if (isLarge()) {
-				inventory = BreweryPlugin.breweryPlugin.getServer().createInventory(this, 27, BreweryPlugin.breweryPlugin.languageReader.get("Etc_Barrel"));
+				inventory = BreweryPlugin.getInstance().getServer().createInventory(this, 27, BreweryPlugin.getInstance().languageReader.get("Etc_Barrel"));
 			} else {
-				inventory = BreweryPlugin.breweryPlugin.getServer().createInventory(this, 9, BreweryPlugin.breweryPlugin.languageReader.get("Etc_Barrel"));
+				inventory = BreweryPlugin.getInstance().getServer().createInventory(this, 9, BreweryPlugin.getInstance().languageReader.get("Etc_Barrel"));
 			}
 		} else {
 			if (time > 0) {
@@ -168,7 +166,7 @@ public class Barrel implements InventoryHolder {
 						}
 						loadTime = System.nanoTime() - loadTime;
 						float ftime = (float) (loadTime / 1000000.0);
-						BreweryPlugin.breweryPlugin.debugLog("opening Barrel with potions (" + ftime + "ms)");
+						BreweryPlugin.getInstance().debugLog("opening Barrel with potions (" + ftime + "ms)");
 					}
 				}
 			}
@@ -180,8 +178,8 @@ public class Barrel implements InventoryHolder {
 			try {
 				LogBlockBarrel.openBarrel(player, inventory, spigot.getLocation());
 			} catch (Throwable e) {
-				BreweryPlugin.breweryPlugin.errorLog("Failed to Log Barrel to LogBlock!");
-				BreweryPlugin.breweryPlugin.errorLog("Brewery was tested with version 1.94 of LogBlock!");
+				BreweryPlugin.getInstance().errorLog("Failed to Log Barrel to LogBlock!");
+				BreweryPlugin.getInstance().errorLog("Brewery was tested with version 1.94 of LogBlock!");
 				e.printStackTrace();
 			}
 		}
@@ -287,7 +285,7 @@ public class Barrel implements InventoryHolder {
 
 		int i = 0;
 		for (Barrel barrel : barrels) {
-			if (barrel.body.isSignOfBarrel(signoffset)) {
+			if (barrel != null && barrel.body.isSignOfBarrel(signoffset)) {
 				if (barrel.spigot.equals(spigot)) {
 					if (barrel.body.getSignoffset() == 0 && signoffset != 0) {
 						// Barrel has no signOffset even though we clicked a sign, may be old
@@ -346,17 +344,17 @@ public class Barrel implements InventoryHolder {
 			if (barrel.body.getBrokenBlock(true) == null) {
 				if (LegacyUtil.isSign(spigot.getType())) {
 					if (!player.hasPermission("brewery.createbarrel.small")) {
-						BreweryPlugin.breweryPlugin.msg(player, BreweryPlugin.breweryPlugin.languageReader.get("Perms_NoSmallBarrelCreate"));
+						BreweryPlugin.getInstance().msg(player, BreweryPlugin.getInstance().languageReader.get("Perms_NoSmallBarrelCreate"));
 						return false;
 					}
 				} else {
 					if (!player.hasPermission("brewery.createbarrel.big")) {
-						BreweryPlugin.breweryPlugin.msg(player, BreweryPlugin.breweryPlugin.languageReader.get("Perms_NoBigBarrelCreate"));
+						BreweryPlugin.getInstance().msg(player, BreweryPlugin.getInstance().languageReader.get("Perms_NoBigBarrelCreate"));
 						return false;
 					}
 				}
 				BarrelCreateEvent createEvent = new BarrelCreateEvent(barrel, player);
-				BreweryPlugin.breweryPlugin.getServer().getPluginManager().callEvent(createEvent);
+				BreweryPlugin.getInstance().getServer().getPluginManager().callEvent(createEvent);
 				if (!createEvent.isCancelled()) {
 					barrels.add(0, barrel);
 					return true;
@@ -381,7 +379,7 @@ public class Barrel implements InventoryHolder {
 	public void remove(@Nullable Block broken, @Nullable Player breaker, boolean dropItems) {
 		BarrelRemoveEvent event = new BarrelRemoveEvent(this, dropItems);
 		// Listened to by LWCBarrel (IntegrationListener)
-		BreweryPlugin.breweryPlugin.getServer().getPluginManager().callEvent(event);
+		BreweryPlugin.getInstance().getServer().getPluginManager().callEvent(event);
 
 		if (inventory != null) {
 			List<HumanEntity> viewers = new ArrayList<>(inventory.getViewers());
@@ -395,8 +393,8 @@ public class Barrel implements InventoryHolder {
 				try {
 					LogBlockBarrel.breakBarrel(breaker, items, spigot.getLocation());
 				} catch (Throwable e) {
-					BreweryPlugin.breweryPlugin.errorLog("Failed to Log Barrel-break to LogBlock!");
-					BreweryPlugin.breweryPlugin.errorLog("Brewery was tested with version 1.94 of LogBlock!");
+					BreweryPlugin.getInstance().errorLog("Failed to Log Barrel-break to LogBlock!");
+					BreweryPlugin.getInstance().errorLog("Brewery was tested with version 1.94 of LogBlock!");
 					e.printStackTrace();
 				}
 			}
@@ -486,7 +484,7 @@ public class Barrel implements InventoryHolder {
 	 * Unload all Barrels that have a Block in a unloaded World
 	 */
 	public static void unloadWorlds() {
-		List<World> worlds = BreweryPlugin.breweryPlugin.getServer().getWorlds();
+		List<World> worlds = BreweryPlugin.getInstance().getServer().getWorlds();
 		barrels.removeIf(barrel -> !worlds.contains(barrel.spigot.getWorld()));
 	}
 
@@ -550,7 +548,7 @@ public class Barrel implements InventoryHolder {
 		}
 	}
 
-	public static class BarrelCheck extends BukkitRunnable {
+	public static class BarrelCheck extends UniversalRunnable {
 		@Override
 		public void run() {
 			boolean repeat = true;
@@ -558,19 +556,21 @@ public class Barrel implements InventoryHolder {
 				if (check < barrels.size()) {
 					Barrel barrel = barrels.get(check);
 					if (!barrel.checked) {
-						Block broken = barrel.body.getBrokenBlock(false);
-						if (broken != null) {
-							BreweryPlugin.breweryPlugin.debugLog("Barrel at "
-								+ broken.getWorld().getName() + "/" + broken.getX() + "/" + broken.getY() + "/" + broken.getZ()
-								+ " has been destroyed unexpectedly, contents will drop");
-							// remove the barrel if it was destroyed
-							barrel.remove(broken, null, true);
-						} else {
-							// Dont check this barrel again, its enough to check it once after every restart (and when randomly chosen)
-							// as now this is only the backup if we dont register the barrel breaking,
-							// for example when removing it with some world editor
-							barrel.checked = true;
-						}
+						BreweryPlugin.getScheduler().runTaskTimer(barrel.getSpigot().getLocation(), () -> {
+							Block broken = barrel.body.getBrokenBlock(false);
+							if (broken != null) {
+								BreweryPlugin.getInstance().debugLog("Barrel at "
+										+ broken.getWorld().getName() + "/" + broken.getX() + "/" + broken.getY() + "/" + broken.getZ()
+										+ " has been destroyed unexpectedly, contents will drop");
+								// remove the barrel if it was destroyed
+								barrel.remove(broken, null, true);
+							} else {
+								// Dont check this barrel again, its enough to check it once after every restart (and when randomly chosen)
+								// as now this is only the backup if we dont register the barrel breaking,
+								// for example when removing it with some world editor
+								barrel.checked = true;
+							}
+						}, 1, 1);
 						repeat = false;
 					}
 					check++;

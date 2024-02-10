@@ -37,7 +37,7 @@ public class UpdateChecker {
 	 * Query the API to find the latest approved file's details.
 	 */
 	public void query(final Consumer<String> consumer) {
-		Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+		BreweryPlugin.getScheduler().runTaskAsynchronously(() -> {
 			try (InputStream is = new URL("https://api.spigotmc.org/legacy/update.php?resource=" + resourceID + "/~").openStream(); Scanner scann = new Scanner(is)) {
 				if (scann.hasNext()) {
 					consumer.accept(scann.next());

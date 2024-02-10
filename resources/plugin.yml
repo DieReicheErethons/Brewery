@@ -54,6 +54,7 @@ permissions:
       brewery.cmd.static: true
       brewery.cmd.reload: true
       brewery.cmd.itemname: true
+      brewery.cmd.reloadaddons: true
   # *
   brewery.*:
     description: Gives Access to every Permission, including bypasses and overrides
@@ -97,6 +98,8 @@ permissions:
     description: Reload config
   brewery.cmd.itemname:
     description: View the material name of an item
+  brewery.cmd.reloadaddons:
+    description: Reload all Addons
 
 # -- Barrel --
   brewery.createbarrel:

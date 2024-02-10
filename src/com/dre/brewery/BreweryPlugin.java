@@ -49,16 +49,15 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.function.Function;
 
 public class BreweryPlugin extends JavaPlugin {
-	private final AddonManager addonManager = new AddonManager(this);
-	private static TaskScheduler scheduler;
 
+	private static AddonManager addonManager;
+	private static TaskScheduler scheduler;
 	private static BreweryPlugin breweryPlugin;
 	public static boolean debug;
 	public static boolean useUUID;
@@ -68,13 +67,8 @@ public class BreweryPlugin extends JavaPlugin {
 	public static boolean use1_13;
 	public static boolean use1_14;
 
-	// Listeners
-	public BlockListener blockListener;
+	// Public Listeners
 	public PlayerListener playerListener;
-	public EntityListener entityListener;
-	public InventoryListener inventoryListener;
-	public WorldListener worldListener;
-	public IntegrationListener integrationListener;
 
 	// Registrations
 	public Map<String, Function<ItemLoader, Ingredient>> ingredientLoaders = new HashMap<>();
@@ -100,6 +94,7 @@ public class BreweryPlugin extends JavaPlugin {
 		use1_14 = !v.matches("(^|.*[^.\\d])1\\.1[0-3]([^\\d].*|$)") && !v.matches("(^|.*[^.\\d])1\\.[0-9]([^\\d].*|$)");
 
 		// Load Addons
+		addonManager = new AddonManager(this);
 		addonManager.loadAddons();
 
 
@@ -140,32 +135,28 @@ public class BreweryPlugin extends JavaPlugin {
 		// Setup Metrics
 		stats.setupBStats();
 
-		// Listeners
-		blockListener = new BlockListener();
-		playerListener = new PlayerListener();
-		entityListener = new EntityListener();
-		inventoryListener = new InventoryListener();
-		worldListener = new WorldListener();
-		integrationListener = new IntegrationListener();
-		getCommand("brewery").setExecutor(new CommandManager());
 
-		breweryPlugin.getServer().getPluginManager().registerEvents(blockListener, breweryPlugin);
-		breweryPlugin.getServer().getPluginManager().registerEvents(playerListener, breweryPlugin);
-		breweryPlugin.getServer().getPluginManager().registerEvents(entityListener, breweryPlugin);
-		breweryPlugin.getServer().getPluginManager().registerEvents(inventoryListener, breweryPlugin);
-		breweryPlugin.getServer().getPluginManager().registerEvents(worldListener, breweryPlugin);
-		breweryPlugin.getServer().getPluginManager().registerEvents(integrationListener, breweryPlugin);
+		getCommand("brewery").setExecutor(new CommandManager());
+		// Listeners
+		playerListener = new PlayerListener();
+
+		getServer().getPluginManager().registerEvents(new BlockListener(), this);
+		getServer().getPluginManager().registerEvents(playerListener, this);
+		getServer().getPluginManager().registerEvents(new EntityListener(), this);
+		getServer().getPluginManager().registerEvents(new InventoryListener(), this);
+		getServer().getPluginManager().registerEvents(new WorldListener(), this);
+		getServer().getPluginManager().registerEvents(new IntegrationListener(), this);
 		if (use1_9) {
-			breweryPlugin.getServer().getPluginManager().registerEvents(new CauldronListener(), breweryPlugin);
+			getServer().getPluginManager().registerEvents(new CauldronListener(), this);
 		}
 		if (BConfig.hasChestShop && use1_13) {
-			breweryPlugin.getServer().getPluginManager().registerEvents(new ChestShopListener(), breweryPlugin);
+			getServer().getPluginManager().registerEvents(new ChestShopListener(), this);
 		}
 		if (BConfig.hasShopKeepers) {
-			breweryPlugin.getServer().getPluginManager().registerEvents(new ShopKeepersListener(), breweryPlugin);
+			getServer().getPluginManager().registerEvents(new ShopKeepersListener(), this);
 		}
 		if (BConfig.hasSlimefun && use1_14) {
-			breweryPlugin.getServer().getPluginManager().registerEvents(new SlimefunListener(), breweryPlugin);
+			getServer().getPluginManager().registerEvents(new SlimefunListener(), this);
 		}
 
 		// Heartbeat
@@ -190,7 +181,7 @@ public class BreweryPlugin extends JavaPlugin {
 			});
 		}
 
-
+		this.debugLog("Using scheduler: " + scheduler.getClass().getSimpleName());
 		this.log(this.getDescription().getName() + " enabled!");
 	}
 

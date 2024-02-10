@@ -46,7 +46,7 @@ public class WGBarrel7 implements WGBarrel {
 				world = ((World) getWorldByName.invoke(platform, spigot.getWorld().getName()));
 			} catch (IllegalAccessException | InvocationTargetException e) {
 				e.printStackTrace();
-				BreweryPlugin.breweryPlugin.msg(player, "Error in WorldGuard");
+				BreweryPlugin.getInstance().msg(player, "Error in WorldGuard");
 				return false;
 			}
 		}

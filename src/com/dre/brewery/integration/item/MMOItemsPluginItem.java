@@ -15,8 +15,8 @@ public class MMOItemsPluginItem extends PluginItem {
 	@Override
 	public boolean matches(ItemStack item) {
 		if (BConfig.hasMMOItems == null) {
-			BConfig.hasMMOItems = BreweryPlugin.breweryPlugin.getServer().getPluginManager().isPluginEnabled("MMOItems")
-				&& BreweryPlugin.breweryPlugin.getServer().getPluginManager().isPluginEnabled("MythicLib");
+			BConfig.hasMMOItems = BreweryPlugin.getInstance().getServer().getPluginManager().isPluginEnabled("MMOItems")
+				&& BreweryPlugin.getInstance().getServer().getPluginManager().isPluginEnabled("MythicLib");
 		}
 		if (!BConfig.hasMMOItems) return false;
 
@@ -25,7 +25,7 @@ public class MMOItemsPluginItem extends PluginItem {
 			return nbtItem.hasType() && nbtItem.getString("MMOITEMS_ITEM_ID").equalsIgnoreCase(getItemId());
 		} catch (Throwable e) {
 			e.printStackTrace();
-			BreweryPlugin.breweryPlugin.errorLog("Could not check MMOItems for Item ID");
+			BreweryPlugin.getInstance().errorLog("Could not check MMOItems for Item ID");
 			BConfig.hasMMOItems = false;
 			return false;
 		}

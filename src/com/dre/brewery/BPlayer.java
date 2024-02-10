@@ -9,8 +9,10 @@ import com.dre.brewery.lore.BrewLore;
 import com.dre.brewery.recipe.BEffect;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.PermissionUtil;
+import com.github.Anon8281.universalScheduler.scheduling.tasks.MyScheduledTask;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -28,11 +30,12 @@ import org.bukkit.util.Vector;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class BPlayer {
-	private static Map<String, BPlayer> players = new HashMap<>();// Players uuid and BPlayer
-	private static Map<Player, Integer> pTasks = new HashMap<>();// Player and count
-	private static int taskId;
+	private static ConcurrentHashMap<String, BPlayer> players = new ConcurrentHashMap<>();// Players uuid and BPlayer
+	private static ConcurrentHashMap<Player, Integer> pTasks = new ConcurrentHashMap<>();// Player and count
+	private static MyScheduledTask task;
 	private static Random pukeRand;
 
 	private final String uuid;
@@ -69,7 +72,7 @@ public class BPlayer {
 	public static BPlayer getByName(String playerName) {
 		if (BreweryPlugin.useUUID) {
 			for (Map.Entry<String, BPlayer> entry : players.entrySet()) {
-				OfflinePlayer p = BreweryPlugin.breweryPlugin.getServer().getOfflinePlayer(UUID.fromString(entry.getKey()));
+				OfflinePlayer p = BreweryPlugin.getInstance().getServer().getOfflinePlayer(UUID.fromString(entry.getKey()));
 				if (p != null) {
 					String name = p.getName();
 					if (name != null) {
@@ -88,7 +91,7 @@ public class BPlayer {
 	public static boolean hasPlayerbyName(String playerName) {
 		if (BreweryPlugin.useUUID) {
 			for (Map.Entry<String, BPlayer> entry : players.entrySet()) {
-				OfflinePlayer p = BreweryPlugin.breweryPlugin.getServer().getOfflinePlayer(UUID.fromString(entry.getKey()));
+				OfflinePlayer p = BreweryPlugin.getInstance().getServer().getOfflinePlayer(UUID.fromString(entry.getKey()));
 				if (p != null) {
 					String name = p.getName();
 					if (name != null) {
@@ -159,7 +162,7 @@ public class BPlayer {
 		// In this event the added alcohol amount is calculated, based on the sensitivity permission
 		BrewDrinkEvent drinkEvent = new BrewDrinkEvent(brew, meta, player, bPlayer);
 		if (meta != null) {
-			BreweryPlugin.breweryPlugin.getServer().getPluginManager().callEvent(drinkEvent);
+			BreweryPlugin.getInstance().getServer().getPluginManager().callEvent(drinkEvent);
 			if (drinkEvent.isCancelled()) {
 				if (bPlayer.drunkeness <= 0) {
 					bPlayer.remove();
@@ -171,7 +174,7 @@ public class BPlayer {
 		if (brew.hasRecipe()) {
 			brew.getCurrentRecipe().applyDrinkFeatures(player, brew.getQuality());
 		}
-		BreweryPlugin.breweryPlugin.stats.forDrink(brew);
+		BreweryPlugin.getInstance().stats.forDrink(brew);
 
 		int brewAlc = drinkEvent.getAddedAlcohol();
 		int quality = drinkEvent.getQuality();
@@ -218,8 +221,8 @@ public class BPlayer {
 		try {
 			// It this returns false, then the Action Bar is not supported. Do not repeat the message as it was sent into chat
 			if (sendDrunkenessMessage(player)) {
-				BreweryPlugin.breweryPlugin.getServer().getScheduler().scheduleSyncDelayedTask(BreweryPlugin.breweryPlugin, () -> sendDrunkenessMessage(player), 40);
-				BreweryPlugin.breweryPlugin.getServer().getScheduler().scheduleSyncDelayedTask(BreweryPlugin.breweryPlugin, () -> sendDrunkenessMessage(player), 80);
+				BreweryPlugin.getScheduler().runTaskLater(() -> sendDrunkenessMessage(player), 40);
+				BreweryPlugin.getScheduler().runTaskLater(() -> sendDrunkenessMessage(player), 80);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -242,7 +245,7 @@ public class BPlayer {
 			hangover = true;
 		}
 
-		b.append(BreweryPlugin.breweryPlugin.languageReader.get(hangover ? "Player_Hangover" : "Player_Drunkeness"));
+		b.append(BreweryPlugin.getInstance().languageReader.get(hangover ? "Player_Hangover" : "Player_Drunkeness"));
 
 		// Drunkeness or Hangover Strength Bars
 		b.append(": §7[");
@@ -303,7 +306,7 @@ public class BPlayer {
 		b.append("§7]");
 		final String text = b.toString();
 		if (hangover && BreweryPlugin.use1_11) {
-			BreweryPlugin.breweryPlugin.getServer().getScheduler().scheduleSyncDelayedTask(BreweryPlugin.breweryPlugin, () -> player.sendTitle("", text, 30, 100, 90), 160);
+			BreweryPlugin.getScheduler().runTaskLater(() -> player.sendTitle("", text, 30, 100, 90), 160);
 			return false;
 		}
 		try {
@@ -321,10 +324,10 @@ public class BPlayer {
 		drunkeness = 100;
 		syncToSQL(false);
 		if (BConfig.overdrinkKick && !player.hasPermission("brewery.bypass.overdrink")) {
-			BreweryPlugin.breweryPlugin.getServer().getScheduler().scheduleSyncDelayedTask(BreweryPlugin.breweryPlugin, () -> passOut(player), 1);
+			BreweryPlugin.getScheduler().runTaskLater(() -> passOut(player), 1);
 		} else {
 			addPuke(player, 60 + (int) (Math.random() * 60.0));
-			BreweryPlugin.breweryPlugin.msg(player, BreweryPlugin.breweryPlugin.languageReader.get("Player_CantDrink"));
+			BreweryPlugin.getInstance().msg(player, BreweryPlugin.getInstance().languageReader.get("Player_CantDrink"));
 		}
 	}
 
@@ -402,7 +405,7 @@ public class BPlayer {
 								}
 								push.multiply(BConfig.stumbleModifier);
 								PlayerPushEvent pushEvent = new PlayerPushEvent(player, push, this);
-								BreweryPlugin.breweryPlugin.getServer().getPluginManager().callEvent(pushEvent);
+								BreweryPlugin.getInstance().getServer().getPluginManager().callEvent(pushEvent);
 								push = pushEvent.getPush();
 								if (pushEvent.isCancelled() || push.lengthSquared() <= 0) {
 									time = -10;
@@ -424,7 +427,7 @@ public class BPlayer {
 	}
 
 	public void passOut(Player player) {
-		player.kickPlayer(BreweryPlugin.breweryPlugin.languageReader.get("Player_DrunkPassOut"));
+		player.kickPlayer(BreweryPlugin.getInstance().languageReader.get("Player_DrunkPassOut"));
 		offlineDrunk = drunkeness;
 		syncToSQL(false);
 	}
@@ -467,7 +470,7 @@ public class BPlayer {
 			return;
 		}
 		// delayed login event as the player is not fully accessible pre login
-		BreweryPlugin.breweryPlugin.getServer().getScheduler().runTaskLater(BreweryPlugin.breweryPlugin, () -> login(player), 1L);
+		BreweryPlugin.getScheduler().runTaskLater(() -> login(player), 1L);
 	}
 
 	// he may be having a hangover
@@ -491,7 +494,7 @@ public class BPlayer {
 				Location randomLoc = Wakeup.getRandom(player.getLocation());
 				if (randomLoc != null) {
 					player.teleport(randomLoc);
-					BreweryPlugin.breweryPlugin.msg(player, BreweryPlugin.breweryPlugin.languageReader.get("Player_Wake"));
+					BreweryPlugin.getInstance().msg(player, BreweryPlugin.getInstance().languageReader.get("Player_Wake"));
 				}
 			}
 			offlineDrunk = 0;
@@ -516,7 +519,7 @@ public class BPlayer {
 			} else if (homeType.startsWith("cmd:")) {
 				player.performCommand(homeType.substring(4));
 			} else {
-				BreweryPlugin.breweryPlugin.errorLog("Config.yml 'homeType: " + homeType + "' unknown!");
+				BreweryPlugin.getInstance().errorLog("Config.yml 'homeType: " + homeType + "' unknown!");
 			}
 			if (home != null) {
 				player.teleport(home);
@@ -566,14 +569,14 @@ public class BPlayer {
 		}
 
 		PlayerPukeEvent event = new PlayerPukeEvent(player, count);
-		BreweryPlugin.breweryPlugin.getServer().getPluginManager().callEvent(event);
+		BreweryPlugin.getInstance().getServer().getPluginManager().callEvent(event);
 		if (event.isCancelled() || event.getCount() < 1) {
 			return;
 		}
 		BUtil.reapplyPotionEffect(player, PotionEffectType.HUNGER.createEffect(80, 4), true);
 
 		if (pTasks.isEmpty()) {
-			taskId = BreweryPlugin.breweryPlugin.getServer().getScheduler().scheduleSyncRepeatingTask(BreweryPlugin.breweryPlugin, BPlayer::pukeTask, 1L, 1L);
+			task = BreweryPlugin.getScheduler().runTaskTimer(player, BPlayer::pukeTask, 1L, 1L);
 		}
 		pTasks.put(player, event.getCount());
 	}
@@ -594,7 +597,7 @@ public class BPlayer {
 			}
 		}
 		if (pTasks.isEmpty()) {
-			BreweryPlugin.breweryPlugin.getServer().getScheduler().cancelTask(taskId);
+			task.cancel();
 		}
 	}
 
@@ -612,10 +615,11 @@ public class BPlayer {
 		Vector direction = loc.getDirection();
 		direction.multiply(0.5);
 		loc.add(direction);
+
 		Item item = player.getWorld().dropItem(loc, new ItemStack(BConfig.pukeItem.get(new Random().nextInt(BConfig.pukeItem.size()))));
 		item.setVelocity(direction);
 		item.setPickupDelay(32767); // Item can never be picked up when pickup delay is 32767
-		item.setMetadata("brewery_puke", new FixedMetadataValue(BreweryPlugin.breweryPlugin, true));
+		item.setMetadata("brewery_puke", new FixedMetadataValue(BreweryPlugin.getInstance(), true));
 		if (BreweryPlugin.use1_14) item.setPersistent(false); // No need to save Puke items
 
 		int pukeDespawntime = BConfig.pukeDespawntime;
@@ -641,7 +645,7 @@ public class BPlayer {
 
 	public static void applyEffects(List<PotionEffect> effects, Player player, PlayerEffectEvent.EffectType effectType) {
 		PlayerEffectEvent event = new PlayerEffectEvent(player, effectType, effects);
-		BreweryPlugin.breweryPlugin.getServer().getPluginManager().callEvent(event);
+		BreweryPlugin.getInstance().getServer().getPluginManager().callEvent(event);
 		effects = event.getEffects();
 		if (event.isCancelled() || effects == null) {
 			return;
@@ -667,13 +671,13 @@ public class BPlayer {
 		l.add(PotionEffectType.CONFUSION.createEffect(duration, 0));
 
 		PlayerEffectEvent event = new PlayerEffectEvent(player, PlayerEffectEvent.EffectType.ALCOHOL, l);
-		BreweryPlugin.breweryPlugin.getServer().getPluginManager().callEvent(event);
+		BreweryPlugin.getInstance().getServer().getPluginManager().callEvent(event);
 		l = event.getEffects();
 		if (event.isCancelled() || l == null) {
 			return;
 		}
 		for (PotionEffect effect : l) {
-			effect.apply(player);
+			BreweryPlugin.getScheduler().runTask(player, () -> effect.apply(player)); // Fix can't add effect to entities Async
 		}
 	}
 
@@ -716,7 +720,7 @@ public class BPlayer {
 	public static void addQualityEffects(int quality, int brewAlc, Player player) {
 		List<PotionEffect> list = getQualityEffects(quality, brewAlc);
 		PlayerEffectEvent event = new PlayerEffectEvent(player, PlayerEffectEvent.EffectType.QUALITY, list);
-		BreweryPlugin.breweryPlugin.getServer().getPluginManager().callEvent(event);
+		BreweryPlugin.getInstance().getServer().getPluginManager().callEvent(event);
 		list = event.getEffects();
 		if (event.isCancelled() || list == null) {
 			return;
@@ -760,7 +764,7 @@ public class BPlayer {
 		list.add(PotionEffectType.HUNGER.createEffect(duration, amplifier));
 
 		PlayerEffectEvent event = new PlayerEffectEvent(player, PlayerEffectEvent.EffectType.HANGOVER, list);
-		BreweryPlugin.breweryPlugin.getServer().getPluginManager().callEvent(event);
+		BreweryPlugin.getInstance().getServer().getPluginManager().callEvent(event);
 		list = event.getEffects();
 		if (event.isCancelled() || list == null) {
 			return;
@@ -867,7 +871,7 @@ public class BPlayer {
 
 	public int getQuality() {
 		if (drunkeness == 0) {
-			BreweryPlugin.breweryPlugin.errorLog("drunkeness should not be 0!");
+			BreweryPlugin.getInstance().errorLog("drunkeness should not be 0!");
 			return quality;
 		}
 		if (drunkeness < 0) {

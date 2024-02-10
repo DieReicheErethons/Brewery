@@ -59,7 +59,7 @@ public class SQLSync {
 			if (!saveDataQueue.offer(object, 5, TimeUnit.SECONDS)) {
 				BConfig.sqlSync = null;
 				closeConnection();
-				BreweryPlugin.breweryPlugin.errorLog("SQL saving queue overrun, disabling SQL saving");
+				BreweryPlugin.getInstance().errorLog("SQL saving queue overrun, disabling SQL saving");
 			}
 		} catch (InterruptedException | SQLException e) {
 			e.printStackTrace();
@@ -71,7 +71,7 @@ public class SQLSync {
 		try {
 			if (!checkConnection()) {
 				if (!openConnection()) {
-					BreweryPlugin.breweryPlugin.errorLog("Opening SQL Connection failed");
+					BreweryPlugin.getInstance().errorLog("Opening SQL Connection failed");
 					return;
 				}
 			}
@@ -80,7 +80,7 @@ public class SQLSync {
 			if (statement.execute("SELECT * FROM Brewery_Z_BPlayers WHERE uuid = '" + uuid.toString() + "';")) {
 				final ResultSet result = statement.getResultSet();
 				if (result.next()) {
-					BreweryPlugin.breweryPlugin.getServer().getScheduler().runTask(BreweryPlugin.breweryPlugin, () -> {
+					BreweryPlugin.getScheduler().runTask(() -> {
 						try {
 							new BPlayer(uuid.toString(), result.getInt("quality"), result.getInt("drunkeness"), result.getInt("offlineDrunk"));
 						} catch (SQLException e) {
@@ -90,7 +90,7 @@ public class SQLSync {
 					return;
 				}
 			}
-			BreweryPlugin.breweryPlugin.getServer().getScheduler().runTask(BreweryPlugin.breweryPlugin, () -> BPlayer.sqlRemoved(uuid));
+			BreweryPlugin.getScheduler().runTask(() -> BPlayer.sqlRemoved(uuid));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -99,7 +99,7 @@ public class SQLSync {
 	private void initAsyncTask() {
 		if (sqlTaskRunning) return;
 		sqlTaskRunning = true;
-		BreweryPlugin.breweryPlugin.getServer().getScheduler().runTaskAsynchronously(BreweryPlugin.breweryPlugin, new SQLSaver());
+		BreweryPlugin.getScheduler().runTaskAsynchronously(new SQLSaver());
 	}
 
 
@@ -108,7 +108,7 @@ public class SQLSync {
 		this.password = password;
 
 		if (BConfig.sqlHost == null || BConfig.sqlPort == null || user == null || BConfig.sqlDB == null || password == null) {
-			BreweryPlugin.breweryPlugin.errorLog("Mysql settings not correctly defined!");
+			BreweryPlugin.getInstance().errorLog("Mysql settings not correctly defined!");
 			return false;
 		}
 
@@ -138,11 +138,11 @@ public class SQLSync {
 			if (BreweryPlugin.debug) {
 				e.printStackTrace();
 			} else {
-				BreweryPlugin.breweryPlugin.errorLog("SQL Exception occured, set 'debug: true' for more info");
-				BreweryPlugin.breweryPlugin.errorLog(e.getMessage());
+				BreweryPlugin.getInstance().errorLog("SQL Exception occured, set 'debug: true' for more info");
+				BreweryPlugin.getInstance().errorLog(e.getMessage());
 				Throwable cause = e.getCause();
 				if (cause != null) {
-					BreweryPlugin.breweryPlugin.errorLog(cause.getMessage());
+					BreweryPlugin.getInstance().errorLog(cause.getMessage());
 				}
 			}
 			return false;
@@ -209,7 +209,7 @@ public class SQLSync {
 
 						if (!checkConnection()) {
 							if (!openConnection()) {
-								BreweryPlugin.breweryPlugin.errorLog("Opening SQL Connection failed");
+								BreweryPlugin.getInstance().errorLog("Opening SQL Connection failed");
 								return;
 							}
 						}
@@ -230,7 +230,7 @@ public class SQLSync {
 									if (storedOfflineDrunk != d.offlineDrunk) {
 										// The player is not offlineDrunk anymore,
 										// Someone else is changing the mysql data
-										BreweryPlugin.breweryPlugin.getServer().getScheduler().runTask(BreweryPlugin.breweryPlugin, () -> BPlayer.sqlRemoved(d.uuid));
+										BreweryPlugin.getScheduler().runTask(() -> BPlayer.sqlRemoved(d.uuid));
 										continue;
 									}
 								}

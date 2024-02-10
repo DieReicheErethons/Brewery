@@ -17,7 +17,7 @@ import static com.dre.brewery.utility.PermissionUtil.BPermission.*;
 
 public class CommandUtil {
 
-    private static final BreweryPlugin BREWERY_PLUGIN = BreweryPlugin.breweryPlugin;
+    private static final BreweryPlugin BREWERY_PLUGIN = BreweryPlugin.getInstance();
 
 
     private static Set<Tuple<String, String>> mainSet;

@@ -39,7 +39,7 @@ public class LanguageReader {
 		FileConfiguration defaults = null;
 		ConfigUpdater updater = null;
 		String line;
-		InputStream resource = BreweryPlugin.breweryPlugin.getResource(defaultPath);
+		InputStream resource = BreweryPlugin.getInstance().getResource(defaultPath);
 		if (resource == null) return;
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(resource))) {
 			while ((line = reader.readLine()) != null) {
@@ -49,7 +49,7 @@ public class LanguageReader {
 					if (!entries.containsKey(key)) {
 						if (defaults == null) {
 							defaults = new YamlConfiguration();
-							defaults.load(new BufferedReader(new InputStreamReader(Objects.requireNonNull(BreweryPlugin.breweryPlugin.getResource(defaultPath)))));
+							defaults.load(new BufferedReader(new InputStreamReader(Objects.requireNonNull(BreweryPlugin.getInstance().getResource(defaultPath)))));
 							updater = new ConfigUpdater(file);
 							updater.appendLines("", "# Updated");
 						}
@@ -61,11 +61,11 @@ public class LanguageReader {
 			if (updater != null) {
 				createBackup();
 				updater.saveConfig();
-				BreweryPlugin.breweryPlugin.log("Language file updated");
+				BreweryPlugin.getInstance().log("Language file updated");
 			}
 		} catch (IOException | InvalidConfigurationException e) {
 			e.printStackTrace();
-			BreweryPlugin.breweryPlugin.errorLog("Language File could not be updated");
+			BreweryPlugin.getInstance().errorLog("Language File could not be updated");
 		}
 	}
 

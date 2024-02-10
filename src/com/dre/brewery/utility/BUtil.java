@@ -261,7 +261,7 @@ public class BUtil {
 	 * create empty World save Sections
 	 */
 	public static void createWorldSections(ConfigurationSection section) {
-		for (World world : BreweryPlugin.breweryPlugin.getServer().getWorlds()) {
+		for (World world : BreweryPlugin.getInstance().getServer().getWorlds()) {
 			String worldName = world.getName();
 			if (worldName.startsWith("DXL_")) {
 				worldName = getDxlName(worldName);
@@ -348,7 +348,7 @@ public class BUtil {
 			page = 1;
 		}
 
-		sender.sendMessage(color("&7-------------- &f" + BreweryPlugin.breweryPlugin.languageReader.get("Etc_Page") + " &6" + page + "&f/&6" + pages + " &7--------------"));
+		sender.sendMessage(color("&7-------------- &f" + BreweryPlugin.getInstance().languageReader.get("Etc_Page") + " &6" + page + "&f/&6" + pages + " &7--------------"));
 
 		ListIterator<String> iter = strings.listIterator((page - 1) * 7);
 

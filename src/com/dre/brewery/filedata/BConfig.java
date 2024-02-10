@@ -103,7 +103,7 @@ public class BConfig {
 	public static SQLSync sqlSync;
 	public static boolean sqlDrunkSync;
 
-	public static BreweryPlugin breweryPlugin = BreweryPlugin.breweryPlugin;
+	public static BreweryPlugin breweryPlugin = BreweryPlugin.getInstance();
 
 	private static boolean checkConfigs() {
 		File cfg = new File(breweryPlugin.getDataFolder(), "config.yml");
@@ -150,7 +150,7 @@ public class BConfig {
 	}
 
 	public static FileConfiguration loadConfigFile() {
-		File file = new File(BreweryPlugin.breweryPlugin.getDataFolder(), "config.yml");
+		File file = new File(BreweryPlugin.getInstance().getDataFolder(), "config.yml");
 		if (!checkConfigs()) {
 			return null;
 		}
@@ -166,9 +166,9 @@ public class BConfig {
 
 		// Failed to load
 		if (breweryPlugin.languageReader != null) {
-			BreweryPlugin.breweryPlugin.errorLog(breweryPlugin.languageReader.get("Error_YmlRead"));
+			BreweryPlugin.getInstance().errorLog(breweryPlugin.languageReader.get("Error_YmlRead"));
 		} else {
-			BreweryPlugin.breweryPlugin.errorLog("Could not read file config.yml, please make sure the file is in valid yml format (correct spaces etc.)");
+			BreweryPlugin.getInstance().errorLog("Could not read file config.yml, please make sure the file is in valid yml format (correct spaces etc.)");
 		}
 		return null;
 	}
@@ -187,10 +187,10 @@ public class BConfig {
 		String version = config.getString("version", null);
 		if (version != null) {
 			if (!version.equals(configVersion) || (oldMat && BreweryPlugin.use1_13)) {
-				File file = new File(BreweryPlugin.breweryPlugin.getDataFolder(), "config.yml");
+				File file = new File(BreweryPlugin.getInstance().getDataFolder(), "config.yml");
 				copyDefaultConfigs(true);
 				new ConfigUpdater(file).update(version, oldMat, breweryPlugin.language, config);
-				BreweryPlugin.breweryPlugin.log("Config Updated to version: " + configVersion);
+				BreweryPlugin.getInstance().log("Config Updated to version: " + configVersion);
 				config = YamlConfiguration.loadConfiguration(file);
 			}
 		}
@@ -252,7 +252,7 @@ public class BConfig {
 			MCBarrel.enableAging = config.getBoolean("ageInMCBarrels", true);
 		}
 
-		Brew.loadSeed(config, new File(BreweryPlugin.breweryPlugin.getDataFolder(), "config.yml"));
+		Brew.loadSeed(config, new File(BreweryPlugin.getInstance().getDataFolder(), "config.yml"));
 
 		if (!BreweryPlugin.use1_13) {
 			// world.getBlockAt loads Chunks in 1.12 and lower. Can't load async
@@ -331,7 +331,7 @@ public class BConfig {
 								mat = vaultItem.getType();
 							}
 						} catch (Exception e) {
-							BreweryPlugin.breweryPlugin.errorLog("Could not check vault for Item Name");
+							BreweryPlugin.getInstance().errorLog("Could not check vault for Item Name");
 							e.printStackTrace();
 						}
 					}
@@ -379,9 +379,9 @@ public class BConfig {
 				}
 			}
 			if (wg == null) {
-				BreweryPlugin.breweryPlugin.errorLog("Failed loading WorldGuard Integration! Opening Barrels will NOT work!");
-				BreweryPlugin.breweryPlugin.errorLog("Brewery was tested with version 5.8, 6.1 and 7.0 of WorldGuard!");
-				BreweryPlugin.breweryPlugin.errorLog("Disable the WorldGuard support in the config and do /brew reload");
+				BreweryPlugin.getInstance().errorLog("Failed loading WorldGuard Integration! Opening Barrels will NOT work!");
+				BreweryPlugin.getInstance().errorLog("Brewery was tested with version 5.8, 6.1 and 7.0 of WorldGuard!");
+				BreweryPlugin.getInstance().errorLog("Disable the WorldGuard support in the config and do /brew reload");
 			}
 		}
 		if (useBlocklocker) {
@@ -391,7 +391,7 @@ public class BConfig {
 				BlocklockerBarrel.registerBarrelAsProtectable();
 			} catch (ClassNotFoundException e) {
 				useBlocklocker = false;
-				BreweryPlugin.breweryPlugin.log("Unsupported Version of 'BlockLocker', locking Brewery Barrels disabled");
+				BreweryPlugin.getInstance().log("Unsupported Version of 'BlockLocker', locking Brewery Barrels disabled");
 			}
 		}
 
@@ -422,7 +422,7 @@ public class BConfig {
 
 		// The Config was reloaded, call Event
 		ConfigLoadEvent event = new ConfigLoadEvent();
-		BreweryPlugin.breweryPlugin.getServer().getPluginManager().callEvent(event);
+		BreweryPlugin.getInstance().getServer().getPluginManager().callEvent(event);
 
 
 	}

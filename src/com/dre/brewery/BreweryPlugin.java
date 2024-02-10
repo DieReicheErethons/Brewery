@@ -26,13 +26,8 @@ package com.dre.brewery;
 
 import com.dre.brewery.api.addons.AddonManager;
 import com.dre.brewery.commands.CommandManager;
-
 import com.dre.brewery.commands.CommandUtil;
-import com.dre.brewery.filedata.BConfig;
-import com.dre.brewery.filedata.BData;
-import com.dre.brewery.filedata.DataSave;
-import com.dre.brewery.filedata.LanguageReader;
-import com.dre.brewery.filedata.UpdateChecker;
+import com.dre.brewery.filedata.*;
 import com.dre.brewery.integration.ChestShopListener;
 import com.dre.brewery.integration.IntegrationListener;
 import com.dre.brewery.integration.ShopKeepersListener;
@@ -44,6 +39,8 @@ import com.dre.brewery.recipe.*;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.LegacyUtil;
 import com.dre.brewery.utility.Stats;
+import com.github.Anon8281.universalScheduler.UniversalScheduler;
+import com.github.Anon8281.universalScheduler.scheduling.schedulers.TaskScheduler;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
@@ -58,9 +55,10 @@ import java.util.Map;
 import java.util.function.Function;
 
 public class BreweryPlugin extends JavaPlugin {
-	AddonManager addonManager = new AddonManager(this);
 
-	public static BreweryPlugin breweryPlugin;
+	private static AddonManager addonManager;
+	private static TaskScheduler scheduler;
+	private static BreweryPlugin breweryPlugin;
 	public static boolean debug;
 	public static boolean useUUID;
 	public static boolean useNBT;
@@ -69,13 +67,8 @@ public class BreweryPlugin extends JavaPlugin {
 	public static boolean use1_13;
 	public static boolean use1_14;
 
-	// Listeners
-	public BlockListener blockListener;
+	// Public Listeners
 	public PlayerListener playerListener;
-	public EntityListener entityListener;
-	public InventoryListener inventoryListener;
-	public WorldListener worldListener;
-	public IntegrationListener integrationListener;
 
 	// Registrations
 	public Map<String, Function<ItemLoader, Ingredient>> ingredientLoaders = new HashMap<>();
@@ -90,6 +83,7 @@ public class BreweryPlugin extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		breweryPlugin = this;
+		scheduler = UniversalScheduler.getScheduler(this);
 
 		// Version check
 		String v = Bukkit.getBukkitVersion();
@@ -100,13 +94,11 @@ public class BreweryPlugin extends JavaPlugin {
 		use1_14 = !v.matches("(^|.*[^.\\d])1\\.1[0-3]([^\\d].*|$)") && !v.matches("(^|.*[^.\\d])1\\.[0-9]([^\\d].*|$)");
 
 		// Load Addons
-		try {
-			addonManager.loadAddons();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		addonManager = new AddonManager(this);
+		addonManager.loadAddons();
 
-		//MC 1.13 uses a different NBT API than the newer versions..
+
+		//MC 1.13 uses a different NBT API than the newer versions.
 		// We decide here which to use, the new or the old or none at all
 		if (LegacyUtil.initNbt()) {
 			useNBT = true;
@@ -143,40 +135,36 @@ public class BreweryPlugin extends JavaPlugin {
 		// Setup Metrics
 		stats.setupBStats();
 
-		// Listeners
-		blockListener = new BlockListener();
-		playerListener = new PlayerListener();
-		entityListener = new EntityListener();
-		inventoryListener = new InventoryListener();
-		worldListener = new WorldListener();
-		integrationListener = new IntegrationListener();
-		getCommand("brewery").setExecutor(new CommandManager()); // Not null. Check plugin.yml!
 
-		breweryPlugin.getServer().getPluginManager().registerEvents(blockListener, breweryPlugin);
-		breweryPlugin.getServer().getPluginManager().registerEvents(playerListener, breweryPlugin);
-		breweryPlugin.getServer().getPluginManager().registerEvents(entityListener, breweryPlugin);
-		breweryPlugin.getServer().getPluginManager().registerEvents(inventoryListener, breweryPlugin);
-		breweryPlugin.getServer().getPluginManager().registerEvents(worldListener, breweryPlugin);
-		breweryPlugin.getServer().getPluginManager().registerEvents(integrationListener, breweryPlugin);
+		getCommand("brewery").setExecutor(new CommandManager());
+		// Listeners
+		playerListener = new PlayerListener();
+
+		getServer().getPluginManager().registerEvents(new BlockListener(), this);
+		getServer().getPluginManager().registerEvents(playerListener, this);
+		getServer().getPluginManager().registerEvents(new EntityListener(), this);
+		getServer().getPluginManager().registerEvents(new InventoryListener(), this);
+		getServer().getPluginManager().registerEvents(new WorldListener(), this);
+		getServer().getPluginManager().registerEvents(new IntegrationListener(), this);
 		if (use1_9) {
-			breweryPlugin.getServer().getPluginManager().registerEvents(new CauldronListener(), breweryPlugin);
+			getServer().getPluginManager().registerEvents(new CauldronListener(), this);
 		}
 		if (BConfig.hasChestShop && use1_13) {
-			breweryPlugin.getServer().getPluginManager().registerEvents(new ChestShopListener(), breweryPlugin);
+			getServer().getPluginManager().registerEvents(new ChestShopListener(), this);
 		}
 		if (BConfig.hasShopKeepers) {
-			breweryPlugin.getServer().getPluginManager().registerEvents(new ShopKeepersListener(), breweryPlugin);
+			getServer().getPluginManager().registerEvents(new ShopKeepersListener(), this);
 		}
 		if (BConfig.hasSlimefun && use1_14) {
-			breweryPlugin.getServer().getPluginManager().registerEvents(new SlimefunListener(), breweryPlugin);
+			getServer().getPluginManager().registerEvents(new SlimefunListener(), this);
 		}
 
 		// Heartbeat
-		breweryPlugin.getServer().getScheduler().runTaskTimer(breweryPlugin, new BreweryRunnable(), 650, 1200);
-		breweryPlugin.getServer().getScheduler().runTaskTimer(breweryPlugin, new DrunkRunnable(), 120, 120);
+		BreweryPlugin.getScheduler().runTaskTimer(new BreweryRunnable(), 650, 1200);
+		BreweryPlugin.getScheduler().runTaskTimer(new DrunkRunnable(), 120, 120);
 
 		if (use1_9) {
-			breweryPlugin.getServer().getScheduler().runTaskTimer(breweryPlugin, new CauldronParticles(), 1, 1);
+			BreweryPlugin.getScheduler().runTaskTimer(new CauldronParticles(), 1, 1);
 		}
 
 		// Disable Update Check for older mc versions
@@ -193,7 +181,7 @@ public class BreweryPlugin extends JavaPlugin {
 			});
 		}
 
-
+		this.debugLog("Using scheduler: " + scheduler.getClass().getSimpleName());
 		this.log(this.getDescription().getName() + " enabled!");
 	}
 
@@ -204,8 +192,8 @@ public class BreweryPlugin extends JavaPlugin {
 		// Disable listeners
 		HandlerList.unregisterAll(this);
 
-		// Stop shedulers
-		getServer().getScheduler().cancelTasks(this);
+		// Stop schedulers
+		BreweryPlugin.getScheduler().cancelTasks(this);
 
 		if (breweryPlugin == null) {
 			return;
@@ -382,6 +370,10 @@ public class BreweryPlugin extends JavaPlugin {
 		return BUtil.color(msg);
 	}
 
+	public static TaskScheduler getScheduler() {
+		return scheduler;
+	}
+
 
 	// Runnables
 
@@ -399,12 +391,16 @@ public class BreweryPlugin extends JavaPlugin {
 		public void run() {
 			long t1 = System.nanoTime();
 			BConfig.reloader = null;
-			Iterator<BCauldron> iter = BCauldron.bcauldrons.values().iterator();
-			while (iter.hasNext()) {
+            // runs every min to update cooking time
+			Iterator<BCauldron> bCauldronsToRemove = BCauldron.bcauldrons.values().iterator();
+			while (bCauldronsToRemove.hasNext()) {
 				// runs every min to update cooking time
-				if (!iter.next().onUpdate()) {
-					iter.remove();
-				}
+				BCauldron bCauldron = bCauldronsToRemove.next();
+				BreweryPlugin.getScheduler().runTask(bCauldron.getBlock().getLocation(), () -> {
+					if (!bCauldron.onUpdate()) {
+						bCauldronsToRemove.remove();
+					}
+				});
 			}
 			long t2 = System.nanoTime();
 			Barrel.onUpdate();// runs every min to check and update ageing time

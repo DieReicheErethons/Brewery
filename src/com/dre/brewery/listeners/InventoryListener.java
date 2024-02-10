@@ -36,7 +36,7 @@ public class InventoryListener implements Listener {
 		Inventory inv = event.getInventory();
 		if (player == null || !(inv instanceof BrewerInventory)) return;
 
-		BreweryPlugin.breweryPlugin.debugLog("Starting brew inventory tracking");
+		BreweryPlugin.getInstance().debugLog("Starting brew inventory tracking");
 		trackedBrewmen.add(player.getUniqueId());
 	}
 
@@ -50,7 +50,7 @@ public class InventoryListener implements Listener {
 		Inventory inv = event.getInventory();
 		if (player == null || !(inv instanceof BrewerInventory)) return;
 
-		BreweryPlugin.breweryPlugin.debugLog("Stopping brew inventory tracking");
+		BreweryPlugin.getInstance().debugLog("Stopping brew inventory tracking");
 		trackedBrewmen.remove(player.getUniqueId());
 	}
 
@@ -164,7 +164,7 @@ public class InventoryListener implements Listener {
 							case MOVE_TO_OTHER_INVENTORY:
 							case HOTBAR_SWAP:
 								// Fix a Graphical glitch of item still showing colors until clicking it
-								BreweryPlugin.breweryPlugin.getServer().getScheduler().runTask(BreweryPlugin.breweryPlugin, () -> ((Player) event.getWhoClicked()).updateInventory());
+								BreweryPlugin.getScheduler().runTask(() -> ((Player) event.getWhoClicked()).updateInventory());
 						}
 					}
 				}
@@ -229,17 +229,6 @@ public class InventoryListener implements Listener {
 	public void onInventoryOpen(InventoryOpenEvent event) {
 		if (!BreweryPlugin.use1_14) return;
 		if (!MCBarrel.enableAging) return;
-
-		/*Barrel x = null;
-		if (event.getInventory().getHolder() instanceof Barrel) {
-			x = ((Barrel) event.getInventory().getHolder());
-		}
-
-		if (!opening) {
-			opening = true;
-			Barrel finalBarrel = x;
-			P.p.getServer().getScheduler().scheduleSyncDelayedTask(P.p, () -> {finalBarrel.remove(null, null); opening = false;}, 100);
-		}*/
 
 		// Check for MC Barrel
 		if (event.getInventory().getType() == InventoryType.BARREL) {

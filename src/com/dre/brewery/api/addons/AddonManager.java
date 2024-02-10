@@ -88,6 +88,7 @@ public class AddonManager extends ClassLoader {
 				plugin.getLogger().log(Level.SEVERE, "Failed to load addon classes from jar " + file.getName(), ex);
 			}
 		}
+
 		int loaded = addons.size();
 		if (loaded > 0) plugin.log("Loaded " + loaded + " addon(s)");
 	}

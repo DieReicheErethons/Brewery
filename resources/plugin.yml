@@ -4,6 +4,7 @@ website: 'https://www.spigotmc.org/resources/breweryx.114777/'
 main: com.dre.brewery.BreweryPlugin
 softdepend: [LWC, LogBlock, WorldGuard, GriefPrevention, Vault, ChestShop, Shopkeepers, Towny, BlockLocker, Slimefun]
 authors: [Milan Albrecht, Frank Baumann, ProgrammerDan, Daniel Saukel, Jsinco]
+folia-supported: true
 api-version: 1.13
 libraries:
   - 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.10'
@@ -53,6 +54,7 @@ permissions:
       brewery.cmd.static: true
       brewery.cmd.reload: true
       brewery.cmd.itemname: true
+      brewery.cmd.reloadaddons: true
   # *
   brewery.*:
     description: Gives Access to every Permission, including bypasses and overrides
@@ -96,6 +98,8 @@ permissions:
     description: Reload config
   brewery.cmd.itemname:
     description: View the material name of an item
+  brewery.cmd.reloadaddons:
+    description: Reload all Addons
 
 # -- Barrel --
   brewery.createbarrel:

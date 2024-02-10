@@ -30,7 +30,7 @@ public class BlocklockerBarrel implements ProtectableBlocksSettings {
 	}
 
 	public boolean isOrWillCreateBarrel(Block block) {
-		if (!BreweryPlugin.breweryPlugin.isEnabled() || !BConfig.useBlocklocker) {
+		if (!BreweryPlugin.getInstance().isEnabled() || !BConfig.useBlocklocker) {
 			return false;
 		}
 		if (!LegacyUtil.isWoodPlanks(block.getType()) && !LegacyUtil.isWoodStairs(block.getType())) {

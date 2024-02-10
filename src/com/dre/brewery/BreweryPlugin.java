@@ -433,7 +433,7 @@ public class BreweryPlugin extends JavaPlugin {
 
 	}
 
-	public class CauldronParticles implements Runnable {
+	public static class CauldronParticles implements Runnable {
 		@Override
 		public void run() {
 			if (!BConfig.enableCauldronParticles) return;

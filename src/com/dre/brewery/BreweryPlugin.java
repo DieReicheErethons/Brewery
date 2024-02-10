@@ -51,6 +51,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -99,13 +100,10 @@ public class BreweryPlugin extends JavaPlugin {
 		use1_14 = !v.matches("(^|.*[^.\\d])1\\.1[0-3]([^\\d].*|$)") && !v.matches("(^|.*[^.\\d])1\\.[0-9]([^\\d].*|$)");
 
 		// Load Addons
-		try {
-			addonManager.loadAddons();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		addonManager.loadAddons();
 
-		//MC 1.13 uses a different NBT API than the newer versions..
+
+		//MC 1.13 uses a different NBT API than the newer versions.
 		// We decide here which to use, the new or the old or none at all
 		if (LegacyUtil.initNbt()) {
 			useNBT = true;
@@ -149,7 +147,7 @@ public class BreweryPlugin extends JavaPlugin {
 		inventoryListener = new InventoryListener();
 		worldListener = new WorldListener();
 		integrationListener = new IntegrationListener();
-		getCommand("brewery").setExecutor(new CommandManager()); // Not null. Check plugin.yml!
+		getCommand("brewery").setExecutor(new CommandManager());
 
 		breweryPlugin.getServer().getPluginManager().registerEvents(blockListener, breweryPlugin);
 		breweryPlugin.getServer().getPluginManager().registerEvents(playerListener, breweryPlugin);
@@ -403,14 +401,16 @@ public class BreweryPlugin extends JavaPlugin {
 			long t1 = System.nanoTime();
 			BConfig.reloader = null;
             // runs every min to update cooking time
-			Collection<BCauldron> bCauldronsToRemove = BCauldron.bcauldrons.values();
-			BCauldron.bcauldrons.values().forEach(bcauldron -> {
-				BreweryPlugin.getScheduler().runTask(bcauldron.getBlock().getLocation(), () -> {
-					if (!bcauldron.onUpdate())
-						bCauldronsToRemove.add(bcauldron);
+			Iterator<BCauldron> bCauldronsToRemove = BCauldron.bcauldrons.values().iterator();
+			while (bCauldronsToRemove.hasNext()) {
+				// runs every min to update cooking time
+				BCauldron bCauldron = bCauldronsToRemove.next();
+				BreweryPlugin.getScheduler().runTask(bCauldron.getBlock().getLocation(), () -> {
+					if (!bCauldron.onUpdate()) {
+						bCauldronsToRemove.remove();
+					}
 				});
-			});
-			BCauldron.bcauldrons.values().removeIf(bCauldronsToRemove::contains);
+			}
 			long t2 = System.nanoTime();
 			Barrel.onUpdate();// runs every min to check and update ageing time
 			long t3 = System.nanoTime();
@@ -433,7 +433,7 @@ public class BreweryPlugin extends JavaPlugin {
 
 	}
 
-	public static class CauldronParticles implements Runnable {
+	public class CauldronParticles implements Runnable {
 		@Override
 		public void run() {
 			if (!BConfig.enableCauldronParticles) return;

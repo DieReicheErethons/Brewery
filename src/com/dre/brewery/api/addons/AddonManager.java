@@ -40,6 +40,8 @@ public class AddonManager extends ClassLoader {
 		for (BreweryAddon addon : addons) {
 			addon.onAddonDisable();
 		}
+		int loaded = addons.size();
+		if (loaded > 0) plugin.log("Disabled " + loaded + " addon(s)");
 		addons.clear();
 	}
 
@@ -47,7 +49,8 @@ public class AddonManager extends ClassLoader {
 		for (BreweryAddon addon : addons) {
 			addon.onBreweryReload();
 		}
-		plugin.getLogger().info("Reloaded " + addons.size() + " addons");
+		int loaded = addons.size();
+		if (loaded > 0) plugin.log("Reloaded " + loaded + " addon(s)");
 	}
 
 	public List<BreweryAddon> getAddons() {
@@ -85,7 +88,9 @@ public class AddonManager extends ClassLoader {
 				plugin.getLogger().log(Level.SEVERE, "Failed to load addon classes from jar " + file.getName(), ex);
 			}
 		}
-		plugin.getLogger().info("Loaded " + addons.size() + " addons");
+
+		int loaded = addons.size();
+		if (loaded > 0) plugin.log("Loaded " + loaded + " addon(s)");
 	}
 
 

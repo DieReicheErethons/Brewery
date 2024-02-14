@@ -3,7 +3,6 @@ package com.dre.brewery.api.addons;
 import com.dre.brewery.BreweryPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandMap;
-import org.bukkit.command.SimpleCommandMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

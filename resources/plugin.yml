@@ -25,6 +25,7 @@ permissions:
       brewery.cauldron.time: true
       brewery.cauldron.insert: true
       brewery.cauldron.fill: true
+      brewery.cmd.version: true
 # Mod
   brewery.mod:
     description: Allow to maintain Wakeup Points and to login even if overdrunken
@@ -100,6 +101,8 @@ permissions:
     description: View the material name of an item
   brewery.cmd.reloadaddons:
     description: Reload all Addons
+  brewery.cmd.version:
+    description: See misc info about BreweryX
 
 # -- Barrel --
   brewery.createbarrel:

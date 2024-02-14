@@ -52,6 +52,10 @@ public class UpdateChecker {
 		latestVersion = version;
 	}
 
+	public static String getLatestVersion() {
+		return latestVersion;
+	}
+
 	public static void setUpdateAvailable(boolean available) {
 		updateAvailable = available;
 	}

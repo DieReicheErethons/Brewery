@@ -1,4 +1,4 @@
-name: BreweryX
+name: Brewery
 version: '${project.version}'
 website: 'https://www.spigotmc.org/resources/breweryx.114777/'
 main: com.dre.brewery.BreweryPlugin

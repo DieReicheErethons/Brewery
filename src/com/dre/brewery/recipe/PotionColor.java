@@ -1,6 +1,6 @@
 package com.dre.brewery.recipe;
 
-import com.dre.brewery.P;
+import com.dre.brewery.BreweryPlugin;
 import org.bukkit.Color;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -19,7 +19,7 @@ public class PotionColor {
 	public static final PotionColor BLACK = new PotionColor(8, PotionType.WEAKNESS, Color.BLACK);
 	public static final PotionColor RED = new PotionColor(9, PotionType.STRENGTH, Color.fromRGB(196,0,0));
 	public static final PotionColor GREY = new PotionColor(10, PotionType.SLOWNESS, Color.GRAY);
-	public static final PotionColor WATER = new PotionColor(11, P.use1_9 ? PotionType.WATER_BREATHING : null, Color.BLUE);
+	public static final PotionColor WATER = new PotionColor(11, BreweryPlugin.use1_9 ? PotionType.WATER_BREATHING : null, Color.BLUE);
 	public static final PotionColor DARK_RED = new PotionColor(12, PotionType.INSTANT_DAMAGE, Color.fromRGB(128,0,0));
 	public static final PotionColor BRIGHT_GREY = new PotionColor(14, PotionType.INVISIBILITY, Color.SILVER);
 	public static final PotionColor WHITE = new PotionColor(Color.WHITE);
@@ -65,10 +65,10 @@ public class PotionColor {
 
 	@SuppressWarnings("deprecation")
 	public void colorBrew(PotionMeta meta, ItemStack potion, boolean destillable) {
-		if (P.use1_9) {
+		if (BreweryPlugin.use1_9) {
 			// We need to Hide Potion Effects even in 1.12, as it would otherwise show "No Effects"
 			meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
-			if (P.use1_11) {
+			if (BreweryPlugin.use1_11) {
 				// BasePotionData was only used for the Color, so starting with 1.12 we can use setColor instead
 				meta.setColor(getColor());
 			} else {

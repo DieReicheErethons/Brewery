@@ -16,6 +16,7 @@ Brew_Years: Years
 Brew_fermented: fermented
 Brew_minute: minute
 Brew_Alc: Alc &v1ml
+Brew_Brewer: 'Brewer: &v1'
 
 # CMD
 CMD_Copy_Error: '&6&v1 &cPotions did not fit into your inventory'
@@ -54,6 +55,7 @@ Etc_Barrel: Barrel
 Etc_Page: Page
 Etc_Usage: 'Usage:'
 Etc_SealingTable: Brew Sealing Table
+Etc_UpdateAvailable: 'Update available: &a&v1 &f-> &a&v2 &bhttps://www.spigotmc.org/resources/breweryx.114777/'
 
 # Help
 Help_Copy: '&6/brew copy [Quantity]&9 Copies the potion in your hand'

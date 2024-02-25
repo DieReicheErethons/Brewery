@@ -1,15 +1,19 @@
 package com.dre.brewery.listeners;
 
 import com.dre.brewery.BCauldron;
-import com.dre.brewery.P;
 import com.dre.brewery.utility.LegacyUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.data.Levelled;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.CauldronLevelChangeEvent;
+
+import java.util.List;
 
 public class CauldronListener implements Listener {
 
@@ -37,8 +41,9 @@ public class CauldronListener implements Listener {
 				}
 			} else { // newType == Material.WATER_CAULDRON
 				// Water level change
-				Levelled oldCauldron = ((Levelled) event.getBlock().getBlockData());
-				Levelled newCauldron = ((Levelled) newState.getBlockData());
+
+				Levelled oldCauldron = (Levelled) event.getBlock().getBlockData();
+				Levelled newCauldron = (Levelled) newState.getBlockData();
 
 				// Water Level increased somehow, might be Bucket, Bottle, Rain, etc.
 				if (newCauldron.getLevel() > oldCauldron.getLevel()) {
@@ -48,6 +53,17 @@ public class CauldronListener implements Listener {
 		}
 	}
 
+	/* PATCH - "My friend found a way to dupe brews #541" https://github.com/DieReicheErethons/Brewery/issues/541
+	 * Check if piston is pushing a BreweryCauldron and remove it
+	 */
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	public void onPistonExtend(BlockPistonExtendEvent event) {
+		for (Block block : event.getBlocks()) {
+			if (BCauldron.bcauldrons.containsKey(block)) {
+				BCauldron.remove(block);
+			}
+		}
+	}
 
 	@SuppressWarnings("deprecation")
 	private void oldCauldronChange(CauldronLevelChangeEvent event) {

@@ -1,3 +1,13 @@
+# BreweryX
+### This is a fork of the original Brewery plugin to add features and give support to Brewery
+
+Need help, have a feature request, or found a bug? Join the discord [here](https://discord.gg/aV5Am7uxWr)!
+
+
+
+
+# Old ReadME:
+
 ### Brewery is a Minecraft-Plugin for an alternate brewing process, including alcoholic Potions.
 
 [![Build Status](https://github.com/DieReicheErethons/Brewery/actions/workflows/maven.yml/badge.svg)](https://github.com/DieReicheErethons/Brewery/actions/workflows/maven.yml)
@@ -15,7 +25,7 @@
 
 ### JavaDocs
 
-[JavaDocs on Jitpack](https://javadoc.jitpack.io/com/github/DieReicheErethons/Brewery/3.1.1/javadoc/index.html)
+[JavaDocs on Jitpack](https://javadoc.jitpack.io/com/github/DieReicheErethons/Brewery/3.1.1/javadoc/index.html) (Old, new ones coming soon + wiki)
 
 ### Maven
 

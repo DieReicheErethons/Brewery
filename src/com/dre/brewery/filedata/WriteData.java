@@ -3,9 +3,8 @@ package com.dre.brewery.filedata;
 
 import java.io.File;
 
+import com.dre.brewery.BreweryPlugin;
 import org.bukkit.configuration.file.FileConfiguration;
-
-import com.dre.brewery.P;
 
 /**
  * Writes the collected Data to file in Async Thread
@@ -22,8 +21,8 @@ public class WriteData implements Runnable {
 
 	@Override
 	public void run() {
-		File datafile = new File(P.p.getDataFolder(), "data.yml");
-		File worlddatafile = new File(P.p.getDataFolder(), "worlddata.yml");
+		File datafile = new File(BreweryPlugin.getInstance().getDataFolder(), "data.yml");
+		File worlddatafile = new File(BreweryPlugin.getInstance().getDataFolder(), "worlddata.yml");
 
 		try {
 			data.save(datafile);

@@ -3,12 +3,12 @@ package com.dre.brewery.integration.barrel;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import com.dre.brewery.BreweryPlugin;
 import org.bukkit.block.Block;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-import com.dre.brewery.P;
 import com.sk89q.worldguard.LocalPlayer;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
@@ -29,9 +29,9 @@ public class WGBarrel5 implements WGBarrel {
 			canBuild = ApplicableRegionSet.class.getMethod("canBuild", LocalPlayer.class);
 			getApplicableRegions = RegionManager.class.getMethod("getApplicableRegions", Location.class);
 		} catch (NoSuchMethodException e) {
-			P.p.errorLog("Failed to Hook WorldGuard for Barrel Open Permissions! Opening Barrels will NOT work!");
-			P.p.errorLog("Brewery was tested with version 5.8, 6.1 to 7.0 of WorldGuard!");
-			P.p.errorLog("Disable the WorldGuard support in the config and do /brew reload");
+			BreweryPlugin.getInstance().errorLog("Failed to Hook WorldGuard for Barrel Open Permissions! Opening Barrels will NOT work!");
+			BreweryPlugin.getInstance().errorLog("Brewery was tested with version 5.8, 6.1 to 7.0 of WorldGuard!");
+			BreweryPlugin.getInstance().errorLog("Disable the WorldGuard support in the config and do /brew reload");
 			e.printStackTrace();
 		}
 	}

@@ -20,6 +20,7 @@ public class CustomMatchAnyItem extends RecipeItem {
 	private List<Material> materials;
 	private List<String> names;
 	private List<String> lore;
+	private List<Integer> customModelDatas;
 
 
 	@Override
@@ -33,6 +34,10 @@ public class CustomMatchAnyItem extends RecipeItem {
 
 	public boolean hasLore() {
 		return lore != null && !lore.isEmpty();
+	}
+
+	public boolean hasCustomModelDatas() {
+		return customModelDatas != null && !customModelDatas.isEmpty();
 	}
 
 	@Override
@@ -62,6 +67,16 @@ public class CustomMatchAnyItem extends RecipeItem {
 	protected void setLore(List<String> lore) {
 		this.lore = lore;
 	}
+
+	@Nullable
+	public List<Integer> getCustomModelDatas() {
+		return customModelDatas;
+	}
+
+	protected void setCustomModelDatas(List<Integer> customModelDatas) {
+		this.customModelDatas = customModelDatas;
+	}
+
 
 	@NotNull
 	@Override
@@ -99,6 +114,9 @@ public class CustomMatchAnyItem extends RecipeItem {
 			List<String> l = new ArrayList<>(1);
 			l.add(lore.get(0));
 			return new CustomItem(null, null, l);
+		}
+		if (hasCustomModelDatas()) {
+			return new CustomItem(null, null, null, customModelDatas.get(0));
 		}
 
 		// Shouldnt happen
@@ -165,6 +183,29 @@ public class CustomMatchAnyItem extends RecipeItem {
 		return null;
 	}
 
+	public int getCustomModelDataMatch(ItemStack item) {
+		if (!item.hasItemMeta() || !hasCustomModelDatas()) {
+			return 0;
+		}
+		ItemMeta meta = item.getItemMeta();
+		assert meta != null;
+		if (meta.hasCustomModelData()) {
+			return getCustomModelDataMatch(meta.getCustomModelData());
+		}
+		return 0;
+	}
+
+	public int getCustomModelDataMatch(int usedCustomModelData) {
+		if (!hasCustomModelDatas()) return 0;
+
+		for (int customModelData : this.customModelDatas) {
+			if (customModelData == usedCustomModelData) {
+				return customModelData;
+			}
+		}
+		return 0;
+	}
+
 	@Override
 	public boolean matches(ItemStack item) {
 		if (getMaterialMatch(item) != null) {
@@ -173,7 +214,10 @@ public class CustomMatchAnyItem extends RecipeItem {
 		if (getNameMatch(item) != null) {
 			return true;
 		}
-		return getLoreMatch(item) != null;
+		if (getLoreMatch(item) != null) {
+			return true;
+		}
+		return getCustomModelDataMatch(item) != 0;
 	}
 
 	@Override
@@ -195,10 +239,12 @@ public class CustomMatchAnyItem extends RecipeItem {
 			if (hasLore() && ci.hasLore()) {
 				return getLoreMatch(ci.getLore()) != null;
 			}
-		} else if (ingredient instanceof SimpleItem) {
+			if (hasCustomModelDatas() && ci.hasCustomModelData()) {
+				return getCustomModelDataMatch(ci.getCustomModelData()) != 0;
+			}
+		} else if (ingredient instanceof SimpleItem si) {
 			// If we contain the Material of the Simple Item, we match
-			SimpleItem si = (SimpleItem) ingredient;
-			return hasMaterials() && materials.contains(si.getMaterial());
+            return hasMaterials() && materials.contains(si.getMaterial());
 		}
 		return false;
 	}
@@ -211,12 +257,13 @@ public class CustomMatchAnyItem extends RecipeItem {
 		CustomMatchAnyItem that = (CustomMatchAnyItem) o;
 		return Objects.equals(materials, that.materials) &&
 			Objects.equals(names, that.names) &&
-			Objects.equals(lore, that.lore);
+			Objects.equals(lore, that.lore) &&
+			Objects.equals(customModelDatas, that.customModelDatas);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(super.hashCode(), materials, names, lore);
+		return Objects.hash(super.hashCode(), materials, names, lore, customModelDatas);
 	}
 
 	@Override
@@ -226,6 +273,7 @@ public class CustomMatchAnyItem extends RecipeItem {
 			", materials: " + (materials != null ? materials.size() : 0) +
 			", names:" + (names != null ? names.size() : 0) +
 			", loresize: " + (lore != null ? lore.size() : 0) +
+			", customDatas: " + (customModelDatas != null ? customModelDatas.size() : 0) +
 			'}';
 	}
 }

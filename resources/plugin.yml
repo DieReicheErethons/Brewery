@@ -1,9 +1,13 @@
 name: Brewery
-version: 3.1.1
-main: com.dre.brewery.P
+version: '${project.version}'
+website: 'https://www.spigotmc.org/resources/breweryx.114777/'
+main: com.dre.brewery.BreweryPlugin
 softdepend: [LWC, LogBlock, WorldGuard, GriefPrevention, Vault, ChestShop, Shopkeepers, Towny, BlockLocker, Slimefun]
-authors: [Milan Albrecht, Frank Baumann, ProgrammerDan, Daniel Saukel]
+authors: [Milan Albrecht, Frank Baumann, ProgrammerDan, Daniel Saukel, Jsinco]
+folia-supported: true
 api-version: 1.13
+libraries:
+  - 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.10'
 commands:
   brewery:
     description: Mostly admin commands to create/modify Brews and drunkeness
@@ -21,6 +25,7 @@ permissions:
       brewery.cauldron.time: true
       brewery.cauldron.insert: true
       brewery.cauldron.fill: true
+      brewery.cmd.version: true
 # Mod
   brewery.mod:
     description: Allow to maintain Wakeup Points and to login even if overdrunken
@@ -33,6 +38,7 @@ permissions:
     description: Gives access to Every Command and most bypasses
     default: op
     children:
+      brewery.update: true
       brewery.user: true
       brewery.mod: true
       brewery.cmd.info: true
@@ -48,7 +54,9 @@ permissions:
       brewery.cmd.delete: true
       brewery.cmd.static: true
       brewery.cmd.reload: true
-# *
+      brewery.cmd.itemname: true
+      brewery.cmd.reloadaddons: true
+  # *
   brewery.*:
     description: Gives Access to every Permission, including bypasses and overrides
     children:
@@ -89,6 +97,12 @@ permissions:
     description: Make Brews Static
   brewery.cmd.reload:
     description: Reload config
+  brewery.cmd.itemname:
+    description: View the material name of an item
+  brewery.cmd.reloadaddons:
+    description: Reload all Addons
+  brewery.cmd.version:
+    description: See misc info about BreweryX
 
 # -- Barrel --
   brewery.createbarrel:
@@ -137,3 +151,7 @@ permissions:
 
   brewery.recovery.2:
     description: How quickly the player will naturally reduce his drunkeness per minute
+
+# -- Misc --
+  brewery.update:
+    description: Get notified about new versions

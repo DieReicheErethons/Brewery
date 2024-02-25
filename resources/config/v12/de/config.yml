@@ -7,6 +7,9 @@
 # Sprachedatei die genutzt werden sollte (befindet sich in plugins/Brewery/languages)
 language: de
 
+# Prefix used on messages
+pluginPrefix: '&2[Brewery]&f '
+
 # Ob der Spieler beim nächsten Einloggen nach starker Trunkenheit am nächsten morgen Zuhause "aufwacht" (Ein home Plugin muss installiert sein!) [true]
 enableHome: true
 
@@ -32,7 +35,7 @@ enableKickOnOverdrink: false
 enablePuke: true
 
 # Item das beim Erbrechen mehrfach unaufsammelbar fallen gelassen wird [SOUL_SAND]
-pukeItem: SOUL_SAND
+pukeItem: [SOUL_SAND]
 
 # Zeit in Sekunden bis die pukeitems despawnen, (mc standard wäre 300 = 5 min) [60]
 # Wurde die item Despawnzeit in der spigot.yml verändert, verändert sich auch die pukeDespawnzeit in Abhängigkeit.
@@ -64,6 +67,9 @@ alwaysShowQuality: true
 
 # Ob in den Iteminformationen immer der Alkoholgehalt angezeigt weden soll, oder nur im Braustand [false]
 alwaysShowAlc: false
+
+# If we should show who brewed the drink [false]
+showBrewer: false
 
 # Ob das reifen in -Minecraft- Fässern aktiviert ist und wie viele Brewery Getränke in die diese getan werden können [6]
 ageInMCBarrels: true

@@ -19,7 +19,7 @@ public class DistortChat {
 	public static List<String[]> ignoreText = new ArrayList<>();
 	public static Boolean doSigns;
 	public static Boolean log;
-	private static Map<String, Long> waitPlayers = new HashMap<>();
+	private static final Map<String, Long> waitPlayers = new HashMap<>();
 
 	private String from;
 	private String to;
@@ -77,12 +77,12 @@ public class DistortChat {
 							if (Character.isSpaceChar(chat.charAt(command.length()))) {
 								if (chat.toLowerCase().startsWith(command.toLowerCase())) {
 									if (log) {
-										P.p.log(P.p.languageReader.get("Player_TriedToSay", name, chat));
+										BreweryPlugin.getInstance().log(BreweryPlugin.getInstance().languageReader.get("Player_TriedToSay", name, chat));
 									}
 									String message = chat.substring(command.length() + 1);
 									String distorted = distortMessage(message, bPlayer.getDrunkeness());
 									PlayerChatDistortEvent call = new PlayerChatDistortEvent(event.isAsynchronous(), event.getPlayer(), bPlayer, message, distorted);
-									P.p.getServer().getPluginManager().callEvent(call);
+									BreweryPlugin.getInstance().getServer().getPluginManager().callEvent(call);
 									if (call.isCancelled()) {
 										return;
 									}
@@ -110,7 +110,7 @@ public class DistortChat {
 					if (message.length() > 1) {
 						String distorted = distortMessage(message, bPlayer.getDrunkeness());
 						PlayerChatDistortEvent call = new PlayerChatDistortEvent(event.isAsynchronous(), event.getPlayer(), bPlayer, message, distorted);
-						P.p.getServer().getPluginManager().callEvent(call);
+						BreweryPlugin.getInstance().getServer().getPluginManager().callEvent(call);
 						if (!call.isCancelled()) {
 							distorted = call.getDistortedMessage();
 
@@ -133,12 +133,12 @@ public class DistortChat {
 			if (!words.isEmpty()) {
 				String message = event.getMessage();
 				if (log) {
-					P.p.log(P.p.languageReader.get("Player_TriedToSay", event.getPlayer().getName(), message));
+					BreweryPlugin.getInstance().log(BreweryPlugin.getInstance().languageReader.get("Player_TriedToSay", event.getPlayer().getName(), message));
 				}
 
 				String distorted = distortMessage(message, bPlayer.getDrunkeness());
 				PlayerChatDistortEvent call = new PlayerChatDistortEvent(event.isAsynchronous(), event.getPlayer(), bPlayer, message, distorted);
-				P.p.getServer().getPluginManager().callEvent(call);
+				BreweryPlugin.getInstance().getServer().getPluginManager().callEvent(call);
 				if (call.isCancelled()) {
 					return;
 				}

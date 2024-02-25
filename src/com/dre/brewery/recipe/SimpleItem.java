@@ -1,6 +1,6 @@
 package com.dre.brewery.recipe;
 
-import com.dre.brewery.P;
+import com.dre.brewery.BreweryPlugin;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -64,7 +64,7 @@ public class SimpleItem extends RecipeItem implements Ingredient {
 			return false;
 		}
 		//noinspection deprecation
-		return P.use1_13 || dur == item.getDurability();
+		return BreweryPlugin.use1_13 || dur == item.getDurability();
 	}
 
 	@Override
@@ -144,8 +144,8 @@ public class SimpleItem extends RecipeItem implements Ingredient {
 	}
 
 	// Needs to be called at Server start
-	public static void registerItemLoader(P p) {
-		p.registerForItemLoader("SI", SimpleItem::loadFrom);
+	public static void registerItemLoader(BreweryPlugin breweryPlugin) {
+		breweryPlugin.registerForItemLoader("SI", SimpleItem::loadFrom);
 	}
 
 }

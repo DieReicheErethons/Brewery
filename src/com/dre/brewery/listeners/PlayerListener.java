@@ -37,12 +37,12 @@ public class PlayerListener implements Listener {
 		// -- Clicking an Hopper --
 		if (type == Material.HOPPER) {
 			if (BConfig.brewHopperDump && event.getPlayer().isSneaking()) {
-				if (!P.use1_9 || event.getHand() == EquipmentSlot.HAND) {
+				if (!BreweryPlugin.use1_9 || event.getHand() == EquipmentSlot.HAND) {
 					ItemStack item = event.getItem();
 					if (Brew.isBrew(item)) {
 						event.setCancelled(true);
 						BUtil.setItemInHand(event, Material.GLASS_BOTTLE, false);
-						if (P.use1_11) {
+						if (BreweryPlugin.use1_11) {
 							clickedBlock.getWorld().playSound(clickedBlock.getLocation(), Sound.ITEM_BOTTLE_EMPTY, 1f, 1f);
 						}
 					}
@@ -52,7 +52,7 @@ public class PlayerListener implements Listener {
 		}
 
 		// -- Opening a Sealing Table --
-		if (P.use1_14 && BSealer.isBSealer(clickedBlock)) {
+		if (BreweryPlugin.use1_14 && BSealer.isBSealer(clickedBlock)) {
 			if (player.isSneaking()) {
 				event.setUseInteractedBlock(Event.Result.DENY);
 				return;
@@ -62,7 +62,7 @@ public class PlayerListener implements Listener {
 				BSealer sealer = new BSealer(player);
 				event.getPlayer().openInventory(sealer.getInventory());
 			} else {
-				P.p.msg(player, P.p.languageReader.get("Error_SealingTableDisabled"));
+				BreweryPlugin.getInstance().msg(player, BreweryPlugin.getInstance().languageReader.get("Error_SealingTableDisabled"));
 			}
 			return;
 		}
@@ -78,16 +78,16 @@ public class PlayerListener implements Listener {
 		}
 
 		// -- Opening a Minecraft Barrel --
-		if (P.use1_14 && type == Material.BARREL) {
+		if (BreweryPlugin.use1_14 && type == Material.BARREL) {
 			if (!player.hasPermission("brewery.openbarrel.mc")) {
 				event.setCancelled(true);
-				P.p.msg(player, P.p.languageReader.get("Error_NoPermissions"));
+				BreweryPlugin.getInstance().msg(player, BreweryPlugin.getInstance().languageReader.get("Error_NoPermissions"));
 			}
 			return;
 		}
 
 		// Do not process Off Hand for Barrel interaction
-		if (P.use1_9 && event.getHand() != EquipmentSlot.HAND) {
+		if (BreweryPlugin.use1_9 && event.getHand() != EquipmentSlot.HAND) {
 			return;
 		}
 
@@ -117,7 +117,7 @@ public class PlayerListener implements Listener {
 
 			barrel.open(player);
 
-			if (P.use1_14) {
+			if (BreweryPlugin.use1_14) {
 
 				// When right clicking a normal Block in 1.14 with a potion or any edible item in hand,
 				// even when cancelled, the consume animation will continue playing while opening the Barrel inventory.
@@ -142,7 +142,7 @@ public class PlayerListener implements Listener {
 					}
 					if (useSlot != -1) {
 						inv.setHeldItemSlot(useSlot);
-						P.p.getServer().getScheduler().scheduleSyncDelayedTask(P.p, () -> player.getInventory().setHeldItemSlot(held), 2);
+						BreweryPlugin.getScheduler().runTaskLater(() -> player.getInventory().setHeldItemSlot(held), 2);
 					}
 				}
 
@@ -180,7 +180,7 @@ public class PlayerListener implements Listener {
 					/*if (player.getGameMode() != org.bukkit.GameMode.CREATIVE) {
 						brew.remove(item);
 					}*/
-					if (P.use1_9) {
+					if (BreweryPlugin.use1_9) {
 						if (player.getGameMode() != GameMode.CREATIVE) {
 							// replace the potion with an empty potion to avoid effects
 							event.setItem(new ItemStack(Material.POTION));
@@ -263,10 +263,10 @@ public class PlayerListener implements Listener {
 						bplayer.join(player);
 						return;
 					case 2:
-						event.disallow(PlayerLoginEvent.Result.KICK_OTHER, P.p.languageReader.get("Player_LoginDeny"));
+						event.disallow(PlayerLoginEvent.Result.KICK_OTHER, BreweryPlugin.getInstance().languageReader.get("Player_LoginDeny"));
 						return;
 					case 3:
-						event.disallow(PlayerLoginEvent.Result.KICK_OTHER, P.p.languageReader.get("Player_LoginDenyLong"));
+						event.disallow(PlayerLoginEvent.Result.KICK_OTHER, BreweryPlugin.getInstance().languageReader.get("Player_LoginDenyLong"));
 				}
 			}
 		}

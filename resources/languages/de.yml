@@ -16,6 +16,7 @@ Brew_Years: Jahre
 Brew_fermented: gegärt
 Brew_minute: minute
 Brew_Alc: Alc &v1ml
+Brew_Brewer: 'Brewer: &v1'
 
 # CMD
 CMD_Copy_Error: '&6&v1 &cTränke haben nicht mehr in das Inventar gepasst'
@@ -54,6 +55,7 @@ Etc_Page: Seite
 Etc_Usage: 'Benutzung:'
 Etc_Barrel: Fass
 Etc_SealingTable: Trankversiegler
+Etc_UpdateAvailable: 'Update available: &a&v1 &f-> &a&v2 &bhttps://www.spigotmc.org/resources/breweryx.114777/'
 
 # Help
 Help_Copy: '&6/brew Copy [Anzahl]&9 Kopiert den Trank in deiner Hand'

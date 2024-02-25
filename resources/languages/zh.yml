@@ -16,6 +16,7 @@ Brew_Years: 年
 Brew_fermented: 炖煮发酵
 Brew_minute: 分钟
 Brew_Alc: 酒精度 &v1ml
+Brew_Brewer: 'Brewer: &v1'
 
 # CMD
 CMD_Copy_Error: '&6&v1&r, &c你的背包塞不下了.'
@@ -54,6 +55,7 @@ Etc_Barrel: 木桶
 Etc_Page: 页
 Etc_Usage: '用途:'
 Etc_SealingTable: Brew Sealing Table
+Etc_UpdateAvailable: 'Update available: &a&v1 &f-> &a&v2 &bhttps://www.spigotmc.org/resources/breweryx.114777/'
 
 # Help
 Help_Copy: '&6/brew copy [数量] &9复制当前手中的饮品.'

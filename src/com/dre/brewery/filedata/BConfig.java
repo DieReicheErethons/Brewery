@@ -1,10 +1,7 @@
 package com.dre.brewery.filedata;
 
-import com.dre.brewery.BSealer;
-import com.dre.brewery.Brew;
-import com.dre.brewery.DistortChat;
-import com.dre.brewery.MCBarrel;
-import com.dre.brewery.P;
+import com.dre.brewery.*;
+import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.api.events.ConfigLoadEvent;
 import com.dre.brewery.integration.barrel.BlocklockerBarrel;
 import com.dre.brewery.integration.barrel.WGBarrel;
@@ -37,6 +34,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class BConfig {
 
@@ -72,7 +70,7 @@ public class BConfig {
 
 	//BPlayer
 	public static Map<Material, Integer> drainItems = new HashMap<>();// DrainItem Material and Strength
-	public static Material pukeItem;
+	public static List<Material> pukeItem;
 	public static boolean showStatusOnDrink;
 	public static int pukeDespawntime;
 	public static float stumbleModifier;
@@ -90,11 +88,13 @@ public class BConfig {
 	public static boolean enableEncode;
 	public static boolean alwaysShowQuality; // Always show quality stars
 	public static boolean alwaysShowAlc; // Always show alc%
+	public static boolean showBrewer;
 	public static boolean brewHopperDump; // Allow Dumping of Brew liquid into Hoppers
 
 	//Features
 	public static boolean craftSealingTable; // Allow Crafting of Sealing Table
 	public static boolean enableSealingTable; // Allow Usage of Sealing Table
+	public static String pluginPrefix = "&2[Brewery]&f ";
 
 	//Item
 	public static List<RecipeItem> customItems = new ArrayList<>();
@@ -104,28 +104,28 @@ public class BConfig {
 	public static SQLSync sqlSync;
 	public static boolean sqlDrunkSync;
 
-	public static P p = P.p;
+	public static BreweryPlugin breweryPlugin = BreweryPlugin.getInstance();
 
 	private static boolean checkConfigs() {
-		File cfg = new File(p.getDataFolder(), "config.yml");
+		File cfg = new File(breweryPlugin.getDataFolder(), "config.yml");
 		if (!cfg.exists()) {
-			p.log("§1§lNo config.yml found, creating default file! You may want to choose a config according to your language!");
-			p.log("§1§lYou can find them in plugins/Brewery/configs/");
-			p.log("§1§lJust copy the config for your language into the Brewery folder and /brew reload");
-			InputStream defconf = p.getResource("config/" + (P.use1_13 ? "v13/" : "v12/") + "en/config.yml");
+			breweryPlugin.log("§1§lNo config.yml found, creating default file! You may want to choose a config according to your language!");
+			breweryPlugin.log("§1§lYou can find them in plugins/Brewery/configs/");
+			breweryPlugin.log("§1§lJust copy the config for your language into the Brewery folder and /brew reload");
+			InputStream defconf = breweryPlugin.getResource("config/" + (BreweryPlugin.use1_13 ? "v13/" : "v12/") + "en/config.yml");
 			if (defconf == null) {
-				p.errorLog("default config file not found, your jarfile may be corrupt. Disabling Brewery!");
+				breweryPlugin.errorLog("default config file not found, your jarfile may be corrupt. Disabling Brewery!");
 				return false;
 			}
 			try {
-				BUtil.saveFile(defconf, p.getDataFolder(), "config.yml", false);
+				BUtil.saveFile(defconf, breweryPlugin.getDataFolder(), "config.yml", false);
 			} catch (IOException e) {
 				e.printStackTrace();
 				return false;
 			}
 		}
 		if (!cfg.exists()) {
-			p.errorLog("default config file could not be copied, your jarfile may be corrupt. Disabling Brewery!");
+			breweryPlugin.errorLog("default config file could not be copied, your jarfile may be corrupt. Disabling Brewery!");
 			return false;
 		}
 
@@ -134,13 +134,13 @@ public class BConfig {
 	}
 
 	private static void copyDefaultConfigs(boolean overwrite) {
-		File configs = new File(p.getDataFolder(), "configs");
-		File languages = new File(p.getDataFolder(), "languages");
+		File configs = new File(breweryPlugin.getDataFolder(), "configs");
+		File languages = new File(breweryPlugin.getDataFolder(), "languages");
 		for (String l : new String[] {"de", "en", "fr", "it", "zh", "tw"}) {
 			File lfold = new File(configs, l);
 			try {
-				BUtil.saveFile(p.getResource("config/" + (P.use1_13 ? "v13/" : "v12/") + l + "/config.yml"), lfold, "config.yml", overwrite);
-				BUtil.saveFile(p.getResource("languages/" + l + ".yml"), languages, l + ".yml", false); // Never overwrite languages, they get updated with their updater
+				BUtil.saveFile(breweryPlugin.getResource("config/" + (BreweryPlugin.use1_13 ? "v13/" : "v12/") + l + "/config.yml"), lfold, "config.yml", overwrite);
+				BUtil.saveFile(breweryPlugin.getResource("languages/" + l + ".yml"), languages, l + ".yml", false); // Never overwrite languages, they get updated with their updater
 			} catch (IOException e) {
 				if (!(l.equals("zh") || l.equals("tw"))) {
 					// zh and tw not available for some versions
@@ -151,7 +151,7 @@ public class BConfig {
 	}
 
 	public static FileConfiguration loadConfigFile() {
-		File file = new File(P.p.getDataFolder(), "config.yml");
+		File file = new File(BreweryPlugin.getInstance().getDataFolder(), "config.yml");
 		if (!checkConfigs()) {
 			return null;
 		}
@@ -166,20 +166,20 @@ public class BConfig {
 		}
 
 		// Failed to load
-		if (p.languageReader != null) {
-			P.p.errorLog(p.languageReader.get("Error_YmlRead"));
+		if (breweryPlugin.languageReader != null) {
+			BreweryPlugin.getInstance().errorLog(breweryPlugin.languageReader.get("Error_YmlRead"));
 		} else {
-			P.p.errorLog("Could not read file config.yml, please make sure the file is in valid yml format (correct spaces etc.)");
+			BreweryPlugin.getInstance().errorLog("Could not read file config.yml, please make sure the file is in valid yml format (correct spaces etc.)");
 		}
 		return null;
 	}
 
 	public static void readConfig(FileConfiguration config) {
 		// Set the Language
-		p.language = config.getString("language", "en");
+		breweryPlugin.language = config.getString("language", "en");
 
 		// Load LanguageReader
-		p.languageReader = new LanguageReader(new File(p.getDataFolder(), "languages/" + p.language + ".yml"), "languages/" + p.language + ".yml");
+		breweryPlugin.languageReader = new LanguageReader(new File(breweryPlugin.getDataFolder(), "languages/" + breweryPlugin.language + ".yml"), "languages/" + breweryPlugin.language + ".yml");
 
 		// Has to config still got old materials
 		boolean oldMat = config.getBoolean("oldMat", false);
@@ -187,11 +187,11 @@ public class BConfig {
 		// Check if config is the newest version
 		String version = config.getString("version", null);
 		if (version != null) {
-			if (!version.equals(configVersion) || (oldMat && P.use1_13)) {
-				File file = new File(P.p.getDataFolder(), "config.yml");
+			if (!version.equals(configVersion) || (oldMat && BreweryPlugin.use1_13)) {
+				File file = new File(BreweryPlugin.getInstance().getDataFolder(), "config.yml");
 				copyDefaultConfigs(true);
-				new ConfigUpdater(file).update(version, oldMat, p.language, config);
-				P.p.log("Config Updated to version: " + configVersion);
+				new ConfigUpdater(file).update(version, oldMat, breweryPlugin.language, config);
+				BreweryPlugin.getInstance().log("Config Updated to version: " + configVersion);
 				config = YamlConfiguration.loadConfiguration(file);
 			}
 		}
@@ -199,7 +199,7 @@ public class BConfig {
 		// If the Update Checker should be enabled
 		updateCheck = config.getBoolean("updateCheck", false);
 
-		PluginManager plMan = p.getServer().getPluginManager();
+		PluginManager plMan = breweryPlugin.getServer().getPluginManager();
 
 		// Third-Party
 		useWG = config.getBoolean("useWorldGuard", true) && plMan.isPluginEnabled("WorldGuard");
@@ -220,8 +220,9 @@ public class BConfig {
 
 		// various Settings
 		DataSave.autosave = config.getInt("autosave", 3);
-		P.debug = config.getBoolean("debug", false);
-		pukeItem = Material.matchMaterial(config.getString("pukeItem", "SOUL_SAND"));
+		BreweryPlugin.debug = config.getBoolean("debug", false);
+		pukeItem = !config.getStringList("pukeItem").isEmpty() ? config.getStringList("pukeItem").stream().map(Material::matchMaterial).collect(Collectors.toList())
+				: List.of(Material.matchMaterial(config.getString("pukeItem"))); //Material.matchMaterial(config.getString("pukeItem", "SOUL_SAND"));
 		hangoverTime = config.getInt("hangoverDays", 0) * 24 * 60;
 		overdrinkKick = config.getBoolean("enableKickOnOverdrink", false);
 		enableHome = config.getBoolean("enableHome", false);
@@ -234,26 +235,28 @@ public class BConfig {
 		enableWake = config.getBoolean("enableWake", false);
 		craftSealingTable = config.getBoolean("craftSealingTable", false);
 		enableSealingTable = config.getBoolean("enableSealingTable", false);
+		pluginPrefix = config.getString("pluginPrefix", "&2[Brewery]&f ");
 		colorInBarrels = config.getBoolean("colorInBarrels", false);
 		colorInBrewer = config.getBoolean("colorInBrewer", false);
 		alwaysShowQuality = config.getBoolean("alwaysShowQuality", false);
 		alwaysShowAlc = config.getBoolean("alwaysShowAlc", false);
+		showBrewer = config.getBoolean("showBrewer", false);
 		enableEncode = config.getBoolean("enableEncode", false);
 		openEverywhere = config.getBoolean("openLargeBarrelEverywhere", false);
-		enableCauldronParticles = P.use1_9 && config.getBoolean("enableCauldronParticles", false);
+		enableCauldronParticles = BreweryPlugin.use1_9 && config.getBoolean("enableCauldronParticles", false);
 		minimalParticles = config.getBoolean("minimalParticles", false);
 		useOffhandForCauldron = config.getBoolean("useOffhandForCauldron", false);
 		loadDataAsync = config.getBoolean("loadDataAsync", true);
 		brewHopperDump = config.getBoolean("brewHopperDump", false);
 
-		if (P.use1_14) {
+		if (BreweryPlugin.use1_14) {
 			MCBarrel.maxBrews = config.getInt("maxBrewsInMCBarrels", 6);
 			MCBarrel.enableAging = config.getBoolean("ageInMCBarrels", true);
 		}
 
-		Brew.loadSeed(config, new File(P.p.getDataFolder(), "config.yml"));
+		Brew.loadSeed(config, new File(BreweryPlugin.getInstance().getDataFolder(), "config.yml"));
 
-		if (!P.use1_13) {
+		if (!BreweryPlugin.use1_13) {
 			// world.getBlockAt loads Chunks in 1.12 and lower. Can't load async
 			loadDataAsync = false;
 		}
@@ -272,7 +275,7 @@ public class BConfig {
 					custom.makeImmutable();
 					customItems.add(custom);
 				} else {
-					p.errorLog("Loading the Custom Item with id: '" + custId + "' failed!");
+					breweryPlugin.errorLog("Loading the Custom Item with id: '" + custId + "' failed!");
 				}
 			}
 		}
@@ -286,7 +289,7 @@ public class BConfig {
 				if (recipe != null && recipe.isValid()) {
 					configRecipes.add(recipe);
 				} else {
-					p.errorLog("Loading the Recipe with id: '" + recipeId + "' failed!");
+					breweryPlugin.errorLog("Loading the Recipe with id: '" + recipeId + "' failed!");
 				}
 			}
 			BRecipe.numConfigRecipes = configRecipes.size();
@@ -301,7 +304,7 @@ public class BConfig {
 				if (recipe != null) {
 					configRecipes.add(recipe);
 				} else {
-					p.errorLog("Loading the Cauldron-Recipe with id: '" + id + "' failed!");
+					breweryPlugin.errorLog("Loading the Cauldron-Recipe with id: '" + id + "' failed!");
 				}
 			}
 			BCauldronRecipe.numConfigRecipes = configRecipes.size();
@@ -322,7 +325,7 @@ public class BConfig {
 				String[] drainSplit = drainString.split("/");
 				if (drainSplit.length > 1) {
 					Material mat = Material.matchMaterial(drainSplit[0]);
-					int strength = p.parseInt(drainSplit[1]);
+					int strength = breweryPlugin.parseInt(drainSplit[1]);
 					if (mat == null && hasVault && strength > 0) {
 						try {
 							net.milkbowl.vault.item.ItemInfo vaultItem = net.milkbowl.vault.item.Items.itemByString(drainSplit[0]);
@@ -330,7 +333,7 @@ public class BConfig {
 								mat = vaultItem.getType();
 							}
 						} catch (Exception e) {
-							P.p.errorLog("Could not check vault for Item Name");
+							BreweryPlugin.getInstance().errorLog("Could not check vault for Item Name");
 							e.printStackTrace();
 						}
 					}
@@ -357,7 +360,7 @@ public class BConfig {
 		DistortChat.doSigns = config.getBoolean("distortSignText", false);
 
 		// Register Sealing Table Recipe
-		if (P.use1_14) {
+		if (BreweryPlugin.use1_14) {
 			if (craftSealingTable && !BSealer.recipeRegistered) {
 				BSealer.registerRecipe();
 			} else if (!craftSealingTable && BSealer.recipeRegistered) {
@@ -378,9 +381,9 @@ public class BConfig {
 				}
 			}
 			if (wg == null) {
-				P.p.errorLog("Failed loading WorldGuard Integration! Opening Barrels will NOT work!");
-				P.p.errorLog("Brewery was tested with version 5.8, 6.1 and 7.0 of WorldGuard!");
-				P.p.errorLog("Disable the WorldGuard support in the config and do /brew reload");
+				BreweryPlugin.getInstance().errorLog("Failed loading WorldGuard Integration! Opening Barrels will NOT work!");
+				BreweryPlugin.getInstance().errorLog("Brewery was tested with version 5.8, 6.1 and 7.0 of WorldGuard!");
+				BreweryPlugin.getInstance().errorLog("Disable the WorldGuard support in the config and do /brew reload");
 			}
 		}
 		if (useBlocklocker) {
@@ -390,7 +393,7 @@ public class BConfig {
 				BlocklockerBarrel.registerBarrelAsProtectable();
 			} catch (ClassNotFoundException e) {
 				useBlocklocker = false;
-				P.p.log("Unsupported Version of 'BlockLocker', locking Brewery Barrels disabled");
+				BreweryPlugin.getInstance().log("Unsupported Version of 'BlockLocker', locking Brewery Barrels disabled");
 			}
 		}
 
@@ -421,7 +424,7 @@ public class BConfig {
 
 		// The Config was reloaded, call Event
 		ConfigLoadEvent event = new ConfigLoadEvent();
-		P.p.getServer().getPluginManager().callEvent(event);
+		BreweryPlugin.getInstance().getServer().getPluginManager().callEvent(event);
 
 
 	}

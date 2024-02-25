@@ -2,7 +2,7 @@ package com.dre.brewery.integration;
 
 import com.Acrobot.ChestShop.Events.ShopCreatedEvent;
 import com.dre.brewery.Brew;
-import com.dre.brewery.P;
+import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.filedata.BConfig;
 import org.bukkit.Material;
 import org.bukkit.block.Container;
@@ -22,7 +22,7 @@ public class ChestShopListener implements Listener {
 					if (item != null && item.getType() == Material.POTION) {
 						Brew brew = Brew.get(item);
 						if (brew != null && !brew.isSealed()) {
-							event.getPlayer().sendTitle("", P.p.color(P.p.languageReader.get("Player_ShopSealBrew")), 10, 70, 20);
+							event.getPlayer().sendTitle("", BreweryPlugin.getInstance().color(BreweryPlugin.getInstance().languageReader.get("Player_ShopSealBrew")), 10, 70, 20);
 							return;
 						}
 					}
@@ -32,7 +32,7 @@ public class ChestShopListener implements Listener {
 			HandlerList.unregisterAll(this);
 			BConfig.hasChestShop = false;
 			e.printStackTrace();
-			P.p.errorLog("Failed to notify Player using ChestShop. Disabling ChestShop support");
+			BreweryPlugin.getInstance().errorLog("Failed to notify Player using ChestShop. Disabling ChestShop support");
 		}
 	}
 }

@@ -16,6 +16,7 @@ Brew_Years: 年
 Brew_fermented: 發酵
 Brew_minute: 分鐘
 Brew_Alc: Alc &v1ml
+Brew_Brewer: 'Brewer: &v1'
 
 # CMD
 CMD_Copy_Error: '&6&v1 &c藥水不適合你的庫存'
@@ -54,6 +55,7 @@ Etc_Barrel: 釀造桶
 Etc_Page: 頁數
 Etc_Usage: '用法:'
 Etc_SealingTable: Brew Sealing Table
+Etc_UpdateAvailable: 'Update available: &a&v1 &f-> &a&v2 &bhttps://www.spigotmc.org/resources/breweryx.114777/'
 
 # Help
 Help_Copy: '&6/brew copy [數量]&9 複製手中的藥水'

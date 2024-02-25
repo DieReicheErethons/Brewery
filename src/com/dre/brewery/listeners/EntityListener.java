@@ -2,7 +2,7 @@ package com.dre.brewery.listeners;
 
 import com.dre.brewery.Barrel;
 import com.dre.brewery.Brew;
-import com.dre.brewery.P;
+import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.api.events.barrel.BarrelDestroyEvent;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -72,7 +72,7 @@ public class EntityListener implements Listener {
 			if (barrel != null) {
 				BarrelDestroyEvent breakEvent = new BarrelDestroyEvent(barrel, block, BarrelDestroyEvent.Reason.EXPLODED, null);
 				// Listened to by LWCBarrel (IntegrationListener)
-				P.p.getServer().getPluginManager().callEvent(breakEvent);
+				BreweryPlugin.getInstance().getServer().getPluginManager().callEvent(breakEvent);
 				breakEvents.add(breakEvent);
 				if (breakEvent.isCancelled()) {
 					iter.remove();

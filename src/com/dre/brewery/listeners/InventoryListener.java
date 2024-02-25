@@ -31,12 +31,12 @@ public class InventoryListener implements Listener {
 	 */
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onBrewerOpen(InventoryOpenEvent event) {
-		if (!P.use1_9) return;
+		if (!BreweryPlugin.use1_9) return;
 		HumanEntity player = event.getPlayer();
 		Inventory inv = event.getInventory();
 		if (player == null || !(inv instanceof BrewerInventory)) return;
 
-		P.p.debugLog("Starting brew inventory tracking");
+		BreweryPlugin.getInstance().debugLog("Starting brew inventory tracking");
 		trackedBrewmen.add(player.getUniqueId());
 	}
 
@@ -45,18 +45,18 @@ public class InventoryListener implements Listener {
 	 */
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onBrewerClose(InventoryCloseEvent event) {
-		if (!P.use1_9) return;
+		if (!BreweryPlugin.use1_9) return;
 		HumanEntity player = event.getPlayer();
 		Inventory inv = event.getInventory();
 		if (player == null || !(inv instanceof BrewerInventory)) return;
 
-		P.p.debugLog("Stopping brew inventory tracking");
+		BreweryPlugin.getInstance().debugLog("Stopping brew inventory tracking");
 		trackedBrewmen.remove(player.getUniqueId());
 	}
 
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onBrewerDrag(InventoryDragEvent event) {
-		if (!P.use1_9) return;
+		if (!BreweryPlugin.use1_9) return;
 		// Workaround the Drag event when only clicking a slot
 		if (event.getInventory() instanceof BrewerInventory) {
 			onBrewerClick(new InventoryClickEvent(event.getView(), InventoryType.SlotType.CONTAINER, 0, ClickType.LEFT, InventoryAction.PLACE_ALL));
@@ -70,7 +70,7 @@ public class InventoryListener implements Listener {
 	 */
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onBrewerClick(InventoryClickEvent event) {
-		if (!P.use1_9) return;
+		if (!BreweryPlugin.use1_9) return;
 
 		HumanEntity player = event.getWhoClicked();
 		Inventory inv = event.getInventory();
@@ -87,7 +87,7 @@ public class InventoryListener implements Listener {
 
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onBrew(BrewEvent event) {
-		if (P.use1_9) {
+		if (BreweryPlugin.use1_9) {
 			if (BDistiller.hasBrew(event.getContents(), BDistiller.getDistillContents(event.getContents())) != 0) {
 				event.setCancelled(true);
 			}
@@ -106,7 +106,7 @@ public class InventoryListener implements Listener {
 			if (item.hasItemMeta()) {
 				PotionMeta potion = ((PotionMeta) item.getItemMeta());
 				assert potion != null;
-				if (P.use1_11) {
+				if (BreweryPlugin.use1_11) {
 					// Convert potions from 1.10 to 1.11 for new color
 					if (potion.getColor() == null) {
 						Brew brew = Brew.get(potion);
@@ -116,7 +116,7 @@ public class InventoryListener implements Listener {
 					}
 				} else {
 					// convert potions from 1.8 to 1.9 for color and to remove effect descriptions
-					if (P.use1_9 && !potion.hasItemFlag(ItemFlag.HIDE_POTION_EFFECTS)) {
+					if (BreweryPlugin.use1_9 && !potion.hasItemFlag(ItemFlag.HIDE_POTION_EFFECTS)) {
 						Brew brew = Brew.get(potion);
 						if (brew != null) {
 							brew.convertPre1_9(item);
@@ -138,7 +138,7 @@ public class InventoryListener implements Listener {
 			if (event.getSlot() > 2) {
 				return;
 			}
-		} else if (!(event.getInventory().getHolder() instanceof Barrel) && !(P.use1_14 && event.getInventory().getHolder() instanceof org.bukkit.block.Barrel)) {
+		} else if (!(event.getInventory().getHolder() instanceof Barrel) && !(BreweryPlugin.use1_14 && event.getInventory().getHolder() instanceof org.bukkit.block.Barrel)) {
 			return;
 		}
 
@@ -164,7 +164,7 @@ public class InventoryListener implements Listener {
 							case MOVE_TO_OTHER_INVENTORY:
 							case HOTBAR_SWAP:
 								// Fix a Graphical glitch of item still showing colors until clicking it
-								P.p.getServer().getScheduler().runTask(P.p, () -> ((Player) event.getWhoClicked()).updateInventory());
+								BreweryPlugin.getScheduler().runTask(() -> ((Player) event.getWhoClicked()).updateInventory());
 						}
 					}
 				}
@@ -175,7 +175,7 @@ public class InventoryListener implements Listener {
 	// Check if the player tries to add more than the allowed amount of brews into an mc-barrel
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onInventoryClickMCBarrel(InventoryClickEvent event) {
-		if (!P.use1_14) return;
+		if (!BreweryPlugin.use1_14) return;
 		if (event.getInventory().getType() != InventoryType.BARREL) return;
 		if (!MCBarrel.enableAging) return;
 
@@ -194,7 +194,7 @@ public class InventoryListener implements Listener {
 	// Handle the Brew Sealer Inventory
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onInventoryClickBSealer(InventoryClickEvent event) {
-		if (!P.use1_13) return;
+		if (!BreweryPlugin.use1_13) return;
 		InventoryHolder holder = event.getInventory().getHolder();
 		if (!(holder instanceof BSealer)) {
 			return;
@@ -227,19 +227,8 @@ public class InventoryListener implements Listener {
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onInventoryOpen(InventoryOpenEvent event) {
-		if (!P.use1_14) return;
+		if (!BreweryPlugin.use1_14) return;
 		if (!MCBarrel.enableAging) return;
-
-		/*Barrel x = null;
-		if (event.getInventory().getHolder() instanceof Barrel) {
-			x = ((Barrel) event.getInventory().getHolder());
-		}
-
-		if (!opening) {
-			opening = true;
-			Barrel finalBarrel = x;
-			P.p.getServer().getScheduler().scheduleSyncDelayedTask(P.p, () -> {finalBarrel.remove(null, null); opening = false;}, 100);
-		}*/
 
 		// Check for MC Barrel
 		if (event.getInventory().getType() == InventoryType.BARREL) {
@@ -259,7 +248,7 @@ public class InventoryListener implements Listener {
 	// block the pickup of items where getPickupDelay is > 1000 (puke)
 	@EventHandler(ignoreCancelled = true)
 	public void onHopperPickupPuke(InventoryPickupItemEvent event){
-		if (event.getItem().getPickupDelay() > 1000 && event.getItem().getItemStack().getType() == BConfig.pukeItem) {
+		if (event.getItem().getPickupDelay() > 1000 && BConfig.pukeItem.contains(event.getItem().getItemStack().getType())) {
 			event.setCancelled(true);
 		}
 	}
@@ -275,7 +264,7 @@ public class InventoryListener implements Listener {
 			return;
 		}
 
-		if (!P.use1_14) return;
+		if (!BreweryPlugin.use1_14) return;
 
 		if (event.getSource().getType() == InventoryType.BARREL) {
 			ItemStack item = event.getItem();
@@ -299,12 +288,12 @@ public class InventoryListener implements Listener {
 
 	@EventHandler
 	public void onInventoryClose(InventoryCloseEvent event) {
-		if (!P.use1_13) return;
+		if (!BreweryPlugin.use1_13) return;
 		if (event.getInventory().getHolder() instanceof BSealer) {
 			((BSealer) event.getInventory().getHolder()).closeInv();
 		}
 
-		if (!P.use1_14) return;
+		if (!BreweryPlugin.use1_14) return;
 
 		// Barrel Closing Sound
 		if (event.getInventory().getHolder() instanceof Barrel) {

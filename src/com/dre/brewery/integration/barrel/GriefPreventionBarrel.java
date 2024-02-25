@@ -1,6 +1,6 @@
 package com.dre.brewery.integration.barrel;
 
-import com.dre.brewery.P;
+import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.api.events.barrel.BarrelAccessEvent;
 import me.ryanhamshire.GriefPrevention.Claim;
 import me.ryanhamshire.GriefPrevention.ClaimPermission;
@@ -12,7 +12,7 @@ import java.util.function.Supplier;
 
 public class GriefPreventionBarrel {
 
-	private static P brewery = P.p;
+	private static BreweryPlugin brewery = BreweryPlugin.getInstance();
 
 	public static boolean checkAccess(BarrelAccessEvent event) {
 		GriefPrevention griefPrevention = GriefPrevention.instance;

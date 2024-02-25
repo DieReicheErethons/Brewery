@@ -7,6 +7,9 @@
 # Lingua da usare (fra quelle in plugins/Brewery/languages)
 language: it
 
+# Prefix used on messages
+pluginPrefix: '&2[Brewery]&f '
+
 # Se il giocatore si sveglia nella sua /home dopo aver bevuto troppo(il plugin di /home deve essere installato!) [true]
 enableHome: true
 
@@ -32,7 +35,7 @@ enableKickOnOverdrink: false
 enablePuke: true
 
 # L'oggetto droppato in massa quando si vomita che dovrebbe rappresentare il vomito [Soul_Sand]
-pukeItem: Soul_Sand
+pukeItem: [Soul_Sand]
 
 # Tempo in secondi perché il vomito sparisca (il valore di minecraft di default è 300 = 5 min) [60]
 # Se il tempo di scomparsa viene cambiato in spigot.yml anche pukeDespawntime cambia.
@@ -64,6 +67,9 @@ alwaysShowQuality: true
 
 # Always show the alcohol content on the item. If false, it will only show in the brewing stand [false]
 alwaysShowAlc: false
+
+# If we should show who brewed the drink [false]
+showBrewer: false
 
 # If aging in -Minecraft- Barrels in enabled [true] and how many Brewery drinks can be put into them [6]
 ageInMCBarrels: true

@@ -1,7 +1,7 @@
 package com.dre.brewery.integration;
 
 import com.dre.brewery.Brew;
-import com.dre.brewery.P;
+import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.filedata.BConfig;
 import com.nisovin.shopkeepers.api.events.PlayerOpenUIEvent;
 import com.nisovin.shopkeepers.api.ui.DefaultUITypes;
@@ -45,7 +45,7 @@ public class ShopKeepersListener implements Listener {
 		if (item != null && item.getType() == Material.POTION && event.getClickedInventory() == event.getView().getTopInventory()) {
 			Brew brew = Brew.get(item);
 			if (brew != null && !brew.isSealed()) {
-				P.p.msg(event.getWhoClicked(), P.p.languageReader.get("Player_ShopSealBrew"));
+				BreweryPlugin.getInstance().msg(event.getWhoClicked(), BreweryPlugin.getInstance().languageReader.get("Player_ShopSealBrew"));
 			}
 		}
 	}
@@ -60,7 +60,7 @@ public class ShopKeepersListener implements Listener {
 		HandlerList.unregisterAll(this);
 		BConfig.hasShopKeepers = false;
 		e.printStackTrace();
-		P.p.errorLog("Failed to notify Player using 'ShopKeepers'. Disabling 'ShopKeepers' support");
+		BreweryPlugin.getInstance().errorLog("Failed to notify Player using 'ShopKeepers'. Disabling 'ShopKeepers' support");
 		openedEditors.clear();
 	}
 

@@ -24,11 +24,10 @@
 
 package com.dre.brewery;
 
-import com.dre.brewery.filedata.BConfig;
-import com.dre.brewery.filedata.BData;
-import com.dre.brewery.filedata.DataSave;
-import com.dre.brewery.filedata.LanguageReader;
-import com.dre.brewery.filedata.UpdateChecker;
+import com.dre.brewery.api.addons.AddonManager;
+import com.dre.brewery.commands.CommandManager;
+import com.dre.brewery.commands.CommandUtil;
+import com.dre.brewery.filedata.*;
 import com.dre.brewery.integration.ChestShopListener;
 import com.dre.brewery.integration.IntegrationListener;
 import com.dre.brewery.integration.ShopKeepersListener;
@@ -40,11 +39,11 @@ import com.dre.brewery.recipe.*;
 import com.dre.brewery.utility.BUtil;
 import com.dre.brewery.utility.LegacyUtil;
 import com.dre.brewery.utility.Stats;
+import com.github.Anon8281.universalScheduler.UniversalScheduler;
+import com.github.Anon8281.universalScheduler.scheduling.schedulers.TaskScheduler;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -55,8 +54,11 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.function.Function;
 
-public class P extends JavaPlugin {
-	public static P p;
+public class BreweryPlugin extends JavaPlugin {
+
+	private static AddonManager addonManager;
+	private static TaskScheduler scheduler;
+	private static BreweryPlugin breweryPlugin;
 	public static boolean debug;
 	public static boolean useUUID;
 	public static boolean useNBT;
@@ -65,13 +67,8 @@ public class P extends JavaPlugin {
 	public static boolean use1_13;
 	public static boolean use1_14;
 
-	// Listeners
-	public BlockListener blockListener;
+	// Public Listeners
 	public PlayerListener playerListener;
-	public EntityListener entityListener;
-	public InventoryListener inventoryListener;
-	public WorldListener worldListener;
-	public IntegrationListener integrationListener;
 
 	// Registrations
 	public Map<String, Function<ItemLoader, Ingredient>> ingredientLoaders = new HashMap<>();
@@ -85,7 +82,8 @@ public class P extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
-		p = this;
+		breweryPlugin = this;
+		scheduler = UniversalScheduler.getScheduler(this);
 
 		// Version check
 		String v = Bukkit.getBukkitVersion();
@@ -95,7 +93,12 @@ public class P extends JavaPlugin {
 		use1_13 = !v.matches("(^|.*[^.\\d])1\\.1[0-2]([^\\d].*|$)") && !v.matches("(^|.*[^.\\d])1\\.[0-9]([^\\d].*|$)");
 		use1_14 = !v.matches("(^|.*[^.\\d])1\\.1[0-3]([^\\d].*|$)") && !v.matches("(^|.*[^.\\d])1\\.[0-9]([^\\d].*|$)");
 
-		//MC 1.13 uses a different NBT API than the newer versions..
+		// Load Addons
+		addonManager = new AddonManager(this);
+		addonManager.loadAddons();
+
+
+		//MC 1.13 uses a different NBT API than the newer versions.
 		// We decide here which to use, the new or the old or none at all
 		if (LegacyUtil.initNbt()) {
 			useNBT = true;
@@ -111,15 +114,13 @@ public class P extends JavaPlugin {
 		try {
 			FileConfiguration cfg = BConfig.loadConfigFile();
 			if (cfg == null) {
-				p = null;
-				getServer().getPluginManager().disablePlugin(this);
+				log("Something went wrong when trying to load the config file! Please check your config.yml");
 				return;
 			}
 			BConfig.readConfig(cfg);
 		} catch (Exception e) {
 			e.printStackTrace();
-			p = null;
-			getServer().getPluginManager().disablePlugin(this);
+			log("Something went wrong when trying to load the config file! Please check your config.yml");
 			return;
 		}
 
@@ -134,68 +135,67 @@ public class P extends JavaPlugin {
 		// Setup Metrics
 		stats.setupBStats();
 
-		// Listeners
-		blockListener = new BlockListener();
-		playerListener = new PlayerListener();
-		entityListener = new EntityListener();
-		inventoryListener = new InventoryListener();
-		worldListener = new WorldListener();
-		integrationListener = new IntegrationListener();
-		PluginCommand c = getCommand("Brewery");
-		if (c != null) {
-			c.setExecutor(new CommandListener());
-			c.setTabCompleter(new TabListener());
-		}
 
-		p.getServer().getPluginManager().registerEvents(blockListener, p);
-		p.getServer().getPluginManager().registerEvents(playerListener, p);
-		p.getServer().getPluginManager().registerEvents(entityListener, p);
-		p.getServer().getPluginManager().registerEvents(inventoryListener, p);
-		p.getServer().getPluginManager().registerEvents(worldListener, p);
-		p.getServer().getPluginManager().registerEvents(integrationListener, p);
+		getCommand("brewery").setExecutor(new CommandManager());
+		// Listeners
+		playerListener = new PlayerListener();
+
+		getServer().getPluginManager().registerEvents(new BlockListener(), this);
+		getServer().getPluginManager().registerEvents(playerListener, this);
+		getServer().getPluginManager().registerEvents(new EntityListener(), this);
+		getServer().getPluginManager().registerEvents(new InventoryListener(), this);
+		getServer().getPluginManager().registerEvents(new WorldListener(), this);
+		getServer().getPluginManager().registerEvents(new IntegrationListener(), this);
 		if (use1_9) {
-			p.getServer().getPluginManager().registerEvents(new CauldronListener(), p);
+			getServer().getPluginManager().registerEvents(new CauldronListener(), this);
 		}
 		if (BConfig.hasChestShop && use1_13) {
-			p.getServer().getPluginManager().registerEvents(new ChestShopListener(), p);
+			getServer().getPluginManager().registerEvents(new ChestShopListener(), this);
 		}
 		if (BConfig.hasShopKeepers) {
-			p.getServer().getPluginManager().registerEvents(new ShopKeepersListener(), p);
+			getServer().getPluginManager().registerEvents(new ShopKeepersListener(), this);
 		}
 		if (BConfig.hasSlimefun && use1_14) {
-			p.getServer().getPluginManager().registerEvents(new SlimefunListener(), p);
+			getServer().getPluginManager().registerEvents(new SlimefunListener(), this);
 		}
 
 		// Heartbeat
-		p.getServer().getScheduler().runTaskTimer(p, new BreweryRunnable(), 650, 1200);
-		p.getServer().getScheduler().runTaskTimer(p, new DrunkRunnable(), 120, 120);
+		BreweryPlugin.getScheduler().runTaskTimer(new BreweryRunnable(), 650, 1200);
+		BreweryPlugin.getScheduler().runTaskTimer(new DrunkRunnable(), 120, 120);
 
 		if (use1_9) {
-			p.getServer().getScheduler().runTaskTimer(p, new CauldronParticles(), 1, 1);
+			BreweryPlugin.getScheduler().runTaskTimer(new CauldronParticles(), 1, 1);
 		}
 
 		// Disable Update Check for older mc versions
 		if (use1_14 && BConfig.updateCheck) {
-			try {
-				p.getServer().getScheduler().runTaskLaterAsynchronously(p, new UpdateChecker(), 135);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			new UpdateChecker(114777).query(latestVersion -> {
+				int pluginVersion = parseInt(getDescription().getVersion().replace(".","").strip());
+				int latest = parseInt(latestVersion.replace(".", "").strip());
+
+				if (latest > pluginVersion) {
+					UpdateChecker.setUpdateAvailable(true);
+					UpdateChecker.setLatestVersion(latestVersion);
+					msg(Bukkit.getConsoleSender(), languageReader.get("Etc_UpdateAvailable", "v" + getDescription().getVersion(), "v" + latestVersion));
+				}
+			});
 		}
 
+		this.debugLog("Using scheduler: " + scheduler.getClass().getSimpleName());
 		this.log(this.getDescription().getName() + " enabled!");
 	}
 
 	@Override
 	public void onDisable() {
+		addonManager.unloadAddons();
 
 		// Disable listeners
 		HandlerList.unregisterAll(this);
 
-		// Stop shedulers
-		getServer().getScheduler().cancelTasks(this);
+		// Stop schedulers
+		BreweryPlugin.getScheduler().cancelTasks(this);
 
-		if (p == null) {
+		if (breweryPlugin == null) {
 			return;
 		}
 
@@ -223,6 +223,7 @@ public class P extends JavaPlugin {
 		FileConfiguration cfg = BConfig.loadConfigFile();
 		if (cfg == null) {
 			// Could not read yml file, do not proceed, error was printed
+			log("Something went wrong when trying to load the config file! Please check your config.yml");
 			return;
 		}
 
@@ -234,8 +235,7 @@ public class P extends JavaPlugin {
 			BConfig.readConfig(cfg);
 		} catch (Exception e) {
 			e.printStackTrace();
-			p = null;
-			getServer().getPluginManager().disablePlugin(this);
+			log("Something went wrong when trying to load the config file! Please check your config.yml");
 			return;
 		}
 
@@ -243,7 +243,7 @@ public class P extends JavaPlugin {
 		BCauldron.reload();
 
 		// Clear Recipe completions
-		TabListener.reload();
+		CommandUtil.reloadTabCompleter();
 
 		// Reload Recipes
 		boolean successful = true;
@@ -254,15 +254,15 @@ public class P extends JavaPlugin {
 		}
 		if (sender != null) {
 			if (!successful) {
-				msg(sender, p.languageReader.get("Error_Recipeload"));
+				msg(sender, breweryPlugin.languageReader.get("Error_Recipeload"));
 			} else {
-				p.msg(sender, p.languageReader.get("CMD_Reload"));
+				breweryPlugin.msg(sender, breweryPlugin.languageReader.get("CMD_Reload"));
 			}
 		}
 		BConfig.reloader = null;
 	}
 
-	private void clearConfigData() {
+	public void clearConfigData() {
 		BRecipe.getConfigRecipes().clear();
 		BRecipe.numConfigRecipes = 0;
 		BCauldronRecipe.acceptedMaterials.clear();
@@ -305,14 +305,14 @@ public class P extends JavaPlugin {
 		ingredientLoaders.remove(saveID);
 	}
 
-	public static P getInstance() {
-		return p;
+	public static BreweryPlugin getInstance() {
+		return breweryPlugin;
 	}
 
 	// Utility
 
 	public void msg(CommandSender sender, String msg) {
-		sender.sendMessage(color("&2[Brewery] &f" + msg));
+		sender.sendMessage(color(BConfig.pluginPrefix + msg));
 	}
 
 	public void log(String msg) {
@@ -326,9 +326,9 @@ public class P extends JavaPlugin {
 	}
 
 	public void errorLog(String msg) {
-		Bukkit.getConsoleSender().sendMessage(ChatColor.DARK_GREEN + "[Brewery] " + ChatColor.DARK_RED + "ERROR: " + ChatColor.RED + msg);
+		Bukkit.getConsoleSender().sendMessage(color(BConfig.pluginPrefix + "&cERROR: " + msg));
 		if (BConfig.reloader != null) {
-			BConfig.reloader.sendMessage(ChatColor.DARK_GREEN + "[Brewery] " + ChatColor.DARK_RED + "ERROR: " + ChatColor.RED + msg);
+			BConfig.reloader.sendMessage(color(BConfig.pluginPrefix + "&cERROR: " + msg));
 		}
 	}
 
@@ -370,6 +370,10 @@ public class P extends JavaPlugin {
 		return BUtil.color(msg);
 	}
 
+	public static TaskScheduler getScheduler() {
+		return scheduler;
+	}
+
 
 	// Runnables
 
@@ -387,12 +391,16 @@ public class P extends JavaPlugin {
 		public void run() {
 			long t1 = System.nanoTime();
 			BConfig.reloader = null;
-			Iterator<BCauldron> iter = BCauldron.bcauldrons.values().iterator();
-			while (iter.hasNext()) {
+            // runs every min to update cooking time
+			Iterator<BCauldron> bCauldronsToRemove = BCauldron.bcauldrons.values().iterator();
+			while (bCauldronsToRemove.hasNext()) {
 				// runs every min to update cooking time
-				if (!iter.next().onUpdate()) {
-					iter.remove();
-				}
+				BCauldron bCauldron = bCauldronsToRemove.next();
+				BreweryPlugin.getScheduler().runTask(bCauldron.getBlock().getLocation(), () -> {
+					if (!bCauldron.onUpdate()) {
+						bCauldronsToRemove.remove();
+					}
+				});
 			}
 			long t2 = System.nanoTime();
 			Barrel.onUpdate();// runs every min to check and update ageing time

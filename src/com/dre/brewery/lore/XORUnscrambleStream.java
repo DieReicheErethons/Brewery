@@ -1,6 +1,6 @@
 package com.dre.brewery.lore;
 
-import com.dre.brewery.P;
+import com.dre.brewery.BreweryPlugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.FilterInputStream;
@@ -66,7 +66,7 @@ public class XORUnscrambleStream extends FilterInputStream {
 			if (id == 0) {
 				running = false;
 				successType = SuccessType.UNSCRAMBLED;
-				P.p.debugLog("Unscrambled data");
+				BreweryPlugin.getInstance().debugLog("Unscrambled data");
 				return;
 			}
 			int parity = in.read();
@@ -74,7 +74,7 @@ public class XORUnscrambleStream extends FilterInputStream {
 			boolean success = checkParity(parity);
 			if (success) {
 				successType = SuccessType.MAIN_SEED;
-				P.p.debugLog("Using main Seed to unscramble");
+				BreweryPlugin.getInstance().debugLog("Using main Seed to unscramble");
 			}
 
 			if (!success && prevSeeds != null) {
@@ -83,7 +83,7 @@ public class XORUnscrambleStream extends FilterInputStream {
 					xorStream = new SeedInputStream(seed ^ id);
 					if (success = checkParity(parity)) {
 						successType = SuccessType.PREV_SEED;
-						P.p.debugLog("Had to use prevSeed to unscramble");
+						BreweryPlugin.getInstance().debugLog("Had to use prevSeed to unscramble");
 						break;
 					}
 				}

@@ -7,6 +7,9 @@
 # Languagefile to be used (found in plugins/Brewery/languages)
 language: en
 
+# Prefix used on messages
+pluginPrefix: '&2[Brewery]&f '
+
 # If the player wakes up at /home when logging in after excessive drinking (/home plugin must be installed!) [true]
 enableHome: true
 
@@ -32,7 +35,7 @@ enableKickOnOverdrink: false
 enablePuke: true
 
 # Item that is dropped multiple times uncollectable when puking [Soul_Sand]
-pukeItem: Soul_Sand
+pukeItem: [Soul_Sand]
 
 # Time in seconds until the pukeitems despawn, (mc default is 300 = 5 min) [60]
 # If the item despawn time was changed in the spigot.yml, the pukeDespawntime changes as well.
@@ -64,6 +67,9 @@ alwaysShowQuality: true
 
 # Always show the alcohol content on the item. If false, it will only show in the brewing stand [false]
 alwaysShowAlc: false
+
+# If we should show who brewed the drink [false]
+showBrewer: false
 
 # If aging in -Minecraft- Barrels in enabled [true] and how many Brewery drinks can be put into them [6]
 ageInMCBarrels: true
@@ -100,7 +106,7 @@ version: '3.1'
 #  material: Which type the item has to be
 #  name: Which name the item has to be (Formatting codes possible: such as &6)
 #  lore: What has to be in the lore of the item
-
+#  modeldata: Custom Model Data Int. Whatever Model data number the item has to have (NEEDS TO HAVE QUOTATIONS, SEE EXAMPLE)
 customItems:
   # Three Example Items
   ex-item:
@@ -125,6 +131,11 @@ customItems:
 
   rasp:
     name: '&cRaspberry'
+
+  modelitem:
+    material: paper
+    # modeldata must always be in quotations
+    modeldata: '12345'
 
   blue-flowers:
     matchAny: true

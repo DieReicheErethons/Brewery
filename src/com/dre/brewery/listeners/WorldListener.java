@@ -2,8 +2,7 @@ package com.dre.brewery.listeners;
 
 import com.dre.brewery.BCauldron;
 import com.dre.brewery.Barrel;
-import com.dre.brewery.P;
-import com.dre.brewery.Wakeup;
+import com.dre.brewery.BreweryPlugin;
 import com.dre.brewery.filedata.BConfig;
 import com.dre.brewery.filedata.BData;
 import com.dre.brewery.filedata.DataSave;
@@ -21,7 +20,7 @@ public class WorldListener implements Listener {
 	public void onWorldLoad(WorldLoadEvent event) {
 		final World world = event.getWorld();
 		if (BConfig.loadDataAsync) {
-			P.p.getServer().getScheduler().runTaskAsynchronously(P.p, () -> lwDataTask(world));
+			BreweryPlugin.getScheduler().runTaskAsynchronously(() -> lwDataTask(world));
 		} else {
 			lwDataTask(world);
 		}

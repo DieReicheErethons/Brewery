@@ -9,6 +9,9 @@
 # 语言文件(可在plugins/Brewery/languages下找到)
 language: zh
 
+# Prefix used on messages
+pluginPrefix: '&2[Brewery]&f '
+
 # 喝高了的下线玩家会在家里醒来(需要/home等功能支持)[true]
 enableHome: true
 
@@ -34,7 +37,7 @@ enableKickOnOverdrink: false
 enablePuke: true
 
 # 呕吐物[Soul_Sand]
-pukeItem: Soul_Sand
+pukeItem: [Soul_Sand]
 
 # 呕吐物消失的时间, 单位为秒(MC默认为300 = 5分钟)[60]
 # 如果spigot.yml中的物品消失时间被变更, 此处也会变更.
@@ -66,6 +69,9 @@ alwaysShowQuality: true
 
 # Always show the alcohol content on the item. If false, it will only show in the brewing stand [false]
 alwaysShowAlc: false
+
+# If we should show who brewed the drink [false]
+showBrewer: false
 
 # MC自带的桶内可以存放多少饮品 [6]
 ageInMCBarrels: true

@@ -291,6 +291,14 @@ public class BrewLore {
 		}
 	}
 
+	public void updateBrewer(String name) {
+		if (name != null && BConfig.showBrewer) {
+			addOrReplaceLore(Type.BREWER, "§8", BreweryPlugin.getInstance().languageReader.get("Brew_Brewer", name));
+		} else {
+			removeLore(Type.BREWER);
+		}
+	}
+
 	/**
 	 * Converts to/from qualitycolored Lore
  	 */
@@ -577,7 +585,8 @@ public class BrewLore {
 		DISTILL("§p"),
 		AGE("§y"),
 		WOOD("§z"),
-		ALC("§q");
+		ALC("§q"),
+		BREWER("§g");
 
 		public final String id;
 

@@ -101,7 +101,7 @@ public class BIngredients {
 	/**
 	 * returns an Potion item with cooked ingredients
 	 */
-	public ItemStack cook(int state) {
+	public ItemStack cook(int state, String brewer) {
 
 		ItemStack potion = new ItemStack(Material.POTION);
 		PotionMeta potionMeta = (PotionMeta) potion.getItemMeta();
@@ -125,6 +125,7 @@ public class BIngredients {
 			lore.updateQualityStars(false);
 			lore.updateCustomLore();
 			lore.updateAlc(false);
+			lore.updateBrewer(brewer);
 			lore.addOrReplaceEffects(brew.getEffects(), brew.getQuality());
 			lore.write();
 

@@ -68,6 +68,9 @@ alwaysShowQuality: true
 # Always show the alcohol content on the item. If false, it will only show in the brewing stand [false]
 alwaysShowAlc: false
 
+# If we should show who brewed the drink [false]
+showBrewer: false
+
 # If aging in -Minecraft- Barrels in enabled [true] and how many Brewery drinks can be put into them [6]
 ageInMCBarrels: true
 maxBrewsInMCBarrels: 6

@@ -16,6 +16,7 @@ Brew_Years: 年
 Brew_fermented: 發酵
 Brew_minute: 分鐘
 Brew_Alc: Alc &v1ml
+Brew_Brewer: 'Brewer: &v1'
 
 # CMD
 CMD_Copy_Error: '&6&v1 &c藥水不適合你的庫存'

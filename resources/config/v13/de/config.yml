@@ -68,6 +68,9 @@ alwaysShowQuality: true
 # Ob in den Iteminformationen immer der Alkoholgehalt angezeigt weden soll, oder nur im Braustand [false]
 alwaysShowAlc: false
 
+# If we should show who brewed the drink [false]
+showBrewer: false
+
 # Ob das reifen in -Minecraft- Fässern aktiviert ist und wie viele Brewery Getränke in die diese getan werden können [6]
 ageInMCBarrels: true
 maxBrewsInMCBarrels: 6

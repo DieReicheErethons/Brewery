@@ -17,6 +17,7 @@ Brew_Years: Años
 Brew_fermented: fermentado
 Brew_minute: minuto
 Brew_Alc: Alc &v1ml
+Brew_Brewer: 'Brewer: &v1'
 
 # CMD
 CMD_Copy_Error: '&6&v1 &cLas pociones no cabían en tu inventario'

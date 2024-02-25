@@ -69,6 +69,9 @@ alwaysShowQuality: true
 # Toujours indiquer la teneur en alcool sur les objets. S'il est false, il n'apparaîtra que dans le stand de brassage. [false]
 alwaysShowAlc: false
 
+# If we should show who brewed the drink [false]
+showBrewer: false
+
 # Combien de boissons de brasserie peuvent être mises dans les barils -Minecraft- [6]
 ageInMCBarrels: true
 maxBrewsInMCBarrels: 6

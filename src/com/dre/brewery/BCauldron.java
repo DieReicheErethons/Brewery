@@ -168,7 +168,7 @@ public class BCauldron {
 			BreweryPlugin.getInstance().msg(player, BreweryPlugin.getInstance().languageReader.get("Perms_NoCauldronFill"));
 			return true;
 		}
-		ItemStack potion = ingredients.cook(state);
+		ItemStack potion = ingredients.cook(state, player.getName());
 		if (potion == null) return false;
 
 		if (BreweryPlugin.use1_13) {

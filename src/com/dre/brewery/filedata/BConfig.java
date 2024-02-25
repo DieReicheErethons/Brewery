@@ -88,6 +88,7 @@ public class BConfig {
 	public static boolean enableEncode;
 	public static boolean alwaysShowQuality; // Always show quality stars
 	public static boolean alwaysShowAlc; // Always show alc%
+	public static boolean showBrewer;
 	public static boolean brewHopperDump; // Allow Dumping of Brew liquid into Hoppers
 
 	//Features
@@ -239,6 +240,7 @@ public class BConfig {
 		colorInBrewer = config.getBoolean("colorInBrewer", false);
 		alwaysShowQuality = config.getBoolean("alwaysShowQuality", false);
 		alwaysShowAlc = config.getBoolean("alwaysShowAlc", false);
+		showBrewer = config.getBoolean("showBrewer", false);
 		enableEncode = config.getBoolean("enableEncode", false);
 		openEverywhere = config.getBoolean("openLargeBarrelEverywhere", false);
 		enableCauldronParticles = BreweryPlugin.use1_9 && config.getBoolean("enableCauldronParticles", false);

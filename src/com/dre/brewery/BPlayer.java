@@ -435,6 +435,10 @@ public class BPlayer {
 
 	// #### Login ####
 
+	public boolean canJoinSimpleStatus() {
+        return canJoin() == 0;
+    }
+
 	// can the player login or is he too drunk
 	public int canJoin() {
 		if (drunkeness <= 70) {
@@ -905,5 +909,18 @@ public class BPlayer {
 
 	public void setAlcRecovery(int alcRecovery) {
 		this.alcRecovery = alcRecovery;
+	}
+
+
+	public String getName() {
+		Player player = BUtil.getPlayerfromString(uuid);
+		OfflinePlayer offlinePlayer;
+
+		if (player != null) {
+			return player.getName();
+		} else {
+			offlinePlayer = Bukkit.getOfflinePlayer(UUID.fromString(uuid));
+		}
+		return offlinePlayer.getName();
 	}
 }

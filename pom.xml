@@ -1,5 +1,6 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.dre</groupId>
@@ -127,15 +128,19 @@
 			<id>chestshop-repo</id>
 			<url>https://repo.minebench.de/</url>
 		</repository>
-        <repository>
-            <!-- BlockLocker -->
-            <id>CodeMC</id>
-            <url>https://repo.codemc.org/repository/maven-public/</url>
-        </repository>
+		<repository>
+			<!-- BlockLocker -->
+			<id>CodeMC</id>
+			<url>https://repo.codemc.org/repository/maven-public/</url>
+		</repository>
 		<repository>
 			<!-- MythicLib (MMOItems) -->
 			<id>phoenix</id>
 			<url>https://nexus.phoenixdevt.fr/repository/maven-public/</url>
+		</repository>
+		<repository>
+			<id>glaremasters repo</id>
+			<url>https://repo.glaremasters.me/repository/towny/</url>
 		</repository>
 		<repository>
 			<!-- Shopkeepers -->
@@ -294,8 +299,8 @@
 		</dependency>
 		<dependency>
 			<!-- https://www.spigotmc.org/resources/towny-advanced.72694/history -->
-			<groupId>com.github.TownyAdvanced</groupId>
-			<artifactId>Towny</artifactId>
+			<groupId>com.palmergames.bukkit.towny</groupId>
+			<artifactId>towny</artifactId>
 			<version>0.100.0.0</version>
 			<scope>provided</scope>
 		</dependency>

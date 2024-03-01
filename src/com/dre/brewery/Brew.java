@@ -10,7 +10,9 @@ import com.dre.brewery.recipe.PotionColor;
 import com.dre.brewery.utility.BUtil;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.BrewerInventory;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
@@ -428,6 +430,16 @@ public class Brew implements Cloneable {
 		}
 	}
 
+	public ItemStack setGlint(ItemStack item) {
+		if (!currentRecipe.hasGlint()) return item;
+
+		item.addEnchantment(Enchantment.DURABILITY, 1);
+		ItemMeta meta = item.getItemMeta();
+		meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+		item.setItemMeta(meta);
+		return item;
+	}
+
 	/**
 	 * Get Special Drink Effects
 	 */
@@ -804,6 +816,7 @@ public class Brew implements Cloneable {
 
 		recipe.getColor().colorBrew(potionMeta, potion, false);
 		updateCustomModelData(potionMeta);
+		potion = setGlint(potion);
 		potionMeta.setDisplayName(P.p.color("&f" + recipe.getName(quality)));
 		//if (!P.use1_14) {
 		// Before 1.14 the effects duration would strangely be only a quarter of what we tell it to be

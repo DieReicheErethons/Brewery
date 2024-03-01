@@ -430,16 +430,6 @@ public class Brew implements Cloneable {
 		}
 	}
 
-	public ItemStack setGlint(ItemStack item) {
-		if (!currentRecipe.hasGlint()) return item;
-
-		item.addEnchantment(Enchantment.DURABILITY, 1);
-		ItemMeta meta = item.getItemMeta();
-		meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-		item.setItemMeta(meta);
-		return item;
-	}
-
 	/**
 	 * Get Special Drink Effects
 	 */
@@ -816,8 +806,12 @@ public class Brew implements Cloneable {
 
 		recipe.getColor().colorBrew(potionMeta, potion, false);
 		updateCustomModelData(potionMeta);
-		potion = setGlint(potion);
-		potionMeta.setDisplayName(P.p.color("&f" + recipe.getName(quality)));
+		
+		potionMeta.setDisplayName(P.p.color("&f" + recipe.getName(quality)));	
+
+		if (recipe.hasGlint()) {
+			potionMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+		}
 		//if (!P.use1_14) {
 		// Before 1.14 the effects duration would strangely be only a quarter of what we tell it to be
 		// This is due to the Duration Modifier, that is removed in 1.14
@@ -840,6 +834,9 @@ public class Brew implements Cloneable {
 		}
 		save(potionMeta);
 		potion.setItemMeta(potionMeta);
+		if (recipe.hasGlint()) {
+			potion.addUnsafeEnchantment(Enchantment.LURE, 1);
+		}
 		P.p.stats.metricsForCreate(true);
 		return potion;
 	}

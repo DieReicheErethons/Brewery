@@ -710,6 +710,10 @@ public class Brew implements Cloneable {
 				lore.addOrReplaceEffects(getEffects(), quality);
 				potionMeta.setDisplayName(P.p.color("&f" + recipe.getName(quality)));
 				recipe.getColor().colorBrew(potionMeta, item, canDistill());
+
+				if (recipe.hasGlint()) {
+					potionMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+				}
 			} else {
 				quality = 0;
 				lore.convertLore(false);
@@ -749,6 +753,9 @@ public class Brew implements Cloneable {
 		}
 		save(potionMeta);
 		item.setItemMeta(potionMeta);
+        if (currentRecipe != null && currentRecipe.hasGlint()) {
+            item.addUnsafeEnchantment(Enchantment.LURE, 1);
+        }
 	}
 
 	/**
@@ -806,8 +813,8 @@ public class Brew implements Cloneable {
 
 		recipe.getColor().colorBrew(potionMeta, potion, false);
 		updateCustomModelData(potionMeta);
-		
-		potionMeta.setDisplayName(P.p.color("&f" + recipe.getName(quality)));	
+
+		potionMeta.setDisplayName(P.p.color("&f" + recipe.getName(quality)));
 
 		if (recipe.hasGlint()) {
 			potionMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);

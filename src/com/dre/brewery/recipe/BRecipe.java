@@ -49,6 +49,7 @@ public class BRecipe {
 	private int alcohol; // Alcohol in perfect potion
 	private List<Tuple<Integer, String>> lore; // Custom Lore on the Potion. The int is for Quality Lore, 0 = any, 1,2,3 = Bad,Middle,Good
 	private int[] cmData; // Custom Model Data[3] for each quality
+	private boolean hasGlint; // If the potion has enchantment glint
 
 	// drinking
 	private List<BEffect> effects = new ArrayList<>(); // Special Effects when drinking
@@ -155,6 +156,8 @@ public class BRecipe {
 				recipe.cmData = new int[] {cmd, cmd, cmd};
 			}
 		}
+
+		recipe.hasGlint = configSectionRecipes.getBoolean(recipeId + ".glint", false);
 
 		List<String> effectStringList = configSectionRecipes.getStringList(recipeId + ".effects");
 		if (effectStringList != null) {
@@ -642,6 +645,10 @@ public class BRecipe {
 		return cmData;
 	}
 
+	public boolean hasGlint() {
+		return hasGlint;
+	}
+
 	@Nullable
 	public List<Tuple<Integer, String>> getPlayercmds() {
 		return playercmds;
@@ -958,6 +965,14 @@ public class BRecipe {
 		 */
 		public Builder addCustomModelData(int bad, int normal, int good) {
 			recipe.cmData = new int[] {bad, normal, good};
+			return this;
+		}
+
+		/**
+		 * Set if the Potion has Enchantment Glint
+		 */
+		public Builder hasGlint(boolean hasGlint) {
+			recipe.hasGlint = hasGlint;
 			return this;
 		}
 

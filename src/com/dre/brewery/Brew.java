@@ -10,7 +10,9 @@ import com.dre.brewery.recipe.PotionColor;
 import com.dre.brewery.utility.BUtil;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.BrewerInventory;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
@@ -708,6 +710,10 @@ public class Brew implements Cloneable {
 				lore.addOrReplaceEffects(getEffects(), quality);
 				potionMeta.setDisplayName(P.p.color("&f" + recipe.getName(quality)));
 				recipe.getColor().colorBrew(potionMeta, item, canDistill());
+
+				if (recipe.hasGlint()) {
+					potionMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+				}
 			} else {
 				quality = 0;
 				lore.convertLore(false);
@@ -747,6 +753,9 @@ public class Brew implements Cloneable {
 		}
 		save(potionMeta);
 		item.setItemMeta(potionMeta);
+        if (currentRecipe != null && currentRecipe.hasGlint()) {
+            item.addUnsafeEnchantment(Enchantment.LURE, 1);
+        }
 	}
 
 	/**
@@ -804,7 +813,12 @@ public class Brew implements Cloneable {
 
 		recipe.getColor().colorBrew(potionMeta, potion, false);
 		updateCustomModelData(potionMeta);
+
 		potionMeta.setDisplayName(P.p.color("&f" + recipe.getName(quality)));
+
+		if (recipe.hasGlint()) {
+			potionMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+		}
 		//if (!P.use1_14) {
 		// Before 1.14 the effects duration would strangely be only a quarter of what we tell it to be
 		// This is due to the Duration Modifier, that is removed in 1.14
@@ -827,6 +841,9 @@ public class Brew implements Cloneable {
 		}
 		save(potionMeta);
 		potion.setItemMeta(potionMeta);
+		if (recipe.hasGlint()) {
+			potion.addUnsafeEnchantment(Enchantment.LURE, 1);
+		}
 		P.p.stats.metricsForCreate(true);
 		return potion;
 	}

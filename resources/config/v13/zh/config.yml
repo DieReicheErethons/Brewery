@@ -1,6 +1,7 @@
 # Brewery插件的配置文件
 
 #翻译由Neubulae贡献, mcbbsID: 891215991
+#轩某Rikka,川崎星夕进行了完善，bilibili:649328358,477677552
 
 # -- 设置 --
 # 方框[]内的设定为默认设定
@@ -40,45 +41,48 @@ pukeItem: Soul_Sand
 # 如果spigot.yml中的物品消失时间被变更, 此处也会变更.
 pukeDespawntime: 60
 
-# How much the Player stumbles depending on the amount of alcohol he drank. Can be set to 0 and higher than 100 [100]
+# 玩家因饮酒而蹒跚的程度。可以设置为0或大于100 [100]
 stumblePercent: 100
 
-# Display his drunkeness to the player when he drinks a brew or eats a drainItem [true]
+# 当玩家喝啤酒或吃解酒物品时，向他显示醉酒状态 [true]
 showStatusOnDrink: true
 
-# 解酒物/解酒强度. 降低玩家一定程度的醉酒程度, 解救强度为百分数.(下列)
+# 解酒物/解酒强度。降低玩家一定程度的醉酒程度，解救强度为百分数。(下列)
 drainItems:
   - Bread/4
   - Milk_Bucket/2
 
-# Show Particles over Cauldrons when they have ingredients and a heat source. [true]
-# The changing color of the particles can help with timing some recipes
+# 当炼药锅有原料和热源时，在其上方显示颗粒效果 [true]
+# 颗粒颜色的变化可以帮助定时某些配方
 enableCauldronParticles: true
-# If Cauldron Particles should be reduced to the bare minimum [false]
+# 如果炼药锅颗粒效果应减少到最低限度 [false]
 minimalParticles: false
 
-# If crafting and using of the Brew Sealing Table is enabled (2 Bottles over 4 Planks) [true, true]
+# 如果启用酿造封口桌的制作和使用（2个瓶子放在4块木板上面） [true, true]
 craftSealingTable: true
 enableSealingTable: true
 
-# Always show the 1-5 stars on the item depending on the quality. If false, they will only appear when brewing [true]
+# 根据物品质量始终显示1-5颗星。如果为false，则仅在酿造时出现 [true]
 alwaysShowQuality: true
 
-# Always show the alcohol content on the item. If false, it will only show in the brewing stand [false]
+# 始终显示物品的酒精含量。如果为false，则仅在酿造台显示 [false]
 alwaysShowAlc: false
+
+# 是否要显示酿造饮料的人 [false]
+showBrewer: false
 
 # MC自带的桶内可以存放多少饮品 [6]
 ageInMCBarrels: true
 maxBrewsInMCBarrels: 6
 
-# The used Ingredients and other brewing-data is saved to all Brewery Items. To prevent
-# hacked clients from reading what exactly was used to brew an item, the data can be encoded/scrambled.
-# This is a fast process to stop players from hacking out recipes, once they get hold of a brew.
-# Only drawback: brew items can only be used on another server with the same encodeKey.
-# When using Brews on multiple (BungeeCord) Servers, define a shared Database below at 'multiServerDB'
-# So enable this if you want to make recipe cheating harder, but don't share any brews by world download, schematics, or other means. [false]
+# 使用的原料和其他酿造数据保存到所有酿酒物品中。为了防止
+# 外挂这是一个快速过程，以阻止玩家一旦获得酿造物就作弊配方，
+# 唯一的缺点：酿造物品只能在具有相同encodeKey的另一个服务器上使用。
+# 当在多个(BungeeCord)服务器上使用酿造物时，在下面的'multiServerDB'定义一个共享数据库
+# 所以，如果你想使配方作弊更加困难，请启用此选项，但不要通过世界下载、结构、或其他方式共享任何酿造物。 [false]
 enableEncode: false
 encodeKey: 0
+
 
 # 是否检查更新.[true]
 # 若有更新, 服务端后台与上线时的管理员会收到通知.
@@ -95,26 +99,26 @@ version: '3.1'
 
 
 
-# -- Define custom items --
-# The defined id can then be used in recipes
+# -- 定义自定义物品 --
+# 定义的 id 可以在配方中使用
 
-#  matchAny: true if it is already enough if one of the info matches
-#  material: Which type the item has to be
-#  name: Which name the item has to be (Formatting codes possible: such as &6)
-#  lore: What has to be in the lore of the item
+#  matchAny: 如果设为 true，只要有一个条件匹配即认为匹配成功
+#  material: 物品的类型
+#  name: 物品的名称（可使用格式化代码，例如 &6）
+#  lore: 物品的附加说明
 
 customItems:
-  # Three Example Items
+  # 三个示例物品
   ex-item:
-    # A Barrier item called Wall and has the given line in its lore
+    # 一个名为 Wall 的 Barrier 物品，并具有指定的附加说明
     material: Barrier
     name: 'Wall'
     lore:
-      - '&7Very well protected'
+      - '&7传说'
 
   ex-item2:
-    # Using matchAny only one of the following has to match.
-    # In this case on of the door types, or an item called Beechwood Door, or an item with 'A door' in its lore
+    # 使用 matchAny 时，只需满足以下条件之一即可。
+    # 在此情况下，可以是以下任意门类型之一，或名为 Beechwood Door 的物品，或附加说明中包含 'A door' 的物品
     matchAny: true
     material:
       - Acacia_Door
@@ -123,10 +127,10 @@ customItems:
     name:
       - 'Beechwood Door'
     lore:
-      - 'A door'
+      - '一扇门'
 
   rasp:
-    name: '&cRaspberry'
+    name: '&c树莓'
 
   blue-flowers:
     matchAny: true
@@ -134,26 +138,25 @@ customItems:
       - cornflower
       - blue_orchid
 
+# -- 炼药锅中的成分 --
+# 炼药锅接受的成分以及由其生成的基础药水
+# 只有当你想为基础药水指定自定义名称或颜色时才需要在这里添加内容
 
-# -- Ingredients in the Cauldron --
-# Which Ingredients are accepted by the Cauldron and the base potion resulting from them
-# You only need to add something here if you want to specify a custom name or color for the base potion
-
- # name: Name of the base potion coming out of the Cauldron (Formatting codes possible: such as &6)
- # ingredients: List of 'material/amount'
- #   With an item in your hand, use /brew ItemName to get its material for use in a recipe
- #   (Item-ids instead of material are not supported by bukkit anymore and will not work)
- #   A list of materials can be found here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
- # color: Color of the potion from a cauldron. Defaults to CYAN
- #   Usable Colors: DARK_RED, RED, BRIGHT_RED, ORANGE, YELLOW, PINK, PURPLE, BLUE, CYAN, WATER, TEAL, OLIVE, GREEN, LIME, BLACK, GREY, BRIGHT_GREY, WHITE
- #   Or RGB colors (hex: for example '99FF33') (with '') (search for "HTML color" on the internet)
+ # name: 炼药锅生成的基础药水名称（可使用格式化代码，例如 &6）
+ # ingredients: 成分列表，格式为 'material/amount'
+ #   手持物品时，使用 /brew ItemName 可以获取该物品的 material 用于配方
+ #   （Bukkit 已不再支持 item-id，因此不能使用）
+ #   可用的材料列表请参见：https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
+ # color: 炼药锅生成药水的颜色，默认是 CYAN
+ #   可用颜色：DARK_RED, RED, BRIGHT_RED, ORANGE, YELLOW, PINK, PURPLE, BLUE, CYAN, WATER, TEAL, OLIVE, GREEN, LIME, BLACK, GREY, BRIGHT_GREY, WHITE
+ #   或 RGB 颜色（十六进制，例如 '99FF33'）(需用引号括起)（可在网上搜索 "HTML color" ）
  # cookParticles:
- #   Color of the Particles above the cauldron at different cooking-times
- #   Color and minute during which each color should appear, i.e. one color at 8 minutes fading to another at 18 minutes.
- #   As List, each Color as name or RGB, see above. Written as 'Color/Minute'
- #   It will fade to the last color in the end, if there is only one color in the list, it will fade to grey
- # lore: List of additional text on the base potion. (Formatting codes possible: such as &6)
- # customModelData: Custom Model Data Tag. This is a number that can be used to add custom textures to the item.
+ #   不同烹饪时间段内炼药锅上方粒子的颜色
+ #   每种颜色及其出现的分钟数作为列表，例如在8分钟时一种颜色逐渐变为18分钟时的另一种颜色。
+ #   颜色可用名称或 RGB 值，如上所述。格式为 'Color/Minute'
+ #   最后会逐渐变为列表中的最后一种颜色，如果列表中只有一种颜色，最终会变为灰色
+ # lore: 基础药水的附加说明列表（可使用格式化代码，例如 &6）
+ # customModelData: 自定义模型数据标签。可以用这个数字为物品添加自定义纹理。
 
 cauldron:
   # Example with all possible entries
@@ -166,29 +169,29 @@ cauldron:
     cookParticles:
       - 'RED/5'
       - 'WHITE/10'
-      - '800000/25' # maroon
+      - '800000/25' # 褐红色
     lore:
       - An example for a Base Potion
       - This is how it comes out of a Cauldron
     customModelData: 545
 
-  # -- One Ingredient: --
+  # -- 一种原料: --
   wheat:
     name: 发酵麦汁
     ingredients: Wheat
     cookParticles:
-      - '2d8686/8' # Dark Aqua
+      - '2d8686/8' # 黑色的水
 
   sugarcane:
     name: 糖浆
     ingredients: Sugar_Cane
-    color: 'f1ffad' # yellowish green
+    color: 'f1ffad' # 黄绿色
     cookParticles:
       - 'f1ffad/4'
-      - '858547/10' # dark olive
+      - '858547/10' # 深橄榄色
 
   sugar:
-    name: Sugarwater
+    name: 糖水
     ingredients: Sugar
     cookParticles:
       - 'WHITE/4'
@@ -199,7 +202,7 @@ cauldron:
     ingredients: Apple
 
   berries:
-    name: Grape must
+    name: 葡萄汁
     ingredients: Sweet_Berries
     color: RED
     cookParticles:
@@ -208,7 +211,7 @@ cauldron:
       - 'ac6553/13' # brown-red
 
   potato:
-    name: 土豆泥
+    name: 土豆汤
     ingredients: Potato
 
   grass:
@@ -220,21 +223,21 @@ cauldron:
       - '99ff99/20' # faded green
 
   rmushroom:
-    name: 蘑菇酿
+    name: 红蘑菇汤
     ingredients: Red_Mushroom
     color: 'ff5c33' # amber red
     cookParticles:
       - 'fab09e/15' # faded red
 
   bmushroom:
-    name: Mushroom brew
+    name: 棕蘑菇汤
     ingredients: Brown_Mushroom
     color: 'c68c53' # brighter brown
     cookParticles:
       - 'c68c53/15'
 
   cocoa:
-    name: 上了色的水
+    name: 可可水
     ingredients: Cocoa_Beans
     color: '804600' # mocca
     cookParticles:
@@ -243,7 +246,7 @@ cauldron:
       - '4d4133/8' # Gray-brown
 
   milk:
-    name: 乳浊液体
+    name: Milky water
     ingredients: Milk_Bucket
     color: BRIGHT_GREY
     cookParticles:
@@ -251,25 +254,25 @@ cauldron:
       - 'WHITE/6'
 
   bl_flow:
-    name: Blueish brew
+    name: 浑浊不清的水
     ingredients: blue-flowers
     color: '0099ff' # sky blue
     cookParticles:
       - '0099ff'
 
   cactus:
-    name: Agave brew
+    name: 龙舌兰原液
     ingredients: cactus
     color: '00b300' # cactus green
     cookParticles:
       - '00b300/16'
 
   poi_potato:
-    name: Poisonous Broth
+    name: 毒土豆汤
     ingredients: Poisonous_Potato
 
   egg:
-    name: Sticky brew
+    name: 甜腻的水
     ingredients: Egg
 
 
@@ -278,7 +281,7 @@ cauldron:
     ingredients: Oak_Sapling
 
   vine:
-    name: Boiled herbs
+    name: 草汤
     ingredients: vine
     color: '99ff66' # bright green
     cookParticles:
@@ -294,19 +297,19 @@ cauldron:
       - 'BLACK/20'
 
   melon:
-    name: Melon juice
+    name: 甜瓜汁
     ingredients: melon_slice
 
   wheat_seeds:
-    name: Bitter brew
+    name: 苦茶
     ingredients: Wheat_Seeds
 
   melon_seeds:
-    name: Bitter brew
+    name: 苦茶
     ingredients: Melon_Seeds
 
   pumpkin_seeds:
-    name: Bitter brew
+    name: 苦茶
     ingredients: Pumpkin_Seeds
 
   bone_meal:
@@ -332,7 +335,7 @@ cauldron:
     ingredients: ghast_tear
 
   snowball:
-    name: Icewater
+    name: 冰水
     ingredients: Snowball
 
   Gold_Nugget:
@@ -422,15 +425,16 @@ cauldron:
 #   也可以使用RGB颜色(十六进制, 如'99FF33', 必须包含两个单引号)(在线搜索"HTML 颜色"或者其他颜色库即刻获得你需要的颜色的十六进制表示)
 # difficulty: 酿制难度, 1 = 不需要非常精确的操作就可以制出优质饮品, 10 = 需要非常精确的操作才可以制出优质饮品.
 # alcohol: 完美质量的饮品所含有的酒精度(百分数, 会被直接添加到玩家身上, 100意为直接昏迷)
-# lore: List of additional text on the finished brew. (Formatting codes possible: such as &6)
-#   Specific lore for quality possible, using + bad, ++ normal, +++ good, added to the front of the line.
-# servercommands: List of Commands executed by the -Server- when drinking the brew (Can use %player_name%  %quality%)
-# playercommands: List of Commands executed by the -Player- when drinking the brew (Can use %player_name%  %quality%)
-#   Specific Commands for quality possible, using + bad, ++ normal, +++ good, added to the front of the line.
-# drinkmessage: Chat-message to the Player when drinking the Brew
-# drinktitle: Title on Screen to the Player when drinking the Brew
-# customModelData: Custom Model Data Tag. This is a number that can be used to add custom textures to the item.
-#   Can specify one for all, or one for each quality, separated by /
+# lore: 完成酿造后额外的文本列表。（可能的格式化代码：例如 &6）
+#   可以针对品质指定特定的lore，使用 + 差, ++ 普通, +++ 好，加在行的前面。
+# servercommands: 饮用酿造时由服务器执行的一系列命令（可以使用 %player_name% %quality%）
+# playercommands: 饮用酿造时由玩家执行的一系列命令（可以使用 %player_name% %quality%）
+#   可以针对品质指定特定的命令，使用 + 差, ++ 普通, +++ 好，加在行的前面。
+# drinkmessage: 饮用酿造时发送给玩家的聊天信息
+# drinktitle: 饮用酿造时屏幕上显示给玩家的标题
+# glint: 项目是否应该有发光效果（附魔发光）
+# customModelData: 自定义模型数据标签。这是一个数字，可以用来添加自定义纹理到物品上。
+#   可以为所有指定一个，或者为每个品质指定一个，用 / 分隔。
 # effects: 饮用后能够获得的药效的列表. 格式为"药效/强度/时长(秒)".
 #   药效列表: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/potion/PotionEffectType.html
 #   药效强度与时长可以用"-"划分区间, 如: "SPEED/1-2/30-40" = 最劣质情况下的饮品会给予速度1三十秒, 最优质则会给予速度2四十秒.
@@ -489,7 +493,7 @@ recipes:
     color: 'ffb84d' # Orange
     difficulty: 1
     alcohol: 5
-    lore: +++ &8Refreshing
+    lore: +++ &8耳目一新
 
   2:
     name: 劣质啤酒/啤酒/鲜啤
@@ -502,7 +506,7 @@ recipes:
     color: 'ffd333' # Bright Orange
     difficulty: 1
     lore:
-      - +++ &8Crisp taste
+      - +++ &8清新爽口
     alcohol: 6
 
   3:
@@ -516,7 +520,7 @@ recipes:
     color: '650013' # Dark Red-Brown
     difficulty: 2
     lore:
-      - +++ &8Roasted taste
+      - +++ &8烤味浓郁
     alcohol: 7
 
   wine:
@@ -531,10 +535,10 @@ recipes:
     difficulty: 4
     alcohol: 8
     lore:
-      - '+ &8Harsh'
-      - '+ &8Corked'
-      - '++ &8Mellow'
-      - '+++ &8Full-Bodied'
+      - '+ &8辛辣'
+      - '+ &8变质'
+      - '++ &8芳醇'
+      - '+++ &8醇厚'
 
   4:
     name: 粗制蜜酒/蜜酒/黄金蜜酒
@@ -547,7 +551,7 @@ recipes:
     color: ORANGE
     difficulty: 2
     lore:
-      - +++ Has a golden shine
+      - +++ 金光闪闪
     alcohol: 9
 
   5:
@@ -563,9 +567,9 @@ recipes:
     difficulty: 4
     alcohol: 11
     lore:
-      - +Is there any Apple in this?
-      - ++Refreshing taste of Apple
-      - +++Sweetest hint of Apple
+      - +这真的含有苹果吗
+      - ++清新的苹果香气
+      - +++香甜的苹果味道
     effects:
       - WATER_BREATHING/1-2/150
 
@@ -582,7 +586,7 @@ recipes:
     alcohol: 7
 
   apple_liquor:
-    name: Sour Apple Liquor/Apple Liquor/Calvados
+    name: 酸苹果酒/苹果酒/苹果白兰地
     ingredients:
       - Apple/12
     cookingtime: 16
@@ -593,11 +597,11 @@ recipes:
     difficulty: 5
     alcohol: 14
     lore:
-      - +Sour like Acid
-      - +++ Good Apple Liquor
+      - + 像醋一样酸
+      - +++ 好的苹果酒
 
   whiskey:
-    name: Unsightly Whiskey/Whiskey/Scotch Whiskey
+    name: 不堪入目的威士忌/威士忌/苏格兰威士忌
     ingredients:
       - Wheat/10
     cookingtime: 10
@@ -608,10 +612,10 @@ recipes:
     color: ORANGE
     difficulty: 7
     alcohol: 26
-    lore: '&7Single Malt'
+    lore: '&7单一麦芽'
 
   rum:
-    name: Bitter Rum/Spicy Rum/&6Golden Rum
+    name: 苦的朗姆酒/辣的朗姆酒/金色朗姆酒
     ingredients:
       - Sugar_Cane/18
     cookingtime: 6
@@ -626,9 +630,9 @@ recipes:
       - FIRE_RESISTANCE/1/20-100
       - POISON/1-0/30-0
     lore:
-      - +&8Too bitter to drink
-      - ++&8Spiced by the barrel
-      - +++&eSpiced Gold
+      - +&8苦到喝不进去
+      - ++&8桶装香料
+      - +++&e香料黄金
 
   7:
     name: 劣质伏特加/伏特加/纯正俄式风味伏特加
@@ -640,13 +644,13 @@ recipes:
     color: WHITE
     difficulty: 4
     alcohol: 20
-    lore: + &8Almost undrinkable
+    lore: + &8几乎喝不了
     effects:
       - WEAKNESS/15
       - POISON/10
 
   shroom_vodka:
-    name: Mushroom Vodka/Mushroom Vodka/Glowing Mushroom Vodka
+    name: 蘑菇伏特加/蘑菇伏特加/闪闪发亮的蘑菇伏特加
     ingredients:
       - Potato/10
       - Red_Mushroom/3
@@ -657,7 +661,7 @@ recipes:
     color: 'ff9999' # Pink-Red
     difficulty: 7
     alcohol: 18
-    lore: +++&aGlows in the dark
+    lore: +++&a在黑暗中发光
     effects:
       - WEAKNESS/80
       - CONFUSION/27
@@ -666,7 +670,7 @@ recipes:
       - SLOW/10-3
 
     gin:
-      name: Pale Gin/Gin/Old Tom Gin
+      name: 淡色杜松子酒/杜松子酒/老汤姆杜松子酒
       ingredients:
         - Wheat/9
         - blue-flowers/6  # Custom-Item: Blue Orchids or Cornflowers
@@ -677,13 +681,13 @@ recipes:
       difficulty: 6
       alcohol: 20
       lore:
-        - ++ With the
-        - ++ taste of juniper
-        - +++ Perfectly finished off
-        - +++ with juniper
+        - ++ 添加了
+        - ++ 杜松子的味道
+        - +++ 完美地以杜松子
+        - +++ 作为结尾
 
     tequila:
-      name: Mezcal/Tequila/Tequila anejo
+      name: 梅斯卡尔/龙舌兰酒/陈年龙舌兰酒
       ingredients:
         - cactus/8
       cookingtime: 15
@@ -693,7 +697,7 @@ recipes:
       wood: 1
       age: 12
       alcohol: 20
-      lore: Desert spirit
+      lore: 沙漠之魂
 
   8:
     name: 劣质苦艾酒/苦艾酒/劲猛苦艾酒
@@ -707,10 +711,10 @@ recipes:
     alcohol: 42
     effects:
       - POISON/15-25
-    lore: '+++&8High proof liquor'
+    lore: '+++&8高酒精度的烈酒'
 
   gr_absinthe:
-    name: Poor Absinthe/Green Absinthe/Bright Green Absinthe
+    name: 劣质苦艾酒/绿色苦艾酒/鲜绿色苦艾酒
     ingredients:
       - Grass/17
       - Poisonous_Potato/2
@@ -724,7 +728,7 @@ recipes:
       - POISON/25-40
       - HARM/2
       - NIGHT_VISION/40-60
-    lore: '&aLooks poisonous'
+    lore: '&a看起来有毒'
 
   9:
     name: 土豆汤
@@ -752,7 +756,7 @@ recipes:
       - SPEED/1/30-140
 
   eggnog:
-    name: Egg Liquor/Eggnog/Advocaat
+    name: 蛋液酒/蛋酒/蛋黄酒
     ingredients:
       - Egg/5
       - Sugar/2
@@ -763,7 +767,8 @@ recipes:
     alcohol: 10
     wood: 0
     age: 3
-    lore: Made with raw egg
+    lore: 用生蛋制成
+    
 
 
 
@@ -846,13 +851,13 @@ recipes:
 # Pumpkin Spice Beer,
 # Melon Vodka
 
-# There are a lot of items in Minecraft like Vines, Milk and items added by plugins that would make great ingredients.
+# Minecraft中有许多物品，如藤蔓、牛奶和由插件添加的物品，它们都可以成为很好的原料。
 
 
 # -- 插件兼容性 --
 
 # 检查插件以进行权限配置[true]
-# Plugins 'Landlord' and 'Protection Stones' use the WorldGuard Flag. 'ClaimChunk' is natively supported.
+# 插件 'Landlord' 和 'Protection Stones' 使用 WorldGuard 标志。 'ClaimChunk' 是原生支持的。
 useWorldGuard: true
 useLWC: true
 useGriefPrevention: true
@@ -860,23 +865,23 @@ useTowny: true
 useBlockLocker: true
 useGMInventories: true
 
-# Use a virtual chest when opening a Barrel to check with all other protection plugins
-# This could confuse Anti-Cheat plugins, but is otherwise good to use
-# use this for 'Residence' Plugin and any others that don't check all cases in the PlayerInteractEvent
+# 在打开桶时使用虚拟箱子来检查所有其他保护插件
+# 这可能会混淆反作弊插件，但除此之外是很好的使用
+# 将此用于 'Residence' 插件和任何其他不在 PlayerInteractEvent 中检查所有情况的插件
 useVirtualChestPerms: false
 
-# 对LogBlock启用方块数据录入[true]
+# 对 LogBlock 启用方块数据录入[true]
 useLogBlock: true
 
 
-# -- MultiServer/BungeeCord --
-# If Brewery is running on multiple connected Servers (via BungeeCord)
-# a shared Database can be used here to synchronise drunkeness and to be able to use encoded brews between them.
+# -- 多服务器/BungeeCord --
+# 如果 Brewery 在多个连接的服务器上运行（通过 BungeeCord）
+# 可以在这里使用共享数据库来同步醉酒状态，并能够在它们之间使用编码酿造。
 
 multiServerDB:
-  # If using the Database is enabled
+  # 如果允许使用数据库
   enabled: false
-  # If the drunkeness of players should be synchronised between Servers
+  # 如果要在不同服务器之间同步玩家的醉酒状态
   syncDrunkeness: true
   host: localhost
   port: '3306'
@@ -885,12 +890,12 @@ multiServerDB:
   database: base
 
 
-# -- Various Other Settings --
+# -- 各种其他设置 --
 
-# If items in Offhand should be added to the cauldron as well [false]
+# 是否将副手中的物品也添加到大锅中 [false]
 useOffhandForCauldron: false
 
-# If Barrel and Cauldron data can be loaded Async/in the Background [true]
+# 是否可以异步/在后台加载桶和大锅的数据 [true]
 loadDataAsync: true
 
 # 最大玩家下线记忆时长(单位为天). 饮酒的记忆保持时间, 便于计算宿醉.[7]
@@ -901,9 +906,9 @@ colorInBarrels: true
 colorInBrewer: true
 
 # 大型熟成木桶可以通过右击桶身任意一个位置来打开, 而不需要专门右击其龙头. 这一操作对小型酒桶总为真.[true]
-openLargeBarrelEverywhere: false
+openLargeBarrelEverywhere: true
 
-# Allow emptying brews into hoppers to discard brews while keeping the glass bottle [true]
+# 允许将酿造倒入漏斗中以丢弃酿造，同时保留玻璃瓶 [true]
 brewHopperDump: true
 
 
@@ -918,7 +923,7 @@ brewHopperDump: true
 enableChatDistortion: true
 
 # 在服务器后台登记玩家实际输入的内容, 而非口糊后的内容.[false]
-logRealChat: false
+logRealChat: true
 
 # 以下命令后跟随的语句会糊.[- /gl]
 distortCommands:
